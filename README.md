@@ -13,6 +13,19 @@ Upon creating a new project from the `cookiecutter-monarch-ingest` template, the
 cd dm-bip
 ```
 
+#### GitHub Repository
+1. Create a new repository on GitHub.
+1. Enable GitHub Actions to read and write to the repository (required to deploy the project to GitHub Pages).
+   - in GitHub, go to Settings -> Action -> General -> Workflow permissions and choose read and write permissions
+1. Initialize the local repository and push the code to GitHub. For example:
+
+   ```bash
+   git init
+   git remote add origin https://github.com/amc-corey-cox/dm_bip.git
+   git add -A && git commit -m "Initial commit"
+   git push -u origin main
+   ```
+
 #### Setup Python Environment and Install Poetry
 To finish setting up the project first we'll need to set up a Python development environment. You can either use your system `poetry` or install it within a repository virtual environment.
 
@@ -25,25 +38,11 @@ pip install poetry
 ##### Install Poetry in a Virtual Environment
 To use poetry within a virtual environmen and install `poetry` to the environment use your system Python or install `pyenv` and select your python version with `pyenv local 3.13`. Then create a virtual environment and install poetry to it.
 ```
+pyenv 3.13
 python -m venv .venv
 . .venv/bin/activate
 pip install poetry
 ```
-
-#### GitHub Repository
-
-1. Create a new repository on GitHub.
-1. Enable GitHub Actions to read and write to the repository (required to deploy the project to GitHub Pages).
-   - in GitHub, go to Settings -> Action -> General -> Workflow permissions and choose read and write permissions
-1. Initialize the local repository and push the code to GitHub. For example:
-
-   ```bash
-   cd dm-bip
-   git init
-   git remote add origin https://github.com/<username>/<repository>.git
-   git add -A && git commit -m "Initial commit"
-   git push -u origin main
-   ```
 
 #### Documentation
 
