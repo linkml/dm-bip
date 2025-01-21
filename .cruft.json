@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/amc-corey-cox/monarch-project-template",
-  "commit": "b090b3a94be448e1795b87cce98feb499d7642ef",
+  "commit": "bb8b144307d45f4d8db3439e4088ef13d8763bd8",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -18,7 +18,7 @@
       "github_token_for_doc_deployment": "GH_TOKEN",
       "github_token_for_pypi_deployment": "PYPI_TOKEN",
       "_template": "https://github.com/amc-corey-cox/monarch-project-template",
-      "_commit": "b090b3a94be448e1795b87cce98feb499d7642ef"
+      "_commit": "bb8b144307d45f4d8db3439e4088ef13d8763bd8"
     }
   },
   "directory": null
