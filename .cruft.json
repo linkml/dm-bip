@@ -1,0 +1,24 @@
+{
+  "template": "https://github.com/amc-corey-cox/monarch-project-template",
+  "commit": "b7bf8798cc7d940d9d378cffcdb6105d89e9991c",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "dm-bip",
+      "github_org_name": "amc-corey-cox",
+      "__project_slug": "dm_bip",
+      "project_description": "Data Model-Based Ingestion Pipeline using LinkML tools",
+      "min_python_version": "3.13",
+      "file_name": "main",
+      "greeting_recipient": "World",
+      "full_name": "Corey Cox",
+      "email": "corey@tislab.org",
+      "__author": "Corey Cox <corey@tislab.org>",
+      "license": "MIT",
+      "github_token_for_doc_deployment": "GH_TOKEN",
+      "github_token_for_pypi_deployment": "PYPI_TOKEN",
+      "_template": "https://github.com/amc-corey-cox/monarch-project-template"
+    }
+  },
+  "directory": null
+}
