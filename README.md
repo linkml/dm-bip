@@ -1,9 +1,13 @@
-# dm-bip
+# Data Model-Based Ingestion Pipeline - dm-bip
 
 | [Documentation](https://amc-corey-cox.github.io/dm_bip) |
 
 Data Model-Based Ingestion Pipeline using LinkML tools
-**TODO: Add more detailed information about the project**
+
+## Overview
+The purpose of this repository is to coordinate the efforts of multiple projects in creating a Data Model-Based Ingestion Pipeline (dm-bip) for their respective purposes. Currently, the two projects involved in this effort are the BioData Catalyst (BDC) Data Management Core (BDC-DMC) and the INCLUDE project. If you have another ingest pipeline you would like to consider for inclusion in this joint ingestion pipeline please make an issue or reach out to the respective programs of the authors of this repository.
+
+The main effort of this project is to use existing LinkML tools to the extent possible and fill in gaps between these tools with simple scripts. Whenever possible, the goal should be to move created middle-ware tools within this repository either upstream to the data submitters or into the LinkML tools in use.
 
 # Setting Up a New Project -- Delete this section when completed
 
@@ -90,6 +94,8 @@ This should run all the bullets mentioned above under the `tox` configuration an
 
 And as the last line says: `congratulations :)`!! Your project is ready to evolve!
 
+> If you have an error running `tox` your python dependencies may be out of sync and you may be able to fix it by running `poetry lock` and then running `tox` again.
+
 # Final test to see everything is wired properly
 
 On the command line, type the `project_name`. In this example, `ABCD`:
@@ -109,6 +115,9 @@ To run commands within the poetry environment either preface the command with `p
 
 #### Remove - Setting Up a New Project -- Delete this section when completed
 Once you have completed these steps, you can remove the [Setting Up a New Project](#setting-up-a-new-project) section from this `README.md` file. Removal ends with this section.
+
+# Getting Started
+
 
 # Requirements
 - Python >= 3.13
