@@ -1,4 +1,5 @@
 """Command line interface for dm-bip."""
+
 import logging
 
 import click
