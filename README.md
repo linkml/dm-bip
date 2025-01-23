@@ -9,116 +9,6 @@ The purpose of this repository is to coordinate the efforts of multiple projects
 
 The main effort of this project is to use existing LinkML tools to the extent possible and fill in gaps between these tools with simple scripts. Whenever possible, the goal should be to move created middle-ware tools within this repository either upstream to the data submitters or into the LinkML tools in use.
 
-# Setting Up a New Project -- Delete this section when completed
-
-Upon creating a new project from the `cookiecutter-monarch-ingest` template, there are a few steps you should take to finish setting up the project. First, change into the newly created project.
-
-```bash
-cd dm-bip
-```
-
-#### GitHub Repository
-1. Create a new repository on GitHub.
-1. Enable GitHub Actions to read and write to the repository (required to deploy the project to GitHub Pages).
-   - in GitHub, go to Settings -> Action -> General -> Workflow permissions and choose read and write permissions
-1. Initialize the local repository and push the code to GitHub. For example:
-
-   ```bash
-   git init
-   git remote add origin https://github.com/amc-corey-cox/dm_bip.git
-   git add -A && git commit -m "Initial commit"
-   git push -u origin main
-   ```
-
-#### Setup Python Environment and Install Poetry
-To finish setting up the project first we'll need to set up a Python development environment. You can either use your system `poetry` or install it within a repository virtual environment.
-
-##### Use System Poetry
-To use you're system `poetry`, install `poetry` if you haven't already.
-```
-pip install poetry
-```
-
-##### Install Poetry in a Virtual Environment
-To use poetry within a virtual environmen and install `poetry` to the environment use your system Python or install `pyenv` and select your python version with `pyenv local 3.13`. Then create a virtual environment and install poetry to it. You will also want to add `cruft` to the virtual environment to keep updated with this template.
-```
-pyenv 3.13
-python -m venv .venv
-. .venv/bin/activate
-pip install poetry
-pip install cruft
-```
-
-#### Install Dependencies
-Now that we have the basic repository set up and the background dependencies, we can set up the dependencies for the rest of the project. First, we'll use poetry to install project dependencies.
-```
-poetry install
-```
-
-##### Add `poetry-dynamic-versioning` as a plugin
-Our usage of poetry requires the dynamic versionining plugin.
-```
-poetry self add "poetry-dynamic-versioning[plugin]"
-```
-**Note**: If you are using a Linux system and the above doesn't work giving you the following error `Invalid PEP 440 version: ...`, you could alternatively run:
-```
-poetry add poetry-dynamic-versioning
-```
-
-#### Set-up `pre-commit`
-`pre-commit` runs hooks on every commit to automatically point out issues in code such as missing semicolons, trailing whitespace, and debug statements. For more information click [here](https://pre-commit.com).
-
-```
-poetry run pre-commit install
-```
-which will result in the message: 
-```
-pre-commit installed at .git/hooks/pre-commit
-``` 
-This indicates that you have a successful `pre-commit` setup.
-
-#### Run `tox` to see if the setup works
-```
-poetry run tox
-```
-
-This should run all the bullets mentioned above under the `tox` configuration and ideally you should see the following at the end of the run:
-```
-  coverage-clean: OK (0.20=setup[0.05]+cmd[0.15] seconds)
-  lint-fix: OK (0.40=setup[0.01]+cmd[0.30,0.09] seconds)
-  codespell-write: OK (0.20=setup[0.02]+cmd[0.18] seconds)
-  docstr-coverage: OK (0.29=setup[0.01]+cmd[0.28] seconds)
-  py: OK (1.29=setup[0.01]+cmd[1.28] seconds)
-  congratulations :) (2.55 seconds)
-```
-
-And as the last line says: `congratulations :)`!! Your project is ready to evolve!
-
-> If you have an error running `tox` your python dependencies may be out of sync and you may be able to fix it by running `poetry lock` and then running `tox` again.
-
-# Final test to see everything is wired properly
-
-On the command line, type the `project_name`. In this example, `ABCD`:
-```
-poetry run dm_bip run
-```
-Should return "Hello, World"
-
-To run commands within the poetry environment either preface the command with `poetry run`, i.e. `poetry run /path-to/my-command --options` or open the poetry shell with `poetry shell`.
-
-#### Documentation
-1. Update this `README.md` file with any additional information about the project.
-1. Add any appropriate documentation to the `docs` directory.
-
-> **Note:** After the GitHub Actions for deploying documentation runs, the documentation will be automatically deployed to GitHub Pages.  
-> However, you will need to go to the repository settings and set the GitHub Pages source to the `gh-pages` branch, using the `/docs` directory.
-
-#### Remove - Setting Up a New Project -- Delete this section when completed
-Once you have completed these steps, you can remove the [Setting Up a New Project](#setting-up-a-new-project) section from this `README.md` file. Removal ends with this section.
-
-# Getting Started
-
-
 # Requirements
 - Python >= 3.13
 - [Poetry](https://python-poetry.org/docs/#installation)
@@ -145,8 +35,86 @@ Once you have completed these steps, you can remove the [Setting Up a New Projec
 - `LICENSE` file based on the choice made during setup. 
 - `README.md` file containing `project_description` value entered during setup.
 
-# Future updates to the project's boilerplate code
+# Getting Started
+To get started with development in the Data Model-Based Ingetion Pipeline (dm-bip) first we will need to clone the repository. If you don't already have `git` installed, refer to installation instructions appropriate for your environment [here](https://github.com/git-guides/install-git). With `git` installed you can clone the repository.
+```
+git clone https://github.com/amc-corey-cox/dm-bip.git
+```
 
+Then, change into the newly created project.
+```bash
+cd dm-bip
+```
+
+## Setup Python Environment and Install Poetry
+First, we'll need to set up a Python development environment. You can either use your system `poetry` or install it within a repository virtual environment.
+
+### Use System Poetry
+To use you're system `poetry`, install `poetry` if you haven't already.
+```
+pip install poetry
+```
+
+### Install Poetry in a Virtual Environment
+To use poetry within a virtual environmen and install `poetry` to the environment use your system Python or install `pyenv` and select your python version with `pyenv local 3.13`. Then create a virtual environment and install poetry to it. You will also want to add `cruft` to the virtual environment to keep updated with this template.
+```
+pyenv 3.13
+python -m venv .venv
+. .venv/bin/activate
+pip install poetry
+pip install cruft
+```
+
+### Install Dependencies
+Now that we have the basic repository set up and the background dependencies, we can set up the dependencies for the rest of the project. First, we'll use poetry to install project dependencies.
+```
+poetry install
+```
+
+### Add `poetry-dynamic-versioning` as a plugin
+Our usage of poetry requires the dynamic versionining plugin.
+```
+poetry self add "poetry-dynamic-versioning[plugin]"
+```
+**Note**: If you are using a Linux system and the above doesn't work giving you the following error `Invalid PEP 440 version: ...`, you could alternatively run:
+```
+poetry add poetry-dynamic-versioning
+```
+
+#### Verify the setup is working
+Once we have everything set up, we should run `tox` and  to make sure that the setup is correct and functioning.
+```
+poetry run tox
+```
+
+This should run all the bullets mentioned above under the `tox` configuration and ideally you should see the following at the end of the run:
+```
+  coverage-clean: OK (0.20=setup[0.05]+cmd[0.15] seconds)
+  lint-fix: OK (0.40=setup[0.01]+cmd[0.30,0.09] seconds)
+  codespell-write: OK (0.20=setup[0.02]+cmd[0.18] seconds)
+  docstr-coverage: OK (0.29=setup[0.01]+cmd[0.28] seconds)
+  py: OK (1.29=setup[0.01]+cmd[1.28] seconds)
+  congratulations :) (2.55 seconds)
+```
+
+And as the last line says: `congratulations :)`!! Your project is ready to evolve!
+
+> If you have an error running `tox` your python dependencies may be out of sync and you may be able to fix it by running `poetry lock` and then running `tox` again.
+
+# Final test to see everything is wired properly
+
+On the command line, we can run the project by it's name to ensure it runs.
+```
+poetry run dm_bip run
+```
+Should return "Hello, World"
+
+To run commands within the poetry environment either preface the command with `poetry run`, i.e. `poetry run /path-to/my-command --options` or open the poetry shell with `poetry shell`. You should also be able to activate the virtual environment directly, `.venv/bin/activate` and run the command within the virtual environment like `dm-bip run`.
+
+# This section is for further setup of the project  -- Ignore below
+This section is for further setup of the project as a whole using the `monarch-project-template` and can be ignored for regular development. We should revisit this section as the project evolves and finalize the setup when appropriate.
+
+# Future updates to the project's boilerplate code
 In order to be up-to-date with the template, first check if there is a mismatch between the project's boilerplate code and the template by running:
 ```
 cruft check
