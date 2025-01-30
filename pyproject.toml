@@ -26,6 +26,11 @@ sphinx-autodoc-typehints = {version = ">=1.2.0"}
 sphinx-click = {version = ">=4.3.0"}
 myst-parser = {version = ">=0.18.1"}
 
+
+[tool.poetry.group.env.dependencies]
+poetry = "^2.0.1"
+cruft = "^2.16.0"
+
 [tool.poetry.scripts]
 dm-bip = "dm_bip.cli:main"
 
