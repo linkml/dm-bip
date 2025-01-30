@@ -1,0 +1,2 @@
+type	id	project_id	submitter_id	study_id	study_registration	authz	data_description	dbgap_accession	dbgap_consent	dbgap_consent_text	dbgap_participant_set	dbgap_phs	dbgap_version	exclude_from_aggregations	full_name	short_name	study_description	study_setup	type_of_data	projects.id	projects.code
+study	6f8d9f00-1d0e-4225-a366-77390e9bf746	tutorial-synthetic_data_set_1	public	public	dbGaP	/programs/tutorial/projects/synthetic_data_set_1											high_coverage_2019_Public			2eef3f52-2ffd-58f9-9b5f-0339065dc475	synthetic_data_set_1
