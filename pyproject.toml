@@ -41,7 +41,7 @@ style = "pep440"
 
 [tool.black]
 line-length = 120
-target-version = ["py38", "py39", "py310"]
+target-version = ["py313"]
 
 [tool.ruff]
 lint.extend-ignore = [
@@ -66,7 +66,7 @@ lint.select = [
 ]
 
 lint.unfixable = []
-target-version = "py310"
+target-version = "py313"
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
