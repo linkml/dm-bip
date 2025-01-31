@@ -10,9 +10,9 @@ The purpose of this repository is to coordinate the efforts of multiple projects
 The main effort of this project is to use existing LinkML tools to the extent possible and fill in gaps between these tools with simple scripts. Whenever possible, the goal should be to move created middle-ware tools within this repository either upstream to the data submitters or into the LinkML tools in use.
 
 # Requirements
-- Python >= 3.13
+- Python >= 3.12 (Note: Downgraded to 3.12 due to linkml-runtime issue in 3.13, patch forthcoming)
 - [Poetry](https://python-poetry.org/docs/#installation)
-- [Cruft]
+- [Cruft] (https://cruft.github.io/cruft/)
 
 # Repository Structure
  - Github wokflows:
@@ -58,7 +58,7 @@ pip install poetry
 ### Install Poetry in a Virtual Environment
 To use poetry within a virtual environmen and install `poetry` to the environment use your system Python or install `pyenv` and select your python version with `pyenv local 3.13`. Then create a virtual environment and install poetry to it. You will also want to add `cruft` to the virtual environment to keep updated with this template.
 ```
-pyenv 3.13
+pyenv 3.12
 python -m venv .venv
 . .venv/bin/activate
 pip install poetry
