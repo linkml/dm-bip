@@ -3,6 +3,7 @@
 import pandas as pd
 import argparse
 import sys
+import signal
 
 def main():
     parser = argparse.ArgumentParser(description="Clean a TSV file by dropping columns where all values are NaN.")
@@ -12,7 +13,13 @@ def main():
 
     df = pd.read_csv(args.input_file, sep="\t")  # Read TSV
     df.dropna(axis=1, how="all", inplace=True)  # Drop columns where all values are NaN
-    df.to_csv(args.output, sep="\t", index=False)  # Save back as TSV
+
+    try:
+        df.to_csv(args.output, sep="\t", index=False)  # Save back as TSV
+    except BrokenPipeError:
+        sys.stderr.close()
 
 if __name__ == "__main__":
+    # Handle SIGPIPE to prevent broken pipe errors
+    signal.signal(signal.SIGPIPE, signal.SIG_DFL)
     main()
