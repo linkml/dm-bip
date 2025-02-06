@@ -1,16 +1,16 @@
-1. Joint Working Repository
+1. Joint Working Repository - Lead -- Patrick Golden
     1. Overall Project Documentation - Initial - Completed, Ongoing
     1. Automatic Project Documentation Deployment - Initial - In Progress
     1. Project Testing Suite - Initial - Completed, Needs Sub-tasks
     1. Automated Pre-Commit Project Testing - Completed
     1. Automated Build and Deployment Toolset - Makefile - Initial - In Progress
-1. Ingest-Wide Toy Data Set
+1. Ingest-Wide Toy Data Set - Lead -- Corey Cox & Patrick Golden
     1. Single Toy Data Set for Testing and Build Environment Validation Across Full Pipeline - Initial - In Progress
     1. Integration of Toy Data Set with Automated Build/Test Harness - Not Started
-1. Ingest-Wide Synthetic Data Set
+1. Ingest-Wide Synthetic Data Set - Assigned -- Corey Cox, Patrick Golden, Madan 
     1. Initial Synthetic Data Set Based on Data Available (BDC Synthetic) - In Progress
     1. Initial Synthetic Data Set Generated from BDC Model identified variables - Not Started
-1. Schema Automator
+1. Schema Automator - Lead -- Trish Whetzel, helping -- Corey Cox
     1. Add Schema-Automator to Project and verify it works - In Progress
         1. Had to Downgrade Python Version from 3.13 to 3.12 for now
         1. Used BDC Synthetic Data and produced Schema, no true testing or validation
@@ -24,10 +24,10 @@
         1. Add richer data to synthetic or toy data set to represent gaps
         1. Development on Schema Automator to add functionality
         1. Development on Upstream Complex Mapper for hard to add functionality
-1. Schema Sheets for Data Dictionary
+1. Schema Sheets for Data Dictionary - Lead -- Trish Whetzel
     1. Add Schema Sheets as additional tool to create data models
-1. Annotation of the Data
-1. Schema Validator
+1. Annotation of the Data - Lead -- Trish Whetzel
+1. Schema Validator - Lead -- Madan 
     1. Add Schema Validator to project and verify it works
     1. Create Toy Data Set to verify functionality and start testing harness
         1. Toy Data Set resembling output of Schema Automator
@@ -39,7 +39,7 @@
 1. Schema Data Map - Yaml file that describes the map from one data model to another
     1. Manually Curated data map from BDC Data Model Team
     1. Attempt Automatic generation of map from LLM working group
-1. LinkML Mapper - Doing the Transformation
+1. LinkML Mapper - Doing the Transformation  - Lead -- Corey Cox
     1. Add LinkML Mapper to Project and verify it works
     1. Create Toy Data for LinkML Mapper functionality
         1. Toy Data Set used for Schema Automator Schema generation
@@ -58,19 +58,19 @@
         1. Create Issues in LinkML Mapper and assess feasibility of adding functionality to LinkML Mapper
         1. Add functionality to LinkML Mapper or add scripts to Complex Data Mapper on a per-variable manner
     1. Perform full ingest data transform with LinkML Mapper on real data
-1. Simple Data Cleaner
+1. Simple Data Cleaner - Lead -- Patrick Golden
     1. Simple scripts necessary for Data cleaning outside of ingest pipeline
         1. Poorly formatted Enums (Male, male, M, 1 - all meaning male)
         1. Bad missing data representation (i.e. 9 for no data)
         1. Empty columns
         1. Other bad data practices we can’t expect our ingest to handle
-1. Complex Data Mapper
+1. Complex Data Mapper - Lead -- TBD
         1. One-off scripts on per dataset basis to map data that is too complex for the tools as the exist
         1. Create these as-needed for each variable that cannot be cleanly mapped with LinkML Mapper
-1. Execution and Deployment pipeline
+1. Execution and Deployment pipeline - Lead -- BDC -- Patrick and Stephen, INCLUDE -- Pierette Lo
     1. Wrapping tools and steps into containers for deployment to cloud environments (BDC Catalyst through AWS, Google Cloud)
     1. Local system execution of pipeline in fully automated way if possible or with checkpoints and human-in-the-loop.
-1. Running all data through pipeline to produce a harmonized whole
+1. Running all data through pipeline to produce a harmonized whole - Lead -- BDC -- Corey Cox with Stephen Hwang, INCLUDE -- Pierette Lo
     1. With the final robust synthetic data set, run the full pipeline with both Cloud and Local architectures
     1. Run a single data set all the way through the pipeline either on Cloud or Local architecture
     1. Create Fully automated pipelines for real-world data set
