@@ -9,24 +9,24 @@ gantt
     title Data Model-Based Ingestion Pipeline Roadmap
     dateFormat  YYYY-MM-DD
     section Data Access
-    Preferred Data Access Deadline: Milestone, 2025-02-28, 0d
-    Critical Data Access Deadline: Milestone, 2025-03-15, 0d
-    Absolute Latest Data Access Deadline: Milestone, 2025-05-01, 0d
+    Preferred Data Access Deadline          :Milestone, 2025-02-28, 1d
+    Critical Data Access Deadline           :Milestone, 2025-03-15, 1d
+    Absolute Latest Data Access Deadline    :Milestone, 2025-05-01, 1d
+    section Joint Working Group
+    Initial Documentation                   :Milestone, 2025-01-01, 2025-04-15
+    Testing Suite                           :Milestone, 2025-03-01, 2025-05-15
+    Build & Deployment Tools                :Milestone, 2025-03-01, 2025-05-15
+    section Toy Data
+    Initial Toy Data                        :Milestone, 2025-01-01, 2025-03-01
+    Robust Toy Data for Build & Test        :Milestone, 2025-03-01, 2025-05-28
+    section Synthetic Data
+    Initial Synthetic Data                  :Milestone, 2025-01-01, 2025-03-01
+    Robust Synthetic Data based on Models   :Milestone, 2025-03-01, 2025-05-28
+    section Schema Generation
+    Schema Automator Toy Data               :Milestone, 2025-03-01, 2025-05-28
 
-    section Synthetic Data & Schema
-    Synthetic Data Development        :active, synth, 2025-02-01, 2025-04-15
-    Schema Automator Integration      :auto, schema, 2025-02-10, 2025-04-30
-    Schema Validation & Testing       :valid, 2025-03-01, 2025-05-15
-
-    section Mapping & Transformation
-    Data Mapping (Schema & LinkML)    :map, 2025-03-15, 2025-05-31
-    LinkML Mapper Integration         :linkml, 2025-03-20, 2025-06-10
-    Complex Data Mapping              :complex, 2025-04-01, 2025-06-15
-
-    section Deployment & Execution
-    Pipeline Wrapping & Deployment    :deploy, 2025-04-15, 2025-06-15
-    Full Pipeline Execution           :run, 2025-05-01, 2025-06-30
-    Final Harmonized Data Set Ready   :milestone, final, 2025-06-30, 0d
+    axisFormat %B
+    tickInterval 1month
 ```
 
 1. Joint Working Repository - Lead -- Patrick Golden
