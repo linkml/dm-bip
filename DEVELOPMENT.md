@@ -1,3 +1,119 @@
+# Development Overview
+This document contains the project development outline and assignments as well as associated timeline and project roadmap. This is intended to be used as a tool for organizing our project development and understanding our needs to meet out timeline.
+
+# Project Roadmap
+This Gantt chart represents a starting point for understanding the timeline for our development and serves a roadmap for our development stages. This a high-level chart showing the different parts of the project and how development time can ovelap. Currently, this is non-finalized and is intended only as a starting point for discussing the relative timelines of tasks.
+
+```mermaid
+gantt
+    title Data Model-Based Ingestion Pipeline Roadmap
+    dateFormat  YYYY-MM-DD
+
+    section Data Access
+    -                                       :done, 2025-07-15, 0d
+
+    section 1 
+    Preferred Data Access Deadline          :crit, milestone, 2025-02-28, 1d
+    Critical Data Access Deadline           :crit, milestone, 2025-03-15, 1d
+    Absolute Latest Data Access Deadline    :crit, milestone, 2025-05-01, 1d
+
+    section Joint Working Group 
+    Leads - Patrick, Corey                  :done, 2025-01-10, 0d
+
+    section 2 
+    Development Setup & Documentation       :active, 2025-01-01, 2025-04-15
+    Build & Deployment Tools (Makefile)     :active, 2025-02-10, 2025-06-15
+
+    section Toy Data
+    Leads - Corey, Patrick                  :done, 2025-01-10, 0d
+
+    section 3 
+    Initial Toy Data                        :active, 2025-01-01, 2025-03-01
+    Robust Toy Data for Build & Test        :2025-02-15, 2025-04-01
+
+    section Synthetic Data
+    Leads - Corey, Patrick, Madan           :done, 2025-01-10, 0d
+
+    section 4 
+    Synthetic Data (BDC Synthetic)          :active, 2025-02-10, 2025-04-01
+    Synthetic Data (Prioritized Variables)  :2025-02-20, 2025-06-01
+
+    section Schema Generation
+    Leads - Trish, Corey                    :done, 2025-01-10, 0d
+
+    section 5 
+    Schema Toy Data                         :active, 2025-02-01, 2025-03-01
+    Verify Schema Automator on Toy Data     :active, 2025-02-10, 2025-04-01
+    Synthetic Data for Schema Automator     :2025-02-20, 2025-05-15
+    Schema Automator on Synthetic Data      :2025-03-15, 2025-06-01
+    Use Schema Automator on Real Data       :2025-04-01, 2025-07-01
+    Close Schema Automator Gaps             :2025-04-15, 2025-07-01
+    Schema Sheets & Toy/Synthetic Data      :2025-03-01, 2025-05-01
+    Annotation of Data                      :2025-04-01, 2025-06-01
+
+    section Schema Validator
+    Lead - Madan                            :done, 2025-01-10, 0d
+
+    section 7 
+    Schema Validator Toy Data               :active, 2025-02-10, 2025-03-30
+    Add Schema Validator & Write Tests      :active, 2025-02-10, 2025-04-01
+    Synthetic Data for Schema Validator     :2025-02-20, 2025-05-15
+    Schema Validator on Real Data           :2025-04-01, 2025-07-01
+
+    section Schema Data Map
+    Lead - BDC Data Model Team, Corey       :done, 2025-01-10, 0d
+
+    section 8 
+    Manually Curated Data Map               :2025-03-015, 2025-06-01
+    Attempt Automatic Map Generation        :2025-05-01, 2025-07-01
+
+    section LinkML Map 
+    Lead - Corey                            :done, 2025-01-10, 0d
+
+    section 9 
+    LinkML Map Toy Data                     :active, 2025-02-01, 2025-03-01
+    Add LinkML Map                          :active, 2025-02-10, 2025-04-01
+    Synthetic Data for LinkML Map           :2025-03-15, 2025-06-01
+    Real Data with LinkML Map               :2025-04-01, 2025-07-01
+    Remediate Mapping Issues                :2025-05-01, 2025-07-01
+
+    section Data Cleaning 
+    Lead -- Patrick                         :done, 2025-01-10, 0d
+
+    section 10 
+    Simple Data Cleaning Scripts            :active, 2025-02-01, 2025-04-15
+    Handle Bad Data Practices               :2025-03-15, 2025-07-01
+
+    section Complex Data Mapping
+    Lead -- TBD                             :done, 2025-01-10, 0d
+
+    section 11 
+    Scripts for Complex Mappings            :2025-04-15, 2025-07-01
+
+    section Execution & Deployment
+    Leads - Patrick, Stephen, Pierette      :done, 2025-01-10, 0d
+
+    section 12 
+    Containerized Deployment (AWS, GCP)     :2025-03-15, 2025-06-15
+    Local Execution with Automation         :2025-04-01, 2025-07-01
+
+    section Final Pipeline Run
+    Leads - Corey, Stephen, Pierette        :done, 2025-01-10, 0d
+
+    section 13 
+    Full Pipeline with Synthetic Data       :2025-04-01, 2025-06-01
+    Single Real Data Set Through Pipeline   :2025-04-15, 2025-06-15
+    Fully Automated Pipeline for Cloud      :2025-04-15, 2025-07-01
+    Fully Automated Pipeline for Local      :2025-04-01, 2025-06-15
+    Final Run & Harmonization               :2025-05-15, 2025-07-01
+
+    axisFormat %B
+    tickInterval 1month
+```
+
+# Project Outline
+This outline captures the main features shown in the project roadmap above. This outline can be more detailed and contains some project steps that are less useful in the top-level roadmap. We should plan to refine the use of these tools over time to capture the parts of the project that need to be represented at a top-level plan and a more detailed overview that collects all of the parts we are working on.
+
 1. Joint Working Repository - Lead -- Patrick Golden
     1. Overall Project Documentation - Initial - Completed, Ongoing
     1. Automatic Project Documentation Deployment - Initial - In Progress
@@ -82,3 +198,121 @@
         1. Fill identified gaps with issues and development in the approprite tool or Complex Data Mapper
         1. Final run for each data set to the harmonized model
 
+# Detailed Roadmap
+Many of the tasks involved in the project are a bit too detailed to be worth capturing in the top-level project roadmap. However, it can be valuable to have all of this project detail in the roadmap as well. I'm going to capture this information here initially. We may remove this section if we find ways to better track or express this project detail.
+
+```mermaid
+gantt
+    title Data Model-Based Ingestion Pipeline Roadmap
+    dateFormat  YYYY-MM-DD
+
+    section Data Access
+    -                                       :done, 2025-07-15, 0d
+
+    section 1 
+    Preferred Data Access Deadline          :crit, milestone, 2025-02-28, 1d
+    Critical Data Access Deadline           :crit, milestone, 2025-03-15, 1d
+    Absolute Latest Data Access Deadline    :crit, milestone, 2025-05-01, 1d
+
+    section Joint Working Group 
+    Leads - Patrick, Corey                  :done, 2025-01-10, 0d
+
+    section 2 
+    Initial Documentation                   :2025-01-01, 2025-04-15
+    Documentation Auto Deployment           :active, 2025-02-01, 2025-04-01
+    Project Testing Suite                   :done, 2025-01-01, 2025-03-01
+    Automated Pre-Commit Project Testing    :done, 2025-02-01, 2025-02-15
+    Build & Deployment Tools (Makefile)     :active, 2025-03-01, 2025-06-15
+
+    section Toy Data
+    Leads - Corey, Patrick                  :done, 2025-01-10, 0d
+
+    section 3 
+    Initial Toy Data                        :active, 2025-01-01, 2025-03-01
+    Robust Toy Data for Build & Test        :2025-03-01, 2025-05-01
+    Integration of Toy Data Set with Automated Build/Test Harness :2025-05-01, 2025-06-01
+
+    section Synthetic Data
+    Leads - Corey, Patrick, Madan           :done, 2025-01-10, 0d
+
+    section 4 
+    Initial Synthetic Data (BDC Synthetic)  :active, 2025-01-01, 2025-03-01
+    Initial Synthetic Data from BDC Model Variables :2025-03-01, 2025-05-01
+
+    section Schema Generation
+    Leads - Trish, Corey                    :done, 2025-01-10, 0d
+
+    section 5 
+    Schema Automator Toy Data               :active, 2025-02-10, 2025-03-01
+    Verify Schema Automator on Toy Data     :2025-03-01, 2025-04-01
+    Synthetic Data for Schema Automator     :2025-04-01, 2025-05-15
+    Verify Schema Automator on Synthetic Data :2025-05-15, 2025-06-01
+    Use Schema Automator on Real Data       :2025-06-01, 2025-07-01
+    Close Schema Automator Gaps             :2025-07-01, 2025-08-01
+
+    section Schema Sheets & Annotation
+    Leads - Trish                           :done, 2025-01-10, 0d
+
+    section 6 
+    Add Schema Sheets to support data models :2025-03-01, 2025-04-01
+    Annotation of Data                       :2025-04-01, 2025-06-01
+
+    section Schema Validator
+    Lead - Madan                            :done, 2025-01-10, 0d
+
+    section 7 
+    Add Schema Validator & Verify           :2025-03-01, 2025-04-15
+    Toy Data Set for Schema Validator       :2025-04-15, 2025-05-15
+    Verify Schema Validator & Write Tests   :2025-05-15, 2025-06-01
+    Synthetic Data for Schema Validator     :2025-06-01, 2025-07-01
+    Schema Validator on Real Data           :2025-07-01, 2025-08-01
+
+    section Schema Data Map
+    Manually Curated Data Map               :2025-04-01, 2025-05-01
+    Attempt Automatic Map Generation        :2025-05-01, 2025-06-01
+
+    section LinkML Mapper
+    Lead - Corey                            :done, 2025-01-10, 0d
+
+    section 8 
+    Add LinkML Mapper to Project            :2025-03-01, 2025-04-01
+    Toy Data for LinkML Mapper              :2025-04-01, 2025-05-01
+    Verify LinkML Mapper on Toy Data        :2025-05-01, 2025-06-01
+    Synthetic Data for LinkML Mapper        :2025-06-01, 2025-07-01
+    Real Data with LinkML Mapper            :2025-07-01, 2025-08-01
+    Identify & Remediate Mapping Issues     :2025-08-01, 2025-09-01
+    Full Ingest Data Transform              :2025-09-01, 2025-10-01
+
+    section Data Cleaning
+    Lead -- Patrick                         :done, 2025-01-10, 0d
+
+    section 9 
+    Simple Data Cleaning Scripts            :2025-04-01, 2025-05-01
+    Handle Bad Enums, Missing Data, Empty Columns :2025-05-01, 2025-06-01
+
+    section Complex Data Mapping
+    Lead -- TBD                             :done, 2025-01-10, 0d
+
+    section 10 
+    One-off Scripts for Complex Mappings    :2025-06-01, 2025-07-01
+
+    section Execution & Deployment
+    Leads - Patrick, Stephen, Pierette      :done, 2025-01-10, 0d
+
+    section 11 
+    Containerized Deployment (AWS, GCP)     :2025-05-01, 2025-06-15
+    Local Execution with Automation         :2025-06-15, 2025-07-01
+
+    section Final Pipeline Run
+    Leads - Corey, Stephen, Pierette        :done, 2025-01-10, 0d
+
+    section 12 
+    Run Full Pipeline with Synthetic Data   :2025-07-01, 2025-08-01
+    Run Single Real Data Set Through Pipeline :2025-08-01, 2025-09-01
+    Fully Automated Pipeline for Cloud      :2025-09-01, 2025-10-01
+    Fully Automated Pipeline for Local      :2025-10-01, 2025-11-01
+    Final Run & Harmonization               :2025-11-01, 2025-12-01
+
+    axisFormat %B
+    tickInterval 1month
+```
