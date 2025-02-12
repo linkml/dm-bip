@@ -56,9 +56,9 @@ pip install poetry
 ```
 
 ### Install Poetry in a Virtual Environment
-To use poetry within a virtual environmen and install `poetry` to the environment use your system Python or install `pyenv` and select your python version with `pyenv local 3.13`. Then create a virtual environment and install poetry to it. You will also want to add `cruft` to the virtual environment to keep updated with this template.
+To use poetry within a virtual environment and install `poetry` to the environment, use your system Python or install `pyenv` and select your python version with `pyenv local 3.12`. If you have just installed `pyenv`, make sure to install your intended Python version e.g. `pyenv install 3.12`. Then create a virtual environment and install poetry to it. You will also want to add `cruft` to the virtual environment to keep updated with this template.
 ```
-pyenv 3.12
+pyenv local 3.12
 python -m venv .venv
 . .venv/bin/activate
 pip install poetry
@@ -110,7 +110,7 @@ And as the last line says: `congratulations :)`!! Your project is ready to evolv
 
 On the command line, we can run the project by it's name to ensure it runs.
 ```
-poetry run dm_bip run
+poetry run dm-bip run
 ```
 Should return "Hello, World"
 
