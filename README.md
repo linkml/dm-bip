@@ -41,7 +41,7 @@ To get started with development in the Data Model-Based Ingetion Pipeline (dm-bi
 git clone https://github.com/amc-corey-cox/dm-bip.git
 ```
 
-Then, change into the newly created project.
+Then, change to the newly created project directory.
 ```bash
 cd dm-bip
 ```
