@@ -7,7 +7,7 @@ Data Model-Based Ingestion Pipeline using LinkML tools
 ## Overview
 The purpose of this repository is to coordinate the efforts of multiple projects in creating a Data Model-Based Ingestion Pipeline (dm-bip) for their respective purposes. Currently, the two projects involved in this effort are the BioData Catalyst (BDC) Data Management Core (BDC-DMC) and the INCLUDE project. If you have another ingest pipeline you would like to consider for inclusion in this joint ingestion pipeline please make an issue or reach out to the respective programs of the authors of this repository.
 
-The main effort of this project is to use existing LinkML tools to the extent possible and fill in gaps between these tools with simple scripts. Whenever possible, the goal should be to move created middle-ware tools within this repository either upstream to the data submitters or into the LinkML tools in use.
+The main effort of this project is to use existing [LinkML](https://linkml.io/linkml/) tools to the extent possible and fill in gaps between these tools with simple scripts. Whenever possible, the goal should be to move created middle-ware tools within this repository either upstream to the data submitters or into the LinkML tools in use.
 
 # Requirements
 - Python >= 3.12 (Note: Downgraded to 3.12 due to linkml-runtime issue in 3.13, patch forthcoming)
@@ -41,7 +41,7 @@ To get started with development in the Data Model-Based Ingetion Pipeline (dm-bi
 git clone https://github.com/amc-corey-cox/dm-bip.git
 ```
 
-Then, change into the newly created project.
+Then, change to the newly created project directory.
 ```bash
 cd dm-bip
 ```
@@ -56,9 +56,9 @@ pip install poetry
 ```
 
 ### Install Poetry in a Virtual Environment
-To use poetry within a virtual environmen and install `poetry` to the environment use your system Python or install `pyenv` and select your python version with `pyenv local 3.13`. Then create a virtual environment and install poetry to it. You will also want to add `cruft` to the virtual environment to keep updated with this template.
+To use poetry within a virtual environment and install `poetry` to the environment, use your system Python or install `pyenv` and select your python version with `pyenv local 3.12`. If you have just installed `pyenv`, make sure to install your intended Python version e.g. `pyenv install 3.12`. Then create a virtual environment and install poetry to it. You will also want to add `cruft` to the virtual environment to keep updated with this template.
 ```
-pyenv 3.12
+pyenv local 3.12
 python -m venv .venv
 . .venv/bin/activate
 pip install poetry
@@ -110,7 +110,7 @@ And as the last line says: `congratulations :)`!! Your project is ready to evolv
 
 On the command line, we can run the project by it's name to ensure it runs.
 ```
-poetry run dm_bip run
+poetry run dm-bip run
 ```
 Should return "Hello, World"
 
