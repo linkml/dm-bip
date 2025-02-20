@@ -33,7 +33,8 @@ Our initial toy data set will be prepared from the synthetic data set provided b
 We intend to have  a toy data set for each meaningful step of the data ingest process. The following sections describe the target tool for the data set and the form the data set will take.
 
 ## Initial Data Cleaning
-The purpose of the first data set is to show we can use a a simple Python script to do some data cleaning. Ideally, this will resemble expected incoming data but the immediate purpose is actually to use these simple cleaning scripts to produce an initial synthetic data set. See the synthetic_data/README.md for more information.
- - Filename: toy_data/01_simple_cleanup.tsv
+The purpose of the first data set is to serve as an initial test set for our tools. Ideally, this will resemble expected incoming data but the immediate purpose is just to have something to start with. This initial data set was made from the synthetic data set provided by BDC. An initial perusal of this data shows that it likely doesn't have anything of real interest for our purposes but it does allow us to have a starting point. 
+ - Location: toy_data/initial
  - Format: TSV
- - Notes: 
+ - Files: demographics.tsv, lab_results.tsv, sample.tsv, study.tsv, subject.tsv
+ - Notes: As of yet, I don't know if this has any meaningful representation of data we will need to ingest.
