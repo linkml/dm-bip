@@ -1,0 +1,251 @@
+type	id	project_id	submitter_id	age_at_index	annotated_sex	bmi_baseline	height_baseline	population	race	subjects.id	subjects.submitter_id
+demographic	00097801-64f3-42b7-bc2f-381242118805	tutorial-synthetic_data_set_1	HG02081_demo	76	female	30.7	192.1	KHV	asian	f75d477e-ab8e-4932-898d-d7b42e5c6419	HG02081
+demographic	000f0693-d309-40de-a63c-e949d7b13856	tutorial-synthetic_data_set_1	HG01986_demo	39	male	22.9	188.2	ACB	black or african american	2d827d8c-6255-427b-9624-f1d4f5cd0f27	HG01986
+demographic	0015aa15-dccb-43f2-aabb-8eb407bd63e9	tutorial-synthetic_data_set_1	NA18533_demo	64	female	28.0	170.6	CHB	asian	d4ec0e0c-976a-4494-88d6-e07d1f5e7026	NA18533
+demographic	001757c8-74dd-4ccf-8a69-bf1958613f6a	tutorial-synthetic_data_set_1	HG01271_demo	36	male	27.2	179.2	CLM	hispanic	a902658d-c8f3-4b26-87f4-10123b60977a	HG01271
+demographic	001ea922-f2e5-4dab-9d51-14d4c3cfd1c0	tutorial-synthetic_data_set_1	HG00421_demo	81	male	27.2	168.6	CHS	asian	f1d05dab-b2e9-40e6-ac63-7d587bada658	HG00421
+demographic	002da8ec-5f40-43e9-817b-84071382c815	tutorial-synthetic_data_set_1	HG00581_demo	38	female	25.8	171.2	CHS	asian	a92bcca7-3c7b-4b12-91e7-1467e06e324c	HG00581
+demographic	0047ecb6-c46e-4621-a782-f3686c8568d9	tutorial-synthetic_data_set_1	HG02597_demo	58	male	27.1	152.6	PJL	asian	d3de0a21-2b27-4d77-82c1-2ef1117bdd73	HG02597
+demographic	0050de81-5aac-4986-ad1b-c2d0983c8ddf	tutorial-synthetic_data_set_1	HG02259_demo	72	male	27.9	177.7	PEL	hispanic	c342c130-e31d-4481-9ec7-2024a03d8128	HG02259
+demographic	0077a478-0484-4af0-a176-7fb337df730a	tutorial-synthetic_data_set_1	NA19729_demo	84	male	26.8	168.7	MXL	hispanic	6eba4e28-6bd5-4698-9f44-597806b96996	NA19729
+demographic	0087ba1e-fbe6-4096-a8af-e2a6f8e10104	tutorial-synthetic_data_set_1	HG02185_demo	36	female	25.3	190.6	CDX	asian	a2e6eb79-73b8-4c43-bf2f-f5b3aaacf206	HG02185
+demographic	009ad2aa-d36d-42c7-ac75-21996e090ea4	tutorial-synthetic_data_set_1	HG03559_demo	80	male	24.0	182.9	MSL	black or african american	62b6abb6-cc58-4985-9f57-03677cb1993e	HG03559
+demographic	009df605-ce99-4de2-bb1f-eb0ab8758693	tutorial-synthetic_data_set_1	HG03565_demo	38	male	25.0	183.8	MSL	black or african american	95d9d9e1-10dd-4c16-9f28-7857e8606bb3	HG03565
+demographic	00a0dbff-919b-4d81-893f-2cbcefa33b10	tutorial-synthetic_data_set_1	NA21133_demo	40	male	24.8	175.0	GIH	asian	066e5b5f-bafa-4b2a-8d63-fe255f38614a	NA21133
+demographic	00a44f95-8ae5-427d-8c80-6054d7241704	tutorial-synthetic_data_set_1	NA19378_demo	44	female	21.7	184.2	LWK	black or african american	83c6fce1-be36-4d30-b99c-4fc085c6cb20	NA19378
+demographic	00b939a2-4884-4445-81d3-bbff394fe72f	tutorial-synthetic_data_set_1	NA19795_demo	58	male	28.7	166.6	MXL	hispanic	3a985de1-b3f8-4486-acc3-8de78d2b35f4	NA19795
+demographic	00dc6db4-5047-4e17-bdc7-2ab0357f4174	tutorial-synthetic_data_set_1	HG04001_demo	53	female	25.0	166.6	ITU	asian	7fa9fa80-9df9-420f-bfab-86c7efa21383	HG04001
+demographic	00de7dad-b06b-4a24-b2b4-0c0253d89d06	tutorial-synthetic_data_set_1	HG03832_demo	64	female	25.5	193.1	BEB	asian	bccec49b-06b5-4051-adb0-66ad1d3a1088	HG03832
+demographic	010895bd-8926-40a7-b03b-9aa2e75bcdaf	tutorial-synthetic_data_set_1	HG02494_demo	43	female	23.6	171.4	PJL	asian	41426559-32c1-44c4-9fd1-4ddc4f38f87b	HG02494
+demographic	0122c387-1356-46af-bdd2-940747bb3013	tutorial-synthetic_data_set_1	HG00736_demo	80	male	25.1	181.5	PUR	hispanic	6e1e6538-7d34-467a-9f3d-5d76d87fab4f	HG00736
+demographic	012df1ba-6a7b-4c0b-ae01-c57c2216fe5c	tutorial-synthetic_data_set_1	HG02573_demo	73	male	24.3	168.7	GWD	black or african american	ea127f99-4ad3-46a2-9f07-3e5305292f56	HG02573
+demographic	013d4d2b-5545-46c1-a42e-6326a129cc93	tutorial-synthetic_data_set_1	HG01066_demo	88	male	24.0	174.1	PUR	hispanic	ac6e06c1-2486-4b50-a8a3-33da0808634e	HG01066
+demographic	01408498-da41-469c-8b5a-a089d14734bf	tutorial-synthetic_data_set_1	HG01864_demo	54	male	26.2	177.3	KHV	asian	a95b6b7c-0014-434c-9356-f5051e9a8370	HG01864
+demographic	015214e8-6bbb-488d-a028-474c4dab2afe	tutorial-synthetic_data_set_1	HG01369_demo	41	female	28.6	174.7	CLM	hispanic	c35cefc8-4816-4ca5-a389-34fb59ca74cb	HG01369
+demographic	01877def-b194-4f49-8127-cb41acb72d23	tutorial-synthetic_data_set_1	HG00318_demo	76	female	25.5	170.6	FIN	white	6b3ad68c-9dcf-4451-bff1-3f37113a0109	HG00318
+demographic	01cb8862-4db4-45b0-8056-3c9476a3c1c2	tutorial-synthetic_data_set_1	HG03235_demo	41	female	24.2	180.7	PJL	asian	9e6b858d-169d-48a3-bf69-46514621b292	HG03235
+demographic	020c84ac-e53b-4a68-9ce8-076eb4d8e2f5	tutorial-synthetic_data_set_1	HG01849_demo	72	male	26.2	169.2	KHV	asian	2847da92-5662-453f-bf99-1a47746e7805	HG01849
+demographic	021addea-8440-43b6-9837-9e35f4aa499a	tutorial-synthetic_data_set_1	HG03458_demo	63	female	24.9	182.5	MSL	black or african american	07e57d19-969c-4203-81b6-1e02fef9c392	HG03458
+demographic	0226c740-db1d-4988-ab38-d3d0a5d35ca1	tutorial-synthetic_data_set_1	NA18941_demo	72	female	25.8	168.2	JPT	asian	7e446628-b487-485a-be0d-1402160ba46e	NA18941
+demographic	022ee9f8-e041-4080-9292-8e07663dd62a	tutorial-synthetic_data_set_1	NA12286_demo	85	male	31.4	172.3	CEU	white	dff6678e-89b8-4ed9-972b-9a1f188b4af7	NA12286
+demographic	026dfc1a-79e3-4143-85c6-fd79cfbea954	tutorial-synthetic_data_set_1	HG00448_demo	51	male	23.5	172.0	CHS	asian	5375c2d1-32b9-4b73-9fa7-2b0c19b93752	HG00448
+demographic	02741bbb-f805-43a7-98e7-71e1891e7f62	tutorial-synthetic_data_set_1	NA19248_demo	53	male	24.5	174.6	YRI	black or african american	97a01970-bccd-4ae4-b5c4-38821e870eb2	NA19248
+demographic	02762d31-994e-4725-99a7-3ee0a2db4391	tutorial-synthetic_data_set_1	HG03861_demo	83	female	25.7	191.8	ITU	asian	a6c25afd-25bd-406d-8741-0d1709b62620	HG03861
+demographic	02895287-5966-458e-b1ed-c1b073a50cb5	tutorial-synthetic_data_set_1	HG03303_demo	63	female	24.0	186.6	ESN	black or african american	58dbd82f-490c-411d-8c0d-8d4f1df12b7a	HG03303
+demographic	02bb333f-6bfd-4c71-a686-ad4618f76467	tutorial-synthetic_data_set_1	NA20790_demo	44	female	25.3	173.9	TSI	white	c8c3a753-f6cb-4f86-9db0-f10d406838b6	NA20790
+demographic	02c06ac7-7b17-454f-b5fa-5d9b28e7a65f	tutorial-synthetic_data_set_1	HG01197_demo	37	male	25.9	190.1	PUR	hispanic	c02d8c47-df46-4696-b7bb-27d02a4116a4	HG01197
+demographic	02c3d7a8-ecc7-4739-8779-2a2c83fd104b	tutorial-synthetic_data_set_1	HG01880_demo	47	female	26.7	178.1	ACB	black or african american	f52a75de-d63f-413e-b8d1-80eb6a35db04	HG01880
+demographic	02f1e829-7963-462e-9c52-4f7db5373d04	tutorial-synthetic_data_set_1	HG03279_demo	71	female	24.2	162.0	ESN	black or african american	7c0dbca5-f15e-4f2c-9968-141a24b4c689	HG03279
+demographic	02f81b64-a273-471f-aab6-f8f4d96e13b6	tutorial-synthetic_data_set_1	HG01113_demo	71	female	27.4	175.1	CLM	hispanic	7c9cd317-63ab-4553-a430-429282bde073	HG01113
+demographic	030d9326-df19-494a-985f-1a246bcd8b43	tutorial-synthetic_data_set_1	NA20778_demo	39	male	25.2	169.4	TSI	white	6efbad27-ad46-4bfb-aaed-a76364e1d187	NA20778
+demographic	030efefd-3c54-49d9-9bf3-c16a430d723c	tutorial-synthetic_data_set_1	HG00116_demo	61	male	26.1	167.0	GBR	white	b13c221e-29e4-49c4-9b57-201ec0518778	HG00116
+demographic	033bf41f-4325-4bc8-8a2a-05b5ebd7a6be	tutorial-synthetic_data_set_1	HG02736_demo	66	male	20.4	179.7	PJL	asian	cd74b58d-a31e-4a79-bc24-9325b3727664	HG02736
+demographic	0366015b-4630-4799-9473-5f2cad2e4db0	tutorial-synthetic_data_set_1	NA20582_demo	58	female	25.5	176.8	TSI	white	d512f5c6-8916-4cdb-829e-28ad63c4ac38	NA20582
+demographic	03a2e5a6-ba74-432e-8c3a-2567e8203960	tutorial-synthetic_data_set_1	HG01082_demo	64	male	26.0	165.1	PUR	hispanic	47e6ea75-2c83-4819-b627-3331b51adf21	HG01082
+demographic	03aaad80-fa62-4dec-b8a1-c5bfe460e157	tutorial-synthetic_data_set_1	HG04047_demo	83	female	22.9	166.4	STU	asian	dadf80c7-7f00-45d1-8dd7-96c6de935c60	HG04047
+demographic	03b1313f-74a2-4a25-a058-4f579af2383b	tutorial-synthetic_data_set_1	HG03388_demo	40	male	25.3	177.8	MSL	black or african american	815aa717-1105-44e7-9797-e987dfaf0166	HG03388
+demographic	03b6dae8-753b-4cb6-aa70-990c3c6af13f	tutorial-synthetic_data_set_1	HG01939_demo	73	female	23.2	168.4	PEL	hispanic	aefa26f4-4049-4525-96b7-eda01619be8c	HG01939
+demographic	03e84148-4a1c-489b-9b30-8562a5002b99	tutorial-synthetic_data_set_1	HG02184_demo	57	female	24.9	180.3	CDX	asian	625921ae-beb7-4eb4-83dc-f309d2318c35	HG02184
+demographic	0426b1c2-5684-40b6-9ca7-928c08453eeb	tutorial-synthetic_data_set_1	HG01530_demo	38	male	21.7	185.1	IBS	white	64551ffb-b245-41c9-8ed7-39edebc7f6f7	HG01530
+demographic	043f72cb-85b7-4bbc-952c-eea749960fdd	tutorial-synthetic_data_set_1	NA18983_demo	73	male	26.1	174.0	JPT	asian	9dc28a1c-9f03-47d4-911d-475197f6daa8	NA18983
+demographic	0455415f-139a-4be7-8c90-d7a2047888bc	tutorial-synthetic_data_set_1	HG00373_demo	47	female	27.2	185.2	FIN	white	81be433d-a6a9-4596-8c72-a6d098c6e9d8	HG00373
+demographic	045813a2-18ed-4b5b-a191-2ea3a3b943f9	tutorial-synthetic_data_set_1	NA20762_demo	44	male	24.7	177.6	TSI	white	a31dd5ff-4685-473c-a1ad-47c9218abf60	NA20762
+demographic	0459fb01-1bc4-4185-be65-7aa2fe86ba24	tutorial-synthetic_data_set_1	NA18748_demo	37	male	26.5	182.2	CHB	asian	98986af2-d1c9-4639-9830-20d1c62d1d06	NA18748
+demographic	04a40ef2-76cb-4c13-8db0-568a012bfb25	tutorial-synthetic_data_set_1	NA19257_demo	45	female	22.0	189.5	YRI	black or african american	8152eb10-9332-4518-8ef5-2d64cd5d9554	NA19257
+demographic	04b70f39-8105-4877-a3da-a12da9edda13	tutorial-synthetic_data_set_1	HG00237_demo	47	female	19.7	189.7	GBR	white	046d6a0c-412d-4ec7-87ca-e80190db4490	HG00237
+demographic	04e13806-7042-49cd-96b3-b0b9908446e2	tutorial-synthetic_data_set_1	HG03851_demo	79	male	31.0	180.2	STU	asian	d1135c58-2208-4bf2-9f0c-9df1445df21f	HG03851
+demographic	050b9033-a60c-469a-bb3c-3464d5ec7560	tutorial-synthetic_data_set_1	HG01625_demo	43	male	22.3	156.1	IBS	white	79cbbe7a-6e3e-49b6-bd11-8f8939a52940	HG01625
+demographic	053f6db5-2aae-46e8-a417-e5a09a856b87	tutorial-synthetic_data_set_1	NA20889_demo	59	male	22.4	179.2	GIH	asian	0bb3c814-87b1-4c25-94af-b893bfca5932	NA20889
+demographic	054aaf65-a6ec-49c5-aabf-a1ac6902b984	tutorial-synthetic_data_set_1	NA11920_demo	75	female	28.8	174.9	CEU	white	e4bf947a-6082-4d6f-aa3f-a0b96e80acce	NA11920
+demographic	055681eb-c724-4df9-b05a-ba58e0a8334d	tutorial-synthetic_data_set_1	HG00261_demo	82	female	23.4	188.8	GBR	white	31b0608a-292f-4b19-982c-9dbb46a4eeec	HG00261
+demographic	05568632-60cc-40b0-a776-8d5c3ffbbd0b	tutorial-synthetic_data_set_1	HG01861_demo	86	male	24.8	180.6	KHV	asian	befca904-6dcc-41a4-9103-2cd18014003f	HG01861
+demographic	055f529e-e6f7-4881-af4b-ff0d90b89afe	tutorial-synthetic_data_set_1	HG02922_demo	62	female	23.4	178.5	ESN	black or african american	6ffd4e91-75fb-41cc-a95c-90bf5baa136a	HG02922
+demographic	0561b319-fcd2-4522-a0c8-d7cf82b308ae	tutorial-synthetic_data_set_1	HG02601_demo	46	female	25.6	167.0	PJL	asian	6b0b0672-9dc8-4602-a535-82e62e32ec3f	HG02601
+demographic	05782893-56c0-4b76-acf4-07d25e8b96ef	tutorial-synthetic_data_set_1	HG02073_demo	35	male	26.4	184.9	KHV	asian	d9a2bd33-7a18-4ea1-ad84-5fc3c1ef3b92	HG02073
+demographic	0585f21c-1f96-4bc8-a1d0-b91eec87661d	tutorial-synthetic_data_set_1	NA18531_demo	63	female	25.6	181.1	CHB	asian	5e08b78e-d7a5-4016-83db-838963e3ad66	NA18531
+demographic	05ee6e5f-0edf-4560-a59a-92608a8f02ef	tutorial-synthetic_data_set_1	HG01162_demo	65	female	24.4	177.8	PUR	hispanic	48d83e4b-2379-417a-a30a-acce782b3710	HG01162
+demographic	06163c98-e3ef-4bc1-8f23-dc1b41f49a2e	tutorial-synthetic_data_set_1	HG03919_demo	46	female	26.8	175.9	BEB	asian	520877bb-cfb9-47b0-9bb0-c901e22d2076	HG03919
+demographic	0617c8da-b7f6-41f2-90a7-bb0b6c023338	tutorial-synthetic_data_set_1	HG01967_demo	65	male	25.5	174.1	PEL	hispanic	de3ae85d-2819-49b1-9916-71b164e6ba59	HG01967
+demographic	06417d81-d69f-4b19-8f4f-1a77ac8deef6	tutorial-synthetic_data_set_1	HG02502_demo	68	female	24.2	175.2	ACB	black or african american	65a3e369-fb5a-4f0f-8ee4-e5e97a14ab63	HG02502
+demographic	069fe03d-4874-4773-ad38-468cf28fe340	tutorial-synthetic_data_set_1	HG03088_demo	66	female	22.1	170.7	MSL	black or african american	536f1373-18cb-45a9-95ea-55136f0fb8dd	HG03088
+demographic	06a8ddac-cacd-4f35-b8be-a0cdf5753f23	tutorial-synthetic_data_set_1	HG01284_demo	46	female	27.1	168.4	CLM	hispanic	f56d02fe-9c2b-4edf-b1a2-5526f6244882	HG01284
+demographic	06afc04c-74ba-4104-bb4f-2d65d34227f8	tutorial-synthetic_data_set_1	HG00366_demo	65	male	22.7	183.2	FIN	white	6ed938ef-99cc-415f-b322-353a43fd0617	HG00366
+demographic	06b14148-0918-4b0a-bd03-ca435cd8addb	tutorial-synthetic_data_set_1	HG01312_demo	69	female	22.3	172.6	PUR	hispanic	b3caa3bb-edf8-4447-a4b3-d30f38ee4f7f	HG01312
+demographic	06c8e4ec-a14c-4680-b00e-9a4df2375514	tutorial-synthetic_data_set_1	HG03770_demo	44	female	25.7	186.1	ITU	asian	d192a339-4e17-489e-a3f0-9bc89d00477b	HG03770
+demographic	06f46e55-20aa-454a-b87c-461262fbac9a	tutorial-synthetic_data_set_1	HG03229_demo	86	female	25.5	175.9	PJL	asian	60a4f17f-5a13-4f3d-9a30-10e64f11ca49	HG03229
+demographic	070fe80b-c22e-49d5-9e79-ba43848b8d05	tutorial-synthetic_data_set_1	HG02774_demo	56	male	24.2	163.1	PJL	asian	66f9ead7-d379-403d-831d-132f544c0897	HG02774
+demographic	0718817e-dcf7-4a09-9799-ee3a5192a65e	tutorial-synthetic_data_set_1	NA18549_demo	39	male	25.7	187.9	CHB	asian	d3a952c0-aea7-4e2f-b3ed-4a9c1b5b74db	NA18549
+demographic	073cc877-6a6c-4048-aad9-e75504ca60c7	tutorial-synthetic_data_set_1	NA20502_demo	42	female	24.6	168.8	TSI	white	0c79e235-edbf-4bc3-b233-cbcc0a351f4a	NA20502
+demographic	0748d45a-9ad9-42b6-8e33-4b975e262bc7	tutorial-synthetic_data_set_1	NA20314_demo	55	female	27.2	188.7	ASW	black or african american	f794cbd6-783a-4fa5-a1d8-3754a3abe003	NA20314
+demographic	07893c54-6261-4ec1-9628-12e214291c11	tutorial-synthetic_data_set_1	HG00362_demo	57	female	22.4	162.2	FIN	white	b4ad416d-aecc-470d-bdb8-87cb0763e813	HG00362
+demographic	078ac82e-95d9-4f51-a645-8d525105eb88	tutorial-synthetic_data_set_1	HG00258_demo	50	female	25.0	171.5	GBR	white	c1561e2e-9e01-4847-90f9-5fb61ead0199	HG00258
+demographic	07b00e06-5395-4ab0-8ba8-8980890dbeda	tutorial-synthetic_data_set_1	HG00533_demo	66	male	27.6	186.4	CHS	asian	14485360-1c33-46cd-9dee-280adebe87bc	HG00533
+demographic	07c7e903-5174-4e05-a029-7bcc19c62320	tutorial-synthetic_data_set_1	NA20504_demo	74	female	27.1	162.0	TSI	white	24d0732c-4ee6-4eff-9948-8d35f067ca50	NA20504
+demographic	07dc8f99-afb1-4f49-b275-786250bbc53e	tutorial-synthetic_data_set_1	HG03442_demo	77	male	23.3	181.1	MSL	black or african american	f8419a14-a725-4338-9a0e-24e726f7ec5e	HG03442
+demographic	07ebb3f4-da33-43b1-b08f-429ad56e1eda	tutorial-synthetic_data_set_1	NA19679_demo	72	male	24.1	159.3	MXL	hispanic	41b5be3f-849f-490a-bfd0-7b18dd27151a	NA19679
+demographic	07ef539b-7922-4319-b9b4-8e4e3a5aeb29	tutorial-synthetic_data_set_1	HG01089_demo	36	female	23.6	178.6	PUR	hispanic	e3c5f4aa-495a-4424-82d2-2ff7d8f88d2a	HG01089
+demographic	081607b6-effb-4df6-89a1-6556ad9887bd	tutorial-synthetic_data_set_1	HG03696_demo	78	male	22.0	161.8	STU	asian	f6b8356e-035f-4c56-90c7-23e3895528cd	HG03696
+demographic	0841dddc-d17a-475e-bf23-ebb6978e8bc0	tutorial-synthetic_data_set_1	NA18971_demo	67	male	24.9	175.7	JPT	asian	681d6996-a70b-4129-83c9-d16cb29ec046	NA18971
+demographic	0850461d-2d33-4d1f-915d-594f9a266982	tutorial-synthetic_data_set_1	HG04090_demo	38	female	27.7	172.3	ITU	asian	db45b57c-738d-4d27-b792-6f0c772ee091	HG04090
+demographic	0856d75d-c021-46cb-9f9b-6dbd65cdb43a	tutorial-synthetic_data_set_1	HG02223_demo	62	female	24.1	172.6	IBS	white	bfba7d13-ae04-44bf-bb82-40ffedfcde9f	HG02223
+demographic	085b82f4-16fa-4fcd-b495-e6affd7b5ac8	tutorial-synthetic_data_set_1	NA20818_demo	58	female	30.3	177.7	TSI	white	16a79abc-c395-470d-aaeb-9f107748d646	NA20818
+demographic	089d1b8b-bb7b-47ea-89b2-64fda28feee7	tutorial-synthetic_data_set_1	HG02885_demo	79	female	21.2	180.4	GWD	black or african american	809a9815-bda0-46e9-9050-5749396c2014	HG02885
+demographic	089f625c-78f5-4ede-b6d2-42e95353982e	tutorial-synthetic_data_set_1	NA20282_demo	64	female	24.7	189.2	ASW	black or african american	59ca77aa-fcde-472e-8f64-58e55e62f639	NA20282
+demographic	08a23884-c1b7-4d68-9a3e-be79b616d506	tutorial-synthetic_data_set_1	HG03109_demo	58	male	22.9	178.2	ESN	black or african american	df3e996d-1591-4247-a3a7-d49f8b5b498d	HG03109
+demographic	08be80c3-84a7-4873-a2c0-8f26144938a2	tutorial-synthetic_data_set_1	NA20814_demo	47	male	22.0	166.1	TSI	white	dba50f49-677b-4437-98a1-0abcccd8d0e5	NA20814
+demographic	08cb08a8-99e0-4060-b92e-0ad4c60b25a5	tutorial-synthetic_data_set_1	NA06985_demo	53	female	22.1	170.6	CEU	white	0b420c2d-a8b1-49aa-a7a9-3f8dd06f8747	NA06985
+demographic	08f79e09-7645-4ade-8956-a09fcc4be18f	tutorial-synthetic_data_set_1	HG02023_demo	77	male	27.4	193.4	KHV	asian	333ac228-be81-48b1-bbba-f4e5dd0d8fc2	HG02023
+demographic	093d8bbb-5fb0-4ea0-9bc3-b4b4278dcf78	tutorial-synthetic_data_set_1	HG02811_demo	68	female	23.4	178.8	GWD	black or african american	a38e57ef-1392-4b27-a00e-0c60a1f12a29	HG02811
+demographic	096626a2-1c98-4f14-9a85-c22f2e041b4c	tutorial-synthetic_data_set_1	HG03190_demo	50	male	24.2	171.4	ESN	black or african american	20e17283-e058-4109-a9ac-2cbf8d08a4d4	HG03190
+demographic	09825adf-eae1-416f-834c-f399721f1273	tutorial-synthetic_data_set_1	NA12830_demo	58	female	25.4	163.5	CEU	white	e5003c60-29b1-4c9f-b5b8-4385ff9685d8	NA12830
+demographic	099fe360-ee4f-4511-ae4a-e8da58def19e	tutorial-synthetic_data_set_1	HG03848_demo	41	male	24.0	173.7	STU	asian	41312308-c71f-4874-a2d4-9c7a1d414011	HG03848
+demographic	09bbff92-c43c-4130-a429-a80a6defb577	tutorial-synthetic_data_set_1	HG02793_demo	35	female	28.1	166.5	PJL	asian	a663c6ab-164a-4093-87a1-53aa2c6e2b0f	HG02793
+demographic	09c9c6cf-5db7-4953-8df8-1989fea5c50e	tutorial-synthetic_data_set_1	HG00654_demo	40	female	25.6	188.2	CHS	asian	80096919-0491-4e87-afee-3d19cf222409	HG00654
+demographic	09d80f49-1f42-4a72-b7df-6baa3906f769	tutorial-synthetic_data_set_1	NA19794_demo	66	female	27.9	171.5	MXL	hispanic	2b60c962-a703-49f9-a1bf-910e3cc660a0	NA19794
+demographic	09fc4930-83c7-4404-ad5f-f0b357bed1bd	tutorial-synthetic_data_set_1	HG02292_demo	59	female	25.4	183.5	PEL	hispanic	dd165169-d7d3-473e-8e55-2d8f233ee484	HG02292
+demographic	0a051d37-029c-49e3-b03f-97fe374a256b	tutorial-synthetic_data_set_1	HG00590_demo	81	female	27.1	169.0	CHS	asian	591e5423-0442-4b4a-b86a-e17d34255ab5	HG00590
+demographic	0a0bafda-5543-47bc-b599-7d5fe431c906	tutorial-synthetic_data_set_1	NA18571_demo	62	female	24.0	170.1	CHB	asian	3354ed7d-c72d-419a-b350-cd93c534b330	NA18571
+demographic	0a26dbe1-382c-4fac-899e-2cf3b30a9ebb	tutorial-synthetic_data_set_1	NA18745_demo	63	male	25.7	175.1	CHB	asian	dfbdbe84-6363-4d38-8e1e-7c69c218b924	NA18745
+demographic	0a2eecd1-f442-4c3c-be38-3cdaff304cfa	tutorial-synthetic_data_set_1	NA18907_demo	47	female	22.1	173.8	YRI	black or african american	56de2488-a7e6-46c2-a0a3-907efa11cfac	NA18907
+demographic	0a4ffdf5-2eb4-4f7a-a001-cb18e35a1869	tutorial-synthetic_data_set_1	NA19437_demo	56	female	23.1	185.6	LWK	black or african american	7faa6df0-16d5-4f38-b18f-8959c96225cb	NA19437
+demographic	0a5a0a5a-76ee-42b5-a98c-c16addfe711b	tutorial-synthetic_data_set_1	HG00356_demo	36	female	26.1	177.2	FIN	white	30b60318-694b-49c5-bd8c-fc2a84b41e6a	HG00356
+demographic	0a713eea-b6af-41e5-9fdd-f17d6cd87e34	tutorial-synthetic_data_set_1	NA12287_demo	62	female	21.6	165.2	CEU	white	47264235-155e-4b55-91c2-76ec97e9bd10	NA12287
+demographic	0a7911a0-d40f-4c07-8308-9b6fa6e8c384	tutorial-synthetic_data_set_1	NA19000_demo	81	male	28.1	179.5	JPT	asian	6fbeff7a-f152-4cb0-a84b-41e3405501bd	NA19000
+demographic	0a8ada7b-a8c9-4ee8-a3aa-58b4a1761367	tutorial-synthetic_data_set_1	HG03615_demo	65	male	21.3	178.4	BEB	asian	1eaf5353-75a3-4834-94ff-e313f8bbd42e	HG03615
+demographic	0a9305bd-6632-4ad9-b373-186622b17241	tutorial-synthetic_data_set_1	HG02613_demo	50	male	24.9	171.8	GWD	black or african american	1890cad8-30da-4f42-ab3b-41d3f1da13a3	HG02613
+demographic	0a95cf61-7a38-4977-8a05-b4a58f0c3e38	tutorial-synthetic_data_set_1	NA18546_demo	36	male	27.1	180.5	CHB	asian	71f7575d-5de9-40d9-977f-84468e00ab56	NA18546
+demographic	0abccf5c-a7f0-425c-8e48-f2cdf36b89a2	tutorial-synthetic_data_set_1	HG03175_demo	47	male	25.1	183.6	ESN	black or african american	e76782d1-13b2-490e-8d9b-92e376f1d1ed	HG03175
+demographic	0ac3d4fb-6ccb-4007-b07e-6459fecd1358	tutorial-synthetic_data_set_1	HG02215_demo	81	female	23.3	176.3	GBR	white	eaa5f13c-4700-4ffc-9094-707b9ee52ec2	HG02215
+demographic	0ae5b0d6-3e26-490c-ad64-1f65bc279872	tutorial-synthetic_data_set_1	HG02079_demo	76	male	26.7	164.3	KHV	asian	76308ab1-68c9-4467-b16a-2fdb0d61dbd3	HG02079
+demographic	0b32c1f9-d881-47c3-88db-c85fb16f2cf0	tutorial-synthetic_data_set_1	NA18498_demo	58	male	23.8	176.3	YRI	black or african american	5418847a-378a-4070-a78b-87942a6c58dd	NA18498
+demographic	0b525fe6-c3fc-45d4-9e55-221b88eb4229	tutorial-synthetic_data_set_1	HG00584_demo	66	female	27.1	177.4	CHS	asian	d82059e6-dfb2-4824-8a38-141d72fa6c07	HG00584
+demographic	0b62c049-340c-467c-bb3c-571929b5eece	tutorial-synthetic_data_set_1	NA12341_demo	76	female	27.9	176.1	CEU	white	2b20f36f-d258-44f6-b91d-d01d7637f254	NA12341
+demographic	0b88bf25-4f04-4a09-9c28-36142bc4ee71	tutorial-synthetic_data_set_1	HG00306_demo	68	female	25.9	180.2	FIN	white	7e67256f-ebbf-4853-80bd-2d3999de267b	HG00306
+demographic	0c0af3fd-3a6a-4f18-b150-a56cacff8420	tutorial-synthetic_data_set_1	HG01468_demo	85	female	27.4	172.7	CLM	hispanic	774c80a1-f5dc-4257-955c-37382a741743	HG01468
+demographic	0c0f33f4-fff8-47d8-9672-bfc95b89e904	tutorial-synthetic_data_set_1	NA12828_demo	35	female	23.1	187.7	CEU	white	3b5e2e9d-70b7-4920-847d-db42acb7a6e9	NA12828
+demographic	0c4e3705-ede2-4ce6-b141-97e6dc57f143	tutorial-synthetic_data_set_1	HG03916_demo	38	female	25.2	184.5	BEB	asian	54d1976a-a220-4a11-a8eb-a1d1bbdb7c34	HG03916
+demographic	0c85ef27-c92b-4cb6-90d7-9b3a0c441dae	tutorial-synthetic_data_set_1	HG02798_demo	39	male	21.5	167.6	GWD	black or african american	a5e4b89f-585f-4173-a9b3-0280c3f571ab	HG02798
+demographic	0c88d281-7900-4db9-8f06-066c1cea0c63	tutorial-synthetic_data_set_1	NA20759_demo	52	male	24.4	167.8	TSI	white	cc9af87a-c7a4-42ee-b627-19788ee42e48	NA20759
+demographic	0c8b658c-470d-47b8-9a13-f1b6d40ca735	tutorial-synthetic_data_set_1	NA18553_demo	45	female	25.6	174.2	CHB	asian	278dacbf-de10-4584-b914-f83b6da33aa4	NA18553
+demographic	0c8eb3ca-f028-4e12-80dd-292d659bc45e	tutorial-synthetic_data_set_1	HG00742_demo	73	male	27.1	168.3	PUR	hispanic	2207fd01-1935-4696-a3ed-ae71e5611c4b	HG00742
+demographic	0cb191a9-6c2a-4839-abad-8f9889f79dac	tutorial-synthetic_data_set_1	HG00619_demo	64	male	24.0	164.2	CHS	asian	bba198ab-1b6a-4a1d-ab5e-a5161a77ff8a	HG00619
+demographic	0ccfa74c-60c1-44c3-a938-e0524442d088	tutorial-synthetic_data_set_1	HG03867_demo	47	male	28.5	179.6	ITU	asian	68b92fbd-772b-457d-bea7-267f9ffd1738	HG03867
+demographic	0d0b8bdf-6956-470f-8d54-5f2879c0b9a3	tutorial-synthetic_data_set_1	HG03028_demo	39	female	24.5	178.8	GWD	black or african american	724723f9-7abf-47f3-ae16-518a999497f9	HG03028
+demographic	0d0f1e8c-27d4-49f0-9db8-937fe5550a43	tutorial-synthetic_data_set_1	NA19213_demo	70	male	25.5	178.0	YRI	black or african american	2276c4ec-7303-4c23-aa9f-0c83d58a7278	NA19213
+demographic	0d1c041f-d32b-4574-8e0e-cc440ee61dfc	tutorial-synthetic_data_set_1	HG01770_demo	76	female	24.6	170.7	IBS	white	b75b167a-4ccf-44fa-96e9-39dd951e21f8	HG01770
+demographic	0d4a2b50-dcd5-40d3-8950-bbaf8677c15c	tutorial-synthetic_data_set_1	HG01142_demo	62	male	21.7	178.5	CLM	hispanic	a17ad181-e06a-46c0-843a-2e0c1c972302	HG01142
+demographic	0d5296bc-d7bc-45ae-94bb-1fe44e1733b8	tutorial-synthetic_data_set_1	HG03925_demo	56	female	22.9	159.8	BEB	asian	1f4e4781-c06f-4688-ba94-5bbc88987563	HG03925
+demographic	0d688e3b-535a-4a9b-856f-6c82cfa2ae35	tutorial-synthetic_data_set_1	HG01353_demo	47	male	26.2	176.0	CLM	hispanic	76145dd8-7f5b-4a66-bbd4-049d568d1c2f	HG01353
+demographic	0d7083a3-dcd1-4af8-b1a9-1b7e100747ee	tutorial-synthetic_data_set_1	NA19003_demo	59	female	30.5	176.2	JPT	asian	cb53a0ec-13e6-4998-a3b7-27bc5d8a0e4e	NA19003
+demographic	0d790ce3-0b06-4b33-9ac1-95c1837b0944	tutorial-synthetic_data_set_1	HG01073_demo	70	female	28.3	166.8	PUR	hispanic	df267f56-f045-4d50-b36c-b54370b9f048	HG01073
+demographic	0d93542c-7d49-40d4-9ba1-0c607659c0b5	tutorial-synthetic_data_set_1	HG03163_demo	44	male	22.5	170.6	ESN	black or african american	0c7cb1a6-21db-4545-b293-87c802982d71	HG03163
+demographic	0d9f7645-c5d4-45b3-a6de-e0d06b0a1231	tutorial-synthetic_data_set_1	HG02262_demo	52	male	27.9	176.2	PEL	hispanic	03da8a2d-592d-44df-bba8-9ab21f4e5995	HG02262
+demographic	0db2876b-47f8-4da4-9d33-7922710e2075	tutorial-synthetic_data_set_1	NA18908_demo	84	male	23.7	176.9	YRI	black or african american	10c012fa-6a0a-4dab-a6c9-acbbd5115709	NA18908
+demographic	0dc8e753-62cf-4b6f-8795-9b1d2478f49a	tutorial-synthetic_data_set_1	HG01489_demo	44	female	24.6	165.3	CLM	hispanic	5acb7fbb-8d64-4122-84c2-1d30ed0151a9	HG01489
+demographic	0dcc7959-f094-4a81-98a5-765a49cc5e46	tutorial-synthetic_data_set_1	NA18522_demo	57	male	23.5	180.4	YRI	black or african american	b05fb2f8-07db-4cab-bfc2-6823e8a1b8b1	NA18522
+demographic	0dccb777-2b65-4789-a5c7-ebc7295849c8	tutorial-synthetic_data_set_1	NA19920_demo	49	male	25.1	192.6	ASW	black or african american	bdab1ae0-3167-4950-8ab4-efb3b9fdd294	NA19920
+demographic	0e2c5d01-812b-4ff3-a797-968c7ea3b551	tutorial-synthetic_data_set_1	NA18981_demo	51	female	26.9	165.3	JPT	asian	e4124986-935a-4569-b160-a872fc6024ec	NA18981
+demographic	0e3ecbf7-08b8-4d1d-891d-6ca80f36cad9	tutorial-synthetic_data_set_1	HG00442_demo	58	male	23.3	180.9	CHS	asian	52331083-56d7-4adf-a751-a87e0b4a860e	HG00442
+demographic	0e3f3a0f-5b98-479c-973f-c8666795c923	tutorial-synthetic_data_set_1	HG03241_demo	51	female	23.2	185.4	GWD	black or african american	758a81a9-833c-4eb2-9a0f-e65b3d828cbb	HG03241
+demographic	0e746a0d-667a-46d2-9570-1bc7d92aca27	tutorial-synthetic_data_set_1	HG01921_demo	45	female	28.9	187.2	PEL	hispanic	907925ff-9b86-43d7-b6f1-a559f54fd13c	HG01921
+demographic	0e793c81-c8a1-4883-b32b-85bb288effe0	tutorial-synthetic_data_set_1	HG02604_demo	88	female	28.3	169.7	PJL	asian	4a8ea31f-01ff-4baf-9f44-1a34ef563838	HG02604
+demographic	0ee0add8-54a8-4e6b-8a5c-cc15a242adf5	tutorial-synthetic_data_set_1	HG00119_demo	51	male	22.4	176.9	GBR	white	ec418347-f30c-4ee8-a27b-d665805d9e86	HG00119
+demographic	0eeb8057-4bd3-4465-afbd-faf01e05a3ff	tutorial-synthetic_data_set_1	HG02854_demo	61	male	25.4	183.0	GWD	black or african american	5d6ff93f-53a0-4ceb-8343-855c1c8d36f4	HG02854
+demographic	0f0ae025-7bdc-4c87-937f-c0c55cddcf5b	tutorial-synthetic_data_set_1	NA19792_demo	52	male	26.7	170.2	MXL	hispanic	3e7fb231-2622-4e45-aac7-05ec98c6d455	NA19792
+demographic	0f32b19b-cf18-44c6-8881-d74eb4d3ccf0	tutorial-synthetic_data_set_1	NA19138_demo	58	male	22.1	178.6	YRI	black or african american	679554e2-a1ae-4c67-a079-0e4e46a22365	NA19138
+demographic	0f74c05c-315a-4678-b454-b14d1629ee54	tutorial-synthetic_data_set_1	HG02312_demo	85	female	26.1	169.9	PEL	hispanic	6b8c876a-9e09-42d3-a055-5d33eb0007c2	HG02312
+demographic	0fb20ae0-c33e-4cb2-8282-28b1e277604b	tutorial-synthetic_data_set_1	NA19732_demo	61	male	27.5	170.8	MXL	hispanic	00697fc1-5276-4709-8e1d-5af6dc9698ca	NA19732
+demographic	0fb37ea7-eaaf-450d-beef-6fba1893ed21	tutorial-synthetic_data_set_1	HG02144_demo	65	female	22.7	165.9	ACB	black or african american	a17d56da-5297-4735-8733-13484f118933	HG02144
+demographic	0fbbaccf-5a9b-4982-bcf6-209e0fc4b5d5	tutorial-synthetic_data_set_1	HG02807_demo	41	male	22.4	179.9	GWD	black or african american	1fbff2cf-cd1a-4bcd-9cdf-3d5dfdc14bc3	HG02807
+demographic	0fdd2fd6-0f88-4242-8b81-5fff5d34b383	tutorial-synthetic_data_set_1	HG04222_demo	37	male	27.1	171.6	ITU	asian	3f23b4ce-ec7b-4c2b-a40c-ab8af7bfefea	HG04222
+demographic	0ff689e5-9cfd-4150-977d-0ab8aa6b7ec1	tutorial-synthetic_data_set_1	HG00329_demo	47	male	26.0	176.2	FIN	white	ed68c3f8-0a27-49c7-a4ac-ba5cc84068f7	HG00329
+demographic	0ffb4e69-bf09-4434-b4ea-22d47abae1b7	tutorial-synthetic_data_set_1	HG04239_demo	47	male	27.5	173.0	ITU	asian	ed5feb65-4a80-48f3-9281-a4849f92fdc7	HG04239
+demographic	10529658-f3bb-4f28-8528-71197c8986a7	tutorial-synthetic_data_set_1	HG03660_demo	83	male	25.8	174.9	PJL	asian	bd08df2c-f61a-4571-befe-fd0cfe1bb016	HG03660
+demographic	1053aa9b-3481-458b-9be5-445b109f0715	tutorial-synthetic_data_set_1	NA20127_demo	37	female	22.7	198.1	ASW	black or african american	eb450717-7882-4249-973f-73d7cd1e61e4	NA20127
+demographic	1064900f-fafb-4260-8df7-89b3e2c6f199	tutorial-synthetic_data_set_1	HG02691_demo	62	female	23.3	169.2	PJL	asian	2245edc9-05ac-4ed9-9b2a-51088de51a4d	HG02691
+demographic	107cb5a0-b7c2-4854-b993-56fe9a064e4a	tutorial-synthetic_data_set_1	NA18995_demo	43	male	24.5	178.8	JPT	asian	c88d7995-a503-4286-bf53-22f29caafd3e	NA18995
+demographic	10ba6ae5-61f3-4791-a267-f61146544209	tutorial-synthetic_data_set_1	HG03369_demo	46	female	22.4	175.5	ESN	black or african american	121d77a0-fc55-468c-ade9-9c1687db0073	HG03369
+demographic	10d7a51e-a213-4ada-b037-1c1345e3f660	tutorial-synthetic_data_set_1	NA20542_demo	83	female	25.8	154.4	TSI	white	ff55b526-26da-43e9-9899-ec8e157b55dd	NA20542
+demographic	1101bc46-1011-4402-a80c-c8e309571872	tutorial-synthetic_data_set_1	HG00326_demo	63	female	26.5	165.6	FIN	white	ebfbc658-22c5-417f-880f-b676234c9bc0	HG00326
+demographic	110c5ee9-2fc2-4f1a-9a9d-02135f5566fb	tutorial-synthetic_data_set_1	NA20863_demo	43	male	25.9	178.4	GIH	asian	c3f8d2c9-a044-416b-b994-85ab8d9feba7	NA20863
+demographic	1112b22a-58cc-496e-845f-f181d346801c	tutorial-synthetic_data_set_1	NA19746_demo	76	female	26.9	167.3	MXL	hispanic	5872dd44-7255-4356-88bc-66c30050ab56	NA19746
+demographic	111b5a6f-fcb0-4e5e-9057-efd470753d94	tutorial-synthetic_data_set_1	NA19153_demo	54	male	23.0	191.8	YRI	black or african american	80498388-940a-4dce-96a3-83803fe3b513	NA19153
+demographic	115943af-563c-4e79-8ad7-99bb611572ad	tutorial-synthetic_data_set_1	HG03084_demo	66	male	20.5	180.8	MSL	black or african american	2579dc12-b17b-4d6b-97cf-c188015ed674	HG03084
+demographic	1169023d-af5a-4e85-a4c1-94f4cbb994f8	tutorial-synthetic_data_set_1	NA18582_demo	53	female	28.0	181.2	CHB	asian	bb1ad5fa-e48c-4f37-ba09-7e92dce10216	NA18582
+demographic	1195a97b-4f23-4381-8163-4e6b3ca51745	tutorial-synthetic_data_set_1	HG00704_demo	80	male	25.8	168.9	CHS	asian	c807a271-042c-4e69-af49-31e5ae68445b	HG00704
+demographic	1197719c-28cc-403d-a9f9-b3e7b4681c28	tutorial-synthetic_data_set_1	HG01945_demo	38	female	28.6	174.4	PEL	hispanic	9bb5e364-84eb-41df-b2b8-7174c602e754	HG01945
+demographic	11a6d5db-7a0d-44fd-bda6-24b0f8fee859	tutorial-synthetic_data_set_1	HG01254_demo	64	female	27.2	178.5	CLM	hispanic	c682ffcd-b986-4988-b250-0a2121d7f0a5	HG01254
+demographic	11cf9614-d721-4acd-b9d1-176ae3c3779b	tutorial-synthetic_data_set_1	HG02105_demo	54	female	29.8	187.6	PEL	hispanic	c437b372-a099-45ab-a6f5-28f0ba18f0f9	HG02105
+demographic	11d7b241-e8cb-4a5b-8729-82aa0b872750	tutorial-synthetic_data_set_1	HG00233_demo	46	female	23.4	171.4	GBR	white	090ef5c3-761e-4678-869c-fb04b25df231	HG00233
+demographic	11daabe9-a7a6-472f-b4c9-8c3b9734138c	tutorial-synthetic_data_set_1	NA18975_demo	69	female	23.8	173.0	JPT	asian	893933fa-7678-4ca7-bc87-525a5d3b30b0	NA18975
+demographic	11e8ef1b-2d3b-4892-a847-86481669db86	tutorial-synthetic_data_set_1	HG01673_demo	84	female	23.7	160.9	IBS	white	d330013b-991e-4e2c-bd41-d69e7a0149d6	HG01673
+demographic	128f575d-035c-4e49-8c69-b99ef441621f	tutorial-synthetic_data_set_1	NA19654_demo	83	female	24.1	174.8	MXL	hispanic	5fc4f206-41a9-4cba-9e35-fd9839167a6f	NA19654
+demographic	1299e0b4-fc12-47b2-aebc-ff704a8ade1a	tutorial-synthetic_data_set_1	NA18501_demo	78	male	23.6	190.2	YRI	black or african american	65f75886-1cf4-4c03-afeb-b82234af1db6	NA18501
+demographic	12b10d4f-4303-4a11-bba0-d28eda9d97a7	tutorial-synthetic_data_set_1	NA19035_demo	51	male	23.7	188.8	LWK	black or african american	6f1382ee-01ca-422a-8caf-f4c03411657d	NA19035
+demographic	12c8458c-62d5-4c6b-9999-26ff5fffb733	tutorial-synthetic_data_set_1	NA18622_demo	62	male	24.1	168.8	CHB	asian	8b0b13f9-3482-42b5-8929-0be8c3c0e0d7	NA18622
+demographic	12d28a32-a81a-49ae-a82f-3c6c889c71e8	tutorial-synthetic_data_set_1	HG03518_demo	54	male	24.8	188.3	ESN	black or african american	0bdd04f3-7129-4566-8b1e-32013c47d8fc	HG03518
+demographic	12e87b9b-c2af-4cb0-90eb-1faae5af9393	tutorial-synthetic_data_set_1	NA19095_demo	65	female	20.2	186.2	YRI	black or african american	75979955-d730-4a6d-976a-f27582c54bb3	NA19095
+demographic	12f8a9f8-5185-47bb-9cd5-ee0703f0504e	tutorial-synthetic_data_set_1	NA12155_demo	57	male	25.3	166.0	CEU	white	1a5e9473-f203-4bfa-979a-94bcecce2f97	NA12155
+demographic	131dbe31-3c7a-4d0a-bb45-365a520a1fcc	tutorial-synthetic_data_set_1	NA18910_demo	60	male	22.4	188.2	YRI	black or african american	a817a844-18b4-4628-8d53-658b0bfe3972	NA18910
+demographic	131f607d-4bf1-4307-a755-e4019e543dce	tutorial-synthetic_data_set_1	HG02675_demo	48	male	24.9	175.8	GWD	black or african american	ecb6648b-ef6f-401e-8e37-c5dcfa2f4966	HG02675
+demographic	1354c768-812c-4941-9f24-86b1aea5344f	tutorial-synthetic_data_set_1	HG01841_demo	51	female	29.6	174.5	KHV	asian	2831d84b-2b80-4acc-8584-c78680a0030f	HG01841
+demographic	138242ed-d9e7-4b02-a4bd-fee9193f3d0f	tutorial-synthetic_data_set_1	HG00349_demo	73	female	25.3	192.2	FIN	white	a48af8f0-0693-4a8d-b4df-c067280f0997	HG00349
+demographic	13c786e3-17e4-4652-8c1c-36ddbab4c10f	tutorial-synthetic_data_set_1	HG00982_demo	56	male	27.0	188.9	CDX	asian	334578ba-91f0-4eb0-abee-7ab18c2cd8aa	HG00982
+demographic	13efbf29-eb08-4380-8142-a4df7f00b67a	tutorial-synthetic_data_set_1	HG01500_demo	48	male	23.2	175.2	IBS	white	39a4ae6a-ebc1-46cf-bdb8-1be429585662	HG01500
+demographic	13fd61a0-e936-4a78-9459-fd27df4cfd0a	tutorial-synthetic_data_set_1	NA20799_demo	76	female	26.1	164.9	TSI	white	a268f9fd-ca54-499e-89c8-a21c28ba853e	NA20799
+demographic	14106925-7fb2-4d07-9f7d-d37973eb0172	tutorial-synthetic_data_set_1	NA18621_demo	66	male	28.7	178.9	CHB	asian	4e0c760d-bbd4-4db2-b95b-48c094d13d20	NA18621
+demographic	1426637e-a6b9-482c-b864-f238973ed0ed	tutorial-synthetic_data_set_1	HG00310_demo	42	male	26.3	183.0	FIN	white	0b4c39e3-1d11-477e-a9db-d69b16e1886b	HG00310
+demographic	144fb13d-7009-4d02-9d21-58522734ad50	tutorial-synthetic_data_set_1	HG03012_demo	55	male	25.2	174.7	BEB	asian	5a8aa542-16ba-4894-8295-0c8645d88e58	HG03012
+demographic	1451c3d6-8700-4b3d-850c-3dd240f6bd6e	tutorial-synthetic_data_set_1	HG02449_demo	51	male	23.9	190.0	ACB	black or african american	efcbee20-efc8-4234-b400-9f615dc8ac2c	HG02449
+demographic	14520251-82eb-4dd9-b71a-26210da9b415	tutorial-synthetic_data_set_1	NA20772_demo	39	female	24.8	168.3	TSI	white	a3ff4ee4-9ab2-4523-b77c-26a189289f92	NA20772
+demographic	14862deb-9716-4a7e-94a6-dece88106898	tutorial-synthetic_data_set_1	HG03410_demo	86	female	24.7	159.7	MSL	black or african american	2c83dd97-3973-4a15-bb80-3db1cfc80c52	HG03410
+demographic	14920502-9a7b-40df-8b7c-36ec3db825f5	tutorial-synthetic_data_set_1	HG02508_demo	41	female	23.2	173.4	ACB	black or african american	0ca556a4-471c-4a9a-bb49-315fd938828a	HG02508
+demographic	14a06c6f-93ab-4054-977f-c87aaa9c3adf	tutorial-synthetic_data_set_1	HG03259_demo	64	female	25.1	181.8	GWD	black or african american	ad66d26b-d8f9-4838-bf4b-9c39c988f1e7	HG03259
+demographic	14a3b677-7d48-4212-9f48-b9603d600dfd	tutorial-synthetic_data_set_1	HG00551_demo	84	female	25.1	173.7	PUR	hispanic	900931b5-6880-4724-8772-12ff3aabaa41	HG00551
+demographic	14b42d71-4fbb-40ea-8ea1-7f8805f645fe	tutorial-synthetic_data_set_1	HG03762_demo	58	female	25.3	191.9	PJL	asian	c74a8385-7d91-43bd-8f31-39e01ff2d1ca	HG03762
+demographic	14b6dc10-e297-44f0-88b8-0b2ee2523480	tutorial-synthetic_data_set_1	HG03394_demo	74	male	25.0	165.0	MSL	black or african american	3e9758a8-041d-40ae-b2b5-ef5e70d2d200	HG03394
+demographic	14c03375-0660-4860-afcc-ab7bc08bcf35	tutorial-synthetic_data_set_1	NA18867_demo	49	female	23.4	186.7	YRI	black or african american	4a0e85bb-4b5b-4979-99e4-f1e95459f2bd	NA18867
+demographic	14d500b1-3d32-4ec1-9fb9-d6f95937987e	tutorial-synthetic_data_set_1	NA18934_demo	51	male	24.2	177.4	YRI	black or african american	fdcfc3e7-72a4-4b70-b5dc-f966bed046fc	NA18934
+demographic	14eea41b-3123-4cf5-bc56-ee424761e695	tutorial-synthetic_data_set_1	NA12776_demo	73	female	21.0	186.0	CEU	white	4c12d73e-d645-4654-bcc9-92e22c057b37	NA12776
+demographic	15158f61-bb84-473c-b578-9ba6dcf0b42e	tutorial-synthetic_data_set_1	NA20509_demo	73	male	27.0	165.5	TSI	white	06f28733-8acf-4667-adeb-462d3426b919	NA20509
+demographic	153af74c-7349-4d7e-a583-5d02b477a05f	tutorial-synthetic_data_set_1	HG01583_demo	80	male	26.4	174.9	PJL	asian	5010d680-16e3-421e-968e-db1f048c287b	HG01583
+demographic	153effb8-52db-4d5b-b831-ff04bab46e94	tutorial-synthetic_data_set_1	HG00330_demo	46	female	24.2	174.3	FIN	white	8ca27773-11ae-4206-9658-8e6b3e24156e	HG00330
+demographic	1569dc58-b242-46f9-84fa-3496145701b7	tutorial-synthetic_data_set_1	HG03969_demo	62	male	28.8	158.0	ITU	asian	57460c12-8305-4a9d-891a-ecf6c606d27f	HG03969
+demographic	1572d1e5-3ec1-4f47-a014-00ff48108e00	tutorial-synthetic_data_set_1	HG03342_demo	80	female	24.0	173.6	ESN	black or african american	ebc5afc2-50ec-4448-a3b0-c69c5a10f57c	HG03342
+demographic	15811ae0-00a5-456b-8949-1b9833e4644a	tutorial-synthetic_data_set_1	HG02282_demo	37	female	23.6	162.0	ACB	black or african american	42488e0d-2ec3-4f1c-aa3b-490c5e77c009	HG02282
+demographic	1587469b-5601-4f5e-8f7a-e9227076c14a	tutorial-synthetic_data_set_1	HG03985_demo	73	male	27.9	153.9	STU	asian	b789eb43-0253-4aa7-a2c3-4f6a207ef1dd	HG03985
+demographic	158e942a-2ebd-4ab7-b595-cd8324066b6c	tutorial-synthetic_data_set_1	HG02131_demo	80	male	22.6	168.7	KHV	asian	ceece7d2-e2db-4f03-bca4-c0baa7817ada	HG02131
+demographic	15d768ff-897f-420a-8241-0845cff905dc	tutorial-synthetic_data_set_1	HG03634_demo	44	female	26.5	163.7	PJL	asian	4fd8ecfb-83f0-4d7d-84a0-77eb41b7b98c	HG03634
+demographic	15f8cc77-d0dc-4aa1-bc86-627013f89879	tutorial-synthetic_data_set_1	HG03894_demo	68	female	26.7	173.9	STU	asian	dbaa29df-ceee-4108-8958-2b3d459b42ae	HG03894
+demographic	160708f1-170e-4aa1-b538-8774837049a2	tutorial-synthetic_data_set_1	HG00542_demo	51	male	27.3	180.0	CHS	asian	6e4cae2d-c26c-4281-b8cc-4f62c1cfbd07	HG00542
+demographic	16209e35-5ca8-4a77-8089-5b0059213223	tutorial-synthetic_data_set_1	HG01072_demo	87	male	26.1	172.1	PUR	hispanic	d219eeff-455e-405c-8853-0d46d9131b4f	HG01072
+demographic	162ab811-fb1e-435f-ad0b-be99b3477a6e	tutorial-synthetic_data_set_1	HG04093_demo	36	male	24.9	170.2	ITU	asian	1105af3e-850a-4d30-b434-959765074cb9	HG04093
+demographic	163345ac-3aa9-4655-a64e-46a64ae858f0	tutorial-synthetic_data_set_1	NA18944_demo	39	male	24.9	183.4	JPT	asian	c91bdfb9-2471-4e28-9ca1-37d1488ec681	NA18944
+demographic	164ade7a-ece6-467b-8778-2e80a18bb3e5	tutorial-synthetic_data_set_1	HG04177_demo	77	female	25.9	175.6	BEB	asian	c6613931-dcb6-433b-96de-148aa5a58e0d	HG04177
+demographic	1651b275-596a-49bc-a72d-9d3fe49f109b	tutorial-synthetic_data_set_1	HG03446_demo	49	female	24.7	178.9	MSL	black or african american	07828198-cef5-41dc-a215-7eb26a7b5a85	HG03446
+demographic	165eb1fd-df03-433a-a098-4d2b2cca4289	tutorial-synthetic_data_set_1	HG01348_demo	61	female	28.5	174.6	CLM	hispanic	362adb53-2f25-4472-b6fb-0017beb889b3	HG01348
+demographic	16a25fa3-e79d-4ee5-9555-b60fa29cc7b7	tutorial-synthetic_data_set_1	HG02178_demo	54	female	25.6	178.9	CDX	asian	8230c2f1-f867-4113-8b5f-023027c9f614	HG02178
+demographic	16d60b0c-8fcf-47bf-ac2d-2b11b061b8ea	tutorial-synthetic_data_set_1	NA18573_demo	44	female	27.6	168.6	CHB	asian	72ca6869-5b74-42bc-a956-f225151d5465	NA18573
+demographic	171a8af1-f0e4-423e-b148-c3134f811e6b	tutorial-synthetic_data_set_1	HG00121_demo	48	female	25.0	168.0	GBR	white	4a812d95-4727-4e9f-a0e1-f6efa92cc05c	HG00121
+demographic	1729bd2c-6619-4fe5-a512-184fc51be36d	tutorial-synthetic_data_set_1	HG03687_demo	51	male	27.5	184.9	STU	asian	b4e1bf4d-c72e-4761-97f7-137817596ccf	HG03687
+demographic	17308d03-18c7-43b1-ae06-e18868c25f4c	tutorial-synthetic_data_set_1	HG03073_demo	58	female	25.1	157.1	MSL	black or african american	3922823d-1240-46c7-b0c4-71d7f121b1fc	HG03073
+demographic	173cc93b-1352-4f54-bfb7-8b744cff8061	tutorial-synthetic_data_set_1	HG00321_demo	41	male	26.9	175.6	FIN	white	1b0ee594-3cec-43be-8042-1c4218618a81	HG00321
+demographic	1760aa8d-5075-4397-ab2d-700afcd8bbe7	tutorial-synthetic_data_set_1	NA18597_demo	60	female	29.2	187.9	CHB	asian	8844391f-54c1-4fcf-864e-e16c0faf5e36	NA18597
+demographic	176dec9e-a4e5-498c-926a-44fd1820c313	tutorial-synthetic_data_set_1	NA18562_demo	59	male	25.1	175.0	CHB	asian	bc679211-ccc9-4dd7-96cd-c50b327240cf	NA18562
+demographic	1788adda-3fc0-44c1-8c10-7b7336f177f3	tutorial-synthetic_data_set_1	HG02694_demo	66	female	25.0	167.4	PJL	asian	6f7d2530-93e9-4803-8be6-a21241db6039	HG02694
+demographic	179deaee-4ada-4137-9f90-456f1dee125a	tutorial-synthetic_data_set_1	HG03644_demo	79	male	25.4	160.0	STU	asian	b0286d3e-4893-4fc7-b4a2-a98acc0141ae	HG03644
+demographic	17a14055-f63b-42bc-a904-a6d013d2758b	tutorial-synthetic_data_set_1	NA20340_demo	59	male	25.7	192.1	ASW	black or african american	af864021-e944-4e5c-a305-1f7458701ffb	NA20340
+demographic	17c326ac-278e-46bb-8fe6-bdb5dae99f91	tutorial-synthetic_data_set_1	HG03103_demo	75	male	23.7	175.6	ESN	black or african american	ac775362-a95a-4537-baff-6f56c4af432a	HG03103
+demographic	17ee5605-1300-488d-a35c-283a4aa0af7c	tutorial-synthetic_data_set_1	HG01868_demo	36	female	24.9	196.6	KHV	asian	d1195fed-68d9-4ec2-85fa-79b6a5324287	HG01868
+demographic	180de992-ab90-44a9-ab51-4f70e24d3a97	tutorial-synthetic_data_set_1	HG02465_demo	66	female	24.6	174.6	GWD	black or african american	a59dde99-87b9-4b27-be33-e9c7038771e9	HG02465
+demographic	181e190b-b7eb-471d-96d4-f6f5603d6ede	tutorial-synthetic_data_set_1	NA19717_demo	36	male	23.6	172.9	MXL	hispanic	a0c8e951-5597-4ec3-9f01-c27ae4e468fd	NA19717
+demographic	1830cd42-b8d8-48cc-b2c2-23137ee00698	tutorial-synthetic_data_set_1	NA20806_demo	75	male	24.4	164.1	TSI	white	c0850355-3bfb-44a0-bcff-0eb265da2ad7	NA20806
+demographic	185efb86-314c-4e17-b083-a017d6aec396	tutorial-synthetic_data_set_1	HG00275_demo	66	female	23.2	150.4	FIN	white	52ddeea1-1cb0-4960-a375-c1dd9879018d	HG00275
+demographic	18a7dfd9-2635-4a4d-b883-a0dffefcf041	tutorial-synthetic_data_set_1	NA19984_demo	88	male	23.4	177.5	ASW	black or african american	5ad7994c-d537-458d-8f8d-b65fab14d83f	NA19984
+demographic	18b44dad-9101-4986-b7a3-218525926f5b	tutorial-synthetic_data_set_1	HG01491_demo	51	male	30.0	174.8	CLM	hispanic	f4c1b91f-df95-4d44-8014-bf0343c3138a	HG01491
+demographic	18c6a4d0-72c8-42b1-b410-4c6e1d009f7e	tutorial-synthetic_data_set_1	HG01112_demo	40	male	23.3	183.5	CLM	hispanic	94196987-82ee-44c2-9d67-ba5f1b14f84b	HG01112
+demographic	18cac407-d3dd-45a6-a804-e9ddb0af230b	tutorial-synthetic_data_set_1	NA18747_demo	85	male	24.9	165.9	CHB	asian	f429d673-d410-4dbe-8203-7bbcdfa36823	NA18747
+demographic	18d134d0-c0a7-4bef-aea4-078841e1158d	tutorial-synthetic_data_set_1	NA20885_demo	62	male	24.0	165.2	GIH	asian	8b9eb001-222b-4cfe-a421-b86894934f89	NA20885
+demographic	1915da7d-a18a-4bcf-83af-a19fa518b8ec	tutorial-synthetic_data_set_1	NA19327_demo	36	female	22.7	187.6	LWK	black or african american	8f1334b7-5173-4073-8d9c-61f78573f251	NA19327
+demographic	194ae210-4b18-499a-b0d7-c22775d3c6ee	tutorial-synthetic_data_set_1	HG01257_demo	55	female	26.0	189.9	CLM	hispanic	43ac7cfb-ac99-45d9-891f-019864a721e7	HG01257
+demographic	1967affc-04d1-42c1-a21a-39a12ab421cf	tutorial-synthetic_data_set_1	HG00262_demo	75	female	25.9	167.5	GBR	white	34ea8f4c-9999-4ee1-8381-672b287861ec	HG00262
