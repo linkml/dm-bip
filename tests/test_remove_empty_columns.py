@@ -1,3 +1,5 @@
+"""Test remove_empty_columns."""
+
 import io
 import unittest
 
