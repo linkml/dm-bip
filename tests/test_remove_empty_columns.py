@@ -1,37 +1,30 @@
-"""Test remove_empty_columns script."""
-
-import shutil
-import subprocess
+import io
 import unittest
-from pathlib import Path
+
+from simple_clean.remove_empty_columns import remove_empty_columns
 
 
-class TestRemoveEmptyColumnsCLI(unittest.TestCase):
-    """Test remove_empty_columns.py script."""
+class TestRemoveEmptyColumns(unittest.TestCase):
+    """Test removing empty columns from a TSV file."""
 
-    def run_script(self, script, input_tsv: str) -> str:
-        """Run the script with the given input TSV."""
-        script_path = Path(script).resolve()  # Ensure absolute path
-        python_path = shutil.which("python3")  # Get absolute Python executable path
+    def setUp(self):
+        """Set up sample input data."""
+        self.input_data = "col1\tcol2\tcol3\n" "1\t\t3\n" "2\t\t4\n"  # col2 is empty and should be removed
 
-        if not python_path or not script_path.is_file():
-            raise FileNotFoundError(f"Python executable or script not found: {script_path}")
+        self.expected_output = "col1\tcol3\n" "1\t3\n" "2\t4\n"
 
-        result = subprocess.run(
-            [python_path, str(script_path)],  # Pass script path as a string
-            input=input_tsv,
-            text=True,
-            capture_output=True,
-            # check=True,  # Ensures an error is raised on failure
-        )
-        return result.stdout
+        self.input_file = io.StringIO(self.input_data)
+        self.output_file = io.StringIO()
 
     def test_remove_empty_columns(self):
-        """Test column removal with remove_empty_columns.py script."""
-        input_tsv = "col1\tcol2\tcol3\n1\t\t3\n4\t\t6\n7\t\t9\n"
-        expected_output = "col1\tcol3\n1\t3\n4\t6\n7\t9\n"
-        script = "simple_clean/remove_empty_columns.py"
-        self.assertEqual(self.run_script(script, input_tsv).strip(), expected_output.strip())
+        """Test that columns with all NaN values are removed."""
+        remove_empty_columns(self.input_file, self.output_file)
+
+        # Reset buffer position for reading
+        self.output_file.seek(0)
+        output_data = self.output_file.read()
+
+        self.assertEqual(output_data.strip(), self.expected_output.strip())
 
 
 if __name__ == "__main__":
