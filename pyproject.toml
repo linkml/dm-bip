@@ -11,6 +11,7 @@ python = "^3.12"
 click = "*"
 importlib-metadata = ">=8.2.0"
 pandas = "^2.2.3"
+schema-automator = "^0.5.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = {version = ">=8.3.2"}
