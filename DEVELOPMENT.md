@@ -72,7 +72,7 @@ gantt
     Real Data with LinkML Map               :2025-04-01, 2025-07-01
     Remediate Mapping Issues                :2025-05-01, 2025-07-01
 
-    section Cleaning & Complex Mapping 
+    section Preprocessing
     Lead -- Patrick, TBD                         :done, 2025-01-10, 0d
 
     section 8 
