@@ -11,6 +11,7 @@ Welcome to dm-bip's documentation!
    :caption: Contents:
 
    modules
+   schema_automator
 
 Indices and tables
 ==================
