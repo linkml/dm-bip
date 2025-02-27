@@ -10,11 +10,35 @@ LINT_EXCLUDES := tests/input tests/output
 
 RUN := poetry run
 
+### Help ###
+.PHONY: help
+help:
+	@echo "╭───────────────────────────────────────────────────────────╮"
+	@echo "│ Makefile for dm-bip                                       │"
+	@echo "│ ────────────────────────                                  │"
+	@echo "│ Usage:                                                    │"
+	@echo "│     make <target>                                         │"
+	@echo "│                                                           │"
+	@echo "│ Targets:                                                  │"
+	@echo "│     help                Print this help message           │"
+	@echo "│     all                 Install everything                │"
+	@echo "│     fresh               Clean and install everything      │"
+	@echo "│     clean               Clean up build artifacts          │"
+	@echo "│     clobber             Clean up generated files          │"
+	@echo "│                                                           │"
+	@echo "│     install             Set up the virtual environment    |"
+	@echo "│     docs                Generate documentation            │"
+	@echo "│     test                Run tests                         │"
+	@echo "│     lint                Lint all code                     │"
+	@echo "│     format              Format all code                   │"
+	@echo "│     coverage            Measure and report test coverage  │"
+	@echo "╰───────────────────────────────────────────────────────────╯"
+
 
 ### Installation and Setup ###
 
 .PHONY: all
-all: $(INSTALL_SENTINEL) docs
+all: install
 
 .PHONY: fresh
 fresh: clean clobber all
@@ -25,6 +49,9 @@ $(INSTALL_SENTINEL): poetry.lock
 	touch $@
 
 $(PYTHON): $(INSTALL_SENTINEL)
+
+.PHONY: install
+install: $(INSTALL_SENTINEL)
 
 
 ### Documentation ###
