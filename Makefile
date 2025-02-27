@@ -51,7 +51,8 @@ $(INSTALL_SENTINEL): poetry.lock
 $(PYTHON): $(INSTALL_SENTINEL)
 
 .PHONY: install
-install: $(INSTALL_SENTINEL)
+install:
+	poetry install --with dev --with docs
 
 
 ### Documentation ###
