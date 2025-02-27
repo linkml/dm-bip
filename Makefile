@@ -59,7 +59,8 @@ install:
 
 .PHONY: docs
 docs: $(INSTALL_SENTINEL)
-	$(RUN) mkdocs build
+	$(RUN) sphinx-apidoc -o docs src/dm_bip/ --ext-autodoc -f
+	$(RUN) sphinx-build -b html docs docs/_build
 
 
 ### Testing ###
@@ -77,6 +78,7 @@ clean:
 	rm -rf `find . -name __pycache__`
 	rm -rf .ruff_cache
 	rm -rf .pytest_cache
+	rm -rf docs/_build
 	rm -rf $(VENV)
 
 .PHONY: clobber
