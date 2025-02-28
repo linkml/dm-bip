@@ -33,7 +33,7 @@ gantt
     section 3 
     Initial Toy Data                        :active, 2025-01-01, 2025-03-01
     Robust Toy Data for Build & Test        :active, 2025-02-15, 2025-04-01
-    Synthetic Data (BDC Synthetic)          :active, 2025-02-10, 2025-04-01
+    Initial Synthetic Data                  :active, 2025-02-10, 2025-04-01
     Synthetic Data (Prioritized Variables)  :active, 2025-02-20, 2025-06-01
 
     section Schema Generation
@@ -69,7 +69,7 @@ gantt
     Lead - Corey                            :done, 2025-01-10, 0d
 
     section 7 
-    LinkML Map Toy Data                     :active, 2025-02-01, 2025-03-01
+    LinkML Map Toy Data                     :active, 2025-02-01, 2025-03-08
     Add LinkML Map                          :active, 2025-02-10, 2025-04-01
     Synthetic Data for LinkML Map           :2025-03-15, 2025-06-01
     Real Data with LinkML Map               :2025-04-01, 2025-07-01
