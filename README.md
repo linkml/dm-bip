@@ -152,7 +152,7 @@ This will release a 0.0.0 version of your project on PyPI.
 Use "[Trusted Publishers](https://docs.pypi.org/trusted-publishers/)" by PyPI
 
 ## Creating documentation
-The documentation desired should be placed in the `docs` directory (markdown or reStructured format files).
+The documentation desired should be placed in the `docs` directory (markdown or reStructured format files). It looks like we need to change the permissions for github actions to allow GITHUB_TOKEN read/write access to get docs to deploy.
 
 Let's say the user has 2 more .rst files to add:
  - intro.rst
