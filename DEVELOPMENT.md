@@ -5,6 +5,9 @@ This document contains the project development outline and assignments as well a
 This Gantt chart represents a starting point for understanding the timeline for our development and serves a roadmap for our development stages. This a high-level chart showing the different parts of the project and how development time can ovelap. Currently, this is non-finalized and is intended only as a starting point for discussing the relative timelines of tasks.
 
 ```mermaid
+---
+displayMode: compact
+---
 gantt
     title Data Model-Based Ingestion Pipeline Roadmap
     dateFormat  YYYY-MM-DD
@@ -38,9 +41,9 @@ gantt
 
     section 4 
     Schema Toy Data                         :active, 2025-02-01, 2025-03-08
-    Schema Automator on Synthetic Data      :2025-03-15, 2025-06-01
     Verify Schema Automator on Toy Data     :active, 2025-02-10, 2025-04-01
     Synthetic Data for Schema Automator     :active, 2025-02-20, 2025-05-15
+    Schema Automator on Synthetic Data      :2025-03-15, 2025-06-01
     Use Schema Automator on Real Data       :2025-04-01, 2025-07-01
     Close Schema Automator Gaps             :2025-04-15, 2025-07-01
     Schema Sheets & Toy/Synthetic Data      :active, 2025-03-01, 2025-05-01
