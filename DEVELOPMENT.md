@@ -31,7 +31,7 @@ gantt
     Leads - Corey, Patrick, Madan                  :done, 2025-01-10, 0d
 
     section 3 
-    Initial Toy Data                        :active, 2025-01-01, 2025-03-01
+    Initial Toy Data                        :done, 2025-01-01, 2025-03-01
     Robust Toy Data for Build & Test        :active, 2025-02-15, 2025-04-01
     Initial Synthetic Data                  :active, 2025-02-10, 2025-04-01
     Synthetic Data (Prioritized Variables)  :active, 2025-02-20, 2025-06-01
