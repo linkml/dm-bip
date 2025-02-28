@@ -38,9 +38,9 @@ gantt
 
     section 4 
     Schema Toy Data                         :active, 2025-02-01, 2025-03-08
+    Schema Automator on Synthetic Data      :2025-03-15, 2025-06-01
     Verify Schema Automator on Toy Data     :active, 2025-02-10, 2025-04-01
     Synthetic Data for Schema Automator     :active, 2025-02-20, 2025-05-15
-    Schema Automator on Synthetic Data      :2025-03-15, 2025-06-01
     Use Schema Automator on Real Data       :2025-04-01, 2025-07-01
     Close Schema Automator Gaps             :2025-04-15, 2025-07-01
     Schema Sheets & Toy/Synthetic Data      :active, 2025-03-01, 2025-05-01
