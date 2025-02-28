@@ -29,21 +29,21 @@ gantt
 
     section 3 
     Initial Toy Data                        :active, 2025-01-01, 2025-03-01
-    Robust Toy Data for Build & Test        :2025-02-15, 2025-04-01
+    Robust Toy Data for Build & Test        :active, 2025-02-15, 2025-04-01
     Synthetic Data (BDC Synthetic)          :active, 2025-02-10, 2025-04-01
-    Synthetic Data (Prioritized Variables)  :2025-02-20, 2025-06-01
+    Synthetic Data (Prioritized Variables)  :active, 2025-02-20, 2025-06-01
 
     section Schema Generation
     Leads - Trish, Corey                    :done, 2025-01-10, 0d
 
     section 4 
-    Schema Toy Data                         :active, 2025-02-01, 2025-03-01
+    Schema Toy Data                         :active, 2025-02-01, 2025-03-08
     Verify Schema Automator on Toy Data     :active, 2025-02-10, 2025-04-01
-    Synthetic Data for Schema Automator     :2025-02-20, 2025-05-15
+    Synthetic Data for Schema Automator     :active, 2025-02-20, 2025-05-15
     Schema Automator on Synthetic Data      :2025-03-15, 2025-06-01
     Use Schema Automator on Real Data       :2025-04-01, 2025-07-01
     Close Schema Automator Gaps             :2025-04-15, 2025-07-01
-    Schema Sheets & Toy/Synthetic Data      :2025-03-01, 2025-05-01
+    Schema Sheets & Toy/Synthetic Data      :active, 2025-03-01, 2025-05-01
     Annotation of Data                      :2025-04-01, 2025-06-01
 
     section Schema Validator
