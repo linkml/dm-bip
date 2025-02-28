@@ -3,7 +3,7 @@ on:
   push:
     branches: [ main ]
 permissions:
-  contents:write
+  contents: write
 jobs:
   build-docs:
     runs-on: ubuntu-latest
