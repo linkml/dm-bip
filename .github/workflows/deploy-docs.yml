@@ -2,6 +2,8 @@ name: Auto-deployment of Documentation
 on:
   push:
     branches: [ main ]
+permissions:
+  contents:write
 jobs:
   build-docs:
     runs-on: ubuntu-latest
@@ -25,7 +27,7 @@ jobs:
 
     - name: Build documentation.
       run: |
-        echo ${{ secrets.GH_TOKEN }} >> src/dm_bip/token.txt
+        echo ${{ secrets.GITHUB_TOKEN }} >> src/dm_bip/token.txt
         mkdir gh-pages
         touch gh-pages/.nojekyll
         cd docs/
@@ -40,4 +42,4 @@ jobs:
         branch: gh-pages
         force: true
         folder: gh-pages
-        token: ${{ secrets.GH_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
