@@ -4,7 +4,7 @@ The purpose of synthetic data sets in the Data Model-Based Ingestion Pipeline is
 # Key Features
 The primary and most important feature of the synthetic data sets for the dm-bip are that they be truly synthetic. We need to simulate a real data set but be certain that nothing in our Synthetic Dataset contains any real data or anything that prevents us from sharing the data freely. This means that while we want the synthetic data to look like the real data it cannot use real data.
 
-We need at least one synthetic data set for expansive testing of the pipeline and each tool within the pipeline suite, preferably 2.
+We need at least one synthetic data set for expansive testing of the pipeline and each tool within the pipeline suite, preferably two.
 
 I think the main features of a good synthetic data set are:
 
