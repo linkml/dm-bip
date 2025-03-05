@@ -55,7 +55,7 @@ gantt
     section 5 
     Schema Validator Toy Data               :active, 2025-02-10, 2025-03-30
     Add Schema Validator & Write Tests      :active, 2025-02-10, 2025-04-01
-    Synthetic Data for Schema Validator     :2025-02-20, 2025-05-15
+    Synthetic Data for Schema Validator     :active, 2025-02-20, 2025-05-15
     Schema Validator on Real Data           :2025-04-01, 2025-07-01
 
     section Schema Data Map
