@@ -5,6 +5,9 @@ This document contains the project development outline and assignments as well a
 This Gantt chart represents a starting point for understanding the timeline for our development and serves a roadmap for our development stages. This a high-level chart showing the different parts of the project and how development time can ovelap. Currently, this is non-finalized and is intended only as a starting point for discussing the relative timelines of tasks.
 
 ```mermaid
+---
+displayMode: compact
+---
 gantt
     title Data Model-Based Ingestion Pipeline Roadmap
     dateFormat  YYYY-MM-DD
@@ -24,83 +27,72 @@ gantt
     Development Setup & Documentation       :active, 2025-01-01, 2025-04-15
     Build & Deployment Tools (Makefile)     :active, 2025-02-10, 2025-06-15
 
-    section Toy Data
-    Leads - Corey, Patrick                  :done, 2025-01-10, 0d
+    section Data Sets
+    Leads - Corey, Patrick, Madan                  :done, 2025-01-10, 0d
 
     section 3 
-    Initial Toy Data                        :active, 2025-01-01, 2025-03-01
-    Robust Toy Data for Build & Test        :2025-02-15, 2025-04-01
-
-    section Synthetic Data
-    Leads - Corey, Patrick, Madan           :done, 2025-01-10, 0d
-
-    section 4 
-    Synthetic Data (BDC Synthetic)          :active, 2025-02-10, 2025-04-01
-    Synthetic Data (Prioritized Variables)  :2025-02-20, 2025-06-01
+    Initial Toy Data                        :done, 2025-01-01, 2025-03-01
+    Robust Toy Data for Build & Test        :active, 2025-02-15, 2025-04-01
+    Initial Synthetic Data                  :active, 2025-02-10, 2025-04-01
+    Synthetic Data (Prioritized Variables)  :active, 2025-02-20, 2025-06-01
 
     section Schema Generation
     Leads - Trish, Corey                    :done, 2025-01-10, 0d
 
-    section 5 
-    Schema Toy Data                         :active, 2025-02-01, 2025-03-01
+    section 4 
+    Schema Toy Data                         :active, 2025-02-01, 2025-03-08
     Verify Schema Automator on Toy Data     :active, 2025-02-10, 2025-04-01
-    Synthetic Data for Schema Automator     :2025-02-20, 2025-05-15
+    Synthetic Data for Schema Automator     :active, 2025-02-20, 2025-05-15
     Schema Automator on Synthetic Data      :2025-03-15, 2025-06-01
     Use Schema Automator on Real Data       :2025-04-01, 2025-07-01
     Close Schema Automator Gaps             :2025-04-15, 2025-07-01
-    Schema Sheets & Toy/Synthetic Data      :2025-03-01, 2025-05-01
+    Schema Sheets & Toy/Synthetic Data      :active, 2025-03-01, 2025-05-01
     Annotation of Data                      :2025-04-01, 2025-06-01
 
     section Schema Validator
     Lead - Madan                            :done, 2025-01-10, 0d
 
-    section 7 
+    section 5 
     Schema Validator Toy Data               :active, 2025-02-10, 2025-03-30
     Add Schema Validator & Write Tests      :active, 2025-02-10, 2025-04-01
-    Synthetic Data for Schema Validator     :2025-02-20, 2025-05-15
+    Synthetic Data for Schema Validator     :active, 2025-02-20, 2025-05-15
     Schema Validator on Real Data           :2025-04-01, 2025-07-01
 
     section Schema Data Map
     Lead - BDC Data Model Team, Corey       :done, 2025-01-10, 0d
 
-    section 8 
+    section 6 
     Manually Curated Data Map               :2025-03-015, 2025-06-01
     Attempt Automatic Map Generation        :2025-05-01, 2025-07-01
 
     section LinkML Map 
     Lead - Corey                            :done, 2025-01-10, 0d
 
-    section 9 
-    LinkML Map Toy Data                     :active, 2025-02-01, 2025-03-01
+    section 7 
+    LinkML Map Toy Data                     :active, 2025-02-01, 2025-03-08
     Add LinkML Map                          :active, 2025-02-10, 2025-04-01
     Synthetic Data for LinkML Map           :2025-03-15, 2025-06-01
     Real Data with LinkML Map               :2025-04-01, 2025-07-01
     Remediate Mapping Issues                :2025-05-01, 2025-07-01
 
-    section Data Cleaning 
-    Lead -- Patrick                         :done, 2025-01-10, 0d
+    section Preprocessing
+    Lead -- Patrick, TBD                         :done, 2025-01-10, 0d
 
-    section 10 
+    section 8 
     Simple Data Cleaning Scripts            :active, 2025-02-01, 2025-04-15
-    Handle Bad Data Practices               :2025-03-15, 2025-07-01
-
-    section Complex Data Mapping
-    Lead -- TBD                             :done, 2025-01-10, 0d
-
-    section 11 
     Scripts for Complex Mappings            :2025-04-15, 2025-07-01
 
     section Execution & Deployment
     Leads - Patrick, Stephen, Pierette      :done, 2025-01-10, 0d
 
-    section 12 
+    section 9 
     Containerized Deployment (AWS, GCP)     :2025-03-15, 2025-06-15
     Local Execution with Automation         :2025-04-01, 2025-07-01
 
     section Final Pipeline Run
     Leads - Corey, Stephen, Pierette        :done, 2025-01-10, 0d
 
-    section 13 
+    section 10 
     Full Pipeline with Synthetic Data       :2025-04-01, 2025-06-01
     Single Real Data Set Through Pipeline   :2025-04-15, 2025-06-15
     Fully Automated Pipeline for Cloud      :2025-04-15, 2025-07-01
