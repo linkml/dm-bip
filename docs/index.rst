@@ -1,4 +1,4 @@
-.. dm-bip documentation master file
+.. dm-bip documentation index file
 
 Welcome to the Data Model-Based Ingestion Pipeline (dm-bip) documentation!
 ==========================================================================
@@ -8,40 +8,6 @@ This project coordinates efforts to create a Data Model-Based Ingestion Pipeline
 Overview
 ========
 The primary objective of dm-bip is to leverage existing LinkML tools and supplement them with lightweight scripts where necessary. Whenever feasible, middleware tools developed here should be integrated upstream with data submitters or incorporated into LinkML tools.
-
-Installation
-============
-
-Requirements:
--------------
-- Python >= 3.12 (Note: Downgraded to 3.12 due to linkml-runtime issue in 3.13, patch forthcoming)
-- [Poetry](https://python-poetry.org/docs/#installation)
-- [Cruft](https://cruft.github.io/cruft/)
-
-To install and set up the project:
-
-.. code-block:: bash
-
-    git clone https://github.com/amc-corey-cox/dm-bip.git
-    cd dm-bip
-
-Using System Poetry:
-
-.. code-block:: bash
-
-    pip install poetry
-    poetry install
-
-Using Virtual Environment:
-
-.. code-block:: bash
-
-    pyenv local 3.12
-    python -m venv .venv
-    . .venv/bin/activate
-    pip install poetry
-    pip install cruft
-    poetry install --with env
 
 Usage
 =====
