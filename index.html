@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to dm-bip’s documentation! &mdash; dm-bip 0.0.0 documentation</title>
+  <title>Welcome to the Data Model-Based Ingestion Pipeline (dm-bip) documentation! &mdash; dm-bip 0.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -18,8 +18,7 @@
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="dm_bip" href="modules.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -41,12 +40,15 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">dm_bip</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schema_automator.html">Schema Automator</a></li>
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Welcome to the Data Model-Based Ingestion Pipeline (dm-bip) documentation!</a></li>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#repository-structure">Repository Structure</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
-
+</div>
         </div>
       </div>
     </nav>
@@ -61,7 +63,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to dm-bip’s documentation!</li>
+      <li class="breadcrumb-item active">Welcome to the Data Model-Based Ingestion Pipeline (dm-bip) documentation!</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -71,24 +73,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="welcome-to-dm-bip-s-documentation">
-<h1>Welcome to dm-bip’s documentation!<a class="headerlink" href="#welcome-to-dm-bip-s-documentation" title="Link to this heading"></a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">dm_bip</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dm_bip.html">dm_bip package</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="schema_automator.html">Schema Automator</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="schema_automator.html#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="schema_automator.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="schema_automator.html#usage">Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="schema_automator.html#help">Help</a></li>
-</ul>
-</li>
-</ul>
+  <section id="welcome-to-the-data-model-based-ingestion-pipeline-dm-bip-documentation">
+<h1>Welcome to the Data Model-Based Ingestion Pipeline (dm-bip) documentation!<a class="headerlink" href="#welcome-to-the-data-model-based-ingestion-pipeline-dm-bip-documentation" title="Link to this heading"></a></h1>
+<p>This project coordinates efforts to create a Data Model-Based Ingestion Pipeline using [LinkML](<a class="reference external" href="https://linkml.io/linkml/">https://linkml.io/linkml/</a>) tools. Currently, it is a collaboration between the BioData Catalyst and INCLUDE teams, with the goal of developing a flexible, reusable pipeline framework adaptable to other projects. Contributions from other groups are welcome!</p>
+</section>
+<section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
+<p>The primary objective of dm-bip is to leverage existing LinkML tools and supplement them with lightweight scripts where necessary. Whenever feasible, middleware tools developed here should be integrated upstream with data submitters or incorporated into LinkML tools.</p>
+</section>
+<section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
+<p>To verify everything is working, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>tox
+</pre></div>
 </div>
+<p>To test the project:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>run<span class="w"> </span>dm-bip<span class="w"> </span>run
+</pre></div>
+</div>
+<p>This should return “Hello, World”.</p>
+</section>
+<section id="repository-structure">
+<h1>Repository Structure<a class="headerlink" href="#repository-structure" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><cite>docs/</cite> - Sphinx documentation</p></li>
+<li><p><cite>src/</cite> - Contains the main source code</p></li>
+<li><p><cite>tests/</cite> - Basic unit tests</p></li>
+<li><p><cite>.github/workflows/</cite> - GitHub Actions for CI/CD</p></li>
+<li><p><cite>pyproject.toml</cite> - Poetry configuration file</p></li>
+<li><p><cite>tox.ini</cite> - Configuration for linting, testing, and code quality checks</p></li>
+</ul>
 </section>
 <section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
@@ -104,9 +118,7 @@
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules.html" class="btn btn-neutral float-right" title="dm_bip" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

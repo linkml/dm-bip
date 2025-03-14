@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dm_bip package &mdash; dm-bip 0.0.0 documentation</title>
+  <title>Installation &mdash; dm-bip 0.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -42,14 +42,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <!-- Local TOC -->
               <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">dm_bip package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-dm_bip.cli">dm_bip.cli module</a></li>
-<li><a class="reference internal" href="#module-dm_bip.main">dm_bip.main module</a><ul>
-<li><a class="reference internal" href="#dm_bip.main.demo"><code class="docutils literal notranslate"><span class="pre">demo()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-dm_bip">Module contents</a></li>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements:</a></li>
 </ul>
 </li>
 </ul>
@@ -68,9 +62,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">dm_bip package</li>
+      <li class="breadcrumb-item active">Installation</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/dm_bip.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -78,28 +72,34 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dm-bip-package">
-<h1>dm_bip package<a class="headerlink" href="#dm-bip-package" title="Link to this heading"></a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
-</section>
-<section id="module-dm_bip.cli">
-<span id="dm-bip-cli-module"></span><h2>dm_bip.cli module<a class="headerlink" href="#module-dm_bip.cli" title="Link to this heading"></a></h2>
-<p>Command line interface for dm-bip.</p>
-</section>
-<section id="module-dm_bip.main">
-<span id="dm-bip-main-module"></span><h2>dm_bip.main module<a class="headerlink" href="#module-dm_bip.main" title="Link to this heading"></a></h2>
-<p>Main python file.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="dm_bip.main.demo">
-<span class="sig-prename descclassname"><span class="pre">dm_bip.main.</span></span><span class="sig-name descname"><span class="pre">demo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.main.demo" title="Link to this definition"></a></dt>
-<dd><p>Define API.</p>
-</dd></dl>
-
-</section>
-<section id="module-dm_bip">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dm_bip" title="Link to this heading"></a></h2>
-<p>dm-bip package.</p>
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
+<section id="requirements">
+<h2>Requirements:<a class="headerlink" href="#requirements" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Python &gt;= 3.12 (Note: Downgraded to 3.12 due to linkml-runtime issue in 3.13, patch forthcoming)</p></li>
+<li><p>[Poetry](<a class="reference external" href="https://python-poetry.org/docs/#installation">https://python-poetry.org/docs/#installation</a>)</p></li>
+<li><p>[Cruft](<a class="reference external" href="https://cruft.github.io/cruft/">https://cruft.github.io/cruft/</a>)</p></li>
+</ul>
+<p>To install and set up the project:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/amc-corey-cox/dm-bip.git
+<span class="nb">cd</span><span class="w"> </span>dm-bip
+</pre></div>
+</div>
+<p>Using System Poetry:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>poetry
+poetry<span class="w"> </span>install
+</pre></div>
+</div>
+<p>Using Virtual Environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pyenv<span class="w"> </span><span class="nb">local</span><span class="w"> </span><span class="m">3</span>.12
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+.<span class="w"> </span>.venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>poetry
+pip<span class="w"> </span>install<span class="w"> </span>cruft
+poetry<span class="w"> </span>install<span class="w"> </span>--with<span class="w"> </span>env
+</pre></div>
+</div>
 </section>
 </section>
 

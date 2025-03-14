@@ -1,17 +1,39 @@
-.. dm-bip documentation master file, created by
-   sphinx-quickstart on Fri Aug 12 08:35:01 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. dm-bip documentation index file
 
-Welcome to dm-bip's documentation!
-=========================================================
+Welcome to the Data Model-Based Ingestion Pipeline (dm-bip) documentation!
+==========================================================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+This project coordinates efforts to create a Data Model-Based Ingestion Pipeline using [LinkML](https://linkml.io/linkml/) tools. Currently, it is a collaboration between the BioData Catalyst and INCLUDE teams, with the goal of developing a flexible, reusable pipeline framework adaptable to other projects. Contributions from other groups are welcome!
 
-   modules
-   schema_automator
+Overview
+========
+The primary objective of dm-bip is to leverage existing LinkML tools and supplement them with lightweight scripts where necessary. Whenever feasible, middleware tools developed here should be integrated upstream with data submitters or incorporated into LinkML tools.
+
+Usage
+=====
+To verify everything is working, run:
+
+.. code-block:: bash
+
+    poetry run tox
+
+To test the project:
+
+.. code-block:: bash
+
+    poetry run dm-bip run
+
+This should return "Hello, World".
+
+Repository Structure
+====================
+- `docs/` - Sphinx documentation
+- `src/` - Contains the main source code
+- `tests/` - Basic unit tests
+- `.github/workflows/` - GitHub Actions for CI/CD
+- `pyproject.toml` - Poetry configuration file
+- `tox.ini` - Configuration for linting, testing, and code quality checks
+
 
 Indices and tables
 ==================
