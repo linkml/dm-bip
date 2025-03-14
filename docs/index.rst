@@ -1,24 +1,73 @@
-.. dm-bip documentation master file, created by
-   sphinx-quickstart on Fri Aug 12 08:35:01 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. dm-bip documentation master file
 
 Welcome to the Data Model-Based Ingestion Pipeline (dm-bip) documentation!
+==========================================================================
 
-Data Model-Based Ingestion Pipeline using LinkML tools
+This project coordinates efforts to create a Data Model-Based Ingestion Pipeline using [LinkML](https://linkml.io/linkml/) tools. Currently, it is a collaboration between the BioData Catalyst and INCLUDE teams, with the goal of developing a flexible, reusable pipeline framework adaptable to other projects. Contributions from other groups are welcome!
 
-This project will coordinate the efforts of creating a Data Model-Based Ingestion Pipeline using LinkML tools. The goal is to create a set of tools that can be used to generate ingestion pipelines from a data model.
-Currently this is a collaboration between the BioData Catalyst and INCLUDE teams with LinkML ideally the generalized framework will work for other environments. We welcome other groups joing the effort. 
+Overview
+========
+The primary objective of dm-bip is to leverage existing LinkML tools and supplement them with lightweight scripts where necessary. Whenever feasible, middleware tools developed here should be integrated upstream with data submitters or incorporated into LinkML tools.
 
-=========================================================
+Installation
+============
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+Requirements:
+-------------
+- Python >= 3.12 (Note: Downgraded to 3.12 due to linkml-runtime issue in 3.13, patch forthcoming)
+- [Poetry](https://python-poetry.org/docs/#installation)
+- [Cruft](https://cruft.github.io/cruft/)
 
-   modules
-   schema_automator
-   schemasheets
+To install and set up the project:
+
+.. code-block:: bash
+
+    git clone https://github.com/amc-corey-cox/dm-bip.git
+    cd dm-bip
+
+Using System Poetry:
+
+.. code-block:: bash
+
+    pip install poetry
+    poetry install
+
+Using Virtual Environment:
+
+.. code-block:: bash
+
+    pyenv local 3.12
+    python -m venv .venv
+    . .venv/bin/activate
+    pip install poetry
+    pip install cruft
+    poetry install --with env
+
+Usage
+=====
+To verify everything is working, run:
+
+.. code-block:: bash
+
+    poetry run tox
+
+To test the project:
+
+.. code-block:: bash
+
+    poetry run dm-bip run
+
+This should return "Hello, World".
+
+Repository Structure
+====================
+- `docs/` - Sphinx documentation
+- `src/` - Contains the main source code
+- `tests/` - Basic unit tests
+- `.github/workflows/` - GitHub Actions for CI/CD
+- `pyproject.toml` - Poetry configuration file
+- `tox.ini` - Configuration for linting, testing, and code quality checks
+
 
 Indices and tables
 ==================
