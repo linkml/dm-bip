@@ -1,6 +1,6 @@
 .. dm-bip documentation index file
 
-Welcome to the Data Model-Based Ingestion Pipeline (dm-bip) documentation!
+Data Model-Based Ingestion Pipeline (dm-bip)
 ==========================================================================
 
 This project coordinates efforts to create a Data Model-Based Ingestion Pipeline using [LinkML](https://linkml.io/linkml/) tools. Currently, it is a collaboration between the BioData Catalyst and INCLUDE teams, with the goal of developing a flexible, reusable pipeline framework adaptable to other projects. Contributions from other groups are welcome!
@@ -11,6 +11,8 @@ The primary objective of dm-bip is to leverage existing LinkML tools and supplem
 
 Usage
 =====
+See :doc:`installation` for installation instructions.
+
 To verify everything is working, run:
 
 .. code-block:: bash
@@ -33,6 +35,14 @@ Repository Structure
 - `.github/workflows/` - GitHub Actions for CI/CD
 - `pyproject.toml` - Poetry configuration file
 - `tox.ini` - Configuration for linting, testing, and code quality checks
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents
+
+   installation
+   schema_automator
+   schemasheets
 
 
 Indices and tables
