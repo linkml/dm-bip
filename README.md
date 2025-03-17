@@ -107,8 +107,7 @@ And as the last line says: `congratulations :)`!! Your project is ready to evolv
 > If you have an error running `tox` your python dependencies may be out of sync and you may be able to fix it by running `poetry lock` and then running `tox` again.
 
 # Final test to see everything is wired properly
-
-On the command line, we can run the project by it's name to ensure it runs.
+When you have finished downloading and installing the repo, we can run the project by it's name to ensure everything is setup up properly.
 ```
 poetry run dm-bip run
 ```
@@ -116,10 +115,33 @@ Should return "Hello, World"
 
 To run commands within the poetry environment either preface the command with `poetry run`, i.e. `poetry run /path-to/my-command --options` or open the poetry shell with `poetry shell`. You should also be able to activate the virtual environment directly, `.venv/bin/activate` and run the command within the virtual environment like `dm-bip run`.
 
-# This section is for further setup of the project  -- Ignore below
-This section is for further setup of the project as a whole using the `monarch-project-template` and can be ignored for regular development. We should revisit this section as the project evolves and finalize the setup when appropriate.
+# Development
+Now the repository is cloned, installed, and we have verified everything is working. We are ready for development. Please create issues at the main repository and work on development by creating branches within the main repo or within your own fork and pushing those commits to the main branch via PRs on GitHub.
 
-# Future updates to the project's boilerplate code
+## Testing
+Before you submit your PR it is a good idea to do basic testing. Admittedly, the testing suite is rather sparse at the moment but please write tests for your submitted code and make sure they and other tests work before asking for a PR to be reviewed. We have set up automated testing on GitHub but it is also nice to test on your own system. You can do so with `make`.
+```
+make test
+```
+Or you can test directly with `pytest` which can be nice for only running specific tests.
+```
+poetry run pytest
+```
+
+## Linting
+It is also a good idea to run linting locally before submitting PRs. You can lint with `make`.
+```
+make lint
+```
+Alternatively, you can run the linting direclty with `ruff`.
+```
+poetry run ruff --check --diff --exclude tests/input tests/output
+```
+
+# Updating he project after initial setup
+There are a few things that may need further setup and maintenance after the initial setup of the repository, such as keeping the repository in sync with our upstream project template and setting up or using PyPi for distribution as well as automating that process. Instructions for all of these can be found below.
+
+## Future updates to the project's boilerplate code
 In order to be up-to-date with the template, first check if there is a mismatch between the project's boilerplate code and the template by running:
 ```
 cruft check
@@ -139,7 +161,10 @@ For viewing the difference, run `cruft diff`. This shows the difference between 
 
 After running `cruft update`, the project's boilerplate code will be updated to the latest version of the template.
 
-# Setting up PyPI release
+## This section is for further setup of the project
+This section is for further setup of the project as a whole using the `monarch-project-template` and can be ignored for regular development. We should revisit this section as the project evolves and finalize the setup when appropriate.
+
+### Setting up PyPI release
 
 For the first time, you'll need to just run the following commands:
 ```
@@ -148,46 +173,8 @@ poetry publish -u YOUR_PYPI_USERNAME -p YOUR_PYPI_PASSWORD
 ```
 This will release a 0.0.0 version of your project on PyPI.
 
-## Automating this via Github Release
+#### Automating this via Github Release
 Use "[Trusted Publishers](https://docs.pypi.org/trusted-publishers/)" by PyPI
 
-## Creating documentation
-The documentation desired should be placed in the `docs` directory (markdown or reStructured format files). It looks like we need to change the permissions for github actions to allow GITHUB_TOKEN read/write access to get docs to deploy.
-
-Let's say the user has 2 more .rst files to add:
- - intro.rst
- - installation.rst
-
-These two files should be placed in the docs directory and the `index.rst` file should be updated to read the following
-
-```rst
-Welcome to dm_bip's documentation!
-=========================================================
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-   intro
-   installation
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-```
-This lets sphinx know to look for theses rst files and generate equivalent HTML files.
-
-Documentation is automatically built and deployed via the github workflow `deploy-docs.yml`. 
-When changes are added to the main branch, this workflow is triggered. For this to work, the user needs to 
-set-up the github repository of the project to enable documentation from a specific branch. In the `Settings` tab 
-of the repository, click the `Pages` section in the left bar. For the `Branch`, choose the `gh-pages` branch.
-
-The full GitHub Pages documentation can be found [here](https://docs.github.com/en/pages/quickstart). 
-
 # Acknowledgements
-
 This [cookiecutter](https://cookiecutter.readthedocs.io/en/stable/README.html) project was developed from the [monarch-project-template](https://github.com/monarch-initiative/monarch-project-template) template and will be kept up-to-date using [cruft](https://cruft.github.io/cruft/).
