@@ -71,9 +71,9 @@ Now that we have the basic repository set up and the background dependencies, we
 poetry install
 ```
 
-If you are managing `poetry` and `cruft` in the local virtual environment rather than using your own system wide poetry you may want to use the `env` group.
+If you are managing `poetry` and `cruft` in the local virtual environment rather than using your own system wide poetry you may want to use the `env` group. If you are doing development within the repository you also want to use the `dev` group with your poetry install.
 ```
-poetry install --with env
+poetry install --with env --with dev
 ```
 
 ### Add `poetry-dynamic-versioning` as a plugin
