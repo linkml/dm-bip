@@ -1,6 +1,6 @@
 # Data Model-Based Ingestion Pipeline - dm-bip
 
-| [Documentation](https://amc-corey-cox.github.io/dm_bip) |
+| [Documentation](https://linkml.io/dm-bip/) |
 
 Data Model-Based Ingestion Pipeline using LinkML tools
 
@@ -38,7 +38,7 @@ The main effort of this project is to use existing [LinkML](https://linkml.io/li
 # Getting Started
 To get started with development in the Data Model-Based Ingetion Pipeline (dm-bip) first we will need to clone the repository. If you don't already have `git` installed, refer to installation instructions appropriate for your environment [here](https://github.com/git-guides/install-git). With `git` installed you can clone the repository.
 ```
-git clone https://github.com/amc-corey-cox/dm-bip.git
+git clone https://github.com/linkml/dm-bip.git
 ```
 
 Then, change to the newly created project directory.
