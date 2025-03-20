@@ -12,11 +12,13 @@ click = "*"
 importlib-metadata = ">=8.2.0"
 pandas = "^2.2.3"
 schema-automator = "^0.5.3"
+textual = "^2.1.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = {version = ">=8.3.2"}
 tox = {version = ">=4.16.0"}
 pre-commit = {version = ">=3.3.3"}
+textual-dev = "^1.7.0"
 
 [tool.poetry.group.docs]
 optional = true

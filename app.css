@@ -1,0 +1,12 @@
+PipelineStepWidget {
+    border-bottom: solid white;
+}
+
+Log {
+    align: center middle;
+    text-align: right;
+}
+
+LoadingIndicator {
+    color: white;
+}

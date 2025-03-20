@@ -10,6 +10,10 @@ LINT_EXCLUDES := tests/input tests/output
 
 RUN := poetry run
 
+.PHONY: start
+start:
+	poetry run textual run app.py
+
 ### Help ###
 .PHONY: help
 help:
