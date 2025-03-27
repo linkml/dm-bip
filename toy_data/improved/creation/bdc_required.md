@@ -17,5 +17,4 @@ In addition, some additional entities are likely interest and should likely be i
  1. Visit - Information about the visit or visits the participant had for the study
  2. Questionnaire - Any information recorded through questionnaires
  3. Procedure - Any procedure that may occur on the participant that the study tracks either as part of the study or as relevant information
- 4. Observation - Any observed information about the participant, this has subtypes capturing specific observations
-
+ 4. Observation - Any observed information about the participant, this has sub-types capturing specific observations
