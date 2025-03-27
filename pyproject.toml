@@ -17,6 +17,8 @@ schema-automator = "^0.5.3"
 pytest = {version = ">=8.3.2"}
 tox = {version = ">=4.16.0"}
 pre-commit = {version = ">=3.3.3"}
+black = {version = ">=24.3.0"}
+ruff = {version = ">=0.3.5"}
 
 [tool.poetry.group.docs]
 optional = true
