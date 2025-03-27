@@ -18,3 +18,23 @@ In addition, some additional entities are likely interest and should likely be i
  2. Questionnaire - Any information recorded through questionnaires
  3. Procedure - Any procedure that may occur on the participant that the study tracks either as part of the study or as relevant information
  4. Observation - Any observed information about the participant, this has sub-types capturing specific observations
+
+Here is an example of what these files might look like.
+
+Participant.csv
+
+(Includes demographics directly)
+participant_id	sex	ethnicity	race	year_of_birth
+P001	MALE	NOT_HISPANIC_OR_LATINO	WHITE	1985
+P002	FEMALE	HISPANIC_OR_LATINO	ASIAN	1992
+ClinicalData.csv
+
+(Combines Visits, Conditions, and Measurements—one row per visit/event)
+participant_id	visit_category	age_at_visit	condition	condition_status	systolic_bp	diastolic_bp	measurement_unit
+P001	Outpatient	14000	Hypertension	PRESENT	130	85	mmHg
+P002	Inpatient	11000	None	N/A	120	75	mmHg
+ResearchStudy.csv
+
+(We generate this ourselves during transformation)
+research_study_id	name
+RS001	Hypertension Monitoring Study
