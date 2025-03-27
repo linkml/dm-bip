@@ -138,7 +138,7 @@ Alternatively, you can run the linting direclty with `ruff`.
 poetry run ruff --check --diff --exclude tests/input tests/output
 ```
 
-# Updating he project after initial setup
+# Updating the project after initial setup
 There are a few things that may need further setup and maintenance after the initial setup of the repository, such as keeping the repository in sync with our upstream project template and setting up or using PyPi for distribution as well as automating that process. Instructions for all of these can be found below.
 
 ## Future updates to the project's boilerplate code
