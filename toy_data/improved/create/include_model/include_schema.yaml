@@ -1,0 +1,19 @@
+id: https://w3id.org/include
+name: include-schema
+prefixes:
+  include:
+    prefix_prefix: include
+    prefix_reference: https://w3id.org/include/
+  linkml:
+    prefix_prefix: linkml
+    prefix_reference: https://w3id.org/linkml/
+  schema:
+    prefix_prefix: schema
+    prefix_reference: http://schema.org/
+default_prefix: include
+imports:
+  - linkml:types
+  - include_core
+  - include_assay
+  - include_participant
+  - include_study
