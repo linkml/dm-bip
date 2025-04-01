@@ -13,7 +13,7 @@ These top level entities are the minimum required, each will need to have its mi
 5. Condition - Any conditions of interest that a participant in the study may have
 6. Measurement - Any measurements taken on the participant
 
-In addition, some additional entities are likely interest and should likely be included.
+In addition, some additional entities are likely of interest and should be included.
  1. Visit - Information about the visit or visits the participant had for the study
  2. Questionnaire - Any information recorded through questionnaires
  3. Procedure - Any procedure that may occur on the participant that the study tracks either as part of the study or as relevant information
