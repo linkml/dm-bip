@@ -65,9 +65,33 @@ Here are the classes and slots we should probably include in the toy dataset in 
     - associated_participant
     - associated_visit
     - identity
+- ObservationSet
+    - category
+    - focus
+    - associated_participant
+    - associated_visit
+    - method_type
+    - performed_by
+    - observations
+- Observation
+    - age_at_observation
+    - category
+    - observation_type
+    - method_type
+    - focus
+    - associated_participant
+    - associated_visit
+    - performed_by
+    - value_string
+    - value_boolean
+    - value_quantity
+    - value_enum
+
+For now, I'm excluding all of the observation based slots except for observation because I think they make things complicated for a first run, they also don't add texture to the robust toy data set above what they add in complexity. Once we have the mapping figured out for Observation, expanding to the different types of Observation should be straightforward.
 
 ### Classses and Slots to Exclude
 This is the list of Classes and slots to leave out of the toy dataset with rationale for some on why we made that decision.
+
 - Entity  --- Abstract
 - Person  --- These don't seem very important or may be privacy issues.
     - breed
@@ -112,7 +136,36 @@ This is the list of Classes and slots to leave out of the toy dataset with ratio
     - age_at_condition_start
     - age_at_condition_end
     - condition_provenance
-- 
+- Procedure  --- Seems like we can deal with this later
+- Exposure  --- Also leave until later, and all related
+- DimensionalObservation
+- DimensionalObservationSet
+- File  --- Out of scope, at least for now
+- Document  --- Out of scope, at least for now
+- Specimen  --- Seems out of scope, and all related
+- BiologicalProduct  --- Out of scope for now
+- Substance  --- Likely not specified in current data
+    - substance_type
+    - role  
+    - substance_quantity
+- BodySite
+    - observations
+- Quantity
+    - value_decimal
+    - value_integer
+    - value_concept
+    - unit
+- MeasurementObservationSet
+    - observations
+- MeasurementObservation  --- Inherits from Observation
+    - range_low
+    - range_high
+- SdohObservationSet
+    - observations
+    - category
+- SdohObservation
+    - related_questionnaire_item
+    - category
 
 ## Example files
 
