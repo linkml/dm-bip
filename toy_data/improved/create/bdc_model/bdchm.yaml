@@ -1,0 +1,3282 @@
+---
+id: https://w3id.org/nhlbidatastage/bdchm
+name: bdchm
+title: BioData Catalyst Harmonized Model (bdchm)
+description: |-
+  This is the harmonized data model for use in the BioData Catalyst project.
+license: MIT
+see_also:
+  - https://rtiinternational.github.io/NHLBI-BDC-DMC-HM/
+
+prefixes:
+  bdchm: https://w3id.org/nhlbidatastage/bdchm/
+  linkml: https://w3id.org/linkml/
+  schema: http://schema.org/
+  OMOP: https://athena.ohdsi.org/search-terms/terms/
+  DUO: http://purl.obolibrary.org/obo/DUO_
+  VBO: http://purl.obolibrary.org/obo/VBO_
+  ncbitaxon: http://purl.obolibrary.org/obo/NCBITaxon_
+  MONDO: http://purl.obolibrary.org/obo/MONDO_
+  HP: http://purl.obolibrary.org/obo/HP_
+  rxnorm: https://bioregistry.io/rxnorm:/
+  UOM: https://units-of-measurement.org/
+
+default_prefix: bdchm
+default_range: string
+
+imports:
+  - linkml:types
+
+
+classes:
+  Entity:
+    abstract: true
+    description: >-
+      Any resource that has its own identifier
+    slots:
+      id
+    class_uri: schema:Thing
+
+  Person:
+    is_a: Entity
+    description: >-
+      Administrative information about an individual or animal receiving care or other health-related services.
+    attributes:
+      species:
+        range: CellularOrganismSpeciesEnum
+        description: The scientific binomial name for the species of the Person (e.g. Homo sapiens, Mus musculus, etc.). Values should be derived from the NCBI organismal taxonomy (http://purl.obolibrary.org/obo/ncbitaxon.owl).
+      breed:
+        range: VertebrateBreedEnum
+        description: A label given to a group of animals homogeneous in appearance and other characteristics that distinguish it from other animals of the same species. Values should be derived from the Vertebrate Breed Ontology (http://purl.obolibrary.org/obo/vbo.owl).
+      year_of_birth:
+        range: integer
+        description: Numeric value to represent the calendar year in which an individual was born.
+      vital_status:
+        range: VitalStatusEnum
+        description: Coded value indicating the state or condition of being living or deceased; also includes the case where the vital status is unknown.
+      age_at_death:
+        range: integer
+        description: The age of an individual at the time of death, expressed in days since birth
+        unit:
+          ucum_code: d
+      year_of_death:
+        range: integer
+        description: Numeric value to represent the calendar year in which an individual died.
+      cause_of_death:
+        range: string
+        description: Coded value indicating the circumstance or condition that results in the death of the individual.
+    slots:
+      - identity
+
+  Demography:
+    is_a: Entity
+    description: >-
+      Demographics about an individual or animal receiving care or other health-related services.
+    attributes:
+      sex:
+        range: SexEnum
+        description: The biologic character or quality that distinguishes male and female from one another as expressed by analysis of the person's gonadal, morphologic (internal and external), chromosomal, and hormonal characteristics.
+      ethnicity:
+        range: EthnicityEnum
+        description: An individual's self-described social and cultural grouping, specifically whether an individual describes themselves as Hispanic or Latino. The provided values are based on the categories defined by the U.S. Office of Management and Business and used by the U.S. Census Bureau
+      race:
+        range: RaceEnum
+        description: An arbitrary classification of a taxonomic group that is a division of a species. It usually arises as a consequence of geographical isolation within a species and is characterized by shared heredity, physical attributes and behavior, and in the case of humans, by common history, nationality, or geographic distribution. The provided values are based on the categories defined by the U.S. Office of Management and Business and used by the U.S. Census Bureau.
+    slots:
+      - identity
+      - associated_participant
+
+  Participant:
+    is_a: Entity
+    description: >-
+       A Participant is the entity of interest in a research study, typically a human being or an animal, but can also be a device, group of humans or animals, or a tissue sample. Human research subjects are usually not traceable to a particular person to protect the subject’s privacy.
+    attributes:
+      description:
+        range: string
+        description: A free text field to capture additional info/explanation about the research subject.
+      member_of_research_study:
+        range: ResearchStudy
+        description: A reference to the Study(s) of which this Participant is a member
+      age_at_index:
+        range: integer
+        description: The age in days of the Participant at the index_timepoint
+        unit:
+          ucum_code: d
+      index_timepoint:
+        range: string
+        description: The text term used to describe the reference or anchor date used for date obfuscation, where a single date is obscured by creating one or more date ranges in relation to this date.
+      originating_site:
+        range: Organization
+        description: The Organization through which a subject was enrolled on a ResearchStudy.
+      study_arm:
+        range: string
+        description: The arm(s) of the study on which the Participant is enrolled
+        multivalued: true
+      consents:
+        range: Consent
+        description: 'Data Use Restrictions that are used to indicate permissions/restrictions for datasets and/or materials, and relates to the purposes for which datasets and/or material might be removed, stored or used. Based on the Data Use Ontology : see http://www.obofoundry.org/ontology/duo.html'
+        multivalued: true
+    slots:
+      - associated_person
+      - identity
+
+  ResearchStudy:
+    is_a: Entity
+    description: >-
+      A process where a researcher or organization plans and then executes a series of steps intended to increase the field of healthcare-related knowledge. This includes studies of safety, efficacy, comparative effectiveness and other information about medications, devices, therapies and other interventional and investigative techniques. A ResearchStudy involves the gathering of information about human or animal subjects.
+    attributes:
+      - name:
+          range: string
+          description: An unabridged name of a research program, project, or study.
+      - name_shortened:
+          range: string
+          description: An abbreviated name of a research program, project, or study.
+      - description:
+          range: string
+          description: An unabridged description of a research program, project, or study.
+      - description_shortened:
+          range: string
+          description: An abbreviated description of a research program, project, or study.
+      - sponsor:
+          range: string
+          description: An entity that is responsible for the initiation, management, and/or financing of a research project.
+      - date_started:
+          range: TimePoint
+          description: The date when the research project began.
+      - date_ended:
+          range: TimePoint
+          description: The date when the research project ended.
+      - url:
+          range: uriorcurie
+          description: A URL address for a resource that provides information about a research program, project, or study.
+      - part_of:
+          range: ResearchStudy
+          description: A reference to a parent ResearchStudy (e.g. a link to the overarching CPTAC ResearchStudy from a substudy of CPTAC)
+      - research_project_type:
+          range: string
+          description: The 'type' of ResearchStudy represented (e.g. a broad-based Program like 'CPTAC' or a more focused Project like 'CPTAC PDAC Discovery Study')
+      - associated_timepoint:
+          range: TimePoint
+          multivalued: true
+          description: A collection of timepoint observations that are relevant to research projects (e.g. date of IACUC approval, date of IRB approval, date of embargo end, etc.)
+      - principal_investigator:
+          range: string
+          multivalued: true
+          description: The investigator or investigators leading a project.
+      - consents:
+          range: Consent
+          description: 'Data Use Restrictions that are used to indicate permissions/restrictions for datasets and/or materials, and relates to the purposes for which datasets and/or material might be removed, stored or used. Based on the Data Use Ontology : see http://www.obofoundry.org/ontology/duo.html'
+          multivalued: true
+    slots:
+      - identity
+
+  Consent:
+    is_a: Entity
+    description: >-
+      An entity that can be used to capture consent code and other relevant data about consent for a study.
+    attributes:
+      - consent_code:
+          range: DataUseEnum
+          description: 'Data Use Restrictions that are used to indicate permissions/restrictions for datasets and/or materials, and relates to the purposes for which datasets and/or material might be removed, stored or used. Based on the Data Use Ontology : see http://www.obofoundry.org/ontology/duo.html'
+          multivalued: false
+      - valid_from:
+          range: TimePoint
+          description: The point in time from which the consent record is valid.
+      - valid_to:
+          range: TimePoint
+          description: The point in time after which the consent record is invalid.
+
+  Visit:
+    is_a: Entity
+    description: >-
+      Events where Persons engage with the healthcare system for a duration of time. They are often also called “Encounters”. Visits are defined by a configuration of circumstances under which they occur, such as (i) whether the patient comes to a healthcare institution, the other way around, or the interaction is remote, (ii) whether and what kind of trained medical staff is delivering the service during the Visit, and (iii) whether the Visit is transient or for a longer period involving a stay in bed. (OMOP)
+    attributes:
+      - visit_category:
+          range: VisitCategoryEnum
+          description: A value representing the kind (or category) of visit, like inpatient or outpatient.
+      - age_at_visit_start:
+          range: integer
+          description: The age of the Participant (in days) at the start of the Visit.
+          unit:
+            ucum_code: d
+      - age_at_visit_end:
+          range: integer
+          description: The age of the Participant (in days) at the end of the Visit.
+          unit:
+            ucum_code: d
+      - visit_provenance:
+          range: VisitProvenanceEnum
+          description: A value representing the provenance of the visit record, or where the record comes from.
+      - associated_participant:
+          range: Participant
+          description: A reference to the Participant for whom this Visit occurred.
+
+  Organization:
+    is_a: Entity
+    description: >-
+      A grouping of people or organizations with a common purpose such as a data coordinating center, an university, or an institute within a university.
+    attributes:
+      name:
+        range: string
+        description: The full legal name by which the organization is known (e.g. 'National Cancer Institute')
+      alias:
+        range: string
+        description: A secondary name for the organization such as a short name or abbreviation (e.g. 'NCI')
+      organization_type:
+        range: string
+        description: The type of the organization (e.g. 'Cancer Genome Characterization Center')
+    slots:
+      - identity
+
+  TimePoint:
+    is_a: Entity
+    description: >-
+      A structured representation of a single point in time that allows direct/explicit declaration as a dateTime, specification in terms of offset from a defined index, or description of an event type as a proxy for the time point when it occurred.
+    attributes:
+      - date_time:
+          range: datetime
+          description: An explicitly specified timepoint described in terms of a date and optionally a time on that date.
+      - index_time_point:
+          range: TimePoint
+          description: Another TimePoint from which this point is offset.
+      - offset_from_index:
+          range: integer
+          description: A quantity of time that, together with the index date or event, can be used to derive a specific timepoint.
+      - event_type:
+          range: string
+          description: An event that occurred at the point in time specified by this TimePoint.
+
+  TimePeriod:
+    description: >-
+      A period of time between a start and end time point.
+    attributes:
+      - period_start:
+          range: TimePoint
+          description: When a period of time started.
+      - period_end:
+          range: TimePoint
+          description: When a period of time ended.
+
+  ResearchStudyCollection:
+    tree_root: true
+    description: >-
+      A holder for ResearchStudy objects
+    attributes:
+      entries:
+        range: ResearchStudy
+        multivalued: true
+        inlined: true
+
+  Questionnaire:
+    is_a: Entity
+    description: A Questionnaire is an organized collection of questions intended to solicit information from patients, providers or other individuals involved in the healthcare domain. They may be simple flat lists of questions or can be hierarchically organized in groups and sub-groups, each containing questions. The Questionnaire defines the questions to be asked, how they are ordered and grouped, any intervening instructional text and what the constraints are on the allowed answers. The results of a Questionnaire can be communicated using the QuestionnaireResponse. (FHIR)
+    attributes:
+      name:
+        description: Name for this Questionnaire (computer friendly)
+        range: string
+      title:
+        description: Name for this Questionnaire (human friendly)
+        range: string
+      description:
+        description: Natural language description of the Questionnaire
+        range: string
+      url:
+        description: Canonical identifier for this Questionnaire, represented as an absolute URI (globally unique)
+        range: uriorcurie
+      version:
+        description: The identifier that is used to identify this version of the questionnaire when it is referenced in a specification, model, design or instance. This is an arbitrary value managed by the questionnaire author and is not expected to be globally unique. For example, it might be a timestamp (e.g. yyyymmdd) if a managed version is not available. There is also no expectation that versions can be placed in a lexicographical sequence.
+        range: string
+      publisher:
+        description: Name of the publisher/steward (organization or individual) of this Questionnaire
+        range: string
+      copyright:
+        description: Textual description of any use and/or publishing restrictions
+        range: string
+      copyright_label:
+        description: Copyright holder and year(s)
+        range: string
+      language:
+        description: The language(s) in which questions are presented.
+        range: string
+        multivalued: true
+      items:
+        description: A collection of QuestionnaireItem objects which encapsulate the question being asked.
+        range: QuestionnaireItem
+        multivalued: true
+        required: true
+    slots:
+      - identity
+
+  QuestionnaireItem:
+    is_a: Entity
+    description: QuestionnaireItem defines a question or section within the Questionnaire
+    attributes:
+      text:
+        range: string
+        description: Name for group or question text
+      code:
+        range: string
+        description: Corresponding concept for this item in a terminology
+      part_of:
+        range: QuestionnaireItem
+        description: A reference to a parent QuestionnaireItem.
+    slots:
+      - identity
+
+  QuestionnaireResponse:
+    is_a: Entity
+    description: QuestionnaireResponse provides a complete or partial list of answers to a set of questions filled when responding to a questionnaire. (FHIR)
+    attributes:
+      age_at_response:
+        description: The age (in days) of the Participant when the QuestionnaireResponse was captured.
+        range: integer
+        unit:
+          ucum_code: d
+      items:
+        description: A collection of QuestionnaireResponseItem objects which encapsulate the question being asked and the response.
+        range: QuestionnaireResponseItem
+        multivalued: true
+        required: true
+      associated_visit:
+        description: A reference to the Visit during which this QuestionnaireResponse was captured.
+        range: Visit
+
+  QuestionnaireResponseItem:
+    description: QuestionnaireResponseItem provides a complete or partial list of answers to a set of questions filled when responding to a questionnaire. (FHIR)
+    attributes:
+      has_questionnaire_item:
+        range: QuestionnaireItem
+        description: A reference to the QuestionnaireItem that this QuestionnaireResponseItem responds to.
+      text:
+        range: string
+        description: Name for group or question text
+      response_value:
+        range: QuestionnaireResponseValue
+        required: true
+
+  QuestionnaireResponseValue:
+    description: Single-valued answer to the question. (FHIR)
+    abstract: true
+    attributes:
+      type:
+        range: string
+        designates_type: true
+      name:
+        range: string
+    slots:
+      - value
+
+  QuestionnaireResponseValueDecimal:
+    is_a: QuestionnaireResponseValue
+    description: Single-valued decimal answer to the question
+    slot_usage:
+      value:
+        range: decimal
+        required: true
+
+  QuestionnaireResponseValueBoolean:
+    is_a: QuestionnaireResponseValue
+    description: Single-valued boolean answer to the question
+    slot_usage:
+      value:
+        range: boolean
+        required: true
+
+  QuestionnaireResponseValueInteger:
+    is_a: QuestionnaireResponseValue
+    description: Single-valued integer answer to the question
+    slot_usage:
+      value:
+        range: integer
+        required: true
+
+  QuestionnaireResponseValueTimePoint:
+    is_a: QuestionnaireResponseValue
+    description: Single-valued TimePoint answer to the question
+    slot_usage:
+      value:
+        range: TimePoint
+        required: true
+
+  QuestionnaireResponseValueString:
+    is_a: QuestionnaireResponseValue
+    description: Single-valued string answer to the question
+    slot_usage:
+      value:
+        range: string
+        required: true
+              
+  Condition:
+    is_a: Entity
+    description: >-
+       Conditions are records of a Person suggesting the presence of a disease or medical condition stated as a diagnosis, a sign or a symptom, which is either observed by a Provider or reported by the patient. Conditions are recorded in different sources and levels of standardization. 
+    attributes:
+      condition_concept:
+        range: ConditionConceptEnum
+        description: The coded value for the presence of a disease or medical condition stated as a diagnosis, a sign or a symptom, coded to the Human Phenotype Ontology or MONDO.
+      age_at_condition_start:
+        range: integer
+        description: The Participant's age (expressed in days) when the condition was first recorded.
+        unit:
+          ucum_code: d
+      age_at_condition_end:
+        range: integer
+        description: The Participant's age (expressed in days) when the condition was recorded as having been resolved.
+        unit:
+          ucum_code: d
+      condition_provenance:
+        range: ProvenanceEnum
+        description: A value representing the provenance of the Condition record
+      condition_status:
+        range: ConditionStatusEnum
+        description: A value indicating whether the medical condition described in this record is present, absent, or unknown for this individual patient.
+      condition_severity:
+        range: ConditionSeverityEnum
+        description: A subjective assessment of the severity of the condition
+      relationship_to_participant:
+        range: FamilyRelationshipEnum
+        description: A value indicating the relationship between the Participant to which the Condition is attributed and the individual who had the reported Condition.  If the Condition is affecting the participant themselves, then 'Self' is the appropriate relationship.  If the Condition is affecting a family member (e.g. a parent of the Participant) then an appropriate relationship should be provided (e.g. 'Parent')
+      associated_participant:
+        range: Participant
+        description: A reference to the Participant to which the Condition is attributed.
+      associated_visit:
+        description: A reference to the Visit during which this Condition was recorded.
+        range: Visit
+    slots:
+      - identity
+
+  Procedure:
+    is_a: Entity
+    description: >-
+       Procedure contains records of activities or processes ordered by, or carried out by, a healthcare provider on the patient to have a diagnostic or therapeutic purpose. Procedures are present in various data sources in different forms with varying levels of standardization. [Derived from OMOP]
+    attributes:
+      procedure_concept:
+        range: ProcedureConceptEnum
+        description: The coded value that describes the procedure, derived from OMOP codes.
+      age_at_procedure:
+        range: integer
+        description: The Participant's age (expressed in days) when the procedure was performed.
+        unit:
+          ucum_code: d
+      procedure_provenance:
+        range: ProvenanceEnum
+        description: A value representing the provenance of the Procedure record
+      quantity:
+        range: Quantity
+        description: The quantity of procedures ordered or administered.
+      associated_participant:
+        range: Participant
+        description: A reference to the Participant on which the Procedure was performed.
+      associated_visit:
+        description: A reference to the Visit during which this Procedure was performed.
+        range: Visit
+    slots:
+      - identity
+
+  Exposure:
+    is_a: Entity
+    description: >-
+      Exposures are records of a Person suggesting exposure to a medication, device, environmental material.
+    attributes:
+      age_at_exposure_start:
+        range: integer
+        description: The Participant's age (expressed in days) at the exposure start date.
+        unit:
+          ucum_code: d
+      age_at_exposure_end:
+        range: integer
+        description: The Participant's age (expressed in days) at the exposure end date, if available. Otherwise equal to age_at_exposure_start.
+        unit:
+          ucum_code: d
+      associated_participant:
+        range: Participant
+        description: A reference to the Participant to which the exposure is attributed.
+      associated_visit:
+        description: A reference to the Visit the exposure is associated with, if any.
+        range: Visit
+        required: false
+    slots:
+      - identity
+
+  DrugExposure:
+    is_a: Exposure
+    description: >-
+       DrugExposures are records of a Person suggesting exposure to a medication. The source could be prescription, dispensing, medication administration records (MARs), or patient medication list.
+    attributes:
+      drug_concept:
+        range: DrugExposureConceptEnum
+        description: The coded value for a drug. From RxNorm. The syntax for the enum may need work.
+      exposure_provenance:
+        range: DrugExposureProvenanceEnum
+        description: A value representing the provenance of the DrugExposure record. From OMOP Drug Types.
+      refills:
+        range: integer
+        description: Intended refills at time of the prescription.
+        required: false
+      quantity:
+        range: float
+        description: To find the dose form of a drug the RELATIONSHIP table can be used where the relationship_id is ‘Has dose form’. If liquid, quantity stands for the total amount dispensed or ordered of ingredient in the units given by the drug_strength table. If the unit from the source data does not align with the unit in the DRUG_STRENGTH table the quantity should be converted to the correct unit given in DRUG_STRENGTH. For clinical drugs with fixed dose forms (tablets etc.) the quantity is the number of units/tablets/capsules prescribed or dispensed (can be partial, but then only 1/2 or 1/3, not 0.01). Clinical drugs with divisible dose forms (injections) the quantity is the amount of ingredient the patient got. For example, if the injection is 2mg/mL but the patient got 80mL then quantity is reported as 160. Quantified clinical drugs with divisible dose forms (prefilled syringes), the quantity is the amount of ingredient similar to clinical drugs. Please see [how to calculate drug dose](https://ohdsi.github.io/CommonDataModel/drug_dose.html) for more information.
+        required: false
+      days_supply:
+        range: integer
+        description: The number of days of supply of the medication as recorded in the original prescription or dispensing record. Days supply can differ from actual drug duration (i.e. prescribed days supply vs actual exposure).
+        comments: The field should be left empty if the source data does not contain a verbatim days_supply, and should not be calculated from other fields.  Negative values are not allowed. If the source has negative days supply the record should be dropped as it is unknown if the patient actually took the drug. Several actions are possible -- record is not trustworthy and we remove the record entirely; we trust the record and leave days_supply empty; or record needs to be combined with other record (e.g. reversal of prescription). High values (>365 days) should be investigated. If considered an error in the source data (e.g. typo), the value needs to be excluded to prevent creation of unrealistic long eras.
+        required: false
+      sig:
+        range: string
+        description: This is the verbatim instruction for the drug as written by the provider.
+        comments: Put the written out instructions for the drug as it is verbatim in the source, if available.
+        required: false
+      route_concept:
+        range: DrugRouteEnum
+        description: Route of drug administration.
+
+  DeviceExposure:
+    is_a: Exposure
+    description: >-
+       DeviceExposures are records of a Person suggesting exposure to a foreign object. The source is typically physical objects used in procedures, measurements, or observations.
+    attributes:
+      device_concept:
+        range: DeviceExposureConceptEnum
+        description: The coded value for a device. Primarily SNOMED. The syntax for the enum may need work.
+      exposure_provenance:
+        range: DeviceExposureProvenanceEnum
+        description: A value representing the provenance of the DeviceExposure record. From OMOP Device Types.
+      quantity:
+        range: float
+        description: Amount of device used. If not present in source, default to 1.
+        required: false
+
+  DimensionalObservation:
+    is_a: Observation
+    description: A structured object that describes a single data item about the physical dimensions of an entity (e.g. length width, area), as generated through a point-in-time observation or measurement.
+    comments:
+    - At the core of an Observation is a flexible key-value pair (or a structured collection of key-value pairs), where a "key" field defines the type of observation made, and the "value" field describes the value or outcome of the observation. The fact that the type of observation captured is defined in the data allow Observation to convey a broad range of observation data.
+
+  DimensionalObservationSet:
+    is_a: ObservationSet
+    description: A set of one or more discrete observations about the physical dimensions of an object (e.g. length, width, area).
+    slot_usage:
+      observations:
+        range: DimensionalObservation
+        required: true
+
+  File:
+    is_a: Entity
+    description: >-
+      Abstract class for various kinds of files. Subclasses may be defined
+      for specific file types.
+    comments:
+      - This is taken largely from the 
+        [Gen3 Core Metadata Collection](https://gen3.biodatacatalyst.nhlbi.nih.gov/DD)
+        definition.
+      - Gen3 apparently took most of the attributes listed here from the
+        [Dublin Core /elements/1.1/ namespace](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-3).
+      - Attributes different from those in Dublin Core are noted as such in the comments.
+      - The Document entity was defined in this model prior to defining this File entity.
+        Should it be modified to be a subclass of this?
+      - Unlike Document, which has a url property, the Gen3 Core Metadata
+        definition doesn't have a file location or unique identifier.
+        Should that be left to specific File subclasses or defined here?
+      - Tentatively including three attribute for addressing this --
+        identifier, file_path, and uri.
+      - There appear to be 11 specific file types defined in Gen3, 8 types
+        classified as Data Files and 3 classified as Index Files.
+    attributes:
+      file_name:
+        range: string
+        description: The name (or part of a name) of a file (of any type).
+      file_size:
+        range: integer
+        description: The size of the data file (object) in bytes.
+      file_location:
+        range: uriorcurie
+        description: A unique identifier or url for identifying or locating the file.
+        multivalued: true
+      md5sum:
+        range: string
+        description: The 128-bit hash value expressed as a 32 digit hexadecimal number used as a file's digital fingerprint.
+      data_type:
+        range: string
+        description: >-
+          The nature or genre of the resource. Recommended best practice is to
+          use a controlled vocabulary such as the DCMI Type Vocabulary
+          [DCMI-TYPE](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-7).
+          To describe the file format, physical medium, or dimensions of the
+          resource, use the Format element.
+        comments:
+          - Called 'type' in Dublin Core.
+      data_category:
+        range: string
+        description: A broad categorization of the contents of the data file.
+      format:
+        range: string
+        description: >-
+          The file format, physical medium, or dimensions of the resource.
+          Examples of dimensions include size and duration. Recommended best
+          practice is to use a controlled vocabulary such as the list of
+          Internet Media Types [MIME]
+          (http://www.iana.org/assignments/media-types/).
+      description:
+        range: string
+        description: >-
+          An account of the resource. Description may include but is not
+          limited to: an abstract, a table of contents, a graphical
+          representation, or a free-text account of the resource.
+      associated_participant:
+        range: Participant
+        description: A reference to the Participant to which this file relates.
+      derived_from:
+        range: File
+        description: A File from which this File is derived.  A derivation is a transformation of an entity into another, an update of an entity resulting in a new one, or the construction of a new entity based on a pre-existing entity.
+    slots:
+      - identity
+
+  Document:
+    is_a: Entity
+    description: A collection of information intented to be understood together as a whole, and codified in human-readable form.
+    attributes:
+      document_type:
+        description: The high-level type of the document (e.g.  'publication', 'pathology report')
+        values_from: crdch:enum_CRDCH_Document_document_type
+        multivalued: false
+        range: string
+        required: false
+      description:
+        description: A free text description or summary of the report.
+        multivalued: false
+        range: string
+        required: false
+      focus:
+        description: The entity that the report is primarily about
+        multivalued: false
+        range: Entity
+        required: false
+      url:
+        description: A URL/web address where the document can be accessed.
+        multivalued: true
+        inlined_as_list: true
+        range: string
+        required: false
+    slots:
+      - identity
+
+  Specimen:
+    is_a: Entity
+    description: Any material taken as a sample from a biological entity (living or dead), or from a physical object or the environment. Specimens are usually collected as an example of their kind, often for use in some investigation.
+    attributes:
+      description:
+        description: A free text field to capture additional information or explanation about the specimen.
+        multivalued: false
+        range: string
+        required: false
+      specimen_type:
+        description: The high-level type of the specimen, based on its derivation provenance (i.e. how far removed it is from the original sample extracted from a source).
+        examples:
+        - value: Fresh Specimen
+        - value: Portion
+        - value: Aliquot
+        - value: Analyte
+        - value: Slide
+        values_from: crdch:enum_CRDCH_Specimen_specimen_type
+        multivalued: false
+        range: SpecimenTypeEnum
+        required: false
+      analyte_type:
+        description: For specimens of type 'analyte' (or an 'aliquot' derived from an analyte), this is the category of chemcial the analyte of interest represents (e.g. DNA, RNA)
+        examples:
+        - value: DNA
+        - value: FFPE DNA
+        - value: GenomePlex (Rubicon) Amplified DNA
+        - value: Repli-G (Qiagen) DNA
+        - value: RNA
+        - value: FFPE RNA
+        values_from: crdch:enum_CRDCH_Specimen_analyte_type
+        multivalued: false
+        range: AnalyteTypeEnum
+        required: false
+      source_material_type:
+        description: The general kind of material from which the specimen was derived.
+        comments:
+        - Values captured here may describe the type of molecular mixture, cell, tissue, organ, body fluid, embryo, excretory substance, or experimental system from which a specimen was derived.
+        examples:
+        - value: Tissue
+        - value: Blood
+        - value: Tumor Aspirate
+        - value: Cell Line
+        - value: Expanded Next Generation Cancer Model
+        - value: Pleural Effusion
+        - value: Xenograft Tissue
+        multivalued: false
+        range: SourceMaterialTypeEnum
+        required: false
+      parent_specimen:
+        description: An existing specimen from which the specimen of interest was directly derived (i.e its immediate parent specimen).
+        comments:
+        - This property indicates only the direct parent specimen(s).  Cardinality is 0..m to account for specimens derived from pooling of multiple specimens.
+        multivalued: true
+        inlined_as_list: true
+        range: Specimen
+        required: false
+      source_participant:
+        description: A specific Subject from which the specimen was directly or indirectly derived.
+        multivalued: false
+        range: Participant
+        required: false
+      creation_activity:
+        description: The activity through which a specimen was created, by removing material from an biological subject, or deriving material from an existing specimen.
+        comments:
+        - Note that a given specimen is the result of only one and only one SpecimenCreationActivity, but may be subject to many processing events that subsequently modify or derive new specimens from it.
+        multivalued: false
+        range: SpecimenCreationActivity
+        required: false
+      processing_activity:
+        description: An activity that modifies the physical structure, composition, or state of a specimen.
+        comments:
+        - Note that a given specimen may undergo more than one distinct processing activity, through application of different methodologies that modify its physical state. However, if an activity generates a new specimen (e.g. via portioning, slicing) it is considered a SpeciemnCreationActivity.
+        multivalued: true
+        range: SpecimenProcessingActivity
+        required: false
+      storage_activity:
+        description: An activity that results in the storage or maintenance of a specimen in a particular location, container, or state.
+        comments:
+        - The 0..m cardinality of this attribute reflects the fact that a given specimen may undergo many separate periods of storage, in different locations and/or under different conditions
+        multivalued: true
+        range: SpecimenStorageActivity
+        required: false
+      transport_activity:
+        description: An activity through which the specimen is transported between locations.
+        comments:
+        - The 0..m cardinality of this attribute reflects the fact that a given specimen may undergo many separate transport processes at different periods of time.
+        multivalued: true
+        range: SpecimenTransportActivity
+        required: false
+      contained_in:
+        description: A physical container in which a specimen is presently held or attached -  as storage for future use,  a substrate for growth (e.g. a cell culture dish), or a vessel to enable analysis (e.g. a microscope slide or 96-well plate)
+        comments:
+        - The 0..1 cardinality on this attribute means that you cannot directly references multiple nested containers holding a sample. To capture this scenario, use the "parent_container" attribute of the Container entity.
+        multivalued: false
+        range: SpecimenContainer
+        required: false
+      dimensional_measures:
+        description: Observations about the current physical dimensions of an object (e.g. length, width, area).
+        comments:
+        - Observations are flexible containers for capturing a specific type of observation/measurement data about an object, along with metadata about how it was generated. The specific type of observation made is captured as data in the Observation object.
+        multivalued: false
+        range: DimensionalObservationSet
+        required: false
+      quantity_measure:
+        description: An observation related to the present quantity of a specimen - e.g. its weight, volume, or analyte concentration.
+        comments:
+        - Observations are flexible containers for capturing a specific type of observation/measurement data about an object, along with metadata about how it was generated. The specific type of observation made is captured as data in the Observation object.
+        multivalued: true
+        range: SpecimenQuantityObservation
+        required: false
+      quality_measure:
+        description: An observation about characteristics of a specimen that are indicative of its quality or suitability for use.
+        comments:
+        - Observations are flexible containers for capturing a specific type of observation/measurement data about an object, along with metadata about how it was generated. The specific type of observation made is captured as data in the Observation object.
+        multivalued: true
+        range: SpecimenQualityObservation
+        required: false
+      cellular_composition_type:
+        description: A term describing the type of cell or cellular material comprising a specimen.
+        examples:
+        - value: 2D Classical Conditionally Reprogrammed Cells
+        - value: Adherent Cell Line
+        - value: Bone Marrow Components
+        - value: Buccal Cells
+        - value: Buffy Coat
+        - value: Derived Cell Line
+        - value: Granulocytes
+        - value: Pleural Effusion
+        - value: Human Original Cells
+        - value: Liquid Suspension Cell Line
+        values_from: crdch:enum_CRDCH_Specimen_cellular_composition_type
+        multivalued: false
+        range: string
+        required: false
+      related_document:
+        description: A reference to an external document that is about or related to the specimen (e.g. a publication related to the study it is a part of, pathology report containing additional details about it, protocol describing how it was collected)
+        multivalued: true
+        range: Document
+        required: false
+      section_location:
+        description: The location in a parent specimen from which a section/portion was excised (e.g. top, middle, bottom)
+        comments:
+        - This attribute applies only to Specimens that are of type 'portion' or 'slide'.
+        examples:
+        - value: Top
+        - value: Bottom
+        - value: Unknown
+        values_from: crdch:enum_CRDCH_Specimen_section_location
+        multivalued: false
+        range: SectionLocationEnum
+        required: false
+      derived_product:
+        description: A 'living' biologically active product that was derived from the specimen (e.g. a cell culture, tissue culture, or organoid)
+        multivalued: true
+        inlined_as_list: true
+        range: BiologicProduct
+        required: false
+    slots:
+      - identity
+
+  SpecimenContainer:
+    is_a: Entity
+    description: A vessel in which a specimen is held or to which it is attached - for storage or as a substrate for growth (e.g. a cell culture dish) or analysis (e.g. a microscope slide or 96-well plate)
+    attributes:
+      container_type:
+        description: The kind of the container.
+        examples:
+        - value: Capillary blood collection tube
+        - value: Sputum specimen container
+        - value: Cell culture flask
+        - value: Glass slide
+        values_from: crdch:enum_CRDCH_SpecimenContainer_container_type
+        multivalued: false
+        range: string
+        required: false
+      container_number:
+        description: Informal number by which the container is referenced  or identified (e.g. a slide number, or a well number in a plate)
+        multivalued: false
+        range: string
+        required: false
+      additive:
+        description: A material substance added to the container (typically to support the primary contained object - e.g. culture media to support cell growth)
+        examples:
+        - value: DMEM
+        - value: DMEM+Serum
+        - value: RPMI
+        - value: RPMI+Serum
+        multivalued: true
+        range: Substance
+        required: false
+      parent_container:
+        description: A larger container of which this container is a part (e.g. the complete 96-well plate of which a single well is a part)
+        multivalued: false
+        range: SpecimenContainer
+        required: false
+
+  SpecimenCreationActivity:
+    is_a: Entity
+    description: The process of creating a specimen. This may occur through observing and/or collecting material from an biological source or natural setting, or through derivation from an existing specimen (e.g. via portioning or aliquoting).
+    comments:
+    - A creation activity represents the entire process up to the point where the specimen is physically modified, stored, or transported.
+    attributes:
+      activity_type:
+        description: The high-level type of creation activity.
+        comments:
+        - At present our model collapses two types of processes through which specimens are created (initial collection from source, and derivation from an existing specimen).  The 'category' is a flag to indicate which applies to a given instance, so that more specific recommendations about data entry in certain fields can be specified.
+        examples:
+        - value: Collection from Source
+        - value: Derivation from Specimen
+        multivalued: false
+        range: SpecimenCreationActivityTypeEnum
+        required: false
+      date_started:
+        description: The date when the activity began (in this case, a specimen creation event).
+        comments:
+        - To allow for more precise specification of dates when an activity was performed, we provide date_started and date_ended attributes.  If source data only provides a single date, it SHOULD be entered as both the date_started and date_ended.
+        multivalued: false
+        range: TimePoint
+        required: false
+      date_ended:
+        description: The date when the activity ended (in this case, a specimen creation event).
+        comments:
+        - To allow for more precise specification of dates when an activity was performed, we provide date_started and date_ended attributes.  If source data only provides a single date, it SHOULD be entered as both the date_started and date_ended.
+        multivalued: false
+        range: TimePoint
+        required: false
+      performed_by:
+        description: The organization or group that performed the activity.
+        multivalued: false
+        range: Organization
+        required: false
+      collection_method_type:
+        description: The type of method applied in collecting a sample from its original source.
+        comments:
+        - This attribute applies only when the Specimen.category = 'original'.
+        examples:
+        - value: Anterior Resection of Rectum
+        - value: Ascites Drainage
+        - value: Excisional Biopsy
+        - value: Specimen Pooling
+        multivalued: false
+        range: SpecimenCollectionMethodType
+        required: false
+      derivation_method_type:
+        description: The type of method applied to derive a new specimen from an existing one.
+        comments:
+        - This attribute applies only when Specimen.category = 'portion', 'aliquot', 'analyte', or 'slide'.
+        examples:
+        - value: Vibratome
+        - value: Cryosectioning
+        - value: Tissuemolds
+        - value: Slidingmicrotome
+        - value: Sectioning
+        - value: Other
+        - value: Unknown
+        - value: NotReported
+        values_from: crdch:enum_CRDCH_SpecimenCreationActivity_derivation_method_type
+        multivalued: false
+        range: string
+        required: false
+      additive:
+        description: A type of material or reagent used applied as input when creating a specimen.
+        multivalued: true
+        range: Substance
+        required: false
+      collection_site:
+        description: The anatomic site from which a specimen was collected.
+        comments:
+        - This attribute is used when SpecimenCreationActivity.activity_type = 'Collection from Source'.
+        examples:
+        - value: Abdomen
+        - value: Abdominal Wall
+        - value: Acetabulum
+        multivalued: false
+        range: BodySite
+        required: false
+      quantity_collected:
+        description: The quantity of material in the specimen as originally collected from its original source material (prior to downstream portioning or processing)
+        comments:
+        - This attribute applies only when Specimen.category='initial sample'.
+        multivalued: false
+        range: Quantity
+        required: false
+      specimen_order:
+        description: A numeric value that represents the sequential order of this creation activity relative to those producing other specimens from the same source material or parent specimen.
+        multivalued: false
+        range: integer
+        required: false
+
+  SpecimenQualityObservation:
+    is_a: Observation
+    description: A structured object that describes a characteristic of a specimen indicative of its quality or suitability for use, as generated through a point-in-time observation or measurement.
+
+  SpecimenQuantityObservation:
+    is_a: Observation
+    description: A structured object that describes a single data item about the quantity of a Specimen, as generated through a point-in-time observation or measurement.
+    comments:
+    - At the core of an Observation is a flexible key-value pair (or a structured collection of key-value pairs), where a "key" field defines the type of observation made, and the "value" field describes the value or outcome of the observation. The fact that the type of observation captured is defined in the data allow Observation to convey a broad range of observation data.
+
+  SpecimenProcessingActivity:
+    name: SpecimenProcessingActivity
+    description: An activity that modifies the physical structure, composition, or state of a specimen. Unlike SpecimenCreation, SpecimenProcessing activities do not result in the generation of new entities - they take a single specimen as input, and output that same specimen.
+    comments:
+    - '"Processing" as defined here alters the physical nature of a specimen, such that storage or transport activities do not qualify as processing activities. When instantiating this class, create a separate instances for each type/method of processing performed (e.g. each method of fixation, freezing, labeling, etc. that is applied).'
+    is_a: Entity
+    attributes:
+      activity_type:
+        name: activity_type
+        description: The high-level type of processing activity
+        examples:
+        - value: Fixation
+        - value: Freezing
+        - value: Mounting
+        - value: Preservation
+        multivalued: false
+        range: SpecimenProcessingActivityTypeEnum
+        required: false
+      date_started:
+        name: date_started
+        description: The date when the activity began (in this case, a specimen processing event).
+        comments:
+        - To allow for more precise specification of dates when an activity was performed, we provide date_started and date_ended attributes.  If source data only provides a single date, it SHOULD be entered as both the date_started and date_ended.
+        multivalued: false
+        range: TimePoint
+        required: false
+      date_ended:
+        name: date_ended
+        description: The date when the activity began (in this case, a specimen processing event).
+        comments:
+        - To allow for more precise specification of dates when an activity was performed, we provide date_started and date_ended attributes.  If source data only provides a single date, it SHOULD be entered as both the date_started and date_ended.
+        multivalued: false
+        range: TimePoint
+        required: false
+      duration:
+        name: duration
+        description: The length of time over which the activity was performed.
+        multivalued: true
+        inlined_as_list: true
+        range: Quantity
+        required: false
+      method_type:
+        name: method_type
+        description: A specific type of method or procedure performed to process the specimen
+        examples:
+        - value: Snap Freezing
+        - value: Cryopreservation in liquid nitrogen (dead tissue)
+        - value: Cryopreservation in dry ice (dead tissue)
+        - value: Formalin fixed paraffin embedded (FFPE)
+        - value: Formalin fixed-unbuffered
+        - value: Formalin fixed-buffered
+        - value: OCT
+        values_from: crdch:enum_CRDCH_SpecimenProcessingActivity_method_type
+        multivalued: false
+        range: string
+        required: false
+      additive:
+        name: additive
+        description: A type of material or reagent used as input when processing the specimen
+        examples:
+        - value: Formalin
+        multivalued: true
+        inlined_as_list: true
+        range: Substance
+        required: false
+
+  SpecimenStorageActivity:
+    name: SpecimenStorageActivity
+    description: An activity in which a specimen is stored or maintained in a particular location, container, or state. Unlike 'processing' activities, storage does not alter the \nintrinsic physical nature of a specimen.
+    comments:
+    - Think of the StorageActivity as being one of many possible periods when the specimen was stored at some location and in some state or condition.  We may want to capture storage dates and conditions for each.
+    is_a: Entity
+    attributes:
+      date_started:
+        name: date_started
+        description: The date when the activity began (in this case, a storage event).
+        comments:
+        - To allow for more precise specification of dates when an activity was performed, we provide date_started and date_ended attributes.  If source data only provides a single date, it SHOULD be entered as both the date_started and date_ended.
+        multivalued: false
+        range: TimePoint
+        required: false
+      date_ended:
+        name: date_ended
+        description: The date when the activity ended (in this case, a storage event).
+        comments:
+        - To allow for more precise specification of dates when an activity was performed, we provide date_started and date_ended attributes.  If source data only provides a single date, it SHOULD be entered as both the date_started and date_ended.
+        multivalued: false
+        range: TimePoint
+        required: false
+      duration:
+        name: duration
+        description: The length of time over which the activity was performed.
+        comments:
+        - 'Quantity.unit MUST be a unit of time. '
+        multivalued: false
+        range: Quantity
+        required: false
+      method_type:
+        name: method_type
+        description: A specific type of method or procedure performed to store the specimen
+        examples:
+        - value: ambient temperature
+        - value: cut slide
+        - value: fresh
+        - value: frozen at -70C
+        - value: frozen at -150C
+        - value: frozen in liquid nitrogen
+        - value: frozen in vapor phase
+        - value: paraffin block
+        - value: RNAlater at 4C
+        values_from: crdch:enum_CRDCH_SpecimenStorageActivity_method_type
+        multivalued: false
+        range: string
+        required: false
+      container:
+        name: container
+        description: A container in which the specimen is held or affixed during its storage.
+        multivalued: true
+        inlined_as_list: true
+        range: SpecimenContainer
+        required: false
+
+  SpecimenTransportActivity:
+    name: SpecimenTransportActivity
+    description: An activity through which a specimen is transported between locations or organizations.
+    comments:
+    - Think of the TransportActivity as being one of many possible occasions when the specimen was moved from one location to another, in some state or condition.  We may want to capture dates and conditions for each.
+    is_a: Entity
+    attributes:
+      date_started:
+        name: date_started
+        description: The date when the activity began (in this case, a transport event).
+        comments:
+        - To allow for more precise specification of dates when an activity was performed, we provide date_started and date_ended attributes.  If source data only provides a single date, it SHOULD be entered as both the date_started and date_ended.
+        multivalued: false
+        range: TimePoint
+        required: false
+      date_ended:
+        name: date_ended
+        description: The date when the activity ended (in this case, a transport event).
+        comments:
+        - To allow for more precise specification of dates when an activity was performed, we provide date_started and date_ended attributes.  If source data only provides a single date, it SHOULD be entered as both the date_started and date_ended.
+        multivalued: false
+        range: TimePoint
+        required: false
+      duration:
+        name: duration
+        description: The length of time over which the activity was performed.
+        multivalued: true
+        inlined_as_list: true
+        range: string
+        required: false
+      transport_origin:
+        name: transport_origin
+        description: An organization (facility, site, lab, etc) from which the specimen was transported as a result of the activity.
+        multivalued: false
+        range: Organization
+        required: false
+      transport_destination:
+        name: transport_destination
+        description: An organization (facility, site, lab, etc) to which the specimen is delivered as a result of the activity.
+        multivalued: false
+        range: Organization
+        required: false
+
+  BiologicProduct:
+    name: BiologicProduct
+    description: A living organism, or a metabolically active biological system such as a cell culture, tissue culture, or organoid that is maintained or propagated in vitro.
+    is_a: Entity
+    attributes:
+      description:
+        name: description
+        description: A free text field to capture additional info/explanation about the model system
+        multivalued: false
+        range: string
+        required: false
+      product_type:
+        name: product_type
+        description: The high level type of model system (e.g. cell line, cell culture, tissue culture, organoid)
+        examples:
+        - value: cell line
+        - value: cell culture
+        - value: tissue culture
+        - value: organoid
+        values_from: crdch:enum_CRDCH_BiologicProduct_product_type
+        multivalued: false
+        range: string
+        required: false
+      passage_number:
+        name: passage_number
+        description: When the specimen an actively growing model system, such as a cell or tissue culture, this property captures its passage number.
+        multivalued: true
+        range: integer
+        required: false
+      growth_rate:
+        name: growth_rate
+        description: When the specimen an actively growing model system, such as a cell or tissue culture, this property captures its rate of growth.
+        multivalued: true
+        range: string
+        required: false
+    slots:
+      - identity
+
+  Substance:
+    name: Substance
+    description: A type of material substance, or instance thereof, as used in a particular application. May include information about the role the substance played in a particular application.
+    is_a: Entity
+    attributes:
+      substance_type:
+        name: substance_type
+        description: The specific type of the substance - at as granular a level as possible. May be a specific chemical compound, or the name of a formulation/preparation made up of many compounds.
+        examples:
+        - value: toluene
+        - value: formalin
+        - value: DMEM
+        values_from: crdch:enum_CRDCH_Substance_substance_type
+        multivalued: false
+        range: string
+        required: false
+      role:
+        name: role
+        description: A role played by the substance in a particular application (e.g. the role of a lysis buffer when applied in a specimen creation activity, or the role of fixative when applied in specimen processing)
+        examples:
+        - value: lysis buffer
+        - value: fixative
+        - value: mounting medium
+        - value: collection media
+        values_from: crdch:enum_CRDCH_Substance_role
+        multivalued: true
+        range: string
+        required: false
+      substance_quantity:
+        name: substance_quantity
+        description: The quantity of substance this instance stands for.
+        multivalued: false
+        range: Quantity
+        required: false
+
+  Quantity:
+    is_a: Entity
+    description: A structured object to represent an amount of something (e.g., weight, mass, length, duration of time) - including a value and unit.
+    comments:
+    - QuantityMeasure may be implemented as an Observation-like object that will let us capture any type of measure of the amount of some substance (e.g. "weight", "volume"), with distinct timestamps and methods associated.  It could be implemented as a "simple" observation (one measurement per instance, where the "code" fields is bound to a value set describing the different types of quantity measures allowed -  e.g. "weight", "volume", "concentration"),  or as "composite" observation (multiple measurements possible in a single instance, each captured as a component defined to hold a specific type of quantity measure - e.g.  "weight", "volume", "concentration").  The number of different quantity measures we anticipate needed to support, and the potential for data sparseness, are factors that determine whether a simple or composite Observation would be most appropriate.
+    attributes:
+      value_decimal:
+        description: A decimal amount, in the given units (if specified)
+        multivalued: false
+        range: decimal
+        required: false
+      value_integer:
+        description: An integer amount, in the given units (if specified)
+        multivalued: false
+        range: integer
+        required: false
+      value_concept:
+        description: A coded value representing a quantity (e.g. "Adjacent (< or = 2cm)")
+        multivalued: false
+        range: BaseEnum
+        required: false
+      unit:
+        description: A coded or free text (in the .text field) representation of the unit.
+        multivalued: false
+        range: UnitOfMeasurementEnum
+        required: false
+
+  BodySite:
+    is_a: Entity
+    description: A site in the body of an organism, typically described in terms of an anatomical concept and optional qualifiers (e.g. left/right, upper/lower). But body sites as defined here may include non-canonical sites, such as an implanted medical device.
+    attributes:
+      site:
+        description: A term describing any site in the body.
+        examples:
+        - value: Adenoid
+        - value: Adipose
+        - value: Adrenal
+        values_from: crdch:enum_CRDCH_BodySite_site
+        multivalued: false
+        range: string
+        required: true
+      qualifier:
+        description: A qualifier that further refines or specifies the location of the body site - e.g. to indicate laterality, upper v. lower, containment in some other anatomical structure (e.g. 'blood' contained in the 'hepatic vein')
+        examples:
+        - value: left
+        - value: right
+        - value: bilateral
+        values_from: crdch:enum_CRDCH_BodySite_qualifier
+        multivalued: true
+        range: string
+        required: false
+
+  ObservationSet:
+    is_a: Entity
+    description: A structured object to hold related Observations in a set.
+    attributes:
+      category:
+        description: The general category of observation set described
+        values_from: crdch:enum_CRDCH_ObservationSet_category
+        multivalued: false
+        range: string
+        required: false
+      focus:
+        description: The entity or entities directly observed/measured in generating an observation result.
+        comments:
+        - The "focus", and "associated_participant" fields are useful when data creators want an Observation object to stand on its own, so it can point back to the entities it is about. These fields are not needed when an Observation is embedded in an entity, where focus, subject, and specimen can be determined from context.
+        multivalued: true
+        inlined_as_list: true
+        range: Entity
+        required: false
+      associated_participant:
+        description: The Participant that the observation is about (if not the direct focus).  Observations are often made on specimens derived from a patient, or other entities related to a patient, that ultimately tell us something about the patient of interest.
+        multivalued: false
+        range: Participant
+        required: false
+      associated_visit:
+        description: A reference to the Visit during which this Observation was recorded.
+        range: Visit
+      method_type:
+        description: The type of method used in generating the ObservationSet
+        comments:
+        - This may be a type of observational, measurement, experimental, or computational method specifying how to generate data (e.g. "manual counting", "bright field microscopy"). Or a Guideline or SOP specifying how to interpret data and/or encode the result of an  Observation (e.g. a Cancer Staging system such as that defined by the AJCC, or variant interpretation guideline such as that provided by the ACMG).
+        values_from: crdch:enum_CRDCH_ObservationSet_method_type
+        multivalued: true
+        range: string
+        required: false
+      performed_by:
+        description: The organization or group that performed the observation activity.
+        multivalued: false
+        range: Organization
+        required: false
+    slots:
+      - observations
+      
+  Observation:
+    is_a: Entity
+    description: A data structure with key (observation_type) and value (value) attributes that represents a single observation, such as the hematocrit component of a complete blood count panel.
+    attributes:
+      age_at_observation:
+        range: integer
+        description: The Participant's age (expressed in days) when the Observation was made.
+        unit:
+          ucum_code: d
+      category:
+        description: The general category of observation described
+        values_from: crdch:enum_CRDCH_Observation_category
+        multivalued: false
+        range: string
+        required: false
+      observation_type:
+        description: The type of Observation being represented (e.g. 'diastolic blood pressure')
+        comments: This field holds the "key" in the core key-value pair comprised of the observation_type field and the relevant value(s) field.  
+        values_from: crdch:enum_CRDCH_Observation_observation_type
+        multivalued: false
+        range: string
+        required: true
+      method_type:
+        description: A type of method used in generating the Observation result.
+        comments:
+        - This may be a type of observational, measurement, experimental, or computational method specifying how to generate data (e.g. "manual counting", "bright field microscopy",). Or a Guideline or SOP specifying how to interpret data and/or encode the result of an  Observation (e.g. a Cancer Staging system such as that defined by the AJCC, or variant interpretation guideline such as that provided by the ACMG).
+        values_from: crdch:enum_CRDCH_Observation_method_type
+        multivalued: false
+        range: string
+        required: false
+      focus:
+        description: The entity or entities directly observed/measured in generating an observation result.
+        comments:
+        - The "focus", "subject", and "specimen" fields are useful when data creators want an Observation object to stand on its own, so it can point back to the entities it is about.  These fields are not needed when an Observation is embedded in a Specimen or other entity, where focus, subject, and specimen can be determined from context.
+        multivalued: false
+        range: Entity
+        required: false
+      associated_participant:
+        description: The patient that the observation is about (if not the direct focus).  e.g. observations are often made on specimens derived from a patient, or other entities related to a patient, that ultimately tell us something about the patient of interest.
+        multivalued: false
+        range: Participant
+        required: false
+      associated_visit:
+        description: A reference to the Visit during which this Observation was recorded.
+        range: Visit
+      performed_by:
+        description: The organization or group that performed the observation activity.
+        multivalued: false
+        range: Organization
+        required: false
+      value_string:
+        description: A slot to hold a string value for an Observation.
+        comments:
+        - One and only one of the value(x) fields must be populated.
+        multivalued: false
+        required: false
+        range: string
+      value_boolean:
+        description: A slot to hold a boolean value for an Observation.
+        comments:
+        - One and only one of the value(x) fields must be populated.
+        multivalued: false
+        required: false
+        range: boolean
+      value_quantity:
+        description: A slot to hold a Quantity value for an Observation.
+        comments:
+        - One and only one of the value(x) fields must be populated.
+        multivalued: false
+        required: false
+        range: Quantity
+      value_enum:
+        description: A slot to hold an enumerated value for an Observation.
+        comments:
+        - One and only one of the value(x) fields must be populated.
+        multivalued: false
+        required: false
+        range: BaseEnum
+
+  MeasurementObservationSet:
+    is_a: ObservationSet
+    description: A structured object to hold related Observations in a set.
+    slot_usage:
+      observations:
+        range: MeasurementObservation
+        required: true
+            
+  MeasurementObservation:
+    is_a: Observation
+    description: A data structure with key (observation_type) and value (value) attributes that represents a single observation, such as the hematocrit component of a complete blood count panel.
+    attributes:
+      range_low:
+        description: If reference ranges for upper and lower limit of normal as provided (typically by a laboratory) these are stored in the range_high and range_low fields. This should be set to NULL if not provided.
+        range: Quantity
+      range_high:
+        description: If reference ranges for upper and lower limit of normal as provided (typically by a laboratory) these are stored in the range_high and range_low fields. This should be set to NULL if not provided.
+        range: Quantity
+
+  SdohObservationSet:
+    is_a: ObservationSet
+    description: A structured object to hold related Observations in a set.
+    slot_usage:
+      observations:
+        range: SdohObservation
+        required: true
+      category: 
+        range: GravityDomainEnum
+  
+  SdohObservation:
+    is_a: Observation
+    description: A data structure with key (observation_type) and value (value) attributes that represents a single observation, such as the hematocrit component of a complete blood count panel.
+    attributes:
+      related_questionnaire_item:
+        description: An optional attribute that captures the QuestionnaireItem to which this SdohObservation refers.
+        range: QuestionnaireItem
+    slot_usage:
+      category: 
+        range: GravityDomainEnum
+      
+
+slots:
+  id:
+    identifier: true
+    slot_uri: schema:identifier
+    range: uriorcurie
+    description: The 'logical' identifier of the entity within the system of record.  The simple value of this attribute stands for an identifier of this data object within the system, it can be used as a reference from other objects within the same system (i.e. primary and foreign keys), and it should be unique per type of object. The same data object copied to a different system will likely have a different "id" in the new system since "id" values are system specific and do not represent persistent business identifiers. Business identifiers are assigned outside the information system and are captured in the "identifier" field. The "id" field is more likely to be a serially or randomly generated value that is assigned to the data object as it is created in a system.
+  identity:
+    slot_uri: schema:identifier
+    range: uriorcurie
+    description: A 'business' identifier or accession number for the entity, typically as provided by an external system or authority, that are globally unique and persist across implementing systems. Also, since these identifiers are created outside the information system through a specific business process, the Identifier type has additional attributes to capture this additional metadata so the actual identifier values are qualified by the context that created those values. This additional context allows "identifier" instances to be transmitted as business data across systems while still being able to trace them back to the system of origin.
+    multivalued: true
+  associated_person:
+    range: Person
+    description: A reference to the Person that is associated with this record.
+  value:
+    range: string
+    description: A general slot to hold a value.
+  associated_participant:
+    range: Participant
+    description: A reference to the Participant that is associated with this record.
+  observations:
+    range: Observation
+    description: A set of one or more observations.
+    multivalued: true
+
+
+enums:
+  BaseEnum:
+    description: >-
+      A base constrained set of enumerative values that can be used as a placeholder in a class expected to be further constrained in a subclass.
+
+  DataUseEnum:
+    description: >-
+      A constrained set of enumerative values drawn from the Data Use Ontology (DUO). The DUO is an ontology which represent data use conditions.
+    permissible_values:
+      GRU:
+        description: 'This data use permission indicates that use is allowed for general research use for any research purpose. This includes but is not limited to: health/medical/biomedical purposes, fundamental biology research, the study of population origins or ancestry, statistical methods and algorithms development, and social-sciences research.'
+        meaning: DUO:0000042
+      HMB:
+        description: 'This data use permission indicates that use is allowed for health/medical/biomedical purposes; does not include the study of population origins or ancestry.'
+        meaning: DUO:0000006
+      DS:
+        description: 'This data use permission indicates that use is allowed provided it is related to the specified disease. This term should be coupled with a term describing a disease from an ontology to specify the disease the restriction applies to. DUO recommends MONDO be used, to provide the basis for automated evaluation. For more information see https://github.com/EBISPOT/DUO/blob/master/MONDO_Overview.md Other resources, such as the Disease Ontology, HPO, SNOMED-CT or others, can also be used. When those other resources are being used, this may require an extra mapping step to leverage automated matching algorithms.'
+        meaning: DUO:0000007
+      NPUNCU:
+        description: 'This data use modifier indicates that use of the data is limited to not-for-profit organizations and not-for-profit use, non-commercial use.'
+        meaning: DUO:0000018
+      IRB:
+        description: 'This data use modifier indicates that the requestor must provide documentation of local IRB/ERB approval.'
+        meaning: DUO:0000021
+
+  EthnicityEnum:
+    description: >-
+      A constrained set of enumerative values containing the United States Office of Management and Budget (OMB) values for ethnicity.
+    permissible_values:
+      HISPANIC_OR_LATINO:
+        description: 'A person of Cuban, Mexican, Puerto Rican, South or Central American, or other Spanish culture or origin, regardless of race. The term, "Spanish origin" can be used in addition to "Hispanic or Latino". (OMB)'
+        meaning: OMOP:38003563
+      NOT_HISPANIC_OR_LATINO:
+        description: 'A person not of Cuban, Mexican, Puerto Rican, South or Central American, or other Spanish culture or origin, regardless of race.'
+        meaning: OMOP:38003564
+
+  RaceEnum:
+    description: >-
+      A constrained set of enumerative values containing the United States Office of Management and Budget (OMB) values for race.
+    permissible_values:
+      AMERICAN_INDIAN_OR_ALASKA_NATIVE:
+        description: 'A person having origins in any of the original peoples of North and South America (including Central America) and who maintains tribal affiliation or community attachment. (OMB)'
+        meaning: OMOP:8657
+      ASIAN:
+        description: 'A person having origins in any of the original peoples of the Far East, Southeast Asia, or the Indian subcontinent, including for example, Cambodia, China, India, Japan, Korea, Malaysia, Pakistan, the Philippine Islands, Thailand, and Vietnam. (OMB)'
+        meaning: OMOP:8515
+      BLACK_OR_AFRICAN_AMERICAN:
+        description: 'A person having origins in any of the Black racial groups of Africa. Terms such as "Haitian" or "Negro" can be used in addition to "Black or African American". (OMB)'
+        meaning: OMOP:8516
+      NATIVE_HAWAIIAN_OR_OTHER_PACIFIC_ISLANDER:
+        description: 'Denotes a person having origins in any of the original peoples of Hawaii, Guam, Samoa, or other Pacific Islands. The term covers particularly people who identify themselves as part-Hawaiian, Native Hawaiian, Guamanian or Chamorro, Carolinian, Samoan, Chuukese (Trukese), Fijian, Kosraean, Melanesian, Micronesian, Northern Mariana Islander, Palauan, Papua New Guinean, Pohnpeian, Polynesian, Solomon Islander, Tahitian, Tokelauan, Tongan, Yapese, or Pacific Islander, not specified.'
+        meaning: OMOP:8557
+      UNKNOWN:
+        description: 'Not known, not observed, not recorded, or refused.'
+        meaning: OMOP:8552
+      WHITE:
+        description: 'Denotes person with European, Middle Eastern, or North African ancestral origin who identifies, or is identified, as White.'
+        meaning: OMOP:8527
+
+  SexEnum:
+    description: >-
+      A constrained set of enumerative values containing the OMOP values for sex.
+    permissible_values:
+      MALE:
+        description: A person who belongs to the sex that normally produces sperm.
+        meaning: OMOP:8507
+      FEMALE:
+        description: A person who belongs to the sex that normally produces ova.
+        meaning: OMOP:8532
+      UNKNOWN:
+        description: 'Not known, not observed, not recorded, or refused.'
+        meaning: OMOP:8552
+
+  CellularOrganismSpeciesEnum:
+    description: >-
+      A constrained set of enumerative values containing the NCBITaxon values for cellular organisms.
+    reachable_from:
+      source_ontology: obo:ncbitaxon
+      source_nodes:
+        - ncbitaxon:131567 ## Cellular Organisms
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+
+  VitalStatusEnum:
+    description: >-
+      A constrained set of enumerative values containing the OMOP values for vital status.
+    permissible_values:
+      ALIVE:
+        description: 'Showing characteristics of life; displaying signs of life. (NCIt)'
+        meaning: OMOP:4230556
+      DEAD:
+        description: 'The cessation of life. (NCIt)'
+        meaning: OMOP:434489
+
+  VertebrateBreedEnum:
+    description: >-
+      A constrained set of enumerative values containing the VBO values for vertebrate breeds.
+    reachable_from:
+      source_ontology: obo:vbo
+      source_nodes:
+        - VBO:0400000 ## Vertebrate Breed
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+
+  VisitCategoryEnum:
+    description: >-
+      A constrained set of enumerative values containing the OMOP values for visit categories.
+    permissible_values:
+      INPATIENT:
+        description: Person visiting hospital, at a care stie, in bed, for duration of more than one day, with physicians and other Providers permanently available to deliver service around the clock
+        meaning: OMOP:9201
+      EMERGENCY_ROOM:
+        description: Person visiting dedicated healthcare institution for treating emergencies, at a Care Site, within one day, with physicians and Providers permanently available to deliver service around the clock
+        meaning: OMOP:9203
+      EMERGENCY_ROOM_AND_INPATIENT:
+        description: Person visiting ER followed by a subsequent Inpatient Visit, where Emergency department is part of hospital, and transition from the ER to other hospital departments is undefined
+        meaning: OMOP:262
+      NON_HOSPITAL_INSTITUTION:
+        description: Person visiting dedicated institution for reasons of poor health, at a Care Site, long-term or permanently, with no physician but possibly other Providers permanently available to deliver service around the clock
+        meaning: OMOP:42898160
+      OUTPATIENT:
+        description: Person visiting dedicated ambulatory healthcare institution, at a Care Site, within one day, without bed, with physicians or medical Providers delivering service during Visit
+        meaning: OMOP:9202
+      HOME:
+        description: Provider visiting Person, without a Care Site, within one day, delivering service
+        meaning: OMOP:581476
+      TELEHEALTH:
+        description: Patient engages with Provider through communication media
+        meaning: OMOP:5083
+      PHARMACY:
+        description: Person visiting pharmacy for dispensing of Drug, at a Care Site, within one day
+        meaning: OMOP:581458
+      LABORATORY:
+        description: Patient visiting dedicated institution, at a Care Site, within one day, for the purpose of a Measurement.
+        meaning: OMOP:32036
+      AMBULANCE:
+          description: Person using transportation service for the purpose of initiating one of the other Visits, without a Care Site, within one day, potentially with Providers accompanying the Visit and delivering service
+          meaning: OMOP:581478
+      CASE_MANAGEMENT:
+          description: Person interacting with healthcare system, without a Care Site, within a day, with no Providers involved, for administrative purposes
+          meaning: OMOP:38004193
+
+  VisitProvenanceEnum:
+    description: >-
+      A constrained set of enumerative values containing the OMOP values for visit provenance.
+    permissible_values:
+      CASE_REPORT_FORM:
+        description: Case Report Form
+        meaning: OMOP:32809
+      CLAIM:
+          description: Claim
+          meaning: OMOP:32810
+      CLAIM_AUTHORIZATION:
+          description: Claim authorization
+          meaning: OMOP:32811
+      CLAIM_DISCHARGE_RECORD:
+          description: Claim discharge record
+          meaning: OMOP:32812
+      CLAIM_ENROLMENT_RECORD:
+        description: Claim enrolment record
+        meaning: OMOP:32813
+      COST_RECORD:
+        description: Cost record
+        meaning: OMOP:32814
+      DEATH_CERTIFICATE:
+        description: Death Certificate
+        meaning: OMOP:32815
+      DENTAL_CLAIM:
+        description: Dental claim
+        meaning: OMOP:32816
+      EHR:
+        description: EHR
+        meaning: OMOP:32817
+      EHR_PATHOLOGY_REPORT:
+        description: EHR Pathology report
+        meaning: OMOP:32835
+      EHR_ADMINISTRATION_RECORD:
+        description: EHR administration record
+        meaning: OMOP:32818
+      EHR_ADMISSION_NOTE:
+        description: EHR admission note
+        meaning: OMOP:32819
+      EHR_ANCILLARY_REPORT:
+        description: EHR ancillary report
+        meaning: OMOP:32820
+      EHR_BILLING_RECORD:
+        description: EHR billing record
+        meaning: OMOP:32821
+      EHR_CHIEF_COMPLAINT:
+        description: EHR chief complaint
+        meaning: OMOP:32822
+      EHR_DISCHARGE_RECORD:
+        description: EHR discharge record
+        meaning: OMOP:32823
+      EHR_DISCHARGE_SUMMARY:
+        description: EHR discharge summary
+        meaning: OMOP:32824
+      EHR_DISPENSING_RECORD:
+        description: EHR dispensing record
+        meaning: OMOP:32825
+      EHR_EMERGENCY_ROOM_NOTE:
+        description: EHR emergency room note
+        meaning: OMOP:32826
+      EHR_ENCOUNTER_RECORD:
+        description: EHR encounter record
+        meaning: OMOP:32827
+      EHR_EPISODE_RECORD:
+        description: EHR episode record
+        meaning: OMOP:32828
+      EHR_INPATIENT_NOTE:
+        description: EHR inpatient note
+        meaning: OMOP:32829
+      EHR_MEDICATION_LIST:
+        description: EHR medication list
+        meaning: OMOP:32830
+      EHR_NOTE:
+        description: EHR note
+        meaning: OMOP:32831
+      EHR_NURSING_REPORT:
+        description: EHR nursing report
+        meaning: OMOP:32832
+      EHR_ORDER:
+        description: EHR order
+        meaning: OMOP:32833
+      EHR_OUTPATIENT_NOTE:
+        description: EHR outpatient note
+        meaning: OMOP:32834
+      EHR_PHYSICAL_EXAMINATION:
+        description: EHR physical examination
+        meaning: OMOP:32836
+      EHR_PLANNED_DISPENSING_RECORD:
+        description: EHR planned dispensing record
+        meaning: OMOP:32837
+      EHR_PRESCRIPTION:
+        description: EHR prescription
+        meaning: OMOP:32838
+      EHR_PRESCRIPTION_ISSUE_RECORD:
+        description: EHR prescription issue record
+        meaning: OMOP:32839
+      EHR_PROBLEM_LIST:
+        description: EHR problem list
+        meaning: OMOP:32840
+      EHR_RADIOLOGY_REPORT:
+        description: EHR radiology report
+        meaning: OMOP:32841
+      EHR_REFERRAL_RECORD:
+        description: EHR referral record
+        meaning: OMOP:32842
+      EXTERNAL_CDM_INSTANCE:
+        description: External CDM instance
+        meaning: OMOP:32843
+      FACILITY_CLAIM:
+        description: Facility claim
+        meaning: OMOP:32844
+      FACILITY_CLAIM_DETAIL:
+        description: Facility claim detail
+        meaning: OMOP:32845
+      FACILITY_CLAIM_HEADER:
+        description: Facility claim header
+        meaning: OMOP:32846
+      GEOGRAPHIC_ISOLATION_RECORD:
+        description: Geographic isolation record
+        meaning: OMOP:32847
+      GOVERNMENT_REPORT:
+        description: Government report
+        meaning: OMOP:32848
+      HEALTH_INFORMATION_EXCHANGE_RECORD:
+        description: Health Information Exchange record
+        meaning: OMOP:32849
+      HEALTH_RISK_ASSESSMENT:
+        description: Health Risk Assessment
+        meaning: OMOP:32850
+      HEALTHCARE_PROFESSIONAL_FILLED_SURVEY:
+        description: Healthcare professional filled survey
+        meaning: OMOP:32851
+      HOSPITAL_COST:
+        description: Hospital cost
+        meaning: OMOP:32852
+      INPATIENT_CLAIM:
+        description: Inpatient claim
+        meaning: OMOP:32853
+      INPATIENT_CLAIM_DETAIL:
+        description: Inpatient claim detail
+        meaning: OMOP:32854
+      INPATIENT_CLAIM_HEADER:
+        description: Inpatient claim header
+        meaning: OMOP:32855
+      LAB:
+        description: Lab
+        meaning: OMOP:32856
+      MAIL_ORDER_RECORD:
+        description: Mail order record
+        meaning: OMOP:32857
+      NLP:
+        description: NLP
+        meaning: OMOP:32858
+      OUTPATIENT_CLAIM:
+        description: Outpatient claim
+        meaning: OMOP:32859
+      OUTPATIENT_CLAIM_DETAIL:
+        description: Outpatient claim detail
+        meaning: OMOP:32860
+      OUTPATIENT_CLAIM_HEADER:
+        description: Outpatient claim header
+        meaning: OMOP:32861
+      PATIENT_FILLED_SURVEY:
+        description: Patient filled survey
+        meaning: OMOP:32862
+      PATIENT_OR_PAYER_PAID_RECORD:
+        description: Patient or payer paid record
+        meaning: OMOP:32863
+      PATIENT_REPORTED_COST:
+        description: Patient reported cost
+        meaning: OMOP:32864
+      PATIENT_SELF-REPORT:
+        description: Patient self-report
+        meaning: OMOP:32865
+      PATIENT_SELF-TESTED:
+        description: Patient self-tested
+        meaning: OMOP:705183
+      PAYER_SYSTEM_RECORD_(PAID_PREMIUM):
+        description: Payer system record (paid premium)
+        meaning: OMOP:32866
+      PAYER_SYSTEM_RECORD_(PRIMARY_PAYER):
+        description: Payer system record (primary payer)
+        meaning: OMOP:32867
+      PAYER_SYSTEM_RECORD_(SECONDARY_PAYER):
+        description: Payer system record (secondary payer)
+        meaning: OMOP:32868
+      PHARMACY_CLAIM:
+        description: Pharmacy claim
+        meaning: OMOP:32869
+      POINT_OF_CARE/EXPRESS_LAB:
+        description: Point of care/express lab
+        meaning: OMOP:703249
+      PRE-QUALIFICATION_TIME_PERIOD:
+        description: Pre-qualification time period
+        meaning: OMOP:32870
+      PROFESSIONAL_CLAIM:
+        description: Professional claim
+        meaning: OMOP:32871
+      PROFESSIONAL_CLAIM_DETAIL:
+        description: Professional claim detail
+        meaning: OMOP:32872
+      PROFESSIONAL_CLAIM_HEADER:
+        description: Professional claim header
+        meaning: OMOP:32873
+      PROVIDER_CHARGE_LIST_PRICE:
+        description: Provider charge list price
+        meaning: OMOP:32874
+      PROVIDER_FINANCIAL_SYSTEM:
+        description: Provider financial system
+        meaning: OMOP:32875
+      PROVIDER_INCURRED_COST_RECORD:
+        description: Provider incurred cost record
+        meaning: OMOP:32876
+      RANDOMIZATION_RECORD:
+        description: Randomization record
+        meaning: OMOP:32877
+      REFERENCE_LAB:
+        description: Reference lab
+        meaning: OMOP:32878
+      REGISTRY:
+        description: Registry
+        meaning: OMOP:32879
+      STANDARD_ALGORITHM:
+        description: Standard algorithm
+        meaning: OMOP:32880
+      STANDARD_ALGORITHM_FROM_EHR:
+        description: Standard algorithm from EHR
+        meaning: OMOP:32882
+      STANDARD_ALGORITHM_FROM_CLAIMS:
+        description: Standard algorithm from claims
+        meaning: OMOP:32881
+      SURVEY:
+        description: Survey
+        meaning: OMOP:32883
+      US_SOCIAL_SECURITY_DEATH_MASTER_FILE:
+        description: US Social Security Death Master File
+        meaning: OMOP:32885
+      URGENT_LAB:
+        description: Urgent lab
+        meaning: OMOP:32884
+      VISION_CLAIM:
+        description: Vision claim
+        meaning: OMOP:32886
+
+  MondoHumanDiseaseEnum:
+    description: >-
+      A constrained set of enumerative values containing the MONDO values for human diseases.
+    reachable_from:
+      source_ontology: obo:mondo
+      source_nodes:
+        - MONDO:0700096 ## Human Disease
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+
+  HpoPhenotypicAbnormalityEnum:
+    description: >-
+      A constrained set of enumerative values containing the HPO values for phenotypic abnormalities.
+    reachable_from:
+      source_ontology: obo:hp
+      source_nodes:
+        - HP:0000118 ## Phenotypic Abnormality
+      include_self: false
+      relationship_types:
+        - rdfs:subClassOf
+
+  ConditionConceptEnum:
+    description: >-
+      A constrained set of enumerative values containing both the MONDO values for human diseases and the HPO values for phenotypic abnormalities.
+    inherits:
+      - MondoHumanDiseaseEnum
+      - HpoPhenotypicAbnormalityEnum
+  
+  ProvenanceEnum:
+    description: >-
+      A constrained set of enumerative values containing the OMOP values for provenance.
+    permissible_values:
+      EHR_BILLING_DIAGNOSIS:
+        meaning: OMOP:4822159
+      EHR_CHIEF_COMPLAINT:
+        meaning: OMOP:4822124
+      EHR_ENCOUNTER_DIAGNOSIS:
+        meaning: OMOP:4822160
+      EHR_EPISODE_ENTRY:
+        meaning: OMOP:4822135
+      EHR_PROBLEM_LIST_ENTRY:
+        meaning: OMOP:4822121
+      FIRST_POSITION_CONDITION:
+        meaning: OMOP:4822128
+      NLP_DERIVED:
+        meaning: OMOP:4822058
+      OBSERVATION_RECORDED_FROM_EHR:
+        meaning: OMOP:4822126
+      PATIENT_SELF-REPORTED_CONDITION:
+        meaning: OMOP:4822157
+      PRIMARY_CONDITION:
+        meaning: OMOP:4822127
+      REFERRAL_RECORD:
+        meaning: OMOP:4822125
+      SECONDARY_CONDITION:
+        meaning: OMOP:4822129
+      TUMOR_REGISTRY:
+        meaning: OMOP:4822266
+
+  ConditionStatusEnum:
+    description: >-
+      A constrained set of enumerative values indicating whether a Condition is present, absent, or its status is unknown.
+    permissible_values:
+      PRESENT:
+        description: The condition is/was present in the patient.
+      ABSENT:
+        description: The condition is/was absent in the patient.
+      HISTORICAL:
+        description: The condition is/was present in the patient historically.
+      UNKNOWN:
+        description: The condition is/was of unknown status in the patient.
+
+  ProcedureConceptEnum:
+    description: Procedure codes from OMOP.
+    reachable_from:
+      source_ontology: OMOP
+
+  DrugExposureConceptEnum:
+    description: Drug codes from RxNorm.
+    see_also:
+      - https://bioregistry.io/registry/rxnorm
+      - https://terminology.hl7.org/3.1.0/CodeSystem-v3-rxNorm.html
+      - http://www.nlm.nih.gov/research/umls/rxnorm
+      - urn:oid:2.16.840.1.113883.6.88
+    reachable_from:
+      source_ontology: bioregistry:rxnorm
+
+  DrugExposureProvenanceEnum:
+    description: Source of drug exposure record
+    comments: Taken from OMOP Drug Type values; "select * from concept where vocabulary_id = 'Drug Type';" Do we need descriptions beyond the name?
+    permissible_values:
+      RANDOMIZED DRUG:
+        description: Randomized Drug
+        meaning: OMOP:44777970                                                                                              
+      PATIENT SELF-REPORTED MEDICATION:
+        description: Patient Self-Reported Medication
+        meaning: OMOP:44787730                                                            
+      NLP DERIVED:
+        description: NLP derived
+        meaning: OMOP:32426                                                                                                         
+      PRESCRIPTION DISPENSED IN PHARMACY:
+        description: Prescription dispensed in pharmacy
+        meaning: OMOP:38000175                                                        
+      PHYSICIAN ADMINISTERED DRUG (IDENTIFIED FROM EHR ORDER):
+        description: Physician administered drug (identified from EHR order)
+        meaning: OMOP:581373                
+      DISPENSED IN OUTPATIENT OFFICE:
+        description: Dispensed in Outpatient office
+        meaning: OMOP:581452                                                                  
+      PRESCRIPTION DISPENSED THROUGH MAIL ORDER:
+        description: Prescription dispensed through mail order
+        meaning: OMOP:38000176                                          
+      PRESCRIPTION WRITTEN:
+        description: Prescription written
+        meaning: OMOP:38000177                                                                                    
+      MEDICATION LIST ENTRY:
+        description: Medication list entry
+        meaning: OMOP:38000178                                                                                  
+      PHYSICIAN ADMINISTERED DRUG (IDENTIFIED AS PROCEDURE):
+        description: Physician administered drug (identified as procedure)
+        meaning: OMOP:38000179                  
+      INPATIENT ADMINISTRATION:
+        description: Inpatient administration
+        meaning: OMOP:38000180                                                                            
+      DRUG ERA - 0 DAYS PERSISTENCE WINDOW:
+        description: Drug era - 0 days persistence window
+        meaning: OMOP:38000181                                                    
+      DRUG ERA - 30 DAYS PERSISTENCE WINDOW:
+        description: Drug era - 30 days persistence window
+        meaning: OMOP:38000182                                                  
+      PHYSICIAN ADMINISTERED DRUG (IDENTIFIED FROM EHR PROBLEM LIST):
+        description: Physician administered drug (identified from EHR problem list)
+        meaning: OMOP:43542356
+      PHYSICIAN ADMINISTERED DRUG (IDENTIFIED FROM REFERRAL RECORD):
+        description: Physician administered drug (identified from referral record)
+        meaning: OMOP:43542357  
+      PHYSICIAN ADMINISTERED DRUG (IDENTIFIED FROM EHR OBSERVATION):
+        description: Physician administered drug (identified from EHR observation)
+        meaning: OMOP:43542358  
+
+  DrugRouteEnum:
+    description: Routes of drug administration.
+    comments: OMOP contains 165 standard values; `select * from concept where domain_id = 'Route' and invalid_reason is null and standard_concept is not null;` from SNOMED. Do we need descriptions beyond the name?
+    permissible_values:
+      ARTERIOVENOUS FISTULA:
+        description: Arteriovenous fistula
+        meaning: OMOP:44783786                     
+      HAEMODIAFILTRATION:
+        description: Haemodiafiltration
+        meaning: OMOP:44801748                           
+      SUBLESIONAL:
+        description: Sublesional
+        meaning: OMOP:46270168                                         
+      INTRANEURAL:
+        description: Intraneural
+        meaning: OMOP:46272911                                         
+      INTRAMURAL:
+        description: Intramural
+        meaning: OMOP:46272926                                           
+      INTRACATHETER INSTILLATION:
+        description: Intracatheter instillation
+        meaning: OMOP:605428             
+      SUBLABIAL:
+        description: Sublabial
+        meaning: OMOP:600817                                               
+      INTRA-ARTICULAR:
+        description: Intra-articular
+        meaning: OMOP:4006860                                  
+      INTRADIALYTIC:
+        description: Intradialytic
+        meaning: OMOP:618805                                       
+      ARTERIOVENOUS GRAFT:
+        description: Arteriovenous graft
+        meaning: OMOP:762840                           
+      OTIC:
+        description: Otic
+        meaning: OMOP:4023156                                                        
+      ORAL:
+        description: Oral
+        meaning: OMOP:4132161                                                        
+      VAGINAL:
+        description: Vaginal
+        meaning: OMOP:4057765                                                  
+      ROUTE OF ADMINISTRATION VALUE:
+        description: Route of administration value
+        meaning: OMOP:4106215      
+      GASTROSTOMY:
+        description: Gastrostomy
+        meaning: OMOP:4132254                                          
+      NASOGASTRIC:
+        description: Nasogastric
+        meaning: OMOP:4132711                                          
+      JEJUNOSTOMY:
+        description: Jejunostomy
+        meaning: OMOP:4133177                                          
+      SUBCUTANEOUS:
+        description: Subcutaneous
+        meaning: OMOP:4142048                                        
+      GINGIVAL:
+        description: Gingival
+        meaning: OMOP:4156704                                                
+      INTRACARDIAC:
+        description: Intracardiac
+        meaning: OMOP:4156705                                        
+      INTRADERMAL:
+        description: Intradermal
+        meaning: OMOP:4156706                                          
+      INTRAPLEURAL:
+        description: Intrapleural
+        meaning: OMOP:4156707                                        
+      PERIARTICULAR:
+        description: Periarticular
+        meaning: OMOP:4156708                                      
+      ENDOSINUSIAL:
+        description: Endosinusial
+        meaning: OMOP:4157756                                        
+      INTRACAVERNOUS:
+        description: Intracavernous
+        meaning: OMOP:4157757                                    
+      INTRALESIONAL:
+        description: Intralesional
+        meaning: OMOP:4157758                                      
+      INTRALYMPHATIC:
+        description: Intralymphatic
+        meaning: OMOP:4157759                                    
+      INTRAOCULAR:
+        description: Intraocular
+        meaning: OMOP:4157760                                          
+      PERINEURAL:
+        description: Perineural
+        meaning: OMOP:4157761                                            
+      INTRACRANIAL:
+        description: Intracranial
+        meaning: OMOP:4171079                                        
+      DENTAL:
+        description: Dental
+        meaning: OMOP:4163765                                                    
+      INTRAAMNIOTIC:
+        description: Intraamniotic
+        meaning: OMOP:4163767                                      
+      INTRABURSAL:
+        description: Intrabursal
+        meaning: OMOP:4163768                                          
+      INTRADISCAL:
+        description: Intradiscal
+        meaning: OMOP:4163769                                          
+      SUBCONJUNCTIVAL:
+        description: Subconjunctival
+        meaning: OMOP:4163770                                  
+      MUCOUS FISTULA:
+        description: Mucous fistula
+        meaning: OMOP:4171243                                    
+      INTRAPROSTATIC:
+        description: Intraprostatic
+        meaning: OMOP:4171725                                    
+      INTRAVENOUS PERIPHERAL:
+        description: Intravenous peripheral
+        meaning: OMOP:4171884                    
+      PERIOSTEAL:
+        description: Periosteal
+        meaning: OMOP:4171893                                            
+      ESOPHAGOSTOMY:
+        description: Esophagostomy
+        meaning: OMOP:4172191                                      
+      NASODUODENAL:
+        description: Nasoduodenal
+        meaning: OMOP:4172316                                        
+      PERCUTANEOUS:
+        description: Percutaneous
+        meaning: OMOP:4177987                                        
+      SUBORBITAL:
+        description: Suborbital
+        meaning: OMOP:4166865                                            
+      INTRATHORACIC:
+        description: Intrathoracic
+        meaning: OMOP:4167393                                      
+      ENTERAL:
+        description: Enteral
+        meaning: OMOP:4167540                                                  
+      INTRAMYOMETRIAL:
+        description: Intramyometrial
+        meaning: OMOP:4168038                                  
+      COLOSTOMY:
+        description: Colostomy
+        meaning: OMOP:4168047                                              
+      INTRATYMPANIC:
+        description: Intratympanic
+        meaning: OMOP:4168656                                      
+      GASTRO-INTESTINAL STOMA:
+        description: Gastro-intestinal stoma
+        meaning: OMOP:4168665                  
+      INTRAPULMONARY:
+        description: Intrapulmonary
+        meaning: OMOP:4169270                                    
+      INTRASINAL:
+        description: Intrasinal
+        meaning: OMOP:4169440                                            
+      TUMOR CAVITY:
+        description: Tumor cavity
+        meaning: OMOP:4169472                                        
+      SUBMUCOSAL:
+        description: Submucosal
+        meaning: OMOP:4169634                                            
+      INTRADUCTAL:
+        description: Intraductal
+        meaning: OMOP:4170083                                          
+      INTRAVENOUS CENTRAL:
+        description: Intravenous central
+        meaning: OMOP:4170113                          
+      PARAVERTEBRAL:
+        description: Paravertebral
+        meaning: OMOP:4170267                                      
+      UROSTOMY:
+        description: Urostomy
+        meaning: OMOP:4170435                                                
+      LARYNGEAL:
+        description: Laryngeal
+        meaning: OMOP:4170440                                              
+      SURGICAL CAVITY:
+        description: Surgical cavity
+        meaning: OMOP:4170771                                  
+      INTRAVENOUS:
+        description: Intravenous
+        meaning: OMOP:4171047                                          
+      INTRATESTICULAR:
+        description: Intratesticular
+        meaning: OMOP:4171067                                  
+      ENDOCERVICAL:
+        description: Endocervical
+        meaning: OMOP:4186831                                        
+      ENDOTRACHEOPULMONARY:
+        description: Endotracheopulmonary
+        meaning: OMOP:4186832                        
+      EXTRA-AMNIOTIC:
+        description: Extra-amniotic
+        meaning: OMOP:4186833                                    
+      GASTROENTERAL:
+        description: Gastroenteral
+        meaning: OMOP:4186834                                      
+      INTRACERVICAL:
+        description: Intracervical
+        meaning: OMOP:4186835                                      
+      INTRACORONARY:
+        description: Intracoronary
+        meaning: OMOP:4186836                                      
+      INTRASTERNAL:
+        description: Intrasternal
+        meaning: OMOP:4186837                                        
+      INTRAVESICAL:
+        description: Intravesical
+        meaning: OMOP:4186838                                        
+      OROMUCOSAL:
+        description: Oromucosal
+        meaning: OMOP:4186839                                            
+      CAUDAL:
+        description: Caudal
+        meaning: OMOP:4220455                                                    
+      BUCCAL:
+        description: Buccal
+        meaning: OMOP:4181897                                                    
+      OPHTHALMIC:
+        description: Ophthalmic
+        meaning: OMOP:4184451                                            
+      BODY CAVITY:
+        description: Body cavity
+        meaning: OMOP:4222254                                          
+      INTRAOSSEOUS:
+        description: Intraosseous
+        meaning: OMOP:4213522                                        
+      INTRAVENTRICULAR ROUTE - CARDIAC:
+        description: Intraventricular route - cardiac
+        meaning: OMOP:4222259
+      INTRABILIARY:
+        description: Intrabiliary
+        meaning: OMOP:4223965                                        
+      INTRACEREBROVENTRICULAR:
+        description: Intracerebroventricular
+        meaning: OMOP:4224886                  
+      INTRATHECAL:
+        description: Intrathecal
+        meaning: OMOP:4217202                                          
+      EPIDURAL:
+        description: Epidural
+        meaning: OMOP:4225555                                                
+      INTRATRACHEAL:
+        description: Intratracheal
+        meaning: OMOP:4229543                                      
+      URETHRAL:
+        description: Urethral
+        meaning: OMOP:4233974                                                
+      TRANSMUCOSAL:
+        description: Transmucosal
+        meaning: OMOP:4232601                                        
+      TRANSDERMAL:
+        description: Transdermal
+        meaning: OMOP:4262099                                          
+      INTRA-ARTERIAL:
+        description: Intra-arterial
+        meaning: OMOP:4240824                                    
+      INTRAPERITONEAL:
+        description: Intraperitoneal
+        meaning: OMOP:4243022                                  
+      INTRAMEDULLARY:
+        description: Intramedullary
+        meaning: OMOP:4246511                                    
+      INTRAUTERINE:
+        description: Intrauterine
+        meaning: OMOP:4269621                                        
+      NASAL:
+        description: Nasal
+        meaning: OMOP:4262914                                                      
+      TOPICAL:
+        description: Topical
+        meaning: OMOP:4263689                                                  
+      RECTAL:
+        description: Rectal
+        meaning: OMOP:4290759                                                    
+      SUBLINGUAL:
+        description: Sublingual
+        meaning: OMOP:4292110                                            
+      INTRALUMINAL:
+        description: Intraluminal
+        meaning: OMOP:4292410                                        
+      TRANSCERVICAL:
+        description: Transcervical
+        meaning: OMOP:4304730                                      
+      INTRAABDOMINAL:
+        description: Intraabdominal
+        meaning: OMOP:4304882                                    
+      TRANSURETHRAL:
+        description: Transurethral
+        meaning: OMOP:4305382                                      
+      PERITENDINOUS:
+        description: Peritendinous
+        meaning: OMOP:4305564                                      
+      ILEOSTOMY:
+        description: Ileostomy
+        meaning: OMOP:4305679                                              
+      INTRACORNEAL:
+        description: Intracorneal
+        meaning: OMOP:4305690                                        
+      NASOJEJUNAL:
+        description: Nasojejunal
+        meaning: OMOP:4305834                                          
+      INTRACISTERNAL:
+        description: Intracisternal
+        meaning: OMOP:4305993                                    
+      SUBGINGIVAL:
+        description: Subgingival
+        meaning: OMOP:4306649                                          
+      INTRAOVARIAN:
+        description: Intraovarian
+        meaning: OMOP:4306657                                        
+      INTERSTITIAL:
+        description: Interstitial
+        meaning: OMOP:4327128                                        
+      INTRASYNOVIAL:
+        description: Intrasynovial
+        meaning: OMOP:4302352                                      
+      INTRADUODENAL:
+        description: Intraduodenal
+        meaning: OMOP:4302354                                      
+      SUBTENDINOUS:
+        description: Subtendinous
+        meaning: OMOP:4302493                                        
+      INTRAMUSCULAR:
+        description: Intramuscular
+        meaning: OMOP:4302612                                      
+      INTRAVITREAL:
+        description: Intravitreal
+        meaning: OMOP:4302785                                        
+      INTRASPINAL:
+        description: Intraspinal
+        meaning: OMOP:4302788                                          
+      INTRABRONCHIAL:
+        description: Intrabronchial
+        meaning: OMOP:4303263                                    
+      OROPHARYNGEAL:
+        description: Oropharyngeal
+        meaning: OMOP:4303277                                      
+      INTRACAMERAL:
+        description: Intracameral
+        meaning: OMOP:4303409                                        
+      PARACERVICAL:
+        description: Paracervical
+        meaning: OMOP:4303515                                        
+      PERIURETHRAL:
+        description: Periurethral
+        meaning: OMOP:4303646                                        
+      INTRACORONAL:
+        description: Intracoronal
+        meaning: OMOP:4303667                                        
+      RETROBULBAR:
+        description: Retrobulbar
+        meaning: OMOP:4303673                                          
+      INTRACARTILAGINOUS:
+        description: Intracartilaginous
+        meaning: OMOP:4303676                            
+      OROGASTRIC:
+        description: Orogastric
+        meaning: OMOP:4303795                                            
+      INTRATENDINOUS:
+        description: Intratendinous
+        meaning: OMOP:4303939                                    
+      PERIBULBAR:
+        description: Peribulbar
+        meaning: OMOP:4304274                                            
+      FISTULA:
+        description: Fistula
+        meaning: OMOP:4304277                                                  
+      SURGICAL DRAIN:
+        description: Surgical drain
+        meaning: OMOP:4304412                                    
+      URETERAL:
+        description: Ureteral
+        meaning: OMOP:4304571                                                
+      EPILESIONAL:
+        description: Epilesional
+        meaning: OMOP:35608078                                         
+      EXTRACORPOREAL HEMODIALYSIS:
+        description: Extracorporeal hemodialysis
+        meaning: OMOP:35624178         
+      SUPRACHOROIDAL:
+        description: Suprachoroidal
+        meaning: OMOP:37174548                                   
+      EXTRACORPOREAL:
+        description: Extracorporeal
+        meaning: OMOP:37018288                                   
+      INTRACORPORUS CAVERNOSUM:
+        description: Intracorporus cavernosum
+        meaning: OMOP:37174549               
+      INTRAGLANDULAR:
+        description: Intraglandular
+        meaning: OMOP:37207460                                   
+      INTRACHOLANGIOPANCREATIC:
+        description: Intracholangiopancreatic
+        meaning: OMOP:37207461               
+      INTRAPORTAL:
+        description: Intraportal
+        meaning: OMOP:37207462                                         
+      PERITUMORAL:
+        description: Peritumoral
+        meaning: OMOP:37207463                                         
+      POSTERIOR JUXTASCLERAL:
+        description: Posterior juxtascleral
+        meaning: OMOP:37207464                   
+      SUBRETINAL:
+        description: Subretinal
+        meaning: OMOP:37207465                                           
+      INFILTRATION:
+        description: Infiltration
+        meaning: OMOP:37397638                                       
+      TRANSENDOCARDIAL:
+        description: Transendocardial
+        meaning: OMOP:40487850                               
+      TRANSPLACENTAL:
+        description: Transplacental
+        meaning: OMOP:40487858                                   
+      INTRAEPIDERMAL:
+        description: Intraepidermal
+        meaning: OMOP:40487983                                   
+      INTRACEREBRAL:
+        description: Intracerebral
+        meaning: OMOP:40488317                                     
+      INTRAJEJUNAL:
+        description: Intrajejunal
+        meaning: OMOP:40489989                                       
+      INTRACOLONIC:
+        description: Intracolonic
+        meaning: OMOP:40489990                                       
+      CUTANEOUS:
+        description: Cutaneous
+        meaning: OMOP:40490507                                             
+      INTRAILEAL:
+        description: Intraileal
+        meaning: OMOP:40490837                                           
+      PERIODONTAL:
+        description: Periodontal
+        meaning: OMOP:40490866                                         
+      PERIDURAL:
+        description: Peridural
+        meaning: OMOP:40490896                                             
+      LOWER RESPIRATORY TRACT:
+        description: Lower respiratory tract
+        meaning: OMOP:40490898                 
+      INTRAMAMMARY:
+        description: Intramammary
+        meaning: OMOP:40491321                                       
+      INTRATUMOR:
+        description: Intratumor
+        meaning: OMOP:40491322                                           
+      TRANSTYMPANIC:
+        description: Transtympanic
+        meaning: OMOP:40491830                                     
+      TRANSTRACHEAL:
+        description: Transtracheal
+        meaning: OMOP:40491832                                     
+      INTRAESOPHAGEAL:
+        description: Intraesophageal
+        meaning: OMOP:40492284                                 
+      INTRAGINGIVAL:
+        description: Intragingival
+        meaning: OMOP:40492286                                     
+      INTRAVASCULAR:
+        description: Intravascular
+        meaning: OMOP:40492287                                     
+      INTRADURAL:
+        description: Intradural
+        meaning: OMOP:40492288                                           
+      INTRAMENINGEAL:
+        description: Intrameningeal
+        meaning: OMOP:40492300                                   
+      INTRAGASTRIC:
+        description: Intragastric
+        meaning: OMOP:40492301                                       
+      INTRAPERICARDIAL:
+        description: Intrapericardial
+        meaning: OMOP:40492305                               
+      INTRALINGUAL:
+        description: Intralingual
+        meaning: OMOP:40493227                                       
+      RESPIRATORY TRACT:
+        description: Respiratory tract
+        meaning: OMOP:40486069                             
+      INTRAHEPATIC:
+        description: Intrahepatic
+        meaning: OMOP:40493258                                       
+      CONJUNCTIVAL:
+        description: Conjunctival
+        meaning: OMOP:40486444                                       
+      INTRAEPICARDIAL:
+        description: Intraepicardial
+        meaning: OMOP:40487473                                 
+      DIGESTIVE TRACT:
+        description: Digestive tract
+        meaning: OMOP:40487501                                 
+      OCULAR:
+        description: Ocular
+        meaning: OMOP:40549429                                                   
+
+  DeviceExposureConceptEnum:
+    description: Device codes from SNOMED.
+    see_also:
+      - https://bioregistry.io/registry/snomedct
+      - https://terminology.hl7.org/3.1.0/CodeSystem-v3-snomed-CT.html
+      - https://www.nlm.nih.gov/healthit/snomedct/index.html
+      - urn:oid:2.16.840.1.113883.6.96
+    reachable_from:
+      source_ontology: bioregistry:snomedct
+
+  DeviceExposureProvenanceEnum:
+    description: Source of device exposure record
+    comments: Taken from OMOP Type Concept Domain
+    permissible_values:
+      CASE REPORT FORM:
+        description: Case Report Form
+        meaning: OMOP:32809
+      CLAIM:
+        description: Claim
+        meaning: OMOP:32810
+      CLAIM AUTHORIZATION:
+        description: Claim authorization
+        meaning: OMOP:32811
+      CLAIM DISCHARGE RECORD:
+        description: Claim discharge record
+        meaning: OMOP:32812
+      CLAIM ENROLMENT RECORD:
+        description: Claim enrolment record
+        meaning: OMOP:32813
+      COST RECORD:
+        description: Cost record
+        meaning: OMOP:32814
+      DEATH CERTIFICATE:
+        description: Death Certificate
+        meaning: OMOP:32815
+      DENTAL CLAIM:
+        description: Dental claim
+        meaning: OMOP:32816
+      EHR:
+        description: EHR
+        meaning: OMOP:32817
+      EHR ADMINISTRATION RECORD:
+        description: EHR administration record
+        meaning: OMOP:32818
+      EHR ADMISSION NOTE:
+        description: EHR admission note
+        meaning: OMOP:32819
+      EHR ANCILLARY REPORT:
+        description: EHR ancillary report
+        meaning: OMOP:32820
+      EHR BILLING RECORD:
+        description: EHR billing record
+        meaning: OMOP:32821
+      EHR CHIEF COMPLAINT:
+        description: EHR chief complaint
+        meaning: OMOP:32822
+      EHR DISCHARGE RECORD:
+        description: EHR discharge record
+        meaning: OMOP:32823
+      EHR DISCHARGE SUMMARY:
+        description: EHR discharge summary
+        meaning: OMOP:32824
+      EHR DISPENSING RECORD:
+        description: EHR dispensing record
+        meaning: OMOP:32825
+      EHR EMERGENCY ROOM NOTE:
+        description: EHR emergency room note
+        meaning: OMOP:32826
+      EHR ENCOUNTER RECORD:
+        description: EHR encounter record
+        meaning: OMOP:32827
+      EHR EPISODE RECORD:
+        description: EHR episode record
+        meaning: OMOP:32828
+      EHR INPATIENT NOTE:
+        description: EHR inpatient note
+        meaning: OMOP:32829
+      EHR MEDICATION LIST:
+        description: EHR medication list
+        meaning: OMOP:32830
+      EHR NOTE:
+        description: EHR note
+        meaning: OMOP:32831
+      EHR NURSING REPORT:
+        description: EHR nursing report
+        meaning: OMOP:32832
+      EHR ORDER:
+        description: EHR order
+        meaning: OMOP:32833
+      EHR OUTPATIENT NOTE:
+        description: EHR outpatient note
+        meaning: OMOP:32834
+      EHR PATHOLOGY REPORT:
+        description: EHR Pathology report
+        meaning: OMOP:32835
+      EHR PHYSICAL EXAMINATION:
+        description: EHR physical examination
+        meaning: OMOP:32836
+      EHR PLANNED DISPENSING RECORD:
+        description: EHR planned dispensing record
+        meaning: OMOP:32837
+      EHR PERSCRIPTION:
+        description: EHR prescription
+        meaning: OMOP:32838
+      EHR PERSCRIPTION ISSUE RECORD:
+        description: EHR prescription issue record
+        meaning: OMOP:32839
+      EHR PROBLEM LIST:
+        description: EHR problem list
+        meaning: OMOP:32840
+      EHR RADIOLOGY REPORT:
+        description: EHR radiology report
+        meaning: OMOP:32841
+      EHR REFERRAL RECORD:
+        description: EHR referral record
+        meaning: OMOP:32842
+      EXTERNAL CDM INSTANCE:
+        description: External CDM instance
+        meaning: OMOP:32843
+      FACILITY CLAIM:
+        description: Facility claim
+        meaning: OMOP:32844
+      FACILITY CLAIM DETAIL:
+        description: Facility claim detail
+        meaning: OMOP:32845
+      FACILITY CLAIM HEADER:
+        description: Facility claim header
+        meaning: OMOP:32846
+      GEOGRAPHIC ISOLATION RECORD:
+        description: Geographic isolation record
+        meaning: OMOP:32847
+      GOVERNMENT REPORT:
+        description: Government report
+        meaning: OMOP:32848
+      HEALTH INFORMATION EXCHANGE RECORD:
+        description: Health Information Exchange record
+        meaning: OMOP:32849
+      HEALTH RISK ASSESSMENT:
+        description: Health Risk Assessment
+        meaning: OMOP:32850
+      HEALTHCARE PROFESSIONAL FILLED SURVEY:
+        description: Healthcare professional filled survey
+        meaning: OMOP:32851
+      HOSPITAL COST:
+        description: Hospital cost
+        meaning: OMOP:32852
+      INPATIENT CLAIM:
+        description: Inpatient claim
+        meaning: OMOP:32853
+      INPATIENT CLAIM DETAIL:
+        description: Inpatient claim detail
+        meaning: OMOP:32854
+      INPATIENT CLAIM HEADER:
+        description: Inpatient claim header
+        meaning: OMOP:32855
+      LAB:
+        description: Lab
+        meaning: OMOP:32856
+      MAIL ORDER RECORD:
+        description: Mail order record
+        meaning: OMOP:32857
+      NLP:
+        description: NLP
+        meaning: OMOP:32858
+      OUTPATIENT CLAIM:
+        description: Outpatient claim
+        meaning: OMOP:32859
+      OUTPATIENT CLAIM DETAIL:
+        description: Outpatient claim detail
+        meaning: OMOP:32860
+      OUTPATIENT CLAIM HEADER:
+        description: Outpatient claim header
+        meaning: OMOP:32861
+      PATIENT FILLED SURVEY:
+        description: Patient filled survey
+        meaning: OMOP:32862
+      PATIENT OR PAYER PAID RECORD:
+        description: Patient or payer paid record
+        meaning: OMOP:32863
+      PATIENT REPORTED COST:
+        description: Patient reported cost
+        meaning: OMOP:32864
+      PATIENT SELF-REPORT:
+        description: Patient self-report
+        meaning: OMOP:32865
+      PATIENT SELF-TESTED:
+        description: Patient self-tested
+        meaning: OMOP:705183
+      PAYER SYSTEM RECORD (PAID PREMIUM):
+        description: Payer system record (paid premium)
+        meaning: OMOP:32866
+      PAYER SYSTEM RECORD (PRIMARY PAYER):
+        description: Payer system record (primary payer)
+        meaning: OMOP:32867
+      PAYER SYSTEM RECORD (SECONDARY PAYER):
+        description: Payer system record (secondary payer)
+        meaning: OMOP:32868
+      PHARMACY CLAIM:
+        description: Pharmacy claim
+        meaning: OMOP:32869
+      POINT OF CARE/EXPRESS LAB:
+        description: Point of care/express lab
+        meaning: OMOP:703249
+      PRE-QUALIFICATION TIME PERIOD:
+        description: Pre-qualification time period
+        meaning: OMOP:32870
+      PROFESSIONAL CLAIM:
+        description: Professional claim
+        meaning: OMOP:32871
+      PROFESSIONAL CLAIM DETAIL:
+        description: Professional claim detail
+        meaning: OMOP:32872
+      PROFESSIONAL CLAIM HEADER:
+        description: Professional claim header
+        meaning: OMOP:32873
+      PROVIDER CHARGE LIST PRICE:
+        description: Provider charge list price
+        meaning: OMOP:32874
+      PROVIDER FINANCIAL SYSTEM:
+        description: Provider financial system
+        meaning: OMOP:32875
+      PROVIDER INCURRED COST RECORD:
+        description: Provider incurred cost record
+        meaning: OMOP:32876
+      RANDOMIZATION RECORD:
+        description: Randomization record
+        meaning: OMOP:32877
+      REFERENCE LAB:
+        description: Reference lab
+        meaning: OMOP:32878
+      REGISTRY:
+        description: Registry
+        meaning: OMOP:32879
+      STANDARD ALGORITHM:
+        description: Standard algorithm
+        meaning: OMOP:32880
+      STANDARD ALGORITHM FROM CLAIMS:
+        description: Standard algorithm from claims
+        meaning: OMOP:32881
+      STANDARD ALGORITHM FROM EHR:
+        description: Standard algorithm from EHR
+        meaning: OMOP:32882
+      SURVEY:
+        description: Survey
+        meaning: OMOP:32883
+      URGENT LAB:
+        description: Urgent lab
+        meaning: OMOP:32884
+      US SOCIAL SECURITY DEATH MASTER FILE:
+        description: US Social Security Death Master File
+        meaning: OMOP:32885
+      VISION CLAIM:
+        description: Vision claim
+        meaning: OMOP:32886
+
+  SpecimenTypeEnum:
+    name: SpecimenTypeEnum
+    description: A high-level type of specimen, based on its derivation provenance (i.e. how far removed it is from the original sample extracted from a source).
+    permissible_values:
+      ALIQUOT:
+        text: ALIQUOT
+        description: A specimen that results from the division of some parent specimen into equal amounts for downstream analysis.
+      ANALYTE:
+        text: ANALYTE
+        description: A specimen generated through the extraction of a specified class of substance/chemical (e.g. DNA, RNA, protein) from a parent specimen, which is stored in solution as an analyte.
+      FRESH_SPECIMEN:
+        text: FRESH_SPECIMEN
+        description: A specimen representing the material that was directly collected from a subject (i.e. not generated through portioning, aliquoting, or analyte extraction from an existing specimen).
+      PORTION:
+        text: PORTION
+        description: A physical sub-part taken from an existing specimen.
+      SLIDE:
+        text: SLIDE
+        description: A specimen that is mounted on a slide or coverslip for microscopic analysis.
+
+  AnalyteTypeEnum:
+    name: AnalyteTypeEnum
+    permissible_values:
+      FFPE DNA:
+        text: FFPE DNA
+        description: Formalin-Fixed Paraffin-Embedded DNA
+      Repli-G (Qiagen) DNA:
+        text: Repli-G (Qiagen) DNA
+        description: Repli-G (Qiagen) DNA
+      GenomePlex (Rubicon) Amplified DNA:
+        text: GenomePlex (Rubicon) Amplified DNA
+      Total RNA:
+        text: Total RNA
+        description: Total Ribonucleic Acid
+      Repli-G X (Qiagen) DNA:
+        text: Repli-G X (Qiagen) DNA
+        description: Repli-G X (Qiagen) DNA
+      RNA:
+        text: RNA
+        description: Ribonucleic Acid
+      Repli-G Pooled (Qiagen) DNA:
+        text: Repli-G Pooled (Qiagen) DNA
+        description: REPLI-g Pooled DNA
+      DNA:
+        text: DNA
+        description: DNA
+      EBV Immortalized Normal:
+        text: EBV Immortalized Normal
+        description: Normal Epstein-Barr Virus Immortalization
+      FFPE RNA:
+        text: FFPE RNA
+        description: Formalin-Fixed Paraffin-Embedded RNA
+      Protein:
+        text: Protein
+        description: Protein
+      Nuclei RNA:
+        text: Nuclei RNA
+      cfDNA:
+        text: cfDNA
+
+  SourceMaterialTypeEnum:
+    name: SourceMaterialTypeEnum
+    permissible_values:
+      ADDITIONAL_METASTATIC:
+        text: ADDITIONAL_METASTATIC
+      ADDITIONAL_NEW_PRIMARY:
+        text: ADDITIONAL_NEW_PRIMARY
+      BENIGN_NEOPLASMS:
+        text: BENIGN_NEOPLASMS
+      BLOOD_DERIVED_CANCER_BONE_MARROW:
+        text: BLOOD_DERIVED_CANCER_BONE_MARROW
+      BLOOD_DERIVED_CANCER_BONE_MARROW_POST_TREATMENT:
+        text: BLOOD_DERIVED_CANCER_BONE_MARROW_POST_TREATMENT
+      BLOOD_DERIVED_CANCER_PERIPHERAL_BLOOD:
+        text: BLOOD_DERIVED_CANCER_PERIPHERAL_BLOOD
+      BLOOD_DERIVED_CANCER_PERIPHERAL_BLOOD_POST_TREATMENT:
+        text: BLOOD_DERIVED_CANCER_PERIPHERAL_BLOOD_POST_TREATMENT
+      BLOOD_DERIVED_LIQUID_BIOPSY:
+        text: BLOOD_DERIVED_LIQUID_BIOPSY
+      BLOOD_DERIVED_NORMAL:
+        text: BLOOD_DERIVED_NORMAL
+      BONE_MARROW_NORMAL:
+        text: BONE_MARROW_NORMAL
+      BUCCAL_CELL_NORMAL:
+        text: BUCCAL_CELL_NORMAL
+      CELL_LINE_DERIVED_XENOGRAFT_TISSUE:
+        text: CELL_LINE_DERIVED_XENOGRAFT_TISSUE
+      CELL_LINES:
+        text: CELL_LINES
+      CONTROL_ANALYTE:
+        text: CONTROL_ANALYTE
+      DNA:
+        text: DNA
+      EBV_IMMORTALIZED_NORMAL:
+        text: EBV_IMMORTALIZED_NORMAL
+      EXPANDED_NEXT_GENERATION_CANCER_MODEL:
+        text: EXPANDED_NEXT_GENERATION_CANCER_MODEL
+      FFPE_RECURRENT:
+        text: FFPE_RECURRENT
+      FFPE_SCROLLS:
+        text: FFPE_SCROLLS
+      FIBROBLASTS_FROM_BONE_MARROW_NORMAL:
+        text: FIBROBLASTS_FROM_BONE_MARROW_NORMAL
+      GRANULOCYTES:
+        text: GRANULOCYTES
+      HUMAN_TUMOR_ORIGINAL_CELLS:
+        text: HUMAN_TUMOR_ORIGINAL_CELLS
+      IN_SITU_NEOPLASMS:
+        text: IN_SITU_NEOPLASMS
+      LYMPHOID_NORMAL:
+        text: LYMPHOID_NORMAL
+      METASTATIC:
+        text: METASTATIC
+      MIXED_ADHERENT_SUSPENSION:
+        text: MIXED_ADHERENT_SUSPENSION
+      MONONUCLEAR_CELLS_FROM_BONE_MARROW_NORMAL:
+        text: MONONUCLEAR_CELLS_FROM_BONE_MARROW_NORMAL
+      NEOPLASMS_OF_UNCERTAIN_AND_UNKNOWN_BEHAVIOR:
+        text: NEOPLASMS_OF_UNCERTAIN_AND_UNKNOWN_BEHAVIOR
+      NEXT_GENERATION_CANCER_MODEL:
+        text: NEXT_GENERATION_CANCER_MODEL
+      NORMAL_ADJACENT_TISSUE:
+        text: NORMAL_ADJACENT_TISSUE
+      PLEURAL_EFFUSION:
+        text: PLEURAL_EFFUSION
+      POST_NEOADJUVANT_THERAPY:
+        text: POST_NEOADJUVANT_THERAPY
+      PRIMARY_BLOOD_DERIVED_CANCER_BONE_MARROW:
+        text: PRIMARY_BLOOD_DERIVED_CANCER_BONE_MARROW
+      PRIMARY_BLOOD_DERIVED_CANCER_PERIPHERAL_BLOOD:
+        text: PRIMARY_BLOOD_DERIVED_CANCER_PERIPHERAL_BLOOD
+      PRIMARY_TUMOR:
+        text: PRIMARY_TUMOR
+      PRIMARY_XENOGRAFT_TISSUE:
+        text: PRIMARY_XENOGRAFT_TISSUE
+      RECURRENT_BLOOD_DERIVED_CANCER_BONE_MARROW:
+        text: RECURRENT_BLOOD_DERIVED_CANCER_BONE_MARROW
+      RECURRENT_BLOOD_DERIVED_CANCER_PERIPHERAL_BLOOD:
+        text: RECURRENT_BLOOD_DERIVED_CANCER_PERIPHERAL_BLOOD
+      RECURRENT_TUMOR:
+        text: RECURRENT_TUMOR
+      RNA:
+        text: RNA
+      SALIVA:
+        text: SALIVA
+      SLIDES:
+        text: SLIDES
+      SOLID_TISSUE_NORMAL:
+        text: SOLID_TISSUE_NORMAL
+      TOTAL_RNA:
+        text: TOTAL_RNA
+      TUMOR:
+        text: TUMOR
+      TUMOR_ADJACENT_NORMAL_POST_NEOADJUVANT_THERAPY:
+        text: TUMOR_ADJACENT_NORMAL_POST_NEOADJUVANT_THERAPY
+      XENOGRAFT_TISSUE:
+        text: XENOGRAFT_TISSUE
+      NOT_ALLOWED_TO_COLLECT:
+        text: NOT_ALLOWED_TO_COLLECT
+      NOT_REPORTED:
+        text: NOT_REPORTED
+      UNKNOWN:
+        text: UNKNOWN
+
+  SectionLocationEnum:
+    name: SectionLocationEnum
+    description: The location in a parent specimen from which a section/portion was excised.
+    permissible_values:
+      BOTTOM:
+        text: BOTTOM
+        description: The part of a specimen designated as its 'bottom' based on specified orientation criteria.
+      TOP:
+        text: TOP
+        description: The part of a specimen designated as its 'top' based on specified orientation criteria.
+      UNKNOWN:
+        text: UNKNOWN
+        description: An unknown location on a specimen.
+
+  SpecimenCreationActivityTypeEnum:
+    name: SpecimenCreationActivityTypeEnum
+    description: The high-level type of activity through which the specimen was generated (i.e. via collection from the original source, or via derivation from an existing specimen)
+    permissible_values:
+      COLLECTION_FROM_SOURCE:
+        text: COLLECTION_FROM_SOURCE
+        description: An activity that collects an initial sample directly from a subject / source.
+      DERIVATION_FROM_SPECIMEN:
+        text: DERIVATION_FROM_SPECIMEN
+        description: An activity that derives a new specimen from an existing one.
+
+  SpecimenCollectionMethodType:
+    name: SpecimenCollectionMethodType
+    permissible_values:
+      ORCHIECTOMY:
+        text: ORCHIECTOMY
+      METASTASECTOMY:
+        text: METASTASECTOMY
+      AUTOPSY:
+        text: AUTOPSY
+      UNKNOWN:
+        text: UNKNOWN
+      ASPIRATE:
+        text: ASPIRATE
+      RIGHT_HEMICOLECTOMY:
+        text: RIGHT_HEMICOLECTOMY
+      INCISIONAL_BIOPSY:
+        text: INCISIONAL_BIOPSY
+      BLOOD_DRAW:
+        text: BLOOD_DRAW
+      PERITONEAL_LAVAGE:
+        text: PERITONEAL_LAVAGE
+      OPEN_RADICAL_PROSTATECTOMY:
+        text: OPEN_RADICAL_PROSTATECTOMY
+      ABDOMINO_PERINEAL_RESECTION_OF_RECTUM:
+        text: ABDOMINO_PERINEAL_RESECTION_OF_RECTUM
+      SALPINGECTOMY:
+        text: SALPINGECTOMY
+      ENDO_RECTAL_TUMOR_RESECTION:
+        text: ENDO_RECTAL_TUMOR_RESECTION
+      BIOPSY:
+        text: BIOPSY
+      SALPINGO_OOPHORECTOMY:
+        text: SALPINGO_OOPHORECTOMY
+      NOT_ALLOWED_TO_COLLECT:
+        text: NOT_ALLOWED_TO_COLLECT
+      WHIPPLE_PROCEDURE:
+        text: WHIPPLE_PROCEDURE
+      ENUCLEATION:
+        text: ENUCLEATION
+      MODIFIED_RADICAL_MASTECTOMY:
+        text: MODIFIED_RADICAL_MASTECTOMY
+      PARACENTESIS:
+        text: PARACENTESIS
+      OPEN_CRANIOTOMY:
+        text: OPEN_CRANIOTOMY
+      WEDGE_RESECTION:
+        text: WEDGE_RESECTION
+      LAPAROSCOPIC_RADICAL_NEPHRECTOMY:
+        text: LAPAROSCOPIC_RADICAL_NEPHRECTOMY
+      OPEN_PARTIAL_NEPHRECTOMY:
+        text: OPEN_PARTIAL_NEPHRECTOMY
+      TRANSURETHRAL_RESECTION:
+        text: TRANSURETHRAL_RESECTION
+      SIGMOID_COLECTOMY:
+        text: SIGMOID_COLECTOMY
+      OOPHORECTOMY:
+        text: OOPHORECTOMY
+      TOTAL_HEPATECTOMY:
+        text: TOTAL_HEPATECTOMY
+      INDETERMINANT:
+        text: INDETERMINANT
+      SUBTOTAL_RESECTION:
+        text: SUBTOTAL_RESECTION
+      LEFT_HEMICOLECTOMY:
+        text: LEFT_HEMICOLECTOMY
+      NEEDLE_BIOPSY:
+        text: NEEDLE_BIOPSY
+      OTHER:
+        text: OTHER
+      PANCREATECTOMY:
+        text: PANCREATECTOMY
+      THORACOSCOPIC_BIOPSY:
+        text: THORACOSCOPIC_BIOPSY
+      TOTAL_MASTECTOMY:
+        text: TOTAL_MASTECTOMY
+      EXCISIONAL_BIOPSY:
+        text: EXCISIONAL_BIOPSY
+      BONE_MARROW_ASPIRATE:
+        text: BONE_MARROW_ASPIRATE
+      LOCAL_RESECTION:
+        text: LOCAL_RESECTION
+      LOBECTOMY:
+        text: LOBECTOMY
+      FINE_NEEDLE_ASPIRATION:
+        text: FINE_NEEDLE_ASPIRATION
+      OMENTECTOMY:
+        text: OMENTECTOMY
+      TUMOR_RESECTION:
+        text: TUMOR_RESECTION
+      CYSTECTOMY:
+        text: CYSTECTOMY
+      GROSS_TOTAL_RESECTION:
+        text: GROSS_TOTAL_RESECTION
+      THORACENTESIS:
+        text: THORACENTESIS
+      ANTERIOR_RESECTION_OF_RECTUM:
+        text: ANTERIOR_RESECTION_OF_RECTUM
+      TRANSPLANT:
+        text: TRANSPLANT
+      LAPAROSCOPIC_PARTIAL_NEPHRECTOMY:
+        text: LAPAROSCOPIC_PARTIAL_NEPHRECTOMY
+      LAPAROSCOPIC_RADICAL_PROSTATECTOMY_WITH_ROBOTICS:
+        text: LAPAROSCOPIC_RADICAL_PROSTATECTOMY_WITH_ROBOTICS
+      PNEUMONECTOMY:
+        text: PNEUMONECTOMY
+      PAN_PROCTO_COLECTOMY:
+        text: PAN_PROCTO_COLECTOMY
+      HYSTERECTOMY_NOS:
+        text: HYSTERECTOMY_NOS
+      CORE_BIOPSY:
+        text: CORE_BIOPSY
+      SIMPLE_MASTECTOMY:
+        text: SIMPLE_MASTECTOMY
+      LUMPECTOMY:
+        text: LUMPECTOMY
+      ENDOSCOPIC_BIOPSY:
+        text: ENDOSCOPIC_BIOPSY
+      SIMPLE_HYSTERECTOMY:
+        text: SIMPLE_HYSTERECTOMY
+      LYMPHADENECTOMY:
+        text: LYMPHADENECTOMY
+      LAPAROSCOPIC_BIOPSY:
+        text: LAPAROSCOPIC_BIOPSY
+      TUMOR_DEBULKING:
+        text: TUMOR_DEBULKING
+      ASCITES_DRAINAGE:
+        text: ASCITES_DRAINAGE
+      ENDOSCOPIC_MUCOSAL_RESECTION:
+        text: ENDOSCOPIC_MUCOSAL_RESECTION
+      LAPAROSCOPIC_RADICAL_PROSTATECTOMY_WITHOUT_ROBOTICS:
+        text: LAPAROSCOPIC_RADICAL_PROSTATECTOMY_WITHOUT_ROBOTICS
+      TOTAL_COLECTOMY:
+        text: TOTAL_COLECTOMY
+      LIQUID_BIOPSY:
+        text: LIQUID_BIOPSY
+      RADICAL_HYSTERECTOMY:
+        text: RADICAL_HYSTERECTOMY
+      SURGICAL_RESECTION:
+        text: SURGICAL_RESECTION
+      OPEN_RADICAL_NEPHRECTOMY:
+        text: OPEN_RADICAL_NEPHRECTOMY
+      TRANSVERSE_COLECTOMY:
+        text: TRANSVERSE_COLECTOMY
+      HAND_ASSISTED_LAPAROSCOPIC_RADICAL_NEPHRECTOMY:
+        text: HAND_ASSISTED_LAPAROSCOPIC_RADICAL_NEPHRECTOMY
+      PUNCH_BIOPSY:
+        text: PUNCH_BIOPSY
+      PARTIAL_HEPATECTOMY:
+        text: PARTIAL_HEPATECTOMY
+      SUPRACERVICAL_HYSTERECTOMY:
+        text: SUPRACERVICAL_HYSTERECTOMY
+      OTHER_SURGICAL_RESECTION:
+        text: OTHER_SURGICAL_RESECTION
+      NOT_REPORTED:
+        text: NOT_REPORTED
+      FULL_HYSTERECTOMY:
+        text: FULL_HYSTERECTOMY
+      TONSILLECTOMY:
+        text: TONSILLECTOMY
+      SUPRAGLOTTIC_LARYNGECTOMY:
+        text: SUPRAGLOTTIC_LARYNGECTOMY
+      SUPERFICIAL_PAROTIDECTOMY:
+        text: SUPERFICIAL_PAROTIDECTOMY
+      LARYNGOPHARYNGECTOMY:
+        text: LARYNGOPHARYNGECTOMY
+      MAXILLECTOMY:
+        text: MAXILLECTOMY
+      PARTIAL_NEPHRECTOMY:
+        text: PARTIAL_NEPHRECTOMY
+      MANDIBULECTOMY:
+        text: MANDIBULECTOMY
+      BUCCAL_MUCOSAL_RESECTION:
+        text: BUCCAL_MUCOSAL_RESECTION
+      VERTICAL_HEMILARYNGECTOMY:
+        text: VERTICAL_HEMILARYNGECTOMY
+      TOTAL_NEPHRECTOMY:
+        text: TOTAL_NEPHRECTOMY
+      TOTAL_LARYNGECTOMY:
+        text: TOTAL_LARYNGECTOMY
+      TRANSORAL_LASER_EXCISION:
+        text: TRANSORAL_LASER_EXCISION
+      PAROTIDECTOMY_NOS:
+        text: PAROTIDECTOMY_NOS
+      RADICAL_MAXILLECTOMY:
+        text: RADICAL_MAXILLECTOMY
+      ENDOLARYNGEAL_EXCISION:
+        text: ENDOLARYNGEAL_EXCISION
+      PALATECTOMY:
+        text: PALATECTOMY
+      GLOSSECTOMY:
+        text: GLOSSECTOMY
+      PARTIAL_LARYNGECTOMY:
+        text: PARTIAL_LARYNGECTOMY
+      LYMPH_NODE_DISSECTION:
+        text: LYMPH_NODE_DISSECTION
+      RADICAL_PROSTATECTOMY:
+        text: RADICAL_PROSTATECTOMY
+      DEEP_PAROTIDECTOMY:
+        text: DEEP_PAROTIDECTOMY
+      SUBTOTAL_PROSTATECTOMY:
+        text: SUBTOTAL_PROSTATECTOMY
+      RADICAL_NEPHRECTOMY:
+        text: RADICAL_NEPHRECTOMY
+      SUPRACRICOID_LARYNGECTOMY:
+        text: SUPRACRICOID_LARYNGECTOMY
+      PARTIAL_MAXILLECTOMY:
+        text: PARTIAL_MAXILLECTOMY
+
+  SpecimenQualityObservationTypeEnum:
+    name: SpecimenQualityObservationTypeEnum
+    description: Types of measurements that reflect the quality of a specimen or its suitability for use.
+    permissible_values:
+      A260_A280_RATIO:
+        text: A260_A280_RATIO
+        description: Ratio of absorbance measured at a wavelength of 260 over that at a wavelength of 280.
+      RIBOSOMAL_RNA_28S_16S_RATIO:
+        text: RIBOSOMAL_RNA_28S_16S_RATIO
+        description: Ratio of quantity of 28s RNA over that of 16s RNA.
+
+  SpecimenQualityObservationMethodEnum:
+    name: SpecimenQualityObservationMethodEnum
+    description: A type of method used in determining the quantity of a specimen.
+    permissible_values:
+      UV_SPEC:
+        text: UV_SPEC
+        description: A technique used to measure light absorbance across the ultraviolet and visible ranges of the electromagnetic spectrum.
+      PICO_GREEN:
+        text: PICO_GREEN
+        description: A technique applying the Pico488 fluorescent sensor dye that is used for quantifying the amount of double-stranded DNA (dsDNA) present in a given sample.
+
+  SpecimenQuantityObservationTypeEnum:
+    name: SpecimenQuantityObservationTypeEnum
+    description: Measures related to the quantity of a specimen or analyte it currently contains - e.g. its weight, volume, or concentration.
+    permissible_values:
+      WEIGHT:
+        text: WEIGHT
+        description: The current weight of the specimen, at the time of recording (as opposed to an initial weight before its processing or portioning).
+      VOLUME:
+        text: VOLUME
+        description: The current total volume of the specimen, at the time of recording.
+      CONCENTRATION:
+        text: CONCENTRATION
+        description: The concentration of an extracted analyte that is present in a specimen (specifically, in a specimen of type 'analyte', or an 'aliquot' derived from an analyte). For example, the concentration of DNA in a specimen created through extracting DNA from a blood sample.
+
+  SpecimenProcessingActivityTypeEnum:
+    name: SpecimenProcessingActivityTypeEnum
+    description: The high-level type of processing activity performed.
+    permissible_values:
+      FIXATION:
+        text: FIXATION
+        description: A processing activity that applies chemicals to preserve biological tissues from decay due to autolysis or putrefaction
+      FREEZING:
+        text: FREEZING
+        description: A processing activity that aims to freeze a specimen.
+      MOUNTING:
+        text: MOUNTING
+        description: A processing activity that aims to secure a specimen or slide in place in preparation for further examination (usually via microscopy)
+      PRESERVATION:
+        text: PRESERVATION
+        description: A processing activity that aims to preserve a specimen.
+        
+  UnitOfMeasurementEnum:
+    description: Standard units of measurement from the [Units of Measurement (UOM) ontology](https://units-of-measurement.org/). Units-of-measurement (UOM) provides URLs for Unified Code for Units of Measure (UCUM) codes, and mappings to a number of units ontologies and systems, in human- and machine-readable linked data formats.
+    reachable_from:
+      source_ontology: UOM
+
+  GravityDomainEnum:
+    description: Social Determinants of Health domains as defined in the Gravity Project
+    permissible_values:
+      FOOD_INSECURITY:
+        text: FOOD_INSECURITY
+        description:
+      HOUSING_INSTABILITY:
+        text: HOUSING_INSTABILITY
+        description:
+      HOMELESSNESS:
+        text: HOMELESSNESS
+        description:
+      INADEQUATE_HOUSING:
+        text: INADEQUATE_HOUSING
+        description:
+      TRANSPORTATION_INSECURITY:
+        text: TRANSPORTATION_INSECURITY
+        description:
+      FINANCIAL_INSECURITY:
+        text: FINANCIAL_INSECURITY
+        description:
+      MATERIAL_HARDSHIP:
+        text: MATERIAL_HARDSHIP
+        description:
+      EMPLOYMENT_STATUS:
+        text: EMPLOYMENT_STATUS
+        description:
+      EDUCATIONAL_ATTAINMENT:
+        text: EDUCATIONAL_ATTAINMENT
+        description:
+      VETERAN_STATUS:
+        text: VETERAN_STATUS
+        description:
+      STRESS:
+        text: STRESS
+        description:
+      SOCIAL_CONNECTION:
+        text: SOCIAL_CONNECTION
+        description:
+      INTIMATE_PARTNER_VIOLENCE_IPV:
+        text: INTIMATE_PARTNER_VIOLENCE_IPV
+        description:
+      ELDER_ABUSE:
+        text: ELDER_ABUSE
+        description:
+      HEALTH_LITERACY:
+        text: HEALTH_LITERACY
+        description:
+      MEDICAL_COST_BURDEN:
+        text: MEDICAL_COST_BURDEN
+        description:
+      HEALTH_INSURANCE_COVERAGE_STATUS:
+        text: HEALTH_INSURANCE_COVERAGE_STATUS
+        description:
+      DIGITAL_LITERACY:
+        text: DIGITAL_LITERACY
+        description:
+      DIGITAL_ACCESS:
+        text: DIGITAL_ACCESS
+        description:
+      UTILITY_INSECURITY:
+        text: UTILITY_INSECURITY
+        description:
+  
+  ConditionSeverityEnum:
+    description: Social Determinants of Health domains as defined in the Gravity Project
+    permissible_values:
+      MILD:
+        text: MILD
+        meaning: SNOMED:255604002
+      MODERATE:
+        text: MODERATE
+        meaning: SNOMED:6736007
+      SEVERE:
+        text: SEVERE
+        meaning: SNOMED:24484000
+
+  FamilyRelationshipEnum:
+    description: Values describing the relationship between an individual and family members.
+    permissible_values:
+      ONESELF:
+        description: A relation to one's self.
+      NATURAL_PARENT:
+        description: A relation to a natural parent (mother or father) when otherwise not specified.
+        meaning: SNOMED:13646006
+      NATURAL_FATHER:
+        description: A relation to a natural father.
+        meaning: SNOMED:9947008
+      NATURAL_MOTHER:
+        description: A relation to a natural mother.
+        meaning: SNOMED:65656005
+      NATURAL_SIBLING:
+        description: A relation to a natural sibling (sister or brother) when otherwise not specified.
+        meaning: SNOMED:82101005
+      NATURAL_BROTHER:
+        description: A relation to a natural brother.
+        meaning: SNOMED:60614009
+      NATURAL_SISTER:
+        description: A relation to a natural sister.
+        meaning: SNOMED:73678001
+  
