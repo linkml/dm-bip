@@ -19,17 +19,111 @@ In addition, some additional entities are likely interest and should likely be i
  3. Procedure - Any procedure that may occur on the participant that the study tracks either as part of the study or as relevant information
  4. Observation - Any observed information about the participant, this has sub-types capturing specific observations
 
-Here is an example of what these files might look like.
+## Class and Slot Analysis
+Unlike INCLUDE, the BDC schema is all in one YAML file so we don't need to examine the files separately. In addition, BDC doesn't include a method for determining whether a class is required so we'll need to select what classes we think are necessary based on our assumptions on the data we expect to see. Generally, it might be best to assume we should get some data from each class. We can also ignore the clear metaclasses, marked with abstract=true. Given the class selection, we should determine the minimum required slots for each of the classes. Again, it appears that the BDC schema is more flexible than the INCLUDE data model so most of the slots do not appear to be required. As we don't have many slot requirements we should choose some reasonable slots for each of the classes to create an example data set.
 
+### Classes and Slots to Include
+Here are the classes and slots we should probably include in the toy dataset in order to get reasonable covereage of the BDC data model. We're includding Person here only to make sure that we can wire up the connection to Participant in the BDC model.
+- Person
+	- species
+	- identity
+- Demography
+    - sex
+    - ethnicity
+    - race
+	- identity
+    - associated_participant
+- Participant
+    - description
+    - member_of_research_study
+    - age_at_index
+    - originating_site
+    - study_arm
+    - consents
+    - associated_person
+    - identity
+- ResearchStudy
+    - name
+    - name_shortened
+    - date_started
+    - date_ended
+    - url
+    - research_project_type
+    - consents
+    - identity
+- Consent:
+    - consent_code
+    - valid_from
+    - valid_to
+- Visit
+    - visit_category
+    - associated_participant
+- Condition
+    - condition_status
+    - condition_severity
+    - relationship_to_participant
+    - associated_participant
+    - associated_visit
+    - identity
 
-## Participant.csv
+### Classses and Slots to Exclude
+This is the list of Classes and slots to leave out of the toy dataset with rationale for some on why we made that decision.
+- Entity  --- Abstract
+- Person  --- These don't seem very important or may be privacy issues.
+    - breed
+    - year_of_birth
+    - vital_status
+    - age_at_death
+    - year_of_death
+    - cause_of_death
+- Participant
+    - description  --- Probably a free-form field, so uninteresting
+    - index_timepoint  --- Not ready to deal with timepoints
+- ResearchStudy  --- Free-form or not clear what value
+    - description
+    - description_shortened
+    - sponsor
+    - part_of
+    - principal_investigator
+    - associated_timepoint
+- Visit  --- These don't seem especially informative
+    - age_at_visit_start
+    - age_at_visit_end
+    - visit_provenance
+- Organization  --- I don't think this gets us anything new
+    - name
+    - alias
+    - organization_type
+	- identity
+- TimePoint  --- This feels more complicated than we are ready for
+    - date_time
+    - index_time_point
+    - offset_from_index
+    - event_type
+- TimePeriod  --- Again feels like too much
+	- period_start
+    - period_end
+- ResearchStudyCollection  --- Too meta for now
+      entries
+- Questionnaire  --- I think I'm going to leave all the questionaire stuff out of the toy
+    all slots and related classes
+- Condition
+    - condition_concept
+    - age_at_condition_start
+    - age_at_condition_end
+    - condition_provenance
+- 
+
+## Example files
+
+### Participant.csv
 
 (Includes demographics directly)
 participant_id	sex	ethnicity	race	year_of_birth
 P001	MALE	NOT_HISPANIC_OR_LATINO	WHITE	1985
 P002	FEMALE	HISPANIC_OR_LATINO	ASIAN	1992
 
-## ClinicalData.csv
+### ClinicalData.csv
 
 (Combines Visits, Conditions, and Measurements—one row per visit/event)
 participant_id	visit_category	age_at_visit	condition	condition_status	systolic_bp	diastolic_bp	measurement_unit
@@ -37,7 +131,7 @@ P001	Outpatient	14000	Hypertension	PRESENT	130	85	mmHg
 P002	Inpatient	11000	None	N/A	120	75	mmHg
 
 
-## ResearchStudy.csv
+### ResearchStudy.csv
 
 (We generate this ourselves during transformation)
 research_study_id	name
