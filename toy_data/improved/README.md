@@ -6,3 +6,6 @@ In order to create a useful and robust toy data set we need to gather some infor
  3. Review other prioritized variables to identify the most valuable to develop and test on.
  4. Use the above as a list variables for the toy synthetic data set
  5. Provide the list of fields for synthetic data to an LLM with descriptions of what we would like to generate and have the LLM generate a small synthetic data set.
+
+ ## Fields from BDC-HM and INCLUDE
+ 
