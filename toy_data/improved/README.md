@@ -9,114 +9,102 @@ In order to create a useful and robust toy data set we need to gather some infor
 
  ## Fields from BDC-HM and INCLUDE
 
-BDC-HM
-- Person
-	- species
-	- identity
-- Demography
-    - sex
-    - ethnicity
-    - race
-	- identity
-    - associated_participant
-- Participant
-    - description
-    - member_of_research_study
-    - age_at_index
-    - associated_person
-    - identity
-- ResearchStudy
-    - name
-    - identity
-- Visit
-    - visit_category
-    - associated_participant
-- Condition
-    - condition_status
-    - condition_severity
-    - associated_participant
-    - associated_visit
-    - identity
-- ObservationSet
-    - category
-    - focus
-    - associated_participant
-    - associated_visit
-    - method_type
-    - performed_by
-    - observations
-- Observation
-    - age_at_observation
-    - category
-    - observation_type
-    - method_type
-    - focus
-    - associated_participant
-    - associated_visit
-    - performed_by
-    - value_string
-    - value_boolean
-    - value_quantity
-    - value_enum
+| **BDC-HM**                    |
+|-------------------------------------|
+| Person:species                      |
+| Person:identity                     |
+| Demography:sex                      |
+| Demography:ethnicity                |
+| Demography:race                     |
+| Demography:identity                 |
+| Demography:associated_participant   |
+| Participant:description             |
+| Participant:member_of_research_study|
+| Participant:age_at_index            |
+| Participant:associated_person       |
+| Participant:identity                |
+| ResearchStudy:name                  |
+| ResearchStudy:identity              |
+| Visit:visit_category                |
+| Visit:associated_participant        |
+| Condition:condition_status          |
+| Condition:condition_severity        |
+| Condition:associated_participant    |
+| Condition:associated_visit          |
+| Condition:identity                  |
+| ObservationSet:category             |
+| ObservationSet:focus                |
+| ObservationSet:associated_participant|
+| ObservationSet:associated_visit     |
+| ObservationSet:method_type          |
+| ObservationSet:performed_by         |
+| ObservationSet:observations         |
+| Observation:age_at_observation      |
+| Observation:category                |
+| Observation:observation_type        |
+| Observation:method_type             |
+| Observation:focus                   |
+| Observation:associated_participant  |
+| Observation:associated_visit        |
+| Observation:performed_by            |
+| Observation:value_string            |
+| Observation:value_boolean           |
+| Observation:value_quantity          |
+| Observation:value_enum              |
 
-INCLIDE Model
- - include_study.yaml
-    - Study
-        - studyCode
-        - studyTitle
-        - program
-        - studyDescription
-        - studyContactName
-        - studyContactInstitution
-        - studyContactEmail
-        - researchDomain
-        - participantLifespanStage
-        - studyDesign
-        - clinicalDataSourceType
-        - guidType
-    - Dataset
-        - studyCode
-        - datasetName
-        - datasetGlobalId
-        - expectedNumberOfFiles
-        - dataCollectionStartYear
-        - dataCollectionEndYear
-        - dataCategory
-        - dataType
-        - experimentalStrategy
-        - experimentalPlatform
-        - accessLimitations
-        - accessRequirements
- - include_participant.yaml
-    - Participant
-        - studyCode
-        - participantGlobalId
-        - participantExternalId
-        - familyType
-        - familyRelationship
-        - sex
-        - race
-        - ethnicity
-        - downSyndromeStatus
-        - ageAtFirstPatientEngagement
-        - firstPatientEngagementEvent
-- include_assay.yaml
-    - Biospecimen
-        - studyCode
-        - participantGlobalId
-        - participantExternalId    
-        - sampleGlobalId
-        - sampleExternalId
-        - sampleType
-        - sampleAvailability
-        - containerAvailability
-    - Datafile
-        - studyCode
-        - fileName
-        - fileGlobalId
-        - fileS3Location
-        - drsUri
-        - dataAccess
-        - dataCategory
-        - dataType
-        - fileFormat
+
+
+| **INCLUDE Model**                   |
+|-------------------------------------|
+| Study:studyCode                     |
+| Study:studyTitle                    |
+| Study:program                       |
+| Study:studyDescription              |
+| Study:studyContactName              |
+| Study:studyContactInstitution       |
+| Study:studyContactEmail             |
+| Study:researchDomain                |
+| Study:participantLifespanStage      |
+| Study:studyDesign                   |
+| Study:clinicalDataSourceType        |
+| Study:guidType                      |
+| Dataset:studyCode                   |
+| Dataset:datasetName                 |
+| Dataset:datasetGlobalId             |
+| Dataset:expectedNumberOfFiles       |
+| Dataset:dataCollectionStartYear     |
+| Dataset:dataCollectionEndYear       |
+| Dataset:dataCategory                |
+| Dataset:dataType                    |
+| Dataset:experimentalStrategy        |
+| Dataset:experimentalPlatform        |
+| Dataset:accessLimitations           |
+| Dataset:accessRequirements          |
+| Participant:studyCode               |
+| Participant:participantGlobalId     |
+| Participant:participantExternalId   |
+| Participant:familyType              |
+| Participant:familyRelationship      |
+| Participant:sex                     |
+| Participant:race                    |
+| Participant:ethnicity               |
+| Participant:downSyndromeStatus      |
+| Participant:ageAtFirstPatientEngagement |
+| Participant:firstPatientEngagementEvent |
+| Biospecimen:studyCode               |
+| Biospecimen:participantGlobalId     |
+| Biospecimen:participantExternalId   |
+| Biospecimen:sampleGlobalId          |
+| Biospecimen:sampleExternalId        |
+| Biospecimen:sampleType              |
+| Biospecimen:sampleAvailability      |
+| Biospecimen:containerAvailability   |
+| Datafile:studyCode                  |
+| Datafile:fileName                   |
+| Datafile:fileGlobalId               |
+| Datafile:fileS3Location             |
+| Datafile:drsUri                     |
+| Datafile:dataAccess                 |
+| Datafile:dataCategory               |
+| Datafile:dataType                   |
+| Datafile:fileFormat                 |
