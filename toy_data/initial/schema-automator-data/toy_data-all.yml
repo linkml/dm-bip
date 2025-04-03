@@ -1,0 +1,373 @@
+name: Toy_Schema
+description: Toy_Schema
+id: https://w3id.org/Toy_Schema
+imports:
+- linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  Toy_Schema: https://w3id.org/Toy_Schema
+default_prefix: Toy_Schema
+types:
+  measurement:
+    description: Holds a measurement serialized as a string
+    from_schema: https://w3id.org/Toy_Schema
+    typeof: string
+enums:
+  type_enum:
+    from_schema: https://w3id.org/Toy_Schema
+    permissible_values:
+      demographic:
+        description: demographic
+  project_id_enum:
+    from_schema: https://w3id.org/Toy_Schema
+    permissible_values:
+      tutorial-synthetic_data_set_1:
+        description: tutorial-synthetic_data_set_1
+  annotated_sex_enum:
+    from_schema: https://w3id.org/Toy_Schema
+    permissible_values:
+      female:
+        description: female
+      male:
+        description: male
+  race_enum:
+    from_schema: https://w3id.org/Toy_Schema
+    permissible_values:
+      hispanic:
+        description: hispanic
+      black or african american:
+        description: black or african american
+      asian:
+        description: asian
+      white:
+        description: white
+  consent_codes_enum:
+    from_schema: https://w3id.org/Toy_Schema
+    permissible_values:
+      open:
+        description: open
+  studies.submitter_id_enum:
+    from_schema: https://w3id.org/Toy_Schema
+    permissible_values:
+      public:
+        description: public
+slots:
+  type:
+    examples:
+    - value: demographic
+    from_schema: https://w3id.org/Toy_Schema
+    range: type_enum
+  id:
+    examples:
+    - value: 1967affc-04d1-42c1-a21a-39a12ab421cf
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  project_id:
+    examples:
+    - value: tutorial-synthetic_data_set_1
+    from_schema: https://w3id.org/Toy_Schema
+    range: project_id_enum
+  submitter_id:
+    examples:
+    - value: HG00262_demo
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  age_at_index:
+    examples:
+    - value: '75'
+    from_schema: https://w3id.org/Toy_Schema
+    range: integer
+  annotated_sex:
+    examples:
+    - value: female
+    from_schema: https://w3id.org/Toy_Schema
+    range: annotated_sex_enum
+  bmi_baseline:
+    examples:
+    - value: '25.9'
+    from_schema: https://w3id.org/Toy_Schema
+    range: float
+  height_baseline:
+    examples:
+    - value: '167.5'
+    from_schema: https://w3id.org/Toy_Schema
+    range: float
+  population:
+    examples:
+    - value: GBR
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  race:
+    examples:
+    - value: white
+    from_schema: https://w3id.org/Toy_Schema
+    range: race_enum
+  subjects.id:
+    examples:
+    - value: 34ea8f4c-9999-4ee1-8381-672b287861ec
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  subjects.submitter_id:
+    examples:
+    - value: HG00262
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  hdl:
+    examples:
+    - value: '65.97675051'
+    from_schema: https://w3id.org/Toy_Schema
+    range: float
+  ldl:
+    examples:
+    - value: '132.2853888'
+    from_schema: https://w3id.org/Toy_Schema
+    range: float
+  total_cholesterol:
+    examples:
+    - value: '419.8503206'
+    from_schema: https://w3id.org/Toy_Schema
+    range: float
+  triglycerides:
+    examples:
+    - value: '237.5881813'
+    from_schema: https://w3id.org/Toy_Schema
+    range: float
+  specimen_id:
+    examples:
+    - value: NA19037_sample
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  study_id:
+    examples:
+    - value: public
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  study_registration:
+    examples:
+    - value: dbGaP
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  authz:
+    examples:
+    - value: /programs/tutorial/projects/synthetic_data_set_1
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  study_description:
+    examples:
+    - value: high_coverage_2019_Public
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  projects.id:
+    examples:
+    - value: 2eef3f52-2ffd-58f9-9b5f-0339065dc475
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  projects.code:
+    examples:
+    - value: synthetic_data_set_1
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  consent_codes:
+    examples:
+    - value: open
+    from_schema: https://w3id.org/Toy_Schema
+    range: consent_codes_enum
+  participant_id:
+    examples:
+    - value: HG03934
+    from_schema: https://w3id.org/Toy_Schema
+    range: string
+  studies.id:
+    examples:
+    - value: 6f8d9f00-1d0e-4225-a366-77390e9bf746
+    from_schema: https://w3id.org/Toy_Schema
+    range: measurement
+  studies.submitter_id:
+    examples:
+    - value: public
+    from_schema: https://w3id.org/Toy_Schema
+    range: studies.submitter_id_enum
+classes:
+  demographics:
+    from_schema: https://w3id.org/Toy_Schema
+    slots:
+    - type
+    - id
+    - project_id
+    - submitter_id
+    - age_at_index
+    - annotated_sex
+    - bmi_baseline
+    - height_baseline
+    - population
+    - race
+    - subjects.id
+    - subjects.submitter_id
+    unique_keys:
+      id_key:
+        unique_key_name: id_key
+        unique_key_slots:
+        - id
+      submitter_id_key:
+        unique_key_name: submitter_id_key
+        unique_key_slots:
+        - submitter_id
+      subjects.id_key:
+        unique_key_name: subjects.id_key
+        unique_key_slots:
+        - subjects.id
+      subjects.submitter_id_key:
+        unique_key_name: subjects.submitter_id_key
+        unique_key_slots:
+        - subjects.submitter_id
+  lab_results:
+    from_schema: https://w3id.org/Toy_Schema
+    slots:
+    - type
+    - id
+    - project_id
+    - submitter_id
+    - hdl
+    - ldl
+    - total_cholesterol
+    - triglycerides
+    - subjects.id
+    - subjects.submitter_id
+    unique_keys:
+      id_key:
+        unique_key_name: id_key
+        unique_key_slots:
+        - id
+      submitter_id_key:
+        unique_key_name: submitter_id_key
+        unique_key_slots:
+        - submitter_id
+      hdl_key:
+        unique_key_name: hdl_key
+        unique_key_slots:
+        - hdl
+      ldl_key:
+        unique_key_name: ldl_key
+        unique_key_slots:
+        - ldl
+      total_cholesterol_key:
+        unique_key_name: total_cholesterol_key
+        unique_key_slots:
+        - total_cholesterol
+      triglycerides_key:
+        unique_key_name: triglycerides_key
+        unique_key_slots:
+        - triglycerides
+      subjects.id_key:
+        unique_key_name: subjects.id_key
+        unique_key_slots:
+        - subjects.id
+      subjects.submitter_id_key:
+        unique_key_name: subjects.submitter_id_key
+        unique_key_slots:
+        - subjects.submitter_id
+  sample:
+    from_schema: https://w3id.org/Toy_Schema
+    slots:
+    - type
+    - id
+    - project_id
+    - submitter_id
+    - specimen_id
+    - subjects.id
+    - subjects.submitter_id
+    unique_keys:
+      id_key:
+        unique_key_name: id_key
+        unique_key_slots:
+        - id
+      submitter_id_key:
+        unique_key_name: submitter_id_key
+        unique_key_slots:
+        - submitter_id
+      specimen_id_key:
+        unique_key_name: specimen_id_key
+        unique_key_slots:
+        - specimen_id
+      subjects.id_key:
+        unique_key_name: subjects.id_key
+        unique_key_slots:
+        - subjects.id
+      subjects.submitter_id_key:
+        unique_key_name: subjects.submitter_id_key
+        unique_key_slots:
+        - subjects.submitter_id
+  study:
+    from_schema: https://w3id.org/Toy_Schema
+    slots:
+    - type
+    - id
+    - project_id
+    - submitter_id
+    - study_id
+    - study_registration
+    - authz
+    - study_description
+    - projects.id
+    - projects.code
+    unique_keys:
+      id_key:
+        unique_key_name: id_key
+        unique_key_slots:
+        - id
+      project_id_key:
+        unique_key_name: project_id_key
+        unique_key_slots:
+        - project_id
+      submitter_id_key:
+        unique_key_name: submitter_id_key
+        unique_key_slots:
+        - submitter_id
+      study_id_key:
+        unique_key_name: study_id_key
+        unique_key_slots:
+        - study_id
+      study_registration_key:
+        unique_key_name: study_registration_key
+        unique_key_slots:
+        - study_registration
+      authz_key:
+        unique_key_name: authz_key
+        unique_key_slots:
+        - authz
+      study_description_key:
+        unique_key_name: study_description_key
+        unique_key_slots:
+        - study_description
+      projects.id_key:
+        unique_key_name: projects.id_key
+        unique_key_slots:
+        - projects.id
+      projects.code_key:
+        unique_key_name: projects.code_key
+        unique_key_slots:
+        - projects.code
+  subject:
+    from_schema: https://w3id.org/Toy_Schema
+    slots:
+    - type
+    - id
+    - project_id
+    - submitter_id
+    - consent_codes
+    - participant_id
+    - studies.id
+    - studies.submitter_id
+    unique_keys:
+      id_key:
+        unique_key_name: id_key
+        unique_key_slots:
+        - id
+      submitter_id_key:
+        unique_key_name: submitter_id_key
+        unique_key_slots:
+        - submitter_id
+      participant_id_key:
+        unique_key_name: participant_id_key
+        unique_key_slots:
+        - participant_id
