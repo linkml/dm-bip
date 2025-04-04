@@ -12,26 +12,26 @@ In order to create a useful and robust toy data set we need to gather some infor
 | **BDC-HM**                    | **INCLUDE Model**                   |
 |-------------------------------------|-------------------------------------|
 | Person:species                      | Study:studyCode                     |
-| Person:identity                     | Study:studyTitle                    |
+|                                     | Study:studyTitle                    |
 | Demography:sex                      | Study:program                       |
 | Demography:ethnicity                | Study:studyDescription              |
 | Demography:race                     | Study:studyContactName              |
-| Demography:identity                 | Study:studyContactInstitution       |
+|                                     | Study:studyContactInstitution       |
 | Demography:associated_participant   | Study:studyContactEmail             |
 | Participant:description             | Study:researchDomain                |
 | Participant:member_of_research_study| Study:participantLifespanStage      |
 | Participant:age_at_index            | Study:studyDesign                   |
 | Participant:associated_person       | Study:clinicalDataSourceType        |
-| Participant:identity                | Study:guidType                      |
+|                                     | Study:guidType                      |
 | ResearchStudy:name                  | Dataset:studyCode                   |
-| ResearchStudy:identity              | Dataset:datasetName                 |
+|                                     | Dataset:datasetName                 |
 | Visit:visit_category                | Dataset:datasetGlobalId             |
 | Visit:associated_participant        | Dataset:expectedNumberOfFiles       |
 | Condition:condition_status          | Dataset:dataCollectionStartYear     |
 | Condition:condition_severity        | Dataset:dataCollectionEndYear       |
 | Condition:associated_participant    | Dataset:dataCategory                |
 | Condition:associated_visit          | Dataset:dataType                    |
-| Condition:identity                  | Dataset:experimentalStrategy        |
+|                                     | Dataset:experimentalStrategy        |
 | ObservationSet:category             | Dataset:experimentalPlatform        |
 | ObservationSet:focus                | Dataset:accessLimitations           |
 | ObservationSet:associated_participant| Dataset:accessRequirements          |
