@@ -44,12 +44,16 @@ The table below compares fields from two models: **BDC-HM** (BioData Catalyst Ha
 |                                     | Study:clinicalDataSourceType        |
 |                                     | Study:guidType                      |
 | ObservationSet:category             | Dataset:dataCategory                |
-| ObservationSet:focus                | Dataset:dataType                    |
+| ObservationSet:focus                |                                     |
 | ObservationSet:associated_participant|                                    |
-| ObservationSet:associated_visit     | Dataset:datasetGlobalId             |
-| ObservationSet:method_type          | Dataset:experimentalStrategy        |
-| ObservationSet:performed_by         | Dataset:experimentalPlatform        |
-| ObservationSet:observations         | Dataset:accessLimitations           |
+| ObservationSet:associated_visit     |                                     |
+| ObservationSet:method_type          |                                     |
+| ObservationSet:performed_by         |                                     |
+| ObservationSet:observations         |                                     |
+|                                     | Dataset:datasetGlobalId             |
+|                                     | Dataset:experimentalStrategy        |
+|                                     | Dataset:experimentalPlatform        |
+|                                     | Dataset:accessLimitations           |
 |                                     | Dataset:dataType                    |
 |                                     | Dataset:accessRequirements          |
 | Observation:age_at_observation      |                                     |
@@ -84,4 +88,81 @@ The table below compares fields from two models: **BDC-HM** (BioData Catalyst Ha
 |                                     | Datafile:dataType                   |
 |                                     | Datafile:fileFormat                 |
 
-This is now a good working start for the needed fields and overlap for creating the toy data set attempting to meet all the requirements for both models. Now we can gather this as a list of needed fields, remove duplicates (values stored in more than one Class to link classes together), and gather the addtional fields from the TOPMed Prioritized variables.
+This is now a good working start for the needed fields and overlap for creating the toy data set attempting to meet all the requirements for both models. Now we can gather this as a list of needed fields, remove duplicates (values stored in more than one Class to link classes together), and gather the addtional fields from the TOPMed Prioritized variables. These are the linking fields I'm dropping: 
+Demography:associated_participant
+Participant:member_of_research_study
+Participant:associated_person
+Participant:participantGlobalId
+Participant:participantExternalId
+Visit:associated_participant
+Condition:associated_participant
+Condition:associated_visit
+ObservationSet:associated_participant
+
+
+I'm also going to leave out some other fields that don't make sense to be in the dataset (these are set at ingest or deived):
+Person:species
+Participant:description
+Study:guidType
+Dataset:datasetGlobalID
+Dataset:accessLimitations
+Dataset:dataType
+Dataset:accessRequirements
+Observation:associated_visit
+Observation:performed_by
+
+
+I'm also leaving out everything from Datafile and Biospecimen because I don't know how to handle these; I suspect they are generated during ingest.
+
+Observation value information will be dropped as well in favor of a single value for given observation data. We'll also start by using the same general layout of the initial toy data set because I believe it to share data layout with TOPMed studies. This removes these fields:
+Observation:value_string
+Observation:value_boolean
+Observation:value_quantity
+Observation:value_enum
+
+
+## Selected Fields from Models
+| **BDC-HM**                          | **INCLUDE Model**                   |
+|-------------------------------------|-------------------------------------|
+| Demography:sex                      | Participant:sex                     |
+| Demography:ethnicity                | Participant:ethnicity               |
+| Demography:race                     | Participant:race                    |
+| Participant:age_at_index            | Participant:ageAtFirstPatientEngagement |
+| Visit:visit_category                |                                     |
+| Condition:condition_status          | Participant:downSyndromeStatus      |
+| Condition:condition_severity        |                                     |
+|                                     | Participant:firstPatientEngagementEvent |
+| ResearchStudy:name                  | Study:studyTitle                    |
+|                                     | Study:studyCode                     |
+|                                     | Study:program                       |
+|                                     | Study:studyDescription              |
+|                                     | Study:studyContactName              |
+|                                     | Study:studyContactInstitution       |
+|                                     | Study:studyContactEmail             |
+|                                     | Study:researchDomain                |
+|                                     | Study:participantLifespanStage      |
+|                                     | Study:studyDesign                   |
+|                                     | Study:clinicalDataSourceType        |
+| ObservationSet:category             | Dataset:dataCategory                |
+| ObservationSet:focus                |                                     |
+| ObservationSet:associated_participant|                                    |
+| ObservationSet:associated_visit     |                                     |
+| ObservationSet:method_type          |                                     |
+| ObservationSet:performed_by         |                                     |
+| ObservationSet:observations         |                                     |
+|                                     | Dataset:datasetGlobalId             |
+|                                     | Dataset:experimentalStrategy        |
+|                                     | Dataset:experimentalPlatform        |
+|                                     | Dataset:accessLimitations           |
+|                                     | Dataset:dataType                    |
+|                                     | Dataset:accessRequirements          |
+| Observation:age_at_observation      |                                     |
+| Observation:category                |                                     |
+|                                     | Dataset:dataCollectionStartYear     |
+|                                     | Dataset:dataCollectionEndYear       |
+| Observation:observation_type        |                                     |
+| Observation:method_type             |                                     |
+| Observation:focus                   |                                     |
+
+This is more fields than I had initially hoped for but a lot of this is Study, Dataset, or Observation parameters that can likely be grouped in ways that don't make them too difficult to understand.
+
