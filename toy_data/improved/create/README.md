@@ -166,3 +166,46 @@ Observation:value_enum
 
 This is more fields than I had initially hoped for but a lot of this is Study, Dataset, or Observation parameters that can likely be grouped in ways that don't make them too difficult to understand.
 
+## Model Selected vs TOPMed Harmonized
+| **TOPMed Harmonized**               | **BDC-HM or INCLUDE Model**         |
+|-------------------------------------|-------------------------------------|
+| annotated_sex_1                     | Demography:sex                      |
+| ethnicity                           | Demography:ethnicity                |
+| race_us_1                           | Demography:race                     |
+| age_at_index?                       | Participant:age_at_index            |
+| VISIT                               | Visit:visit_category                |
+| cvd (Cardiovascular Disease)        | Condition:condition_status          |
+| ?                                   | Condition:condition_severity        |
+| hist_cvd (Family History of cvd)    | Condition:condition_status          |
+|                                     | Participant:firstPatientEngagementEvent |
+|                                     | ResearchStudy:name                  |
+|                                     | Study:studyCode                     |
+|                                     | Study:program                       |
+|                                     | Study:studyDescription              |
+|                                     | Study:studyContactName              |
+|                                     | Study:studyContactInstitution       |
+|                                     | Study:studyContactEmail             |
+|                                     | Study:researchDomain                |
+|                                     | Study:participantLifespanStage      |
+|                                     | Study:studyDesign                   |
+|                                     | Study:clinicalDataSourceType        |
+|                                     | ObservationSet:category             |
+|                                     | ObservationSet:focus                |
+|                                     | ObservationSet:associated_participant|
+|                                     | ObservationSet:associated_visit     |
+|                                     | ObservationSet:method_type          |
+|                                     | ObservationSet:performed_by         |
+|                                     | ObservationSet:observations         |
+|                                     | Dataset:datasetGlobalId             |
+|                                     | Dataset:experimentalStrategy        |
+|                                     | Dataset:experimentalPlatform        |
+|                                     | Dataset:accessLimitations           |
+|                                     | Dataset:dataType                    |
+|                                     | Dataset:accessRequirements          |
+|                                     | Observation:age_at_observation      |
+|                                     | Observation:category                |
+|                                     | Dataset:dataCollectionStartYear     |
+|                                     | Dataset:dataCollectionEndYear       |
+|                                     | Observation:observation_type        |
+|                                     | Observation:method_type             |
+|                                     | Observation:focus                   |
