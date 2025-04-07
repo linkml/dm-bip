@@ -16,8 +16,16 @@ enums:
   type_enum:
     from_schema: https://w3id.org/Toy_Schema
     permissible_values:
+      study:
+        description: study
+      subject:
+        description: subject
       demographic:
         description: demographic
+      sample:
+        description: sample
+      lab_result:
+        description: lab result
   project_id_enum:
     from_schema: https://w3id.org/Toy_Schema
     permissible_values:
