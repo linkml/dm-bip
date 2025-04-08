@@ -177,18 +177,18 @@ This is more fields than I had initially hoped for but a lot of this is Study, D
 | cvd (Cardiovascular Disease)        | Condition:condition_status          |
 | ?                                   | Condition:condition_severity        |
 | hist_cvd (Family History of cvd)    | Condition:condition_status          |
-|                                     | Participant:firstPatientEngagementEvent |
-|                                     | ResearchStudy:name                  |
-|                                     | Study:studyCode                     |
-|                                     | Study:program                       |
-|                                     | Study:studyDescription              |
-|                                     | Study:studyContactName              |
-|                                     | Study:studyContactInstitution       |
-|                                     | Study:studyContactEmail             |
-|                                     | Study:researchDomain                |
-|                                     | Study:participantLifespanStage      |
-|                                     | Study:studyDesign                   |
-|                                     | Study:clinicalDataSourceType        |
+| date1                               | Participant:firstPatientEngagementEvent |
+| "ToyData_2"                         | ResearchStudy:name                  |
+| "ToyStudy"                          | Study:studyCode                     |
+| "ToyProgram"                        | Study:program                       |
+| "A toy dataset for testing"         | Study:studyDescription              |
+| "Corey Cox"                         | Study:studyContactName              |
+| "University of North Carolina"      | Study:studyContactInstitution       |
+| ""                                  | Study:studyContactEmail             |
+| "General"                           | Study:researchDomain                |
+| "Adult"                             | Study:participantLifespanStage      |
+| "None"                              | Study:studyDesign                   |
+| "None"                              | Study:clinicalDataSourceType        |
 |                                     | ObservationSet:category             |
 |                                     | ObservationSet:focus                |
 |                                     | ObservationSet:associated_participant|
