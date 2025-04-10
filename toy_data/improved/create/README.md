@@ -174,9 +174,8 @@ This is more fields than I had initially hoped for but a lot of this is Study, D
 | race_us_1                           | Demography:race                     |
 | age_at_index?                       | Participant:age_at_index            |
 | VISIT                               | Visit:visit_category                |
-| cvd (Cardiovascular Disease)        | Condition:condition_status          |
-| ?                                   | Condition:condition_severity        |
-| hist_cvd (Family History of cvd)    | Condition:condition_status          |
+| [ select multiple ]                 | Condition:condition_status          |
+| [ per selections ]                  | Condition:condition_severity        |
 | date1                               | Participant:firstPatientEngagementEvent |
 | "ToyData_2"                         | ResearchStudy:name                  |
 | "ToyStudy"                          | Study:studyCode                     |
@@ -189,10 +188,10 @@ This is more fields than I had initially hoped for but a lot of this is Study, D
 | "Adult"                             | Study:participantLifespanStage      |
 | "None"                              | Study:studyDesign                   |
 | "None"                              | Study:clinicalDataSourceType        |
-|                                     | ObservationSet:category             |
-|                                     | ObservationSet:focus                |
-|                                     | ObservationSet:associated_participant|
-|                                     | ObservationSet:associated_visit     |
+| [ select multiple ]                 | ObservationSet:category             |
+|          |                          | ObservationSet:focus                |
+|          |                          | ObservationSet:associated_participant|
+|          V                          | ObservationSet:associated_visit     |
 |                                     | ObservationSet:method_type          |
 |                                     | ObservationSet:performed_by         |
 |                                     | ObservationSet:observations         |
@@ -209,3 +208,5 @@ This is more fields than I had initially hoped for but a lot of this is Study, D
 |                                     | Observation:observation_type        |
 |                                     | Observation:method_type             |
 |                                     | Observation:focus                   |
+
+For condition and related slots we should select a few conditions to model on. For ObservationSet, Observation, and DataSet we should select a significant group of observations (5-10), grouped as reasonble into datasets of observation sets.
