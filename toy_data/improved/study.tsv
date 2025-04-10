@@ -1,0 +1,2 @@
+ResearchStudy:name	Study:studyCode	Study:program	Study:studyDescription	Study:studyContactName	Study:studyContactInstitution	Study:studyContactEmail	Study:researchDomain	Study:participantLifespanStage	Study:studyDesign	Study:clinicalDataSourceType
+"ToyData_2"	"ToyStudy"	"ToyProgram"	"A toy dataset for testing"	"Corey Cox"	"University of North Carolina"	""	"General"	"Adult"	"None"	"None"
