@@ -1,2 +1,2 @@
-ResearchStudy:name	Study:studyCode	Study:program	Study:studyDescription	Study:studyContactName	Study:studyContactInstitution	Study:studyContactEmail	Study:researchDomain	Study:participantLifespanStage	Study:studyDesign	Study:clinicalDataSourceType
-"ToyData_2"	"ToyStudy"	"ToyProgram"	"A toy dataset for testing"	"Corey Cox"	"University of North Carolina"	""	"General"	"Adult"	"None"	"None"
+type	id	project_id	submitter_id	study_id	study_registration	authz	projects.id	projects.code	study_name	study_code	program	study_description	contact_name	contact_institution	contact_email	research_domain	lifespan_stage	study_design	data_source_type
+Study	1	PROJ001	SUBMITTER001	STUDY001	REG-2025-001	PUBLIC	PROJ001	TP2	ToyData_2	ToyStudy	ToyProgram	A toy dataset for testing	Example Contact	University of North Carolina	no-reply@example.com	General	Adult	None	None

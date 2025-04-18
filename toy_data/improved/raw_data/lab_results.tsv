@@ -1,0 +1,4 @@
+subject_id	systolic_bp	diastolic_bp	cholesterol_mg_dl	creatinine_mg_dl	inhaler_use_per_day
+SUBJ001		128			82			190				0.9				0
+SUBJ002		140			90			210				1.1				2
+SUBJ003		115			75			175				0.8				0
