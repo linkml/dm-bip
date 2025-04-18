@@ -210,3 +210,33 @@ This is more fields than I had initially hoped for but a lot of this is Study, D
 |                                     | Observation:focus                   |
 
 For condition and related slots we should select a few conditions to model on. For ObservationSet, Observation, and DataSet we should select a significant group of observations (5-10), grouped as reasonble into datasets of observation sets.
+
+# Demographics
+Here are the selections for demographics.
+
+sex
+race
+ethnicity
+
+
+# Select Fields for Condition and ObservationSet
+Initial selection of fields:
+Condition:
+Asthma
+Stroke
+Heart Disease (Cardiac, something?)
+Diabetes
+
+Measurement:
+Blood Pressure
+Cholesterol
+Use of Inhaler
+
+bmi_baseline_1
+current_smoker_baseline_1
+ever_smoker_baseline_1
+height_baseline_1
+weight_baseline_1
+sleep_duration_1
+
+Craetinine in blood
