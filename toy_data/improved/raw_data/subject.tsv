@@ -1,0 +1,4 @@
+subject_id	bmi_baseline		height_cm	weight_kg	current_smoker_baseline	ever_smoker_baseline	sleep_duration_hrs	asthma	stroke	heart_disease	diabetes
+SUBJ001		27.3		172		80		Yes			No			7.5			No		No		Yes		No
+SUBJ002		22.8		165		62		No			No			6.8			Yes		No		No		No
+SUBJ003		31.1		180		101		Yes			Yes			5.9			No		Yes		No		Yes

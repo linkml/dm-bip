@@ -37,31 +37,17 @@ Here are the classes and slots we should probably include in the toy dataset in 
     - description
     - member_of_research_study
     - age_at_index
-    - originating_site
-    - study_arm
-    - consents
     - associated_person
     - identity
 - ResearchStudy
     - name
-    - name_shortened
-    - date_started
-    - date_ended
-    - url
-    - research_project_type
-    - consents
     - identity
-- Consent:
-    - consent_code
-    - valid_from
-    - valid_to
 - Visit
     - visit_category
     - associated_participant
 - Condition
     - condition_status
     - condition_severity
-    - relationship_to_participant
     - associated_participant
     - associated_visit
     - identity
@@ -89,6 +75,8 @@ Here are the classes and slots we should probably include in the toy dataset in 
 
 For now, I'm excluding all of the observation based slots except for observation because I think they make things complicated for a first run, they also don't add texture to the robust toy data set above what they add in complexity. Once we have the mapping figured out for Observation, expanding to the different types of Observation should be straightforward.
 
+Many of these classes have an 'identity' slot that would be a unique identifier and likely not provided by the studies. We will probably be auto-generating these. I'm leaving these in here for targeting the mapping but they will not be speciific fields we create in the toy data set.
+
 ### Classses and Slots to Exclude
 This is the list of Classes and slots to leave out of the toy dataset with rationale for some on why we made that decision.
 
@@ -103,6 +91,9 @@ This is the list of Classes and slots to leave out of the toy dataset with ratio
 - Participant
     - description  --- Probably a free-form field, so uninteresting
     - index_timepoint  --- Not ready to deal with timepoints
+    - originating_site
+    - study_arm
+    - consents
 - ResearchStudy  --- Free-form or not clear what value
     - description
     - description_shortened
@@ -110,6 +101,13 @@ This is the list of Classes and slots to leave out of the toy dataset with ratio
     - part_of
     - principal_investigator
     - associated_timepoint
+    - name_shortened
+    - date_started
+    - date_ended
+    - url
+    - research_project_type
+    - consents
+- Consent  --- Not ready to deal with consent
 - Visit  --- These don't seem especially informative
     - age_at_visit_start
     - age_at_visit_end
@@ -136,6 +134,7 @@ This is the list of Classes and slots to leave out of the toy dataset with ratio
     - age_at_condition_start
     - age_at_condition_end
     - condition_provenance
+    - relationship_to_participant
 - Procedure  --- Seems like we can deal with this later
 - Exposure  --- Also leave until later, and all related
 - DimensionalObservation
