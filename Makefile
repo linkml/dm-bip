@@ -12,27 +12,34 @@ RUN := poetry run
 
 ### Help ###
 .PHONY: help
-help:
-	@echo "╭───────────────────────────────────────────────────────────╮"
-	@echo "│ Makefile for dm-bip                                       │"
-	@echo "│ ────────────────────────                                  │"
-	@echo "│ Usage:                                                    │"
-	@echo "│     make <target>                                         │"
-	@echo "│                                                           │"
-	@echo "│ Targets:                                                  │"
-	@echo "│     help                Print this help message           │"
-	@echo "│     all                 Install everything                │"
-	@echo "│     fresh               Clean and install everything      │"
-	@echo "│     clean               Clean up build artifacts          │"
-	@echo "│     clobber             Clean up generated files          │"
-	@echo "│                                                           │"
-	@echo "│     install             Set up the virtual environment    |"
-	@echo "│     docs                Generate documentation            │"
-	@echo "│     test                Run tests                         │"
-	@echo "│     lint                Lint all code                     │"
-	@echo "│     format              Format all code                   │"
-	@echo "│     coverage            Measure and report test coverage  │"
-	@echo "╰───────────────────────────────────────────────────────────╯"
+help::
+	@echo "╭─────────────────────────────────────────────────────────────╮"
+	@echo "│ Makefile for dm-bip                                         │"
+	@echo "│ ────────────────────────                                    │"
+	@echo "│ Usage:                                                      │"
+	@echo "│     make <target>                                           │"
+	@echo "│                                                             │"
+	@echo "│ Schema targets:                                             │"
+	@echo "│     create-schema       Create a schema from a set of files │"
+	@echo "│     lint-schema         Lint a schema from a set of files   │"
+	@echo "│     clean-schema        Remove all generated schema files   │"
+	@echo "│     debug-schema        Print all schema variables          │"
+	@echo "│                                                             │"
+	@echo "│ Project targets:                                            │"
+	@echo "│     help                Print this help message             │"
+	@echo "│     all                 Install everything                  │"
+	@echo "│     fresh               Clean and install everything        │"
+	@echo "│     clean               Clean up build artifacts            │"
+	@echo "│     clobber             Clean up generated files            │"
+	@echo "│                                                             │"
+	@echo "│     install             Set up the virtual environment      |"
+	@echo "│     docs                Generate documentation              │"
+	@echo "│     test                Run tests                           │"
+	@echo "│     lint                Lint all code                       │"
+	@echo "│     format              Format all code                     │"
+	@echo "│     coverage            Measure and report test coverage    │"
+	@echo "╰─────────────────────────────────────────────────────────────╯"
+	@echo
 
 
 ### Installation and Setup ###
@@ -100,3 +107,5 @@ format: $(PYTHON)
 coverage: $(PYTHON)
 	$(RUN) coverage run -m pytest tests
 	$(RUN) coverage report -m
+
+include pipeline.Makefile
