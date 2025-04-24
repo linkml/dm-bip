@@ -56,7 +56,7 @@ Create a schema for all CSV/TSV files in the toy data directory in a schema at `
 
 Create a schema from a single file at `output/schema-automator-data/Schema.yaml`
 
-    DM_INPUT_FILES=toy_data/initial/demographics.tsv make create_schema
+    DM_INPUT_FILES=toy_data/initial/demographics.tsv make schema-create
 endef
 
 check_input_files = \
