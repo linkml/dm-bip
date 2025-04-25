@@ -1,19 +1,28 @@
 RUN := poetry run
 
-DM_INPUT_DIR ?= input
+
+# Configurable parameters via environment variables
+DM_INPUT_DIR ?=
 DM_INPUT_FILES ?=
 DM_SCHEMA_NAME ?= Schema
 DM_OUTPUT_DIR ?= output/$(DM_SCHEMA_NAME)
 
+# Derived output files
+SCHEMA_FILE := $(DM_OUTPUT_DIR)/schema-automator-data/$(DM_SCHEMA_NAME).yaml
+
+
 ifdef DM_INPUT_FILES
 	INPUT_FILES := $(DM_INPUT_FILES)
-else
+else ifdef DM_INPUT_DIR
 	INPUT_FILES := $(shell find $(DM_INPUT_DIR) -type f -regex '.*\.[ct]sv' 2> /dev/null)
+else
+	INPUT_FILES :=
 endif
 
-INPUT_FILENAMES := $(INPUT_FILES:$(INPUT_DIR)/%=%)
+# The names of the files used as inputs, with the base input directory stripped.
+# (Not currently not used).
+INPUT_FILENAMES := $(INPUT_FILES:$(DM_INPUT_DIR)/%=%)
 
-SCHEMA_FILE := $(DM_OUTPUT_DIR)/schema-automator-data/$(DM_SCHEMA_NAME).yaml
 
 define DEBUG
 
@@ -47,7 +56,7 @@ Create a schema for all CSV/TSV files in the toy data directory in a schema at `
 
 Create a schema from a single file at `output/schema-automator-data/Schema.yaml`
 
-    DM_INPUT_FILE=toy_data/initial/demographics.tsv make create_schema
+    DM_INPUT_FILES=toy_data/initial/demographics.tsv make schema-create
 endef
 
 check_input_files = \
@@ -60,8 +69,11 @@ check_input_files = \
 
 # VALIDATE_TARGETS := $(addprefix validate-,$(basename $(notdir $(INPUT_FILENAMES))))
 
-.PHONY: clean-schema
-clean-schema:
+.PHONY: schema-all
+schema-all: $(SCHEMA_FILE) schema-lint
+
+.PHONY: schema-clean
+schema-clean:
 	rm -rf $(DM_OUTPUT_DIR)
 
 $(SCHEMA_FILE): $(INPUT_FILES)
@@ -72,27 +84,31 @@ $(SCHEMA_FILE): $(INPUT_FILES)
 	@echo "  Created schema at $@"
 	@echo
 
-.PHONY: debug-schema
-debug-schema:
+.PHONY: schema-debug
+schema-debug:
 	@:$(info $(DEBUG))
 
+.PHONY: schema-ensure-input
+schema-ensure-input:
+	@:$(call check_input_files)
+
+.PHONY: schema-create
+schema-create: $(SCHEMA_FILE)
+
+.PHONY: schema-lint
+schema-lint: $(SCHEMA_FILE)
+	$(RUN) linkml-lint $<
+
+.PHONY: help
+.PHONY: schema-help
 help::
+schema-help:
 	@:$(info $(HELP))
 	@:$(info )
 	@:$(info Defined variables)
 	@:$(info =================)
 	@:$(info $(DEBUG))
 
-.PHONY: ensure-input
-ensure-input:
-	@:$(call check_input_files)
-
-.PHONY: create-schema
-create-schema: $(SCHEMA_FILE)
-
-.PHONY: lint-schema
-lint-schema: $(SCHEMA_FILE)
-	$(RUN) linkml-lint $<
 
 # .PHONY: validate-schema
 # validate: $(SCHEMA_FILE)
