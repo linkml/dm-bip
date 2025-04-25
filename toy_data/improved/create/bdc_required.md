@@ -75,7 +75,7 @@ Here are the classes and slots we should probably include in the toy dataset in 
 
 For now, I'm excluding all of the observation based slots except for observation because I think they make things complicated for a first run, they also don't add texture to the robust toy data set above what they add in complexity. Once we have the mapping figured out for Observation, expanding to the different types of Observation should be straightforward.
 
-Many of these classes have an 'identity' slot that would be a unique identifier and likely not provided by the studies. We will probably be auto-generating these. I'm leaving these in here for targeting the mapping but they will not be speciific fields we create in the toy data set.
+Many of these classes have an 'identity' slot that would be a unique identifier and likely not provided by the studies. We will probably be auto-generating these. I'm leaving these in here for targeting the mapping but they will not be specific fields we create in the toy data set.
 
 ### Classses and Slots to Exclude
 This is the list of Classes and slots to leave out of the toy dataset with rationale for some on why we made that decision.

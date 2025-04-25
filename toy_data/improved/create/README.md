@@ -100,7 +100,7 @@ Condition:associated_visit
 ObservationSet:associated_participant
 
 
-I'm also going to leave out some other fields that don't make sense to be in the dataset (these are set at ingest or deived):
+I'm also going to leave out some other fields that don't make sense to be in the dataset (these are set at ingest or derived):
 Person:species
 Participant:description
 Study:guidType
@@ -239,4 +239,4 @@ height_baseline_1
 weight_baseline_1
 sleep_duration_1
 
-Craetinine in blood
+Creatinine in blood
