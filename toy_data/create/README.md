@@ -88,7 +88,7 @@ The table below compares fields from two models: **BDC-HM** (BioData Catalyst Ha
 |                                     | Datafile:dataType                   |
 |                                     | Datafile:fileFormat                 |
 
-This is now a good working start for the needed fields and overlap for creating the toy data set attempting to meet all the requirements for both models. Now we can gather this as a list of needed fields, remove duplicates (values stored in more than one Class to link classes together), and gather the addtional fields from the TOPMed Prioritized variables. These are the linking fields I'm dropping: 
+This is now a good working start for the needed fields and overlap for creating the toy data set attempting to meet all the requirements for both models. Now we can gather this as a list of needed fields, remove duplicates (values stored in more than one Class to link classes together), and gather the additional fields from the TOPMed Prioritized variables. These are the linking fields I'm dropping: 
 Demography:associated_participant
 Participant:member_of_research_study
 Participant:associated_person
@@ -209,7 +209,7 @@ This is more fields than I had initially hoped for but a lot of this is Study, D
 |                                     | Observation:method_type             |
 |                                     | Observation:focus                   |
 
-For condition and related slots we should select a few conditions to model on. For ObservationSet, Observation, and DataSet we should select a significant group of observations (5-10), grouped as reasonble into datasets of observation sets.
+For condition and related slots we should select a few conditions to model on. For ObservationSet, Observation, and DataSet we should select a significant group of observations (5-10), grouped as reasonable into datasets of observation sets.
 
 # Demographics
 Here are the selections for demographics.
