@@ -4,57 +4,57 @@ We need to identify required elements of the [INCLUDE model](https://github.com/
 
 Previously this was in a numer of different yaml files. Now the INCLUDE model uses a single data file. Here are the fields based on that file.
 
-    - Study
-        - studyCode
-        - studyTitle
-        - program
-        - studyDescription
-        - studyContactName
-        - studyContactInstitution
-        - studyContactEmail
-        - researchDomain
-        - participantLifespanStage
-        - studyDesign
-        - clinicalDataSourceType
-        - guidType
-        - principalInvestigatorName
-        - expectedNumberOfParticipants
-    - Dataset
-        - datasetName
-        - datasetGlobalId
-        - expectedNumberOfFiles
-        - dataCollectionStartYear
-        - dataCollectionEndYear
-        - dataCategory
-        - dataType
-        - accessLimitations
-        - accessRequirements
-    - Participant
-        - participantGlobalId
-        - participantExternalId
-        - familyType
-        - familyRelationship
-        - sex
-        - race
-        - ethnicity
-        - downSyndromeStatus
-        - ageAtFirstPatientEngagement
-        - firstPatientEngagementEvent
-    - Biospecimen
-        - participantGlobalId
-        - participantExternalId    
-        - sampleGlobalId
-        - sampleExternalId
-        - sampleType
-        - sampleAvailability
-    - Datafile
-        - fileName
-        - fileGlobalId
-        - fileS3Location
-        - drsUri
-        - dataAccess
-        - dataCategory
-        - fileFormat
+- Study
+    - studyCode
+    - studyTitle
+    - program
+    - studyDescription
+    - studyContactName
+    - studyContactInstitution
+    - studyContactEmail
+    - researchDomain
+    - participantLifespanStage
+    - studyDesign
+    - clinicalDataSourceType
+    - guidType
+    - principalInvestigatorName
+    - expectedNumberOfParticipants
+- Dataset
+    - datasetName
+    - datasetGlobalId
+    - expectedNumberOfFiles
+    - dataCollectionStartYear
+    - dataCollectionEndYear
+    - dataCategory
+    - dataType
+    - accessLimitations
+    - accessRequirements
+- Participant
+    - participantGlobalId
+    - participantExternalId
+    - familyType
+    - familyRelationship
+    - sex
+    - race
+    - ethnicity
+    - downSyndromeStatus
+    - ageAtFirstPatientEngagement
+    - firstPatientEngagementEvent
+- Biospecimen
+    - participantGlobalId
+    - participantExternalId    
+    - sampleGlobalId
+    - sampleExternalId
+    - sampleType
+    - sampleAvailability
+- Datafile
+    - fileName
+    - fileGlobalId
+    - fileS3Location
+    - drsUri
+    - dataAccess
+    - dataCategory
+    - fileFormat
 
 
  ## Notes
