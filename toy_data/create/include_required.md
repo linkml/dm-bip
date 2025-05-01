@@ -2,11 +2,8 @@
 
 We need to identify required elements of the [INCLUDE model](https://github.com/include-dcc/include-linkml).
 
-Looking through the separate YAML files, there are no actionable elements in the include_core.yaml and include_schema.yaml files. These files will be handled during data conversion as they are part of the the schema is organized rather than describing core fields that need to contain data.
+Previously this was in a numer of different yaml files. Now the INCLUDE model uses a single data file. Here are the fields based on that file.
 
-Here are the remaining data files and their required classes with the classes required slots.
-
- - include_study.yaml
     - Study
         - studyCode
         - studyTitle
@@ -20,8 +17,9 @@ Here are the remaining data files and their required classes with the classes re
         - studyDesign
         - clinicalDataSourceType
         - guidType
+        - principalInvestigatorName
+        - expectedNumberOfParticipants
     - Dataset
-        - studyCode
         - datasetName
         - datasetGlobalId
         - expectedNumberOfFiles
@@ -29,13 +27,9 @@ Here are the remaining data files and their required classes with the classes re
         - dataCollectionEndYear
         - dataCategory
         - dataType
-        - experimentalStrategy
-        - experimentalPlatform
         - accessLimitations
         - accessRequirements
- - include_participant.yaml
     - Participant
-        - studyCode
         - participantGlobalId
         - participantExternalId
         - familyType
@@ -46,25 +40,20 @@ Here are the remaining data files and their required classes with the classes re
         - downSyndromeStatus
         - ageAtFirstPatientEngagement
         - firstPatientEngagementEvent
-- include_assay.yaml
     - Biospecimen
-        - studyCode
         - participantGlobalId
         - participantExternalId    
         - sampleGlobalId
         - sampleExternalId
         - sampleType
         - sampleAvailability
-        - containerAvailability
     - Datafile
-        - studyCode
         - fileName
         - fileGlobalId
         - fileS3Location
         - drsUri
         - dataAccess
         - dataCategory
-        - dataType
         - fileFormat
 
 
