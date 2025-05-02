@@ -1,0 +1,531 @@
+name: MySchema
+description: MySchema
+id: https://w3id.org/MySchema
+imports:
+- linkml:types
+prefixes:
+  linkml: https://w3id.org/linkml/
+  MySchema: https://w3id.org/MySchema
+default_prefix: MySchema
+enums:
+  asthma_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      'Yes':
+        description: 'Yes'
+      'No':
+        description: 'No'
+  stroke_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      'Yes':
+        description: 'Yes'
+      'No':
+        description: 'No'
+  heart_disease_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      'Yes':
+        description: 'Yes'
+      'No':
+        description: 'No'
+  diabetes_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      'Yes':
+        description: 'Yes'
+      'No':
+        description: 'No'
+  consent_codes_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      open:
+        description: open
+  study.id_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      STUDY001:
+        description: STUDY001
+  project.id_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      PROJ001:
+        description: PROJ001
+  sample_type_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      Blood:
+        description: Blood
+      Saliva:
+        description: Saliva
+  sex_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      Female:
+        description: Female
+      Male:
+        description: Male
+  race_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      hispanic:
+        description: hispanic
+      white:
+        description: white
+      black or african american:
+        description: black or african american
+      asian:
+        description: asian
+  ethnicity_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      Non-Hispanic:
+        description: Non-Hispanic
+      Hispanic:
+        description: Hispanic
+  current_smoker_baseline_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      'Yes':
+        description: 'Yes'
+      'No':
+        description: 'No'
+  ever_smoker_baseline_enum:
+    from_schema: https://w3id.org/MySchema
+    permissible_values:
+      'Yes':
+        description: 'Yes'
+      'No':
+        description: 'No'
+slots:
+  subject_id:
+    examples:
+    - value: SUBJ110
+    from_schema: https://w3id.org/MySchema
+    identifier: true
+    range: string
+  asthma:
+    examples:
+    - value: 'No'
+    from_schema: https://w3id.org/MySchema
+    range: asthma_enum
+  stroke:
+    examples:
+    - value: 'No'
+    from_schema: https://w3id.org/MySchema
+    range: stroke_enum
+  heart_disease:
+    examples:
+    - value: 'No'
+    from_schema: https://w3id.org/MySchema
+    range: heart_disease_enum
+  diabetes:
+    examples:
+    - value: 'No'
+    from_schema: https://w3id.org/MySchema
+    range: diabetes_enum
+  consent_codes:
+    examples:
+    - value: open
+    from_schema: https://w3id.org/MySchema
+    range: consent_codes_enum
+  study.id:
+    examples:
+    - value: STUDY001
+    from_schema: https://w3id.org/MySchema
+    range: study.id_enum
+  project.id:
+    examples:
+    - value: PROJ001
+    from_schema: https://w3id.org/MySchema
+    range: project.id_enum
+  participant.id:
+    examples:
+    - value: NA18620
+    from_schema: https://w3id.org/MySchema
+    range: string
+  sample_id:
+    examples:
+    - value: SAMP-3173
+    from_schema: https://w3id.org/MySchema
+    identifier: true
+    range: string
+  sample_type:
+    examples:
+    - value: Saliva
+    from_schema: https://w3id.org/MySchema
+    range: sample_type_enum
+  sample_date:
+    examples:
+    - value: '2024-01-21'
+    from_schema: https://w3id.org/MySchema
+    range: datetime
+  type:
+    examples:
+    - value: Study
+    from_schema: https://w3id.org/MySchema
+    identifier: true
+    range: string
+  id:
+    examples:
+    - value: '1'
+    from_schema: https://w3id.org/MySchema
+    range: integer
+  project_id:
+    examples:
+    - value: PROJ001
+    from_schema: https://w3id.org/MySchema
+    range: string
+  submitter_id:
+    examples:
+    - value: SUBMITTER001
+    from_schema: https://w3id.org/MySchema
+    range: string
+  study_id:
+    examples:
+    - value: STUDY001
+    from_schema: https://w3id.org/MySchema
+    range: string
+  study_registration:
+    examples:
+    - value: dbGap
+    from_schema: https://w3id.org/MySchema
+    range: string
+  authz:
+    examples:
+    - value: /programs/tutorial/projects/toy_data_set_1
+    from_schema: https://w3id.org/MySchema
+    range: string
+  projects.id:
+    examples:
+    - value: PROJ001
+    from_schema: https://w3id.org/MySchema
+    range: string
+  projects.code:
+    examples:
+    - value: TP2
+    from_schema: https://w3id.org/MySchema
+    range: string
+  study_name:
+    examples:
+    - value: ToyData_2
+    from_schema: https://w3id.org/MySchema
+    range: string
+  study_code:
+    examples:
+    - value: ToyStudy
+    from_schema: https://w3id.org/MySchema
+    range: string
+  program:
+    examples:
+    - value: ToyProgram
+    from_schema: https://w3id.org/MySchema
+    range: string
+  study_description:
+    examples:
+    - value: A toy dataset for testing
+    from_schema: https://w3id.org/MySchema
+    range: string
+  contact_name:
+    examples:
+    - value: Example Contact
+    from_schema: https://w3id.org/MySchema
+    range: string
+  contact_institution:
+    examples:
+    - value: University of North Carolina
+    from_schema: https://w3id.org/MySchema
+    range: string
+  contact_email:
+    examples:
+    - value: no-reply@example.com
+    from_schema: https://w3id.org/MySchema
+    range: string
+  research_domain:
+    examples:
+    - value: General
+    from_schema: https://w3id.org/MySchema
+    range: string
+  lifespan_stage:
+    examples:
+    - value: Adult
+    from_schema: https://w3id.org/MySchema
+    range: string
+  study_design:
+    examples:
+    - value: None
+    from_schema: https://w3id.org/MySchema
+    range: string
+  data_source_type:
+    examples:
+    - value: None
+    from_schema: https://w3id.org/MySchema
+    range: string
+  hdl:
+    examples:
+    - value: '86'
+    from_schema: https://w3id.org/MySchema
+    range: integer
+  ldl:
+    examples:
+    - value: '128'
+    from_schema: https://w3id.org/MySchema
+    range: integer
+  total_cholesterol:
+    examples:
+    - value: '427'
+    from_schema: https://w3id.org/MySchema
+    range: integer
+  triglycerides:
+    examples:
+    - value: '228'
+    from_schema: https://w3id.org/MySchema
+    range: integer
+  creatinine_mg_dl:
+    examples:
+    - value: '0.92'
+    from_schema: https://w3id.org/MySchema
+    range: float
+  sex:
+    examples:
+    - value: Male
+    from_schema: https://w3id.org/MySchema
+    range: sex_enum
+  population:
+    examples:
+    - value: GBR
+    from_schema: https://w3id.org/MySchema
+    range: string
+  race:
+    examples:
+    - value: white
+    from_schema: https://w3id.org/MySchema
+    range: race_enum
+  ethnicity:
+    examples:
+    - value: Non-Hispanic
+    from_schema: https://w3id.org/MySchema
+    range: ethnicity_enum
+  age_at_index:
+    examples:
+    - value: '68'
+    from_schema: https://w3id.org/MySchema
+    range: integer
+  visit_id:
+    examples:
+    - value: VISIT110
+    from_schema: https://w3id.org/MySchema
+    identifier: true
+    range: string
+  bmi_baseline:
+    examples:
+    - value: '28.9'
+    from_schema: https://w3id.org/MySchema
+    range: float
+  height_cm:
+    examples:
+    - value: '169.5'
+    from_schema: https://w3id.org/MySchema
+    range: float
+  weight_kg:
+    examples:
+    - value: '83'
+    from_schema: https://w3id.org/MySchema
+    range: float
+  current_smoker_baseline:
+    examples:
+    - value: 'Yes'
+    from_schema: https://w3id.org/MySchema
+    range: current_smoker_baseline_enum
+  ever_smoker_baseline:
+    examples:
+    - value: 'Yes'
+    from_schema: https://w3id.org/MySchema
+    range: ever_smoker_baseline_enum
+  sleep_duration_hrs:
+    examples:
+    - value: '7.6'
+    from_schema: https://w3id.org/MySchema
+    range: float
+  systolic_bp:
+    examples:
+    - value: '109'
+    from_schema: https://w3id.org/MySchema
+    range: integer
+  diastolic_bp:
+    examples:
+    - value: '84'
+    from_schema: https://w3id.org/MySchema
+    range: integer
+  inhaler_use_per_day:
+    examples:
+    - value: '0'
+    from_schema: https://w3id.org/MySchema
+    range: integer
+classes:
+  subject:
+    from_schema: https://w3id.org/MySchema
+    slots:
+    - subject_id
+    - asthma
+    - stroke
+    - heart_disease
+    - diabetes
+    - consent_codes
+    - study.id
+    - project.id
+    - participant.id
+    unique_keys:
+      participant.id_key:
+        unique_key_name: participant.id_key
+        unique_key_slots:
+        - participant.id
+  sample:
+    from_schema: https://w3id.org/MySchema
+    slots:
+    - sample_id
+    - subject_id
+    - sample_type
+    - sample_date
+    unique_keys:
+      subject_id_key:
+        unique_key_name: subject_id_key
+        unique_key_slots:
+        - subject_id
+  study:
+    from_schema: https://w3id.org/MySchema
+    slots:
+    - type
+    - id
+    - project_id
+    - submitter_id
+    - study_id
+    - study_registration
+    - authz
+    - projects.id
+    - projects.code
+    - study_name
+    - study_code
+    - program
+    - study_description
+    - contact_name
+    - contact_institution
+    - contact_email
+    - research_domain
+    - lifespan_stage
+    - study_design
+    - data_source_type
+    unique_keys:
+      id_key:
+        unique_key_name: id_key
+        unique_key_slots:
+        - id
+      project_id_key:
+        unique_key_name: project_id_key
+        unique_key_slots:
+        - project_id
+      submitter_id_key:
+        unique_key_name: submitter_id_key
+        unique_key_slots:
+        - submitter_id
+      study_id_key:
+        unique_key_name: study_id_key
+        unique_key_slots:
+        - study_id
+      study_registration_key:
+        unique_key_name: study_registration_key
+        unique_key_slots:
+        - study_registration
+      authz_key:
+        unique_key_name: authz_key
+        unique_key_slots:
+        - authz
+      projects.id_key:
+        unique_key_name: projects.id_key
+        unique_key_slots:
+        - projects.id
+      projects.code_key:
+        unique_key_name: projects.code_key
+        unique_key_slots:
+        - projects.code
+      study_name_key:
+        unique_key_name: study_name_key
+        unique_key_slots:
+        - study_name
+      study_code_key:
+        unique_key_name: study_code_key
+        unique_key_slots:
+        - study_code
+      program_key:
+        unique_key_name: program_key
+        unique_key_slots:
+        - program
+      study_description_key:
+        unique_key_name: study_description_key
+        unique_key_slots:
+        - study_description
+      contact_name_key:
+        unique_key_name: contact_name_key
+        unique_key_slots:
+        - contact_name
+      contact_institution_key:
+        unique_key_name: contact_institution_key
+        unique_key_slots:
+        - contact_institution
+      contact_email_key:
+        unique_key_name: contact_email_key
+        unique_key_slots:
+        - contact_email
+      research_domain_key:
+        unique_key_name: research_domain_key
+        unique_key_slots:
+        - research_domain
+      lifespan_stage_key:
+        unique_key_name: lifespan_stage_key
+        unique_key_slots:
+        - lifespan_stage
+      study_design_key:
+        unique_key_name: study_design_key
+        unique_key_slots:
+        - study_design
+      data_source_type_key:
+        unique_key_name: data_source_type_key
+        unique_key_slots:
+        - data_source_type
+  lab_results:
+    from_schema: https://w3id.org/MySchema
+    slots:
+    - subject_id
+    - hdl
+    - ldl
+    - total_cholesterol
+    - triglycerides
+    - creatinine_mg_dl
+  demographics:
+    from_schema: https://w3id.org/MySchema
+    slots:
+    - subject_id
+    - sex
+    - population
+    - race
+    - ethnicity
+    - age_at_index
+  visit:
+    from_schema: https://w3id.org/MySchema
+    slots:
+    - visit_id
+    - subject_id
+    - bmi_baseline
+    - height_cm
+    - weight_kg
+    - current_smoker_baseline
+    - ever_smoker_baseline
+    - sleep_duration_hrs
+    - systolic_bp
+    - diastolic_bp
+    - inhaler_use_per_day
+    unique_keys:
+      subject_id_key:
+        unique_key_name: subject_id_key
+        unique_key_slots:
+        - subject_id
