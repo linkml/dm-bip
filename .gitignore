@@ -1,3 +1,7 @@
+# Root .gitignore for project-wide ignores.
+
+### Note: Some subdirectories (e.g. data/, output/) have their own .gitignore files.
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -128,5 +132,3 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Schema output
-output/
