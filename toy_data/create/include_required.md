@@ -67,4 +67,4 @@ Previously this was in a numer of different yaml files. Now the INCLUDE model us
 The Condition class in include_participant.yaml has annotations:required with a value of tag=required, value=false, which appears to mean that Condition is not required as all of the slots in condition are not required.
 
 ### Datafile
-Muliple slots in the Datafile class are in a state of TBD usage so I think we should exclude those: participantGlobalId, participantExternalId, sampleGlobalId, and sampleExternalId.
+Multiple slots in the Datafile class are in a state of TBD usage so I think we should exclude those: participantGlobalId, participantExternalId, sampleGlobalId, and sampleExternalId.

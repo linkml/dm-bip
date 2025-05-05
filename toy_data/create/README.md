@@ -224,7 +224,7 @@ Initial selection of fields:
 Condition:
 Asthma
 Stroke
-Heart Disease (Cardiac, something?)
+Heart Disease (Cardiac conditions)
 Diabetes
 
 Measurement:
