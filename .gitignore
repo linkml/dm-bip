@@ -1,3 +1,7 @@
+# Root .gitignore for project-wide ignores.
+
+### Note: Some subdirectories (e.g. data/, output/) have their own .gitignore files.
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -56,7 +60,6 @@ coverage.xml
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -128,5 +131,3 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Schema output
-output/
