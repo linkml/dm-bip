@@ -109,7 +109,19 @@ schema-help:
 	@:$(info =================)
 	@:$(info $(DEBUG))
 
+.PHONY: validate-schema
+validate-schema: $(SCHEMA_FILE)
+	$(RUN) linkml validate --schema $<
 
-# .PHONY: validate-schema
-# validate: $(SCHEMA_FILE)
-# 	$(RUN) linkml-validate -s $< -C $(INPUT_FILES)
+.PHONY: validate-data
+validate-data: $(SCHEMA_FILE)
+	@:$(call check_input_files)
+	@for f in $(INPUT_FILES); do \
+		class=$$(basename $$f | sed -E 's/\.[ct]sv$$//' | tr '-' '_' | tr '[:upper:]' '[:lower:]'); \
+		echo "Validating $$f as class '$$class'..."; \
+		$(RUN) linkml validate --schema $(SCHEMA_FILE) --target-class $$class $$f || exit 1; \
+	done
+
+.PHONY: validate-debug
+validate-debug:
+	@:$(info $(DEBUG))
