@@ -1,4 +1,6 @@
+import csv
 from dataclasses import astuple
+from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -33,3 +35,31 @@ def test_replacement_lookup():
     assert replacer.lookup("a.txt", "a", "b") == "b"
     assert replacer.lookup("b.txt", "label", "BADLABEL") == "goodlabel"
     assert replacer.lookup("c.txt", "a", "b") == "b"
+
+
+def test_replace_csv():
+    csv_file = NamedTemporaryFile("wt", newline="")
+    writer = csv.DictWriter(csv_file, ["id", "name", "label"], delimiter="\t")
+
+    writer.writeheader()
+    writer.writerow({"id": "1", "name": "BADNAME", "label": "BADLABEL"})
+
+    csv_file.seek(0)
+    csv_path = Path(csv_file.name)
+
+    replacer = create_replacer(
+        [
+            Replacement(csv_path.name, "name", "BADNAME", "goodname"),
+            Replacement(csv_path.name, "label", "BADLABEL", "goodlabel"),
+        ]
+    )
+
+    output = StringIO()
+
+    replacer.process_csv(csv_path, output)
+
+    expected = """id\tname\tlabel
+1\tgoodname\tgoodlabel
+"""
+
+    assert output.getvalue() == expected

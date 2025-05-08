@@ -1,7 +1,12 @@
+"""
+A data cleaner to replace specific instances of values in a CSV file.
+
+TODO: CLI documentation
+"""
 import csv
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TypeVar, cast
+from typing import TextIO, TypeVar, cast
 
 T = TypeVar("T", bound=dict)
 LookupTable = dict[str, dict[str, dict[str, str]]]
@@ -34,6 +39,7 @@ class Replacer:
     """
 
     def __init__(self, table: LookupTable):
+        """Create a Replacer class."""
         self.table = table
 
     @classmethod
@@ -72,9 +78,28 @@ class Replacer:
 
         return value_lookup.get(value, value)
 
-    def iter_dictreader(self, filename: str, reader: csv.DictReader[str]):
-        """Wrap a csv.DictReader to replace values as it reads."""
-        for row in reader:
-            for k, v in row.items():
-                row[k] = self.lookup(filename, k, v)
-            yield row
+    def process_csv(self, csv_file: Path, output_fp: TextIO):
+        """
+        Open a CSV, replace all replaceable values, and write the resulting CSV to a text stream.
+
+        :param csv_file: A path to a CSV file to open.
+        :param output_fp: A text stream to which to write the resulting CSV.
+        """
+        with csv_file.open("r") as in_fp:
+            dialect = csv.Sniffer().sniff(in_fp.read(2048), delimiters=",\t")
+            in_fp.seek(0)
+            reader = csv.DictReader(in_fp, dialect=dialect)
+
+            field_names = reader.fieldnames
+
+            if field_names is None:
+                raise ValueError("Could not detect field names from CSV file.")
+
+
+            writer = csv.DictWriter(output_fp, field_names, dialect=dialect, lineterminator="\n")
+            writer.writeheader()
+
+            for row in reader:
+                for k, v in row.items():
+                    row[k] = self.lookup(csv_file.name, k, v)
+                writer.writerow(row)
