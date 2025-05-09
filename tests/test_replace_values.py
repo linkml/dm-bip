@@ -1,3 +1,5 @@
+"""Tests for the Replacer data cleaner."""
+
 import csv
 from dataclasses import astuple
 from io import StringIO
@@ -8,6 +10,7 @@ from simple_clean.replace_values import Replacement, Replacer
 
 
 def create_replacer(replacements: list[Replacement]):
+    """Create a replacer class with some replacements without loading a file."""
     file = NamedTemporaryFile("w")
     file.write("filename,column_name,original_value,replacement_value\n")
     for replacement in replacements:
@@ -18,6 +21,7 @@ def create_replacer(replacements: list[Replacement]):
 
 
 def test_replacement_lookup():
+    """Ensure replacer replaces marked values, and leaves unmarked values alone."""
     replacements: list[Replacement] = [
         Replacement("a.txt", "name", "BADNAME", "goodname"),
         Replacement("a.txt", "name", "BADNAME2", "goodname2"),
@@ -38,6 +42,7 @@ def test_replacement_lookup():
 
 
 def test_replace_csv():
+    """Ensure replacing data in a file works."""
     csv_file = NamedTemporaryFile("wt", newline="")
     writer = csv.DictWriter(csv_file, ["id", "name", "label"], delimiter="\t")
 
