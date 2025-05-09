@@ -1,12 +1,12 @@
-"""
-A data cleaner to replace specific instances of values in a CSV file.
+"""A data cleaner to replace specific instances of values in a CSV file."""
 
-TODO: CLI documentation
-"""
 import csv
+import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TextIO, TypeVar, cast
+from typing import Annotated, Optional, TextIO, TypeVar, cast
+
+import typer
 
 T = TypeVar("T", bound=dict)
 LookupTable = dict[str, dict[str, dict[str, str]]]
@@ -103,7 +103,6 @@ class Replacer:
             if field_names is None:
                 raise ValueError("Could not detect field names from CSV file.")
 
-
             writer = csv.DictWriter(output_fp, field_names, dialect=dialect, lineterminator="\n")
             writer.writeheader()
 
@@ -111,3 +110,51 @@ class Replacer:
                 for k, v in row.items():
                     row[k] = self.lookup(csv_file.name, k, v)
                 writer.writerow(row)
+
+
+def replace_csv_values(
+    replacements: Annotated[
+        Path,
+        typer.Argument(help="Path to the replacement file."),
+    ],
+    csv_input: Annotated[
+        Path,
+        typer.Argument(help="Path to the CSV file to perform replacements on."),
+    ],
+    csv_output: Annotated[
+        Optional[Path],
+        typer.Option("--output", "-o", help="Path to write output"),
+    ] = None,
+):
+    """
+    Replace a series of values in a CSV file as defined in a spreadsheet.
+
+    The replacement file must be a CSV and TSV with the following columns, in
+    this order:
+
+    -----------------
+
+    \b
+    filename            The file which should be targeted for replacement. This must only
+                        be the the name of the file, without any leading paths.
+
+    \b
+    column_name         The name of the column to target.
+
+    \b
+    original_value      The value targeted for replacement.
+
+    \b
+    replacement_value   The value with which `original_value` will be replaced.
+    """  # noqa: D301
+    replacer = Replacer.from_file(replacements)
+
+    if csv_output:
+        with csv_output.open("w") as fp:
+            replacer.process_csv(csv_input, fp)
+    else:
+        replacer.process_csv(csv_input, sys.stdout)
+
+
+if __name__ == "__main__":
+    typer.run(replace_csv_values)
