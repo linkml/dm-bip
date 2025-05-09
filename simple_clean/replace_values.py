@@ -31,6 +31,13 @@ def get_or_create_dict(key: str, obj: dict[str, T]) -> T:
     return val
 
 
+def detect_dialect(csv_fp: TextIO):
+    """Detect the dialect of a CSV stream, accepting comma or tab delimeters."""
+    dialect = csv.Sniffer().sniff(csv_fp.read(1024), delimiters=",\t")
+    csv_fp.seek(0)
+    return dialect
+
+
 class Replacer:
     """
     A class that replace values from a lookup table.
@@ -56,7 +63,8 @@ class Replacer:
         lookup_table: LookupTable = {}
 
         with open(replacements_file, "r") as fp:
-            reader = csv.DictReader(fp)
+            dialect = detect_dialect(fp)
+            reader = csv.DictReader(fp, dialect=dialect)
             replacements = [Replacement(**row) for row in reader]
 
         for replacement in replacements:
@@ -86,7 +94,7 @@ class Replacer:
         :param output_fp: A text stream to which to write the resulting CSV.
         """
         with csv_file.open("r") as in_fp:
-            dialect = csv.Sniffer().sniff(in_fp.read(2048), delimiters=",\t")
+            dialect = detect_dialect(in_fp)
             in_fp.seek(0)
             reader = csv.DictReader(in_fp, dialect=dialect)
 
