@@ -1,0 +1,57 @@
+table	Column Name	Description	Data Type	Example Value(s)
+Subject 	subject_id	Unique identifier for each subject.	string	SUBJ001
+Subject 	asthma	Indicates if the subject has asthma (likely "Yes" or "No").	string	No, Yes
+Subject 	stroke	Indicates if the subject has had a stroke (likely "Yes" or "No").	string	No, Yes
+Subject 	heart_disease	Indicates if the subject has heart disease (likely "Yes" or "No").	string	No, Yes
+Subject 	diabetes	Indicates if the subject has diabetes (likely "Yes" or "No").	string	No, Yes
+Subject 	consent_codes	Codes related to the subject's consent for the study.	string	open
+Subject 	study.id	Identifier for the study the subject is participating in (links to study_id in Study).	string	STUDY001
+Subject 	project.id	Identifier for the project the study belongs to (links to project_id in Study).	string	PROJ001
+Subject 	participant.id	Unique identifier for the participant within the project or study. This seems to be another identifier for the subject.	string	NA19669
+Study	type	Type of the record (always "Study" in this file).	string	Study
+Study	id	Unique identifier for the study record.	integer	1
+Study	project_id	Identifier of the project this study belongs to (linking to project.id in Subject).	string	PROJ001
+Study	submitter_id	Identifier used by the submitter for this study.	string	SUBMITTER001
+Study	study_id	Another identifier for the study.	string	STUDY001
+Study	study_registration	Information about the study registration (e.g., with a database like dbGap).	string	dbGap
+Study	authz	Authorization information or access controls for the study data.	string	/programs/tutorial/projects/toy_data_set_1
+Study	projects.id	Redundant identifier for the project (same as project_id).	string	PROJ001
+Study	projects.code	Code or short name for the project.	string	TP2
+Study	study_name	Human-readable name of the study.	string	ToyData_2
+Study	study_code	Short code or abbreviation for the study.	string	ToyStudy
+Study	program	Name of the program this study belongs to.	string	ToyProgram
+Study	study_description	A longer description of the study.	string	A toy dataset for testing
+Study	contact_name	Name of the contact person for the study.	string	Example Contact
+Study	contact_institution	Institution of the contact person.	string	University of North Carolina
+Study	contact_email	Email address of the contact person.	string	no-reply@example.com
+Study	research_domain	The broad area of research the study falls under.	string	General
+Study	lifespan_stage	The stage of the human lifespan the study focuses on.	string	Adult
+Study	study_design	The methodology or design of the study.	string	None
+Study	data_source_type	The type of data collected or used in the study.	string	
+Demographics 	subject_id	Unique identifier for the subject (likely links to subject.id in subject.tsv).	string	SUBJ001, SUBJ002
+Demographics 	sex	Self-reported gender of the subject.	string	Male, Female
+Demographics 	population	Self-reported population group or ancestry of the subject.	string	KHV, ACB, CHB
+Demographics 	race	Self-reported race of the subject.	string	asian, black or african american, hispanic
+Demographics 	ethnicity	Self-reported ethnicity of the subject.	string	Hispanic, Non-Hispanic
+Demographics 	age_at_index	Age of the subject at the index date or a specific time point in the study.	integer	74, 53, 62
+Visit 	visit_id	Unique identifier for each visit record.	string	VISIT001
+Visit 	subject_id	Identifier of the subject associated with this visit (links to subject_id in Subject and Demographics).	string	SUBJ001
+Visit 	bmi_baseline	Body Mass Index (BMI) measured at the baseline visit.	float	23.8, 34.4
+Visit 	height_cm	Height of the subject measured in centimeters.	float	168.4, 156.4
+Visit 	weight_kg	Weight of the subject measured in kilograms.	float	67.5, 84.1
+Visit 	current_smoker_baseline	Indicates if the subject was a current smoker at the baseline visit (likely "Yes" or "No").	string	No, Yes
+Visit 	ever_smoker_baseline	Indicates if the subject had ever smoked at the baseline visit (likely "Yes" or "No").	string	No, Yes
+Visit 	sleep_duration_hrs	Duration of sleep reported in hours.	float	8.4, 4.3
+Visit 	systolic_bp	Systolic blood pressure measurement (likely in mmHg).	integer	128, 106
+Visit 	diastolic_bp	Diastolic blood pressure measurement (likely in mmHg).	integer	76, 85
+Visit 	inhaler_use_per_day	Number of times the subject uses an inhaler per day.	integer	0, 1
+LabResults	subject_id	Unique identifier for the subject associated with these lab results (links to subject_id in other subject-related files).	string	SUBJ001
+LabResults	hdl	High-density lipoprotein (HDL) cholesterol level (likely in mg/dL).	integer	75, 56
+LabResults	ldl	Low-density lipoprotein (LDL) cholesterol level (likely in mg/dL).	integer	136, 126
+LabResults	total_cholesterol	Total cholesterol level (likely in mg/dL).	integer	284, 297
+LabResults	triglycerides	Triglyceride level in the blood (likely in mg/dL).	integer	88, 130
+LabResults	creatinine_mg_dl	Creatinine level in milligrams per deciliter (mg/dL).	float	1.17, 0.84
+Sample 	sample_id	Unique identifier for each biological sample.	string	SAMP-3343
+Sample 	subject_id	Identifier of the subject from whom the sample was collected (links to subject.id in other subject-related files).	string	SUBJ001
+Sample 	sample_type	Type of biological sample collected.	string	Blood, Saliva
+Sample 	sample_date	Date when the sample was collected.	date	1/22/24
