@@ -125,3 +125,4 @@ validate-data: $(SCHEMA_FILE)
 .PHONY: validate-debug
 validate-debug:
 	@:$(info $(DEBUG))
+	
