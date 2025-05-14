@@ -6,10 +6,13 @@ DM_INPUT_DIR ?=
 DM_INPUT_FILES ?=
 DM_SCHEMA_NAME ?= Schema
 DM_OUTPUT_DIR ?= output/$(DM_SCHEMA_NAME)
+VALIDATOR_OUTPUT_DIR ?= $(DM_OUTPUT_DIR)/schema-validator-data
 
 # Derived output files
 SCHEMA_FILE := $(DM_OUTPUT_DIR)/schema-automator-data/$(DM_SCHEMA_NAME).yaml
-
+SCHEMA_LINT_LOG := $(VALIDATOR_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-schema-lint.log
+SCHEMA_VALIDATE_LOG := $(VALIDATOR_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-schema-validate.log
+DATA_VALIDATE_LOG := $(VALIDATOR_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-data-validate.log
 
 ifdef DM_INPUT_FILES
 	INPUT_FILES := $(DM_INPUT_FILES)
@@ -97,7 +100,12 @@ schema-create: $(SCHEMA_FILE)
 
 .PHONY: schema-lint
 schema-lint: $(SCHEMA_FILE)
-	$(RUN) linkml-lint $<
+	@mkdir -p $(VALIDATOR_OUTPUT_DIR)
+	@echo "Linting schema $(SCHEMA_FILE)..."
+	@$(RUN) linkml-lint $< > $(SCHEMA_LINT_LOG) 2>&1 && \
+		echo "Schema linting passed." >> $(SCHEMA_LINT_LOG) || \
+		echo "Schema linting failed. See log for details." >> $(SCHEMA_LINT_LOG)
+	@echo "  Log written to $(SCHEMA_LINT_LOG)"
 
 .PHONY: help
 .PHONY: schema-help
@@ -111,16 +119,30 @@ schema-help:
 
 .PHONY: validate-schema
 validate-schema: $(SCHEMA_FILE)
-	$(RUN) linkml validate --schema $<
+	@mkdir -p $(VALIDATOR_OUTPUT_DIR)
+	@echo "Validating schema $(SCHEMA_FILE)..."
+	@$(RUN) linkml validate --schema $< > $(SCHEMA_VALIDATE_LOG) 2>&1 && \
+		echo "Schema validation passed." >> $(SCHEMA_VALIDATE_LOG) || \
+		echo "Schema validation failed." >> $(SCHEMA_VALIDATE_LOG)
+	@echo "  Log written to $(SCHEMA_VALIDATE_LOG)"
+
 
 .PHONY: validate-data
 validate-data: $(SCHEMA_FILE)
 	@:$(call check_input_files)
+	@mkdir -p $(VALIDATOR_OUTPUT_DIR)
+	@rm -f $(DATA_VALIDATE_LOG)
 	@for f in $(INPUT_FILES); do \
 		class=$$(basename $$f | sed -E 's/\.[ct]sv$$//' | tr '-' '_' | tr '[:upper:]' '[:lower:]'); \
-		echo "Validating $$f as class '$$class'..."; \
-		$(RUN) linkml validate --schema $(SCHEMA_FILE) --target-class $$class $$f || exit 1; \
+		out="$(VALIDATOR_OUTPUT_DIR)/$$(basename $$f).validate.log"; \
+		echo "Validating $$f as class '$$class'..." | tee -a $(DATA_VALIDATE_LOG); \
+		if $(RUN) linkml validate --schema $(SCHEMA_FILE) --target-class $$class $$f 2>>$(DATA_VALIDATE_LOG); then \
+			echo "  ✓ $$f passed." | tee -a $(DATA_VALIDATE_LOG); \
+		else \
+			echo "  ✗ $$f failed. See $$out" | tee -a $(DATA_VALIDATE_LOG); \
+		fi; \
 	done
+	@echo "Validation summary written to $(DATA_VALIDATE_LOG)"
 
 .PHONY: validate-debug
 validate-debug:
