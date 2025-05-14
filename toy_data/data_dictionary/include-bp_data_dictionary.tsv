@@ -1,0 +1,120 @@
+table	variable	label	description
+Age at Event and Latency	id	Participant ID	Participant ID ranging from 1301 to 2414.
+Age at Event and Latency	timepoint	Timepoint	Measurement time period ranging from 1 (baseline) to 5 (12 months) in 3-month increments (1: Baseline; 2: 3 Months; 3: 6 Months; 4: 9 Months; 5: 12 Months).
+Age at Event and Latency	age_at_visit	Age in Days	An exact measure of age in days calculated by subtracting the date of visit from the participant's date of birth.
+Age at Event and Latency	age_cog	Age in Days at the Cognitive Testing	An exact measure of age in days calculated by subtracting the date of the cognitive function testing from the participant's date of birth. This age will match the age_at_visit variable in most cases and is only included if the participant has valid cognitive function data.
+Age at Event and Latency	age_mri	Age in Days at the MRI Scan	An exact measure of age in days calculated by subtracting the date of the MRI scan from the participant's date of birth. This variable is only included if the participant had a valid MRI scan.
+Age at Event and Latency	visit_latency	Difference in Days from Baseline Visit	The difference in days between the date of the visit and the baseline visit
+Age at Event and Latency	cog_latency	Difference in Days from Baseline Cognitive Function Assessment	The difference in days between the date of the cognitive function assessment and the baseline cognitive function assessment.
+Age at Event and Latency	mri_latency	Difference in Days from Baseline MRI Scan	The difference in days between the date of the magnetic resonance imaging (MRI) scan and the baseline MRI scan.
+Anthropometrics	id	Participant ID	Participant ID ranging from 1301 to 2414.
+Anthropometrics	timepoint	Timepoint	Measurement time period ranging from 1 (baseline) to 5 (12 months) in 3-month increments (1: Baseline; 2: 3 Months; 3: 6 Months; 4: 9 Months; 5: 12 Months).
+Anthropometrics	height	Height in Centimeters	Average height in centimeters of two consecutive measurements within 0.635 cm (0.25 in).
+Anthropometrics	weight	Weight in Kilograms	Average weight in kilograms of two consecutive measurements within 0.045 kg (0.1 lb).
+Anthropometrics	bmi	Body Mass Index	Body mass index calculated by dividing weight in kilograms by height in meters squared.
+Anthropometrics	waist	Waist in Centimeters	Average waist circumference in centimeters of two consecutive measurements within 2 cm.
+Anthropometrics	sbp	Systolic Blood Pressure	The average of two consecutive resting systolic blood pressure measurements in millimeters of mercury (mmHg).
+Anthropometrics	dbp	Diastolic Blood Pressure	The average of two consecutive resting diastolic blood pressure measurements in millimeters of mercury (mmHg).
+Anthropometrics	resting_hr	Resting Heart Rate	The average of two consecutive measures of resting heart rate in beats per minute taken during the resting blood pressure assessment.
+Cognitive Function	id	Participant ID	Participant ID ranging from 1301 to 2414.
+Cognitive Function	timepoint	Timepoint	Measurement time period ranging from 1 (baseline) to 5 (12 months) in 3-month increments (1: Baseline; 2: 3 Months; 3: 6 Months; 4: 9 Months; 5: 12 Months).
+Cognitive Function	mtticmd	Incongruency cost (median)	The difference between the median latency of response (from stimulus appearance to button press) on the trials that were congruent versus the trials that were incongruent. Calculated by subtracting the median congruent latency (in ms) from the median incongruent latency. A positive score indicates that the subject is faster on congruent trials and a negative score indicates that the subject is faster on incongruent trials. A higher incongruency cost indicates that the subjects takes longer to process conflicting information.
+Cognitive Function	mttlmd	Reaction latency (median)	The median latency of response (from stimulus appearance to button press). Calculated across all correct, assessed trials.
+Cognitive Function	mttmtcmd	Multitasking cost (median)	The difference between the median latency of response (from stimulus appearance to button press) during assessed blocks in which both rules are used versus assessed blocks in which only a single rule is used. Calculated by subtracting the median latency of response during single task block(s) from the median latency of response during multitasking block(s). A positive score indicates that the subject responds more slowly during multitasking blocks, and indicates a higher cost of managing multiple sources of information.
+Cognitive Function	mtttic	Total incorrect	The number of trials for which the outcome was an incorrect response (subject pressed the incorrect button within the response window). Calculated across all assessed trials.
+Cognitive Function	palfams	First Attempt Memory Score	The number of times a subject chose the correct box on their first attempt when recalling the pattern locations. Calculated across all assessed trials.
+Cognitive Function	paltea	Total Errors	The number of times the subject chose the incorrect box for a stimulus on assessment problems, plus an adjustment for the estimated number of errors they would have made on any problems, attempts and recalls they did not reach. This measure allows you to compare performance on errors made across all subjects regardless of those who terminated early versus those completing the final stage of the task.
+Cognitive Function	rtifmdmt	Five-Choice Movement Time	The median time taken for a subject to release the response button and select the target stimulus after it flashed yellow on screen. Calculated across correct, assessed trials in which the stimulus could appear in any one of five locations. Measured in milliseconds.
+Cognitive Function	rtifmdrt	Five-Choice Reaction Time	The median duration it took for a subject to release the response button after the presentation of a target stimulus. Calculated across correct, assessed trials in which the stimulus could appear in any one of five locations. Measured in milliseconds.
+Cognitive Function	rtismdmt	Simple Movement Time	The median time taken for a subject to release the response button and select the target stimulus after it flashed yellow on screen. Calculated across correct, assessed trials in which the stimulus could appear in one location only. Measured in milliseconds.
+Cognitive Function	rtismdrt	Simple Reaction Time	The median duration it took for a subject to release the response button after the presentation of a target stimulus. Calculated across correct, assessed trials in which the stimulus could appear in one location only. Measured in milliseconds.
+Demographics	id	Participant ID	Participant ID ranging from 1301 to 2414.
+Demographics	timepoint	Timepoint	Measurement time period ranging from 1 (baseline) to 5 (12 months) in 3-month increments (1: Baseline; 2: 3 Months; 3: 6 Months; 4: 9 Months; 5: 12 Months).
+Demographics	gender	Gender	Participant's gender (1: Male; 2: Female)
+Demographics	level_support	Level of Support	Level of parental or caregiver support needed (1: Mild; 2: Moderate)
+Demographics	race	Race	Participant's race (1: American Indian; 2: Asian; 3: Pacific Islander; 4: African American; 5: Caucasian; 6: Mixed Race)
+Demographics	ethnicity	Ethnicity	Participant's ethnicity (1: Not Hispanic or Latino; 2: Hispanic or Latino)
+Health Conditions	id	Participant ID	Participant ID ranging from 1301 to 2414.
+Health Conditions	timepoint	Timepoint	Measurement time period ranging from 1 (baseline) to 5 (12 months) in 3-month increments (1: Baseline; 2: 3 Months; 3: 6 Months; 4: 9 Months; 5: 12 Months).
+Health Conditions	heart_condition	Heart Condition Present	Was the participant born with a heart condition (e.g. hole in their heart, or a missing heart chamber, or valve problem; 0: No; 1: Yes)?
+Health Conditions	vsd	Ventricular Septal Defect	Ventricular Septal Defect (0: No; 1: Yes)
+Health Conditions	asd	Atrial Septal Defect	Atrial Septal Defect (0: No; 1: Yes)
+Health Conditions	pda	Patent Ductus Arteriosus	Patent Ductus Arteriosus (0: No; 1: Yes)
+Health Conditions	avsd	Atrioventricular Septal Defect	Atrioventricular Septal Defect (also called Atrioventricular (AV) Canal and Endocardial Cushion Defect; 0: No; 1: Yes)
+Health Conditions	mitral	Mitrial Valve Defect	Mitral Valve Defect (0: No; 1: Yes)
+Health Conditions	murmur	Heart Murmur	Heart Murmur (0: No; 1: Yes)
+Health Conditions	hole_no_surgery	A hole in the heart that did not require surgery	A hole in the heart that did not require surgery to repair (0: No; 1: Yes)
+Health Conditions	blood_vessel_surgery	Prior blood vessel surgery	Has the participant ever had heart or blood vessel surgery or a cardiac catheterization (0: No; 1: Yes)?
+Health Conditions	type1_diabetes	Type 1 Diabetes	Parent- or caregiver-reported medical diagnosis of type 1 or insulin dependent diabetes at the baseline visit (0: No; 1: Yes).
+Health Conditions	metabolic_disorder	Metabolic Disorder	Parent- or caregiver-reported medical diagnosis of metabolic disorder at the baseline visit (0: No; 1: Yes).
+Health Conditions	hypertension	Hypertension	Parent- or caregiver-reported medical diagnosis of hypertension at the baseline visit (0: No; 1: Yes).
+Health Conditions	type2_diabetes	Type 2 Diabetes	Parent- or caregiver-reported medical diagnosis of type 2 or adult-onset diabetes at the baseline visit (0: No; 1: Yes).
+Health Conditions	asthma	Asthma	Parent- or caregiver-reported medical diagnosis of asthma at the baseline visit (0: No; 1: Yes).
+Health Conditions	food_allergies	Food Allergies	Parent- or caregiver-reported food allergies at the baseline visit (0: No; 1: Yes).
+Health Conditions	hypothyroidism	Hypothyroidism	Parent- or caregiver-reported medical diagnosis of hypothyroidism at the baseline visit (0: No; 1: Yes).
+Imaging	id	Participant ID	Participant ID ranging from 1301 to 2414.
+Imaging	timepoint	Timepoint	Measurement time period ranging from 1 (baseline) to 5 (12 months) in 3-month increments (1: Baseline; 2: 3 Months; 3: 6 Months; 4: 9 Months; 5: 12 Months).
+Imaging	norm_gray	Proportion of Gray Matter in Intracranial Volume	Total gray matter volume (mm3) divided by total intracranial volume (mm3)
+Imaging	norm_white	Proportion of White Matter in Intracranial Volume	Total white matter volume (mm3) divided by total intracranial volume (mm3)
+Imaging	norm_lhippo	Proportion of Left Hippocampus in Intracranial Volume	Left hippocampus volume (mm3) divided by total intracranial volume (mm3)
+Imaging	norm_rhippo	Proportion of Right Hippocampus in Intracranial Volume	Right hippocampus volume (mm3) divided by total intracranial volume (mm3)
+Imaging	rspcc_dmnmask	Default Mode Network Connectivity to the Posterior Cingulate Cortex	Average resting state connectivity within the default mode network to the posterior cingulate cortex.
+Imaging	rspcc_mpfc	Posterior Cinguate Cortex Connectivity to the Medial Prefrontal Cortex	Average resting state connectivity between the posterior cingulate cortex and the medial prefrontal cortex.
+Imaging	rspcc_lpar	Posterior Cinguate Cortex Connectivity to the Left Parietal	Average resting state connectivity between the posterior cingulate cortex and the left parietal.
+Imaging	rspcc_rpar	Posterior Cinguate Cortex Connectivity to the Right Parietal	Average resting state connectivity between the posterior cingulate cortex and the right parietal.
+Imaging	dti_fa	Fractional Anisotropy of White Matter Tracts	Average fractional anisotropy of all white matter tracts of interest
+Imaging	dti_md	Mean Diffusivity of White Matter Tracts	Average mean diffusivity of all white matter tracts of interest.
+Imaging	pcasl	Cerbral Blood Flow in the Gray Matter	Average cerebral blood flow in total gray matter.
+Oxygen Kinetics Meta	id	Participant ID	Participant ID ranging from 1301 to 2414.
+Oxygen Kinetics Meta	timepoint	Timepoint	Measurement time period ranging from 1 (baseline) to 5 (12 months) in 3-month increments (1: Baseline; 2: 3 Months; 3: 6 Months; 4: 9 Months; 5: 12 Months).
+Oxygen Kinetics Meta	start_time	Peak Exercise Test Start Time	The start time of the peak exercise test in 24-hour time format.
+Oxygen Kinetics Meta	room_temperature	Room Temparture in Celsius	The room temperature in Celsius at the beginning of the peak exercise test.
+Oxygen Kinetics Meta	barometric_pressure	Room Air Pressure in Millimeters of Mercury	A measure of the air pressure (mmHg) in the room at the beginning of the peak exercise test
+Oxygen Kinetics Meta	room_humidity	Room Humidity Percentage	The percent room humidity at the beginning of the peak exercise test.
+Oxygen Kinetics Meta	o2_measured	Standard Gases: Measured Oxygen	The measured oxygen at the beginning of the peak exercise test (standard is 20.94%)
+Oxygen Kinetics Meta	co2_measured	Standard Gases: Measured Carbon Dioxide	The measured carbon dioxide at the beginning of the peak exercise test (standard is 0.04%)
+Oxygen Kinetics	id	Participant ID	Participant ID ranging from 1301 to 2414.
+Oxygen Kinetics	timepoint	Timepoint	Measurement time period ranging from 1 (baseline) to 5 (12 months) in 3-month increments (1: Baseline; 2: 3 Months; 3: 6 Months; 4: 9 Months; 5: 12 Months).
+Oxygen Kinetics	predicted_max_hr	Age-Estimated Maximum Heart Rate	Age-estimated maximum heart rate in beats per minute using 210 - (0.56 x age) - 31.
+Oxygen Kinetics	measured_peak_hr	Measured Peak Heart Rate	Measured peak heart rate in beats per minute when peak oxygen consumption was reached.
+Oxygen Kinetics	speed	Treadmill Starting Speed	Starting speed of the treadmill in mph ranging from 1 to 3 mph.
+Oxygen Kinetics	incline	Treadmill Ending Incline	Percent incline of the treadmill when peak oxygen consumption was reached.
+Oxygen Kinetics	time_to_peak	Time to Peak Oxygen Consumption in Seconds	The time elapsed in seconds from the beginning of the test to when peak oxygen consumption was reached.
+Oxygen Kinetics	vo2_l_min	Volume of Oxygen in Liters Per Minute	Volume of oxygen consumption in liters per minute.
+Oxygen Kinetics	vo2_ml_kg_min	Volume of Oxygen in Milliliters Per Minute Adjusted for Body Weight in Kilograms	Volume of oxygen consumption in milliliters per minute adjusted for body weight in kilograms.
+Oxygen Kinetics	rer	Respiratory Exchange Ratio	The highest respiratory exchange ratio (also called respiratory quotient) reached during the peak exercise test.
+Oxygen Kinetics	criteria_exhaustion	Reached Volitional Exhaustion	Participant reached volitional exhaustion (0: No; 1: Yes).
+Oxygen Kinetics	criteria_hr10	Achieved Heart Rate Criteria	Participant achieved a measured peak heart rate less than or equal to 10 beats per minute from their age-estimated maximum heart rate (0: No; 1: Yes).
+Oxygen Kinetics	criteria_rer	Achieved Respiratory Exchange Ratio Criteria	Participant reached a respiratory exchange ratio greater than or equal to 1.0 during the peak oxygen consumption test (0: No; 1: Yes).
+Oxygen Kinetics	valid_peak_test	Valid Peak Oxygen Consumption Test	A valid peak oxygen consumption test determined by volitional exhaustion and either a respiratory exchange ratio greater than or equal to 1.0 during the peak oxygen consumption test or a measured heart rate less than or equal to 10 beats per minute from their age-estimated maximum heart rate (0: No; 1: Yes).
+Physical Activity Day	id	Participant ID	Participant ID ranging from 1301 to 2414.
+Physical Activity Day	timepoint	Timepoint	Measurement time period ranging from 1 (baseline) to 5 (12 months) in 3-month increments (1: Baseline; 2: 3 Months; 3: 6 Months; 4: 9 Months; 5: 12 Months).
+Physical Activity Day	days	Day of Observation	The day of observation for the accelerometer ranging from 1 to 7.
+Physical Activity Day	weekday	Day of the Week	The day of the week.
+Physical Activity Day	season	Astronomical Season	United States' astronomical season (Winter: December 22 - March 19; Spring: March 20 - June 20; Summer: June 21 - September 22; Fall: September 23 - December 21)
+Physical Activity Day	counts	Vertical Axis Counts	Vertical axis counts (i.e., a unitless measure of movement intensity) from the Y-axis of the ActiGraph GT3X-BT portable accelerometer.
+Physical Activity Day	vmc	Vector Magnitude Counts	Vector magnitude counts from the ActiGraph GT3X-BT portable accelerometer calculated as the square root of the sum of the squares from the X, Y, and Z accelerometer axes.
+Physical Activity Day	steps	Steps	The number of steps detected by the accelerometer using ActiGraph's default step detection algorithm.
+Physical Activity Day	wear_time	Wear Time	The number of minutes that a participant wore the accelerometer using the Choi et al. wear time algorithm using 90-minute windows and a 2-minute allowance for non-wear time interruptions.
+Physical Activity Day	sedentary	Sedentary Time	Minutes of sedentary time (less than 100 vertical counts per minute)
+Physical Activity Day	light	Light Physical Activity	Minutes of light physical activity (greater than or equal to 101 and less than 2020 counts per minute)
+Physical Activity Day	moderate	Moderate Physical Activity	Minutes of moderate physical activity (greater than or equal to 2020 and less than 5999 counts per minute)
+Physical Activity Day	vigorous	Vigorous Physical Activity	Minutes of vigorous physical activity (greater than or equal to 5999 counts per minute)
+Physical Activity Day	mvpa	Moderate-to-Vigorous Physical Activity	Minutes of moderate-to-vigorous physical activity (greater than or equal to 2020 counts per minute)
+Physical Activity Person	id	Participant ID	Participant ID ranging from 1301 to 2414.
+Physical Activity Person	timepoint	Timepoint	Measurement time period ranging from 1 (baseline) to 5 (12 months) in 3-month increments (1: Baseline; 2: 3 Months; 3: 6 Months; 4: 9 Months; 5: 12 Months).
+Physical Activity Person	counts	Vertical Axis Counts	Vertical axis counts (i.e., a unitless measure of movement intensity) from the Y-axis of the ActiGraph GT3X-BT portable accelerometer.
+Physical Activity Person	vmc	Vector Magnitude Counts	Vector magnitude counts from the ActiGraph GT3X-BT portable accelerometer calculated as the square root of the sum of the squares from the X, Y, and Z accelerometer axes.
+Physical Activity Person	steps	Steps	The number of steps detected by the accelerometer using ActiGraph's default step detection algorithm.
+Physical Activity Person	wear_time	Wear Time	The number of minutes that a participant wore the accelerometer using the Choi et al. wear time algorithm using 90-minute windows and a 2-minute allowance for non-wear time interruptions.
+Physical Activity Person	sedentary	Sedentary Time	Minutes of sedentary time (less than 100 vertical counts per minute)
+Physical Activity Person	light	Light Physical Activity	Minutes of light physical activity (greater than or equal to 101 and less than 2020 counts per minute)
+Physical Activity Person	moderate	Moderate Physical Activity	Minutes of moderate physical activity (greater than or equal to 2020 and less than 5999 counts per minute)
+Physical Activity Person	vigorous	Vigorous Physical Activity	Minutes of vigorous physical activity (greater than or equal to 5999 counts per minute)
+Physical Activity Person	mvpa	Moderate-to-Vigorous Physical Activity	Minutes of moderate-to-vigorous physical activity (greater than or equal to 2020 counts per minute).
+Physical Activity Person	valid_days	Number of Valid Days	Number of valid days using a wear time criteria of 480 minutes per day.
+Physical Activity Person	valid_weekend_days	Number of Valid Weekend Days	Number of valid weekend days using a wear time criteria of 480 minutes per day.
+Randomization	id	Participant ID	Participant ID ranging from 1301 to 2414.
+Randomization	cohort	Cohort	Cohort number enrolling in the study ranging from 1-4.
+Randomization	strata	Strata	Stratification prior to randomization (1: Female less than or equal to 30 years; 2: Female greater than 30 years; 3: Male less than or equal to 30 years; 4: Female greater than 30 years)
+Randomization	randomization	Randomization	Randomization group (1: Remote High; 2: Remote Low; 3: Health Coach Only)
