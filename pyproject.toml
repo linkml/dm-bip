@@ -12,6 +12,7 @@ click = "*"
 importlib-metadata = ">=8.2.0"
 pandas = "^2.2.3"
 schema-automator = "^0.5.3"
+linkml-map = "^0.3.8"
 
 [tool.poetry.group.dev.dependencies]
 pytest = {version = ">=8.3.2"}
