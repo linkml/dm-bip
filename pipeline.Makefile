@@ -99,6 +99,17 @@ schema-create: $(SCHEMA_FILE)
 schema-lint: $(SCHEMA_FILE)
 	$(RUN) linkml-lint $<
 
+.PHONY: annotate
+annotate:
+	@echo "** Annotate data file with ontology terms using config and input_file: $(input_file)"
+	@cmd="python harmonica/harmonize.py annotate \
+		--config config/config.yml \
+		--input_file $(input_file)"; \
+	if [ -n "$(output_dir)" ]; then cmd="$$cmd --output_dir $(output_dir)"; fi; \
+	if [ -n "$(refresh)" ]; then cmd="$$cmd --refresh"; fi; \
+	echo $$cmd; \
+	eval $$cmd
+
 .PHONY: help
 .PHONY: schema-help
 help::
