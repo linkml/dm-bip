@@ -159,7 +159,7 @@ slots:
     examples:
     - value: '2024-01-21'
     from_schema: https://w3id.org/MySchema
-    range: datetime
+    range: date
   type:
     examples:
     - value: Study
