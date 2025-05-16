@@ -6,7 +6,7 @@ from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from simple_clean.replace_values import Replacement, Replacer
+from dm_bip.cleaners.replace_values import Replacement, Replacer
 
 
 def create_replacer(replacements: list[Replacement]):

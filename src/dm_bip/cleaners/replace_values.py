@@ -32,7 +32,7 @@ def get_or_create_dict(key: str, obj: dict[str, T]) -> T:
 
 
 def detect_dialect(csv_fp: TextIO):
-    """Detect the dialect of a CSV stream, accepting comma or tab delimeters."""
+    """Detect the dialect of a CSV stream, accepting comma or tab delimiters."""
     dialect = csv.Sniffer().sniff(csv_fp.read(1024), delimiters=",\t")
     csv_fp.seek(0)
     return dialect

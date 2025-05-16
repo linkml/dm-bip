@@ -3,7 +3,7 @@
 import io
 import unittest
 
-from simple_clean.remove_empty_columns import remove_empty_columns
+from dm_bip.cleaners.remove_empty_columns import remove_empty_columns
 
 
 class TestRemoveEmptyColumns(unittest.TestCase):
