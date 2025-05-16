@@ -102,10 +102,12 @@ schema-create: $(SCHEMA_FILE)
 schema-lint: $(SCHEMA_FILE)
 	@mkdir -p $(VALIDATOR_OUTPUT_DIR)
 	@echo "Linting schema $(SCHEMA_FILE)..."
-	@$(RUN) linkml-lint $< > $(SCHEMA_LINT_LOG) 2>&1 && \
-		echo "Schema linting passed." >> $(SCHEMA_LINT_LOG) || \
-		echo "Schema linting failed. See log for details." >> $(SCHEMA_LINT_LOG)
-	@echo "  Log written to $(SCHEMA_LINT_LOG)"
+	@$(RUN) linkml-lint $< > $(SCHEMA_LINT_LOG) 2>&1; then \
+			echo "Schema linting passed." >> $(SCHEMA_LINT_LOG); \
+		else \
+			echo "Schema linting failed. See log for details." >> $(SCHEMA_LINT_LOG); \
+		fi; \
+	@echo "Schema linting log written to $(SCHEMA_LINT_LOG)"
 
 .PHONY: help
 .PHONY: schema-help
@@ -121,10 +123,12 @@ schema-help:
 validate-schema: $(SCHEMA_FILE)
 	@mkdir -p $(VALIDATOR_OUTPUT_DIR)
 	@echo "Validating schema $(SCHEMA_FILE)..."
-	@$(RUN) linkml validate --schema $< > $(SCHEMA_VALIDATE_LOG) 2>&1 && \
-		echo "Schema validation passed." >> $(SCHEMA_VALIDATE_LOG) || \
-		echo "Schema validation failed." >> $(SCHEMA_VALIDATE_LOG)
-	@echo "  Log written to $(SCHEMA_VALIDATE_LOG)"
+	@$(RUN) linkml validate --schema $< > $(SCHEMA_VALIDATE_LOG) 2>&1; then \
+			echo "  ✓ $$f passed." | tee -a $(SCHEMA_VALIDATE_LOG); \
+		else \
+			echo "  ✗ $$f failed. See $$out" | tee -a $(SCHEMA_VALIDATE_LOG); \
+		fi; \
+	@echo "Schema validation written to $(SCHEMA_VALIDATE_LOG)"
 
 
 .PHONY: validate-data
@@ -136,13 +140,13 @@ validate-data: $(SCHEMA_FILE)
 		class=$$(basename $$f | sed -E 's/\.[ct]sv$$//' | tr '-' '_' | tr '[:upper:]' '[:lower:]'); \
 		out="$(VALIDATOR_OUTPUT_DIR)/$$(basename $$f).validate.log"; \
 		echo "Validating $$f as class '$$class'..." | tee -a $(DATA_VALIDATE_LOG); \
-		if $(RUN) linkml validate --schema $(SCHEMA_FILE) --target-class $$class $$f 2>>$(DATA_VALIDATE_LOG); then \
+		if $(RUN) linkml validate --schema $(SCHEMA_FILE) --target-class $$class $$f 2>&1; then \
 			echo "  ✓ $$f passed." | tee -a $(DATA_VALIDATE_LOG); \
 		else \
 			echo "  ✗ $$f failed. See $$out" | tee -a $(DATA_VALIDATE_LOG); \
 		fi; \
 	done
-	@echo "Validation summary written to $(DATA_VALIDATE_LOG)"
+	@echo "Data validation summary written to $(DATA_VALIDATE_LOG)"
 
 .PHONY: validate-debug
 validate-debug:
