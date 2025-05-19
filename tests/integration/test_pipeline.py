@@ -1,4 +1,5 @@
 """Tests to make sure that the pipeline is working as expected against test data."""
+
 # ruff: noqa: S603 S607
 
 import os
