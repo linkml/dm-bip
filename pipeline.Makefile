@@ -6,10 +6,13 @@ DM_INPUT_DIR ?=
 DM_INPUT_FILES ?=
 DM_SCHEMA_NAME ?= Schema
 DM_OUTPUT_DIR ?= output/$(DM_SCHEMA_NAME)
+VALIDATOR_OUTPUT_DIR ?= $(DM_OUTPUT_DIR)/schema-validator-data
 
 # Derived output files
 SCHEMA_FILE := $(DM_OUTPUT_DIR)/schema-automator-data/$(DM_SCHEMA_NAME).yaml
-
+SCHEMA_LINT_LOG := $(VALIDATOR_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-schema-lint.log
+SCHEMA_VALIDATE_LOG := $(VALIDATOR_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-schema-validate.log
+DATA_VALIDATE_LOG := $(VALIDATOR_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-data-validate.log
 
 ifdef DM_INPUT_FILES
 	INPUT_FILES := $(DM_INPUT_FILES)
@@ -97,7 +100,25 @@ schema-create: $(SCHEMA_FILE)
 
 .PHONY: schema-lint
 schema-lint: $(SCHEMA_FILE)
-	$(RUN) linkml-lint $<
+	@mkdir -p $(VALIDATOR_OUTPUT_DIR)
+	@echo "Linting schema $(SCHEMA_FILE)..."
+	@$(RUN) linkml-lint $< > $(SCHEMA_LINT_LOG) 2>&1; then \
+			echo "Schema linting passed." >> $(SCHEMA_LINT_LOG); \
+		else \
+			echo "Schema linting failed. See log for details." >> $(SCHEMA_LINT_LOG); \
+		fi; \
+	@echo "Schema linting log written to $(SCHEMA_LINT_LOG)"
+
+.PHONY: annotate
+annotate:
+	@echo "** Annotate data file with ontology terms using config and input_file: $(input_file)"
+	@cmd="python harmonica/harmonize.py annotate \
+		--config config/config.yml \
+		--input_file $(input_file)"; \
+	if [ -n "$(output_dir)" ]; then cmd="$$cmd --output_dir $(output_dir)"; fi; \
+	if [ -n "$(refresh)" ]; then cmd="$$cmd --refresh"; fi; \
+	echo $$cmd; \
+	eval $$cmd
 
 .PHONY: help
 .PHONY: schema-help
@@ -109,7 +130,36 @@ schema-help:
 	@:$(info =================)
 	@:$(info $(DEBUG))
 
+.PHONY: validate-schema
+validate-schema: $(SCHEMA_FILE)
+	@mkdir -p $(VALIDATOR_OUTPUT_DIR)
+	@echo "Validating schema $(SCHEMA_FILE)..."
+	@$(RUN) linkml validate --schema $< > $(SCHEMA_VALIDATE_LOG) 2>&1; then \
+			echo "  ✓ $$f passed." | tee -a $(SCHEMA_VALIDATE_LOG); \
+		else \
+			echo "  ✗ $$f failed. See $$out" | tee -a $(SCHEMA_VALIDATE_LOG); \
+		fi; \
+	@echo "Schema validation written to $(SCHEMA_VALIDATE_LOG)"
 
-# .PHONY: validate-schema
-# validate: $(SCHEMA_FILE)
-# 	$(RUN) linkml-validate -s $< -C $(INPUT_FILES)
+
+.PHONY: validate-data
+validate-data: $(SCHEMA_FILE)
+	@:$(call check_input_files)
+	@mkdir -p $(VALIDATOR_OUTPUT_DIR)
+	@rm -f $(DATA_VALIDATE_LOG)
+	@for f in $(INPUT_FILES); do \
+		class=$$(basename $$f | sed -E 's/\.[ct]sv$$//' | tr '-' '_' | tr '[:upper:]' '[:lower:]'); \
+		out="$(VALIDATOR_OUTPUT_DIR)/$$(basename $$f).validate.log"; \
+		echo "Validating $$f as class '$$class'..." | tee -a $(DATA_VALIDATE_LOG); \
+		if $(RUN) linkml validate --schema $(SCHEMA_FILE) --target-class $$class $$f 2>&1; then \
+			echo "  ✓ $$f passed." | tee -a $(DATA_VALIDATE_LOG); \
+		else \
+			echo "  ✗ $$f failed. See $$out" | tee -a $(DATA_VALIDATE_LOG); \
+		fi; \
+	done
+	@echo "Data validation summary written to $(DATA_VALIDATE_LOG)"
+
+.PHONY: validate-debug
+validate-debug:
+	@:$(info $(DEBUG))
+	
