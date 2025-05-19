@@ -70,4 +70,5 @@ def test_pipeline_schema(toy_data_pipeline_output: Path):
     schema_view = SchemaView(schema_path)
 
     input_files = [f for f in toy_data_input_dir.iterdir() if f.name.endswith(("csv", "tsv"))]
+    assert schema_view.schema.name == SCHEMA_NAME
     assert len(schema_view.all_classes()) == len(input_files)
