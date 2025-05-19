@@ -38,6 +38,7 @@ help::
 	@echo "│     lint                Lint all code                       │"
 	@echo "│     format              Format all code                     │"
 	@echo "│     coverage            Measure and report test coverage    │"
+	@echo "│     jupyter-notebook    Start a Jupyter server and notebook │"
 	@echo "╰─────────────────────────────────────────────────────────────╯"
 	@echo
 
@@ -109,3 +110,4 @@ coverage: $(PYTHON)
 	$(RUN) coverage report -m
 
 include pipeline.Makefile
+include notebook.Makefile
