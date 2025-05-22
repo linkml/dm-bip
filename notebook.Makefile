@@ -1,8 +1,8 @@
 RUN := poetry run
 
 
-.PHONY: install-jupyter-kernel
-install-jupyter-kernel: $(PYTHON)
+.PHONY: add-jupyter-kernel
+add-jupyter-kernel: $(PYTHON)
 	$(RUN) python -m ipykernel install --user --name=dm-bip --display-name "Python (dm-bip)"
 
 .PHONY: jupyter-notebook
@@ -18,7 +18,7 @@ _jupyter:
 		INSTALLED_BEFORE=yes; \
 	else \
 		echo "Installing kernel '$$KERNEL_NAME'..."; \
-		$(MAKE) install-jupyter-kernel; \
+		$(MAKE) add-jupyter-kernel; \
 		INSTALLED_BEFORE=no; \
 	fi; \
 	echo "Launching notebook..."; \
@@ -32,3 +32,17 @@ _jupyter:
 .PHONY: remove-jupyter-kernel
 remove-jupyter-kernel:
 	jupyter kernelspec uninstall dm-bip -f
+
+.PHONY: lint-notebooks
+lint-notebooks:
+	@OUTPUTS=$$(find . -name '*.ipynb' ! -path './.venv/*' -exec grep -l '"output_type":' {} \;); \
+	if [ -n "$$OUTPUTS" ]; then \
+		echo "Notebooks contain outputs. Run 'make fix-notebook-lint'."; \
+		exit 1; \
+	fi
+
+.PHONY: fix-notebook-lint
+fix-notebook-lint:
+	@echo "Stripping outputs from notebooks..."
+	@find . -name '*.ipynb' ! -path "./.venv/*" ! -path "./.ipynb_checkpoints/*" -exec \
+		$(RUN) jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace --to notebook {} \;
