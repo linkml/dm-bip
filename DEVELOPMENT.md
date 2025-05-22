@@ -24,42 +24,42 @@ gantt
     Leads - Patrick, Corey                  :done, 2025-01-10, 0d
 
     section 2 
-    Development Setup & Documentation       :active, 2025-01-01, 2025-04-15
-    Build & Deployment Tools (Makefile)     :active, 2025-02-10, 2025-06-15
+    Development Setup & Documentation       :done, 2025-01-01, 2025-04-15
+    Build & Deployment Tools (Makefile)     :done, 2025-02-10, 2025-06-15
 
     section Data Sets
-    Leads - Corey, Patrick, Madan                  :done, 2025-01-10, 0d
+    Leads - Corey, Patrick, Madan           :done, 2025-01-10, 0d
 
     section 3 
     Initial Toy Data                        :done, 2025-01-01, 2025-03-01
-    Robust Toy Data for Build & Test        :active, 2025-02-15, 2025-04-01
-    Initial Synthetic Data                  :active, 2025-02-10, 2025-04-01
-    Synthetic Data (Prioritized Variables)  :active, 2025-02-20, 2025-06-01
+    Robust Toy Data for Build & Test        :done, 2025-02-15, 2025-04-01
+    Initial Synthetic Data                  :done, 2025-02-10, 2025-04-01
+    Synthetic Data (Prioritized Variables)  :done, 2025-02-20, 2025-06-01
 
     section Schema Generation
     Leads - Trish, Corey                    :done, 2025-01-10, 0d
 
     section 4 
-    Schema Toy Data                         :active, 2025-02-01, 2025-03-08
-    Verify Schema Automator on Toy Data     :active, 2025-02-10, 2025-04-01
-    Synthetic Data for Schema Automator     :active, 2025-02-20, 2025-05-15
-    Schema Automator on Synthetic Data      :2025-03-15, 2025-06-01
-    Use Schema Automator on Real Data       :2025-04-01, 2025-07-01
-    Close Schema Automator Gaps             :2025-04-15, 2025-07-01
-    Schema Sheets & Toy/Synthetic Data      :active, 2025-03-01, 2025-05-01
-    Annotation of Data                      :2025-04-01, 2025-06-01
+    Schema Toy Data                         :done, 2025-02-01, 2025-03-08
+    Verify Schema Automator on Toy Data     :done, 2025-02-10, 2025-04-01
+    Synthetic Data for Schema Automator     :done, 2025-02-20, 2025-05-15
+    Schema Automator on Synthetic Data      :done, 2025-03-15, 2025-06-01
+    Use Schema Automator on Real Data       :done, 2025-04-01, 2025-07-01
+    Close Schema Automator Gaps             :done, 2025-04-15, 2025-07-01
+    Schema Sheets & Toy/Synthetic Data      :done, 2025-03-01, 2025-05-01
+    Annotation of Data                      :active, 2025-04-01, 2025-06-01
 
     section Schema Validator
     Lead - Madan                            :done, 2025-01-10, 0d
 
     section 5 
-    Schema Validator Toy Data               :active, 2025-02-10, 2025-03-30
-    Add Schema Validator & Write Tests      :active, 2025-02-10, 2025-04-01
-    Synthetic Data for Schema Validator     :active, 2025-02-20, 2025-05-15
-    Schema Validator on Real Data           :2025-04-01, 2025-07-01
+    Schema Validator Toy Data               :done, 2025-02-10, 2025-03-30
+    Add Schema Validator & Write Tests      :done, 2025-02-10, 2025-04-01
+    Synthetic Data for Schema Validator     :done, 2025-02-20, 2025-05-15
+    Schema Validator on Real Data           :done, 2025-04-01, 2025-07-01
 
     section Schema Data Map
-    Lead - BDC Data Model Team, Corey       :done, 2025-01-10, 0d
+    Lead - BDC Data Model Team, Corey       :active, 2025-01-10, 0d
 
     section 6 
     Manually Curated Data Map               :2025-03-015, 2025-06-01
@@ -71,7 +71,7 @@ gantt
     section 7 
     LinkML Map Toy Data                     :active, 2025-02-01, 2025-03-08
     Add LinkML Map                          :active, 2025-02-10, 2025-04-01
-    Synthetic Data for LinkML Map           :2025-03-15, 2025-06-01
+    Synthetic Data for LinkML Map           :active, 2025-03-15, 2025-06-01
     Real Data with LinkML Map               :2025-04-01, 2025-07-01
     Remediate Mapping Issues                :2025-05-01, 2025-07-01
 
@@ -79,11 +79,11 @@ gantt
     Lead -- Patrick, TBD                         :done, 2025-01-10, 0d
 
     section 8 
-    Simple Data Cleaning Scripts            :active, 2025-02-01, 2025-04-15
-    Scripts for Complex Mappings            :2025-04-15, 2025-07-01
+    Simple Data Cleaning Scripts            :done, 2025-02-01, 2025-04-15
+    Scripts for Complex Mappings [postponed, canceled]            :done, 2025-04-15, 2025-07-01
 
-    section Execution & Deployment
-    Leads - Patrick, Stephen, Pierette      :done, 2025-01-10, 0d
+    section Exec & Deploy
+    Leads - Patrick, Stephen, Pierette                 :done, 2025-01-10, 0d
 
     section 9 
     Containerized Deployment (AWS, GCP)     :2025-03-15, 2025-06-15
@@ -106,20 +106,21 @@ gantt
 # Project Outline
 This outline captures the main features shown in the project roadmap above. This outline can be more detailed and contains some project steps that are less useful in the top-level roadmap. We should plan to refine the use of these tools over time to capture the parts of the project that need to be represented at a top-level plan and a more detailed overview that collects all of the parts we are working on.
 
-1. **Joint Working Repository - Lead -- Patrick Golden**
-    1. Overall Project Documentation - Initial - Completed, Ongoing
-    1. Automatic Project Documentation Deployment - Initial - In Progress
+1. ✔️**Joint Working Repository - Lead -- Patrick Golden** 
+    1. Overall Project Documentation - Ongoing
+    1. Automatic Project Documentation Deployment - Ongoing
     1. Project Testing Suite - Initial - Completed, Needs Sub-tasks
     1. Automated Pre-Commit Project Testing - Completed
-    1. Automated Build and Deployment Toolset - Makefile - Initial - In Progress
-1. **Ingest-Wide Toy Data Set - Lead -- Corey Cox & Patrick Golden**
-    1. Single Toy Data Set for Testing and Build Environment Validation Across Full Pipeline - Initial - In Progress
-    1. Integration of Toy Data Set with Automated Build/Test Harness - Not Started
-1. **Ingest-Wide Synthetic Data Set - Assigned -- Corey Cox, Patrick Golden, Madan** 
+    1. Automated Build and Deployment Toolset - Makefile - Ongoing
+1. ✔️**Ingest-Wide Toy Data Set - Lead -- Corey Cox & Patrick Golden** 
+    1. Single Toy Data Set for Testing and Build Environment Validation Across Full Pipeline - Initial - Completed
+    1. Integration of Toy Data Set with Automated Build/Test Harness - ?
+1. ✔️**Ingest-Wide Synthetic Data Set - Assigned -- Corey Cox, Patrick Golden, Madan** 
     1. Initial Synthetic Data Set Based on Data Available (BDC Synthetic) - In Progress
     1. Initial Synthetic Data Set Generated from BDC Model identified variables - Not Started
-1. **Schema Automator - Lead -- Trish Whetzel, helping -- Corey Cox**
-    1. Add Schema-Automator to Project and verify it works - In Progress
+        1. NOTE: Initial Toy dataset replaced the need for synthetic dataset as Corey had to build the data set froms scratch to accompdate for what would have been needed from synthetic dataset.
+1. ✔️**Schema Automator - Lead -- Trish Whetzel, helping -- Corey Cox** 
+    1. Add Schema-Automator to Project and verify it works - Completed
         1. Had to Downgrade Python Version from 3.13 to 3.12 for now
         1. Used BDC Synthetic Data and produced Schema, no true testing or validation
         1. Add Schema-Automator usage and installation process to documentation
@@ -132,10 +133,13 @@ This outline captures the main features shown in the project roadmap above. This
         1. Add richer data to synthetic or toy data set to represent gaps
         1. Development on Schema Automator to add functionality
         1. Development on Upstream Complex Mapper for hard to add functionality
-1. **Schema Sheets for Data Dictionary - Lead -- Trish Whetzel**
+1. ✔️**Schema Sheets for Data Dictionary - Lead -- Trish Whetzel** 
     1. Add Schema Sheets as additional tool to create data models
-1. **Annotation of the Data - Lead -- Trish Whetzel**
-1. **Schema Validator - Lead -- Madan** 
+1. ▶️**Annotation of the Data - Lead -- Trish Whetzel** 
+    1. Move to the repo - completed
+    1. Make the tool generalizeable/configurable to allow the tool to prioritize certain resources vs the others depending on need and the use case.
+    1. Add instructions on how to add ontologies by use case     
+1. ✔️**Schema Validator - Lead -- Madan** 
     1. Add Schema Validator to project and verify it works
     1. Create Toy Data Set to verify functionality and start testing harness
         1. Toy Data Set resembling output of Schema Automator
@@ -144,10 +148,10 @@ This outline captures the main features shown in the project roadmap above. This
     1. Verify Schema Validator works for Toy Data Set and Write Tests
     1. Create Synthetic Data Set for Schema Validatory and Write Tests
     1. Use Schema Validator on real data with Schema Automator generated schema
-1. **Schema Data Map - Yaml file that describes the map from one data model to another**
+1. ▶️**Schema Data Map - Yaml file that describes the map from one data model to another** 
     1. Manually Curated data map from BDC Data Model Team
     1. Attempt Automatic generation of map from LLM working group
-1. **LinkML Mapper - Doing the Transformation  - Lead -- Corey Cox**
+1. ▶️**LinkML Mapper - Doing the Transformation  - Lead -- Corey Cox** 
     1. Add LinkML Mapper to Project and verify it works
     1. Create Toy Data for LinkML Mapper functionality
         1. Toy Data Set used for Schema Automator Schema generation
@@ -166,15 +170,15 @@ This outline captures the main features shown in the project roadmap above. This
         1. Create Issues in LinkML Mapper and assess feasibility of adding functionality to LinkML Mapper
         1. Add functionality to LinkML Mapper or add scripts to Complex Data Mapper on a per-variable manner
     1. Perform full ingest data transform with LinkML Mapper on real data
-1. **Simple Data Cleaner - Lead -- Patrick Golden**
+1. ✔️**Simple Data Cleaner - Lead -- Patrick Golden** 
     1. Simple scripts necessary for Data cleaning outside of ingest pipeline
         1. Poorly formatted Enums (Male, male, M, 1 - all meaning male)
         1. Bad missing data representation (i.e. 9 for no data)
         1. Empty columns
         1. Other bad data practices we can’t expect our ingest to handle
-1. **Complex Data Mapper - Lead -- TBD**
-        1. One-off scripts on per dataset basis to map data that is too complex for the tools as the exist
-        1. Create these as-needed for each variable that cannot be cleanly mapped with LinkML Mapper
+1. ❎**Complex Data Mapper - postponed, canceled as not planned**
+    1. One-off scripts on per dataset basis to map data that is too complex for the tools as the exist
+    1. Create these as-needed for each variable that cannot be cleanly mapped with LinkML Mapper
 1. **Execution and Deployment pipeline - Lead -- BDC -- Patrick and Stephen, INCLUDE -- Pierette Lo**
     1. Wrapping tools and steps into containers for deployment to cloud environments (BDC Catalyst through AWS, Google Cloud)
     1. Local system execution of pipeline in fully automated way if possible or with checkpoints and human-in-the-loop.
