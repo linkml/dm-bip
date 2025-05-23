@@ -82,7 +82,7 @@ schema-clean:
 $(SCHEMA_FILE): $(INPUT_FILES)
 	@:$(call check_input_files)
 	mkdir -p $(@D)
-	$(RUN) schemauto generalize-tsvs $^ -o $@
+	$(RUN) schemauto generalize-tsvs -n $(DM_SCHEMA_NAME) $^ -o $@
 	@echo
 	@echo "  Created schema at $@"
 	@echo
