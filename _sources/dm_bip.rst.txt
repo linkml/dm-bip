@@ -9,21 +9,21 @@ dm\_bip.cli module
 
 .. automodule:: dm_bip.cli
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 dm\_bip.main module
 -------------------
 
 .. automodule:: dm_bip.main
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------
 
 .. automodule:: dm_bip
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
