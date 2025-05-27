@@ -20,8 +20,6 @@ tox = {version = ">=4.16.0"}
 pre-commit = {version = ">=3.3.3"}
 black = {version = ">=24.3.0"}
 ruff = {version = ">=0.3.5"}
-ipykernel = "^6.29.5"
-notebook = "^7.4.2"
 
 [tool.poetry.group.docs]
 optional = true
