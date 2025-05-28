@@ -11,17 +11,17 @@ add-jupyter-kernel: $(PYTHON)
 ONESHELL:
 .PHONY: jupyter-notebook
 jupyter-notebook:
-	if jupyter kernelspec list 2>/dev/null | grep -q "$KERNEL_NAME"; then \
-		echo "Kernel '$KERNEL_NAME' already installed."; \
+	if jupyter kernelspec list 2>/dev/null | grep -q "$(KERNEL_NAME)"; then \
+		echo "Kernel '$(KERNEL_NAME)' already installed."; \
 		INSTALLED_BEFORE=yes; \
 	else \
-		echo "Installing kernel '$KERNEL_NAME'..."; \
+		echo "Installing kernel '$(KERNEL_NAME)'..."; \
 		$(MAKE) add-jupyter-kernel; \
 	fi; \
 	echo "Launching notebook..."; \
-	$(RUN) jupyter notebook $NB_FILE; \
+	$(RUN) jupyter notebook $(NB_FILE); \
 	if [ "$$INSTALLED_BEFORE" != "no" ]; then \
-		echo "Removing temporary kernel '$KERNEL_NAME'..."; \
+		echo "Removing temporary kernel '$(KERNEL_NAME)'..."; \
 		$(MAKE) remove-jupyter-kernel; \
 	fi
 
