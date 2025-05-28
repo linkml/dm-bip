@@ -71,10 +71,12 @@ $(PYTHON): $(INSTALL_SENTINEL)
 install:
 	poetry install --with dev --with docs
 
-.PHONY: git-hooks-install
-git-hooks-install:
-	cp scripts/git-hooks/pre-commit .git/hooks/pre-commit
-	chmod +x .git/hooks/pre-commit
+git-hooks-install: .git/hooks/pre-commit
+
+.git/hooks/pre-commit: scripts/git-hooks/pre-commit
+	cp $< $@
+	chmod +x $@
+
 
 ### Documentation ###
 
