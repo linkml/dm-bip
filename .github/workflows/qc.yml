@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # python-version: ["3.12", "3.13" ]
-        python-version: ["3.12" ] # Removing 3.13 for now due to dependency issues
+        python-version: ["3.12", "3.13" ]
+        # python-version: ["3.12" ] # Removing 3.13 for now due to dependency issues
 
     steps:
       - uses: actions/checkout@v3.0.2
