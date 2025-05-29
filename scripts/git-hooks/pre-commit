@@ -1,0 +1,11 @@
+#!/bin/bash
+echo "🧪 Linting notebooks for unwanted outputs..."
+
+make lint-notebooks
+STATUS=$?
+
+if [ $STATUS -ne 0 ]; then
+  echo "Commit rejected. Notebook outputs must be stripped."
+  echo "Run: make fix-notebook-lint"
+  exit $STATUS
+fi
