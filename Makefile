@@ -39,11 +39,15 @@ help::
 	@echo "│     clobber             Clean up generated files            │"
 	@echo "│                                                             │"
 	@echo "│     install             Set up the virtual environment      |"
+	@echo "│     git-hooks-install   Install git pre-commit hooks        |"
 	@echo "│     docs                Generate documentation              │"
 	@echo "│     test                Run tests                           │"
+	@echo "│                                                             │"
 	@echo "│     lint                Lint all code                       │"
 	@echo "│     format              Format all code                     │"
 	@echo "│     coverage            Measure and report test coverage    │"
+	@echo "│                                                             │"
+	@echo "│     jupyter-notebook    Start a Jupyter server and notebook │"
 	@echo "╰─────────────────────────────────────────────────────────────╯"
 	@echo
 
@@ -66,6 +70,12 @@ $(PYTHON): $(INSTALL_SENTINEL)
 .PHONY: install
 install:
 	poetry install --with dev --with docs
+
+git-hooks-install: .git/hooks/pre-commit
+
+.git/hooks/pre-commit: scripts/git-hooks/pre-commit
+	cp $< $@
+	chmod +x $@
 
 
 ### Documentation ###
@@ -102,6 +112,7 @@ clobber:
 lint: $(PYTHON)
 	-$(RUN) ruff check --diff src/ tests/ --exclude $(LINT_EXCLUDES)
 	-$(RUN) ruff format --check --diff --exclude $(LINT_EXCLUDES)
+	$(MAKE) lint-notebooks
 
 
 .PHONY: format
@@ -115,3 +126,4 @@ coverage: $(PYTHON)
 	$(RUN) coverage report -m
 
 include pipeline.Makefile
+include notebook.Makefile
