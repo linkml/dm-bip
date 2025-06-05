@@ -1,2 +1,2 @@
-MASKED_ID	AGE	SEX	RACE	ETHNICITY	BMI	HEIGHT	WEIGHT	Abnormalities of gait and mobility	Achalasia	Acute bronchitis	Acute kidney failure	acute myocardial infarction	Acute nasopharyngitis	Acute sinusitis
-123	8	Female	N/A	N/A	9	9	9	1	1	1	0	0   1	1	1
+MASKED_ID	AGE	SEX	RACE	ETHNICITY	BMI	HEIGHT	WEIGHT	Abnormalities of gait and mobility	achalasia	Achalasia	Acute bronchitis	Acute kidney failure	acute myocardial infarction	Acute nasopharyngitis	Acute sinusitis
+123	8	Female	N/A	N/A	9	9	9	1	1	1	0	0   1	1	1	1
