@@ -109,6 +109,14 @@ schema-lint: $(SCHEMA_FILE)
 		fi;
 	@echo "Schema linting log written to $(SCHEMA_LINT_LOG)"
 
+
+COND_START_COL ?= 6
+
+.PHONY: extract-conditions
+extract-conditions:
+	./src/dm_bip/cleaners/extract_conditions.sh $(input_file) $(COND_START_COL)
+
+
 .PHONY: annotate
 annotate:
 	@echo "** Annotate data file with ontology terms using config and input_file: $(input_file)"
