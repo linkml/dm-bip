@@ -8,7 +8,7 @@ from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
-def flatten_dict(d, parent_key='', sep='__'):
+def flatten_dict(d, parent_key="", sep="__"):
     items = []
     for k, v in d.items():
         new_key = f"{parent_key}{sep}{k}" if parent_key else k
@@ -33,7 +33,7 @@ def explode_rows(flat_records, list_keys):
             new_record = record.copy()
             for k, v in zip(keys, combo):
                 if isinstance(v, dict):
-                    new_record[k] = json.dumps(v, separators=(',', ':'))
+                    new_record[k] = json.dumps(v, separators=(",", ":"))
                 else:
                     new_record[k] = v
             exploded.append({k: v for k, v in new_record.items() if not isinstance(v, list)})
@@ -46,8 +46,7 @@ def join_lists(records, list_keys, join_str=","):
             value = record.get(k)
             if isinstance(value, list):
                 record[k] = join_str.join(
-                    json.dumps(item, separators=(',', ':')) if isinstance(item, dict) else str(item)
-                    for item in value
+                    json.dumps(item, separators=(",", ":")) if isinstance(item, dict) else str(item) for item in value
                 )
     return records
 
@@ -64,15 +63,18 @@ def main():
     parser.add_argument("schema", help="Path to LinkML schema (YAML)")
     parser.add_argument("input", help="Input YAML instance file")
     parser.add_argument("output_dir", help="Output directory for TSV files")
-    parser.add_argument("--list-style", choices=["join", "explode"], default="join",
-                        help="How to handle list values (default: join with ',')")
+    parser.add_argument(
+        "--list-style",
+        choices=["join", "explode"],
+        default="join",
+        help="How to handle list values (default: join with ',')",
+    )
     args = parser.parse_args()
 
     sv = SchemaView(args.schema)
 
     # Build lowercase mapping for class name resolution
     schema_classes = {cls.name.lower().replace("_", ""): cls.name for cls in sv.all_classes().values()}
-
 
     # Load input YAML
     with open(args.input) as f:
