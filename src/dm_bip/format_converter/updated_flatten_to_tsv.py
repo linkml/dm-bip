@@ -1,14 +1,23 @@
+"""
+Flatten LinkML YAML data into TSV files.
+
+This script loads a LinkML model and a YAML instance file, flattens the data,
+and outputs TSV files for each top-level class.
+"""
+
 import argparse
-import yaml
-import json
 import itertools
-import pandas as pd
+import json
 from pathlib import Path
+
+import pandas as pd
+import yaml
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
 def flatten_dict(d, parent_key="", sep="__"):
+    """Flatten dictionary."""
     items = []
     for k, v in d.items():
         new_key = f"{parent_key}{sep}{k}" if parent_key else k
@@ -22,16 +31,17 @@ def flatten_dict(d, parent_key="", sep="__"):
 
 
 def explode_rows(flat_records, list_keys):
+    """Explode nested values to additional rows."""
     exploded = []
     for record in flat_records:
         lists = {k: v for k, v in record.items() if k in list_keys and isinstance(v, list)}
         if not lists:
             exploded.append(record)
             continue
-        keys, values = zip(*lists.items())
+        keys, values = zip(*lists.items(), strict=False)
         for combo in itertools.product(*values):
             new_record = record.copy()
-            for k, v in zip(keys, combo):
+            for k, v in zip(keys, combo, strict=False):
                 if isinstance(v, dict):
                     new_record[k] = json.dumps(v, separators=(",", ":"))
                 else:
@@ -41,6 +51,7 @@ def explode_rows(flat_records, list_keys):
 
 
 def join_lists(records, list_keys, join_str=","):
+    """Join lists."""
     for record in records:
         for k in list_keys:
             value = record.get(k)
@@ -52,6 +63,7 @@ def join_lists(records, list_keys, join_str=","):
 
 
 def get_slot_order(schemaview: SchemaView, class_name: str):
+    """Get the slot order from the model."""
     cls = schemaview.get_class(class_name)
     if not cls:
         raise ValueError(f"Class {class_name} not found in schema")
@@ -59,6 +71,7 @@ def get_slot_order(schemaview: SchemaView, class_name: str):
 
 
 def main():
+    """Run the TSV flattener."""
     parser = argparse.ArgumentParser(description="Flatten all top-level classes in LinkML data to TSV")
     parser.add_argument("schema", help="Path to LinkML schema (YAML)")
     parser.add_argument("input", help="Input YAML instance file")
