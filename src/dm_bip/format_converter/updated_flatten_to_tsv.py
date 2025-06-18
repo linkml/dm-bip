@@ -16,6 +16,7 @@ import yaml
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
+
 def flatten_dict(d, parent_key="", sep="__"):
     """Flatten dictionary."""
     items = []
@@ -28,6 +29,7 @@ def flatten_dict(d, parent_key="", sep="__"):
         else:
             items.append((new_key, v))
     return dict(items)
+
 
 def explode_rows(flat_records, list_keys):
     """Explode nested values to additional rows."""
@@ -48,6 +50,7 @@ def explode_rows(flat_records, list_keys):
             exploded.append({k: v for k, v in new_record.items() if not isinstance(v, list)})
     return exploded
 
+
 def join_lists(records, list_keys, join_str=","):
     """Join lists."""
     for record in records:
@@ -59,12 +62,14 @@ def join_lists(records, list_keys, join_str=","):
                 )
     return records
 
+
 def get_slot_order(schemaview: SchemaView, class_name: str):
     """Get the slot order from the model."""
     cls = schemaview.get_class(class_name)
     if not cls:
         raise ValueError(f"Class {class_name} not found in schema")
     return schemaview.class_slots(cls.name)
+
 
 def extract_mapping_class_derivations(mapping_data):
     """Build a dict mapping top-level keys in YAML to their corresponding class names from the mapping file."""
@@ -92,12 +97,12 @@ def extract_mapping_class_derivations(mapping_data):
                 recurse(item, current_key)
 
     recurse(mapping_data)
-    print(f'class_map: {class_map}')
+    print(f"class_map: {class_map}")
     return class_map
 
 
-
 def collect_instances_by_class(data, class_instances, schema_classes, mapping=None, parent_class=None):
+    """Organize instances from a LinkML YAML document by their target model classes."""
     if isinstance(data, dict):
         for key, value in data.items():
             mapped_class_name = mapping.get(key) if mapping else None
@@ -108,10 +113,14 @@ def collect_instances_by_class(data, class_instances, schema_classes, mapping=No
             if isinstance(value, list):
                 for item in value:
                     if isinstance(item, dict):
-                        effective_class_name = mapped_class_name or schema_classes.get(key.lower().rstrip("s").replace("_", ""))
+                        effective_class_name = mapped_class_name or schema_classes.get(
+                            key.lower().rstrip("s").replace("_", "")
+                        )
                         if effective_class_name:
                             class_instances.setdefault(effective_class_name, []).append(item)
-                        collect_instances_by_class(item, class_instances, schema_classes, mapping, parent_class=effective_class_name)
+                        collect_instances_by_class(
+                            item, class_instances, schema_classes, mapping, parent_class=effective_class_name
+                        )
             elif isinstance(value, dict):
                 if class_name:
                     class_instances.setdefault(class_name, []).append(value)
@@ -119,6 +128,7 @@ def collect_instances_by_class(data, class_instances, schema_classes, mapping=No
     elif isinstance(data, list):
         for item in data:
             collect_instances_by_class(item, class_instances, schema_classes, mapping, parent_class=parent_class)
+
 
 def remove_nested_class_fields(instances, class_name, sv: SchemaView):
     """Remove fields in each instance that are themselves other class blocks."""
@@ -138,15 +148,14 @@ def remove_nested_class_fields(instances, class_name, sv: SchemaView):
         result.append(cleaned)
     return result
 
+
 def main():
     """Run the TSV flattener."""
     parser = argparse.ArgumentParser(description="Flatten LinkML YAML data to TSV")
     parser.add_argument("schema", help="Path to LinkML schema (YAML)")
     parser.add_argument("input", help="Input YAML instance file")
     parser.add_argument("output_dir", help="Output directory for TSV files")
-    parser.add_argument(
-        "--mapping-file", help="Optional YAML file mapping keys to class names"
-    )
+    parser.add_argument("--mapping-file", help="Optional YAML file mapping keys to class names")
     parser.add_argument(
         "--list-style",
         choices=["join", "explode"],
@@ -221,6 +230,7 @@ def main():
         out_path = Path(args.output_dir) / f"{class_name}.tsv"
         df.to_csv(out_path, sep="\t", index=False)
         print(f"Wrote: {out_path}")
+
 
 if __name__ == "__main__":
     main()
