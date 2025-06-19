@@ -34,5 +34,4 @@ fi
 eval "$INPUT_CMD" \
   | sed -e '1,/^$/d' \
   | sed -e '2{/^dbGaP_Subject_ID/d}' \
-  | sed -e '1s/^##/dbGaP_Subject_ID/' -e '1s/\./_/g'
-
+  | sed -e '1s/^##/dbGaP_Subject_ID/' -e '1s/\(phv[0-9]\{8\}\)\.[^ \t]*/\1/g'
