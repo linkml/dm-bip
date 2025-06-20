@@ -27,6 +27,12 @@ endif
 INPUT_FILENAMES := $(INPUT_FILES:$(DM_INPUT_DIR)/%=%)
 
 
+# Derive validate data log target names from INPUT_FILENAMES
+INPUT_FILE_KEYS := $(subst /,__,$(INPUT_FILENAMES))
+VALIDATE_LOGS := $(addprefix $(VALIDATOR_OUTPUT_DIR)/validate-logs/,$(addsuffix .validate.log,$(INPUT_FILE_KEYS)))
+
+
+
 define DEBUG
 
 Configurable variables:
@@ -150,24 +156,49 @@ validate-schema: $(SCHEMA_FILE)
 	@echo "Schema validation written to $(SCHEMA_VALIDATE_LOG)"
 
 
+# .PHONY: validate-data
+# validate-data: $(SCHEMA_FILE)
+#	@:$(call check_input_files)
+#	@mkdir -p $(VALIDATOR_OUTPUT_DIR)
+#	@rm -f $(DATA_VALIDATE_LOG)
+#	@for f in $(INPUT_FILES); do \
+#		class=$$(basename $$f | sed -E 's/\.[ct]sv$$//' | tr '-' '_' | tr '[:upper:]' '[:lower:]'); \
+#		out="$(VALIDATOR_OUTPUT_DIR)/$$(basename $$f).validate.log"; \
+#		echo "Validating $$f as class '$$class'..." | tee -a $(DATA_VALIDATE_LOG); \
+#		if $(RUN) linkml validate --schema $(SCHEMA_FILE) --target-class $$class $$f 2>&1; then \
+#			echo "  ✓ $$f passed." | tee -a $(DATA_VALIDATE_LOG); \
+#		else \
+#			echo "  ✗ $$f failed. See $$out" | tee -a $(DATA_VALIDATE_LOG); \
+#		fi; \
+#	done
+#	@echo "Data validation summary written to $(DATA_VALIDATE_LOG)"
+
+
+# Pattern rule to handle validation per file
+# Assumes OUTPUT is in: $(VALIDATOR_OUTPUT_DIR)/validate-logs/<input_filename>.validate.log
+$(VALIDATOR_OUTPUT_DIR)/validate-logs/%.validate.log:
+	@mkdir -p $(VALIDATOR_OUTPUT_DIR)/validate-logs
+	@input_file=$(DM_INPUT_DIR)/$(subst __,/,$(basename $(basename $(notdir $@)))); \
+	class=$$(basename $$input_file | sed -E 's/\.[ct]sv$$//' | tr '-' '_' | tr '[:upper:]' '[:lower:]'); \
+	echo "Validating $$input_file as class '$$class'..." | tee -a $(DATA_VALIDATE_LOG); \
+	if $(RUN) linkml validate --schema $(SCHEMA_FILE) --target-class $$class $$input_file > $@ 2>&1; then \
+		echo "  ✓ $$input_file passed." | tee -a $(DATA_VALIDATE_LOG); \
+	else \
+		echo "  ✗ $$input_file failed. See $@" | tee -a $(DATA_VALIDATE_LOG); \
+	fi
+
+
 .PHONY: validate-data
-validate-data: $(SCHEMA_FILE)
-	@:$(call check_input_files)
-	@mkdir -p $(VALIDATOR_OUTPUT_DIR)
-	@rm -f $(DATA_VALIDATE_LOG)
-	@for f in $(INPUT_FILES); do \
-		class=$$(basename $$f | sed -E 's/\.[ct]sv$$//' | tr '-' '_' | tr '[:upper:]' '[:lower:]'); \
-		out="$(VALIDATOR_OUTPUT_DIR)/$$(basename $$f).validate.log"; \
-		echo "Validating $$f as class '$$class'..." | tee -a $(DATA_VALIDATE_LOG); \
-		if $(RUN) linkml validate --schema $(SCHEMA_FILE) --target-class $$class $$f 2>&1; then \
-			echo "  ✓ $$f passed." | tee -a $(DATA_VALIDATE_LOG); \
-		else \
-			echo "  ✗ $$f failed. See $$out" | tee -a $(DATA_VALIDATE_LOG); \
-		fi; \
-	done
+validate-data: $(VALIDATE_LOGS)
 	@echo "Data validation summary written to $(DATA_VALIDATE_LOG)"
+
+
+.PHONY: clean-validate
+clean-validate:
+	rm -rf $(VALIDATOR_OUTPUT_DIR)/validate-logs $(DATA_VALIDATE_LOG)
+
 
 .PHONY: validate-debug
 validate-debug:
 	@:$(info $(DEBUG))
-	
+
