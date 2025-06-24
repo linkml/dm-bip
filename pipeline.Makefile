@@ -27,10 +27,11 @@ endif
 INPUT_FILENAMES := $(INPUT_FILES:$(DM_INPUT_DIR)/%=%)
 
 
+NOW := $(shell date +%s)
+
 # Derive validate data log target names from INPUT_FILENAMES
 INPUT_FILE_KEYS := $(subst /,__,$(INPUT_FILENAMES))
-VALIDATE_LOGS := $(addprefix $(VALIDATOR_OUTPUT_DIR)/validate-logs/,$(addsuffix .validate.log,$(INPUT_FILE_KEYS)))
-
+VALIDATE_LOGS := $(INPUT_FILE_KEYS:%=$(VALIDATOR_OUTPUT_DIR)/validate-logs/%.validate.$(NOW).log)
 
 
 define DEBUG
@@ -174,19 +175,26 @@ validate-schema: $(SCHEMA_FILE)
 #	@echo "Data validation summary written to $(DATA_VALIDATE_LOG)"
 
 
+# Given the name of an output log, determine the file that produced it.
+input_file_from_validation_log = $(if $(DM_INPUT_DIR),$(DM_INPUT_DIR)/,)$(subst __,/,$(1))
+
+# Given an input file, determine the class name that schema automator assigned it.
+class_name_from_input = $(shell echo $(notdir $(basename $(1))) | tr '-' '_' | tr '[:upper:]' '[:lower:]')
+
 # Pattern rule to handle validation per file
 # Assumes OUTPUT is in: $(VALIDATOR_OUTPUT_DIR)/validate-logs/<input_filename>.validate.log
-$(VALIDATOR_OUTPUT_DIR)/validate-logs/%.validate.log:
-	@mkdir -p $(VALIDATOR_OUTPUT_DIR)/validate-logs
-	@input_file=$(DM_INPUT_DIR)/$(subst __,/,$(basename $(basename $(notdir $@)))); \
-	class=$$(basename $$input_file | sed -E 's/\.[ct]sv$$//' | tr '-' '_' | tr '[:upper:]' '[:lower:]'); \
-	echo "Validating $$input_file as class '$$class'..." | tee -a $(DATA_VALIDATE_LOG); \
-	if $(RUN) linkml validate --schema $(SCHEMA_FILE) --target-class $$class $$input_file > $@ 2>&1; then \
-		echo "  ✓ $$input_file passed." | tee -a $(DATA_VALIDATE_LOG); \
+$(VALIDATOR_OUTPUT_DIR)/validate-logs/%.validate.$(NOW).log: $(call input_file_from_validation_log,%) $(SCHEMA_FILE)
+	@mkdir -p $(@D)
+	@echo "Validating $< as class '$(call class_name_from_input,$<)'..." | tee -a $(DATA_VALIDATE_LOG)
+	@if $(RUN) linkml validate \
+		--schema $(SCHEMA_FILE) \
+		--target-class $(call class_name_from_input,$<) \
+		$< > $@ 2>&1; \
+	then \
+		echo "  ✓ $< passed." | tee -a $(DATA_VALIDATE_LOG); \
 	else \
-		echo "  ✗ $$input_file failed. See $@" | tee -a $(DATA_VALIDATE_LOG); \
+		echo "  ✗ $< failed. See $@" | tee -a $(DATA_VALIDATE_LOG); \
 	fi
-
 
 .PHONY: validate-data
 validate-data: $(VALIDATE_LOGS)
