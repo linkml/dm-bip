@@ -6,7 +6,7 @@ DM_INPUT_DIR ?=
 DM_INPUT_FILES ?=
 DM_SCHEMA_NAME ?= Schema
 DM_OUTPUT_DIR ?= output/$(DM_SCHEMA_NAME)
-VALIDATOR_OUTPUT_DIR ?= $(DM_OUTPUT_DIR)/schema-validator-data
+VALIDATOR_OUTPUT_DIR ?= $(DM_OUTPUT_DIR)/schema-validator-logs
 
 # Derived output files
 SCHEMA_FILE := $(DM_OUTPUT_DIR)/schema-automator-data/$(DM_SCHEMA_NAME).yaml
@@ -24,14 +24,14 @@ endif
 
 # The names of the files used as inputs, with the base input directory stripped.
 # (Not currently not used).
-INPUT_FILENAMES := $(INPUT_FILES:$(DM_INPUT_DIR)/%=%)
+INPUT_FILENAMES := $(INPUT_FILES:$(if $(DM_INPUT_DIR),$(DM_INPUT_DIR)/,)%=%)
 
 
 NOW := $(shell date +%s)
 
 # Derive validate data log target names from INPUT_FILENAMES
 INPUT_FILE_KEYS := $(subst /,__,$(INPUT_FILENAMES))
-VALIDATE_LOGS := $(INPUT_FILE_KEYS:%=$(VALIDATOR_OUTPUT_DIR)/validate-logs/%.validate.$(NOW).log)
+VALIDATE_LOGS := $(INPUT_FILE_KEYS:%=$(VALIDATOR_OUTPUT_DIR)/validation/%/success.log)
 
 
 define DEBUG
@@ -157,24 +157,6 @@ validate-schema: $(SCHEMA_FILE)
 	@echo "Schema validation written to $(SCHEMA_VALIDATE_LOG)"
 
 
-# .PHONY: validate-data
-# validate-data: $(SCHEMA_FILE)
-#	@:$(call check_input_files)
-#	@mkdir -p $(VALIDATOR_OUTPUT_DIR)
-#	@rm -f $(DATA_VALIDATE_LOG)
-#	@for f in $(INPUT_FILES); do \
-#		class=$$(basename $$f | sed -E 's/\.[ct]sv$$//' | tr '-' '_' | tr '[:upper:]' '[:lower:]'); \
-#		out="$(VALIDATOR_OUTPUT_DIR)/$$(basename $$f).validate.log"; \
-#		echo "Validating $$f as class '$$class'..." | tee -a $(DATA_VALIDATE_LOG); \
-#		if $(RUN) linkml validate --schema $(SCHEMA_FILE) --target-class $$class $$f 2>&1; then \
-#			echo "  ✓ $$f passed." | tee -a $(DATA_VALIDATE_LOG); \
-#		else \
-#			echo "  ✗ $$f failed. See $$out" | tee -a $(DATA_VALIDATE_LOG); \
-#		fi; \
-#	done
-#	@echo "Data validation summary written to $(DATA_VALIDATE_LOG)"
-
-
 # Given the name of an output log, determine the file that produced it.
 input_file_from_validation_log = $(if $(DM_INPUT_DIR),$(DM_INPUT_DIR)/,)$(subst __,/,$(1))
 
@@ -182,31 +164,89 @@ input_file_from_validation_log = $(if $(DM_INPUT_DIR),$(DM_INPUT_DIR)/,)$(subst 
 class_name_from_input = $(shell echo $(notdir $(basename $(1))) | tr '-' '_' | tr '[:upper:]' '[:lower:]')
 
 # Pattern rule to handle validation per file
-# Assumes OUTPUT is in: $(VALIDATOR_OUTPUT_DIR)/validate-logs/<input_filename>.validate.log
-$(VALIDATOR_OUTPUT_DIR)/validate-logs/%.validate.$(NOW).log: $(call input_file_from_validation_log,%) $(SCHEMA_FILE)
-	@mkdir -p $(@D)
+#
+# Here are the variables in the following recipe, assuming an input file named "data/chairs.tsv" and
+# the default values for $(DM_OUTPUT_DIR) and $(VALIDATOR_OUTPUT_DIR):
+#
+# Make variables:
+#     % and $*: data__chairs.tsv
+#     $<: data/chairs.tsv
+#
+# Shell variables
+#     LOG_DIR:             output/schema-validator-logs/validation/data__chairs.tsv/
+#     FAILURE_DIR_SYMLINK: output/schema-validator-logs/errors/data__chairs.tsv/
+#     LOG_FILENAME:        $LOG_DIR/data__chairs.tsv.92475972.log
+#     SUCCESS_SYMLINK:     $LOG_DIR/success.log <-- the same as $@ (the target of this recipe)
+#     FAILURE_SYMLINK:     $LOG_DIR/latest-error.log
+#
+# If validation hasn't run yet, here is the idea:
+#   * Run `linkml validate` for the target class in schema $(SCHEMA_FILE) against $< (the input file)
+#   * No matter what, send the output of that command to $$LOG_FILENAME, a timestamped log of the validation
+#     command
+#   * If validation was successful, link that log to $$SUCCESS_SYMLINK, aka $@, the target of this
+#     recipe.
+#   * If validation was not successful, link that log to $$FAILURE_SYMLINK, and link the log directory for
+#     this file ($$LOG_DIR) to $$FAILURE_DIR_SYMLINK. This will allow someone to quickly check out the
+#     `output/schema-validator/errors/` directory to see what files did not validate
+#
+# If validation *has* run, then the only files that will be validated are ones that do not have the
+# $$SUCCESS_SYMLINK symlink created. Before validation is run again, the failure symlinks are removed.
+$(VALIDATOR_OUTPUT_DIR)/validation/%/success.log: $(call input_file_from_validation_log,%) $(SCHEMA_FILE)
+	@:$(call check_input_files)
+	@mkdir -p $(VALIDATOR_OUTPUT_DIR)/validation $(VALIDATOR_OUTPUT_DIR)/errors
 	@echo "Validating $< as class '$(call class_name_from_input,$<)'..." | tee -a $(DATA_VALIDATE_LOG)
-	@if $(RUN) linkml validate \
+	@LOG_DIR=$(VALIDATOR_OUTPUT_DIR)/validation/$*; \
+	FAILURE_DIR_SYMLINK=$(VALIDATOR_OUTPUT_DIR)/errors/$*; \
+	LOG_FILENAME=$*.$(NOW).log; \
+	SUCCESS_SYMLINK=$$LOG_DIR/success.log; \
+	FAILURE_SYMLINK=$$LOG_DIR/latest-error.log; \
+	rm -f $$SUCCESS_SYMLINK $$FAILURE_SYMLINK $$FAILURE_DIR_SYMLINK; \
+	mkdir -p $$LOG_DIR; \
+	if $(RUN) linkml validate \
 		--schema $(SCHEMA_FILE) \
 		--target-class $(call class_name_from_input,$<) \
-		$< > $@ 2>&1; \
+		$< > $$LOG_DIR/$$LOG_FILENAME 2>&1; \
 	then \
 		echo "  ✓ $< passed." | tee -a $(DATA_VALIDATE_LOG); \
+		ln -s $$LOG_FILENAME $$SUCCESS_SYMLINK; \
 	else \
-		echo "  ✗ $< failed. See $@" | tee -a $(DATA_VALIDATE_LOG); \
+		echo "  ✗ $< failed. See $$FAILURE_DIR_SYMLINK/latest-error.log" | tee -a $(DATA_VALIDATE_LOG); \
+		ln -s $$LOG_FILENAME $$FAILURE_SYMLINK; \
+		ln -s ../validation/$* $$FAILURE_DIR_SYMLINK; \
 	fi
 
-.PHONY: validate-data
-validate-data: $(VALIDATE_LOGS)
+$(VALIDATOR_OUTPUT_DIR)/_validation_complete: $(VALIDATE_LOGS)
+	@echo
 	@echo "Data validation summary written to $(DATA_VALIDATE_LOG)"
+	@echo
+	@echo Validation complete.
+	@NUM_FAILURES=$$(ls $(VALIDATOR_OUTPUT_DIR)/errors | wc -l); \
+	if [ $$NUM_FAILURES -gt 0 ]; then \
+		echo Validation failures: $$NUM_FAILURES; \
+		echo; \
+		echo "Failing files:"; \
+		ls -1 $(VALIDATOR_OUTPUT_DIR)/errors | sed -e 's/^/    /'; \
+		echo; \
+		echo "See $(VALIDATOR_OUTPUT_DIR)/errors for error logs."; \
+		echo; \
+	else \
+		touch $@; \
+	fi
+
+
+.PHONY: validate-data
+validate-data: $(VALIDATOR_OUTPUT_DIR)/_validation_complete
 
 
 .PHONY: clean-validate
-clean-validate:
-	rm -rf $(VALIDATOR_OUTPUT_DIR)/validate-logs $(DATA_VALIDATE_LOG)
+validate-clean:
+	rm -rf $(VALIDATOR_OUTPUT_DIR)
 
 
 .PHONY: validate-debug
 validate-debug:
 	@:$(info $(DEBUG))
 
+
+# When adding linkml-map workflow, make $(VALIDATOR_OUTPUT_DIR)_validation_complete as
+# a prerequisite. This file is only made when all validation passes.
