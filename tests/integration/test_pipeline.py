@@ -34,7 +34,7 @@ def toy_data_pipeline_output():
     )
 
     proc = subprocess.run(
-        ["make", "schema-create"],
+        ["make", "pipeline"],
         cwd=str(root_dir),
         capture_output=True,
         text=True,
@@ -63,12 +63,24 @@ def test_pipeline_no_input():
     assert "no input files detected" in result.stderr
 
 
-def test_pipeline_schema(toy_data_pipeline_output: Path):
+def test_pipeline(toy_data_pipeline_output: Path):
     """Ensure that the pipeline creates a LinkML schema as expected."""
-    schema_path = toy_data_pipeline_output / "schema-automator-data" / f"{SCHEMA_NAME}.yaml"
+    schema_path = toy_data_pipeline_output / f"{SCHEMA_NAME}.yaml"
+    validation_path = toy_data_pipeline_output / "validation-logs"
+
     assert schema_path.exists()
     schema_view = SchemaView(schema_path)
 
     input_files = [f for f in toy_data_input_dir.iterdir() if f.name.endswith(("csv", "tsv"))]
     assert schema_view.schema.name == SCHEMA_NAME
     assert len(schema_view.all_classes()) == len(input_files)
+
+    assert (validation_path / f"{SCHEMA_NAME}-data-validate.log").exists()
+    validated_files = (validation_path / "data-validation").iterdir()
+    assert set(d.name for d in validated_files) == set(a.name for a in input_files)
+    for file_log_dir in validated_files:
+        success_symlink = file_log_dir / "success.log"
+        error_symlink = file_log_dir / "latest-error.log"
+        has_success = success_symlink.is_symlink() and success_symlink.exists()
+        has_error = error_symlink.is_symlink() and error_symlink.exists()
+        assert has_success or has_error
