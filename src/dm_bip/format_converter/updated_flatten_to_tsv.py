@@ -2,15 +2,13 @@
 Flatten LinkML YAML data into TSV files.
 
 This script loads a LinkML model and a YAML instance file, flattens the data,
-and outputs TSV files for each top-level class or as a single wide table.
-Optionally uses a mapping file to resolve class names from YAML keys.
+and outputs TSV files for each top-level class.
 """
 
 import argparse
 import itertools
 import json
 from pathlib import Path
-
 import pandas as pd
 import yaml
 from linkml_runtime.utils.schemaview import SchemaView
@@ -58,7 +56,8 @@ def join_lists(records, list_keys, join_str=","):
             value = record.get(k)
             if isinstance(value, list):
                 record[k] = join_str.join(
-                    json.dumps(item, separators=(",", ":")) if isinstance(item, dict) else str(item) for item in value
+                    json.dumps(item, separators=(",", ":")) if isinstance(item, dict) else str(item)
+                    for item in value
                 )
     return records
 
@@ -71,165 +70,203 @@ def get_slot_order(schemaview: SchemaView, class_name: str):
     return schemaview.class_slots(cls.name)
 
 
-def extract_mapping_class_derivations(mapping_data):
-    """Build a dict mapping top-level keys in YAML to their corresponding class names from the mapping file."""
-    class_map = {}
+def get_scalar_slots(sv: SchemaView, class_name: str, instance_class_names: set):
+    """
+    Return a list of scalar (non-nested) slot names for a given class.
 
-    def recurse(node, current_key=None):
-        if isinstance(node, dict):
-            for key, val in node.items():
-                if key == "class_derivations" and isinstance(val, dict):
-                    for cls_name in val:
-                        if current_key:
-                            class_map[current_key] = cls_name
-                        else:
-                            # top-level class
-                            class_map[cls_name] = cls_name
-                        # recurse into class content to catch nested mappings
-                        recurse(val[cls_name], current_key)
-                elif key == "object_derivations" and isinstance(val, list):
-                    for item in val:
-                        recurse(item, current_key)
-                else:
-                    recurse(val, key)
-        elif isinstance(node, list):
-            for item in node:
-                recurse(item, current_key)
+    This function filters the slots of the specified class to include only those
+    whose ranges are not themselves other classes present in the instance data,
+    i.e., slots that point to scalar values like strings, numbers, enums, or dates.
 
-    recurse(mapping_data)
-    print(f"class_map: {class_map}")
-    return class_map
+    Parameters:
+        sv (SchemaView): The LinkML schema view.
+        class_name (str): The name of the class to inspect.
+        instance_class_names (set): Set of all class names found in the instance data
+                                    (used to exclude nested class slots).
 
-
-def collect_instances_by_class(data, class_instances, schema_classes, mapping=None, parent_class=None):
-    """Organize instances from a LinkML YAML document by their target model classes."""
-    if isinstance(data, dict):
-        for key, value in data.items():
-            mapped_class_name = mapping.get(key) if mapping else None
-            class_key = key.lower().rstrip("s").replace("_", "")
-            class_name = mapped_class_name or schema_classes.get(class_key)
-            if class_name is None and mapping:
-                class_name = mapping.get(key.rstrip("s"))
-            if isinstance(value, list):
-                for item in value:
-                    if isinstance(item, dict):
-                        effective_class_name = mapped_class_name or schema_classes.get(
-                            key.lower().rstrip("s").replace("_", "")
-                        )
-                        if effective_class_name:
-                            class_instances.setdefault(effective_class_name, []).append(item)
-                        collect_instances_by_class(
-                            item, class_instances, schema_classes, mapping, parent_class=effective_class_name
-                        )
-            elif isinstance(value, dict):
-                if class_name:
-                    class_instances.setdefault(class_name, []).append(value)
-                collect_instances_by_class(value, class_instances, schema_classes, mapping, parent_class=class_name)
-    elif isinstance(data, list):
-        for item in data:
-            collect_instances_by_class(item, class_instances, schema_classes, mapping, parent_class=parent_class)
+    Returns:
+        List[str]: A list of slot names that are scalar fields for the given class.
+    """
+    scalar_slots = []
+    print(f"\n\n")
+    for slot_name in sv.class_slots(class_name, attributes=True):
+        slot = sv.get_slot(slot_name)
+        if slot is None:
+            continue
+        if slot.range in instance_class_names:
+            continue  # skip slots that are other classes we're collecting
+        scalar_slots.append(slot.name)
+    print(f"Scalar slots for {class_name}: {scalar_slots}")
+    return scalar_slots
 
 
-def remove_nested_class_fields(instances, class_name, sv: SchemaView):
-    """Remove fields in each instance that are themselves other class blocks."""
-    known_classes = {cls.name for cls in sv.all_classes().values()}
-    result = []
-    for inst in instances:
-        cleaned = {}
-        for k, v in inst.items():
-            k_clean = k.lower().replace("_", "")
-            if isinstance(v, list) and all(isinstance(i, dict) for i in v):
-                if k_clean.rstrip("s") in (name.lower().replace("_", "") for name in known_classes):
+def get_reference_slots(schemaview: SchemaView, class_name: str, instance_class_names, container_key=None, container_class=None, scalar_slots=None):
+    """
+    Identify reference-type slots for a given class.
+
+    This function returns slot names that reference other classes without embedding
+    them (i.e., they are not inlined and not multivalued), or that refer to classes
+    not being flattened in the current output (e.g., external classes).
+
+    Reference slots are used to retain scalar-style linking fields such as
+    'associated_participant' that serve as foreign keys to another table.
+
+    Parameters:
+        schemaview (SchemaView): The LinkML schema view.
+        class_name (str): The class to inspect.
+        instance_class_names (Iterable[str]): The set of class names found in the instance data.
+        container_key (str, optional): Not currently used, reserved for future logic.
+        container_class (str, optional): Not currently used, reserved for future logic.
+        scalar_slots (List[str], optional): List of known scalar slots to exclude from reference detection.
+
+    Returns:
+        List[str]: A list of slot names that should be treated as scalar references to other classes.
+    """
+    scalar_slots = set(scalar_slots or [])
+    reference_slots = []
+
+    for slot_name in schemaview.class_slots(class_name, attributes=True):
+        if slot_name in scalar_slots:
+            continue
+
+        slot = schemaview.get_slot(slot_name)
+        if not slot:
+            continue
+
+        # Reference to another class but not embedded (i.e., inlined=False)
+        if (
+            slot.range in instance_class_names and
+            not slot.inlined and
+            not slot.multivalued
+        ):
+            reference_slots.append(slot.name)
+
+        # Also include if it refers to a class that is NOT included in our flattened output
+        elif slot.range not in instance_class_names and slot.range in schemaview.all_classes():
+            reference_slots.append(slot.name)
+
+    return reference_slots
+
+
+def collect_instances_by_class(instance_data, container_key, container_class, sv):
+    """Collect instances of all schema-defined classes starting from the container."""
+    container_data = instance_data.get(container_key, [])
+    if not isinstance(container_data, list):
+        raise ValueError(f"Expected a list for container key '{container_key}', got {type(container_data)}")
+
+    collected = {}
+
+    def recurse(obj, expected_class):
+        if isinstance(obj, dict):
+            collected.setdefault(expected_class, []).append(obj)
+            # Recurse into child objects based on schema-defined slots
+            for slot_name in sv.class_slots(expected_class):
+                slot = sv.induced_slot(slot_name, expected_class)
+                value = obj.get(slot.name)
+                if value is None:
                     continue
-            if isinstance(v, dict):
-                if k_clean in (name.lower().replace("_", "") for name in known_classes):
-                    continue
-            cleaned[k] = v
-        result.append(cleaned)
-    return result
+                if slot.range in sv.all_classes():
+                    if isinstance(value, list):
+                        for item in value:
+                            recurse(item, slot.range)
+                    elif isinstance(value, dict):
+                        recurse(value, slot.range)
+
+    for top_level_obj in container_data:
+        recurse(top_level_obj, container_class)
+
+    print(f"\nCollected instances for classes: {list(collected.keys())}")
+    return collected
+
 
 
 def main():
-    """Run the TSV flattener."""
-    parser = argparse.ArgumentParser(description="Flatten LinkML YAML data to TSV")
+    parser = argparse.ArgumentParser(description="Flatten all top-level classes in LinkML data to TSV")
     parser.add_argument("schema", help="Path to LinkML schema (YAML)")
     parser.add_argument("input", help="Input YAML instance file")
     parser.add_argument("output_dir", help="Output directory for TSV files")
-    parser.add_argument("--mapping-file", help="Optional YAML file mapping keys to class names")
-    parser.add_argument(
-        "--list-style",
-        choices=["join", "explode"],
-        default="join",
-        help="How to handle list values (default: join with ',')",
-    )
-    parser.add_argument(
-        "--mode",
-        choices=["per-class", "wide"],
-        default="per-class",
-        help="Whether to generate a TSV per class or one wide table (default: per-class)",
-    )
+    parser.add_argument("--container-key", required=True, help="Top-level key in instance data (e.g., 'persons')")
+    parser.add_argument("--container-class", required=True, help="Class name for the top-level key (e.g., 'Person')")
+    parser.add_argument("--mode", choices=["wide", "per-class"], default="per-class", help="Output mode")
+    parser.add_argument("--list-style", choices=["join", "explode"], default="join", help="How to handle list values")
     args = parser.parse_args()
 
     sv = SchemaView(args.schema)
-    schema_classes = {cls.name.lower().replace("_", ""): cls.name for cls in sv.all_classes().values()}
-
-    mapping = {}
-    if args.mapping_file:
-        with open(args.mapping_file) as mf:
-            raw_map = yaml.safe_load(mf)
-            mapping = extract_mapping_class_derivations(raw_map)
-
     with open(args.input) as f:
         data = yaml.safe_load(f)
 
     Path(args.output_dir).mkdir(parents=True, exist_ok=True)
 
     if args.mode == "wide":
-        all_records = []
-        for top_key, records in data.items():
-            if not isinstance(records, list):
-                continue
+        raise NotImplementedError("Only per-class mode is supported in this version.")
+    else:
+        instances_by_class = collect_instances_by_class(data, args.container_key, args.container_class, sv)
+
+        for class_name, records in instances_by_class.items():
+            scalar_slots = get_scalar_slots(sv, class_name, instances_by_class.keys())
+            print(f"{class_name} scalar slots: {scalar_slots}")
+
+            ref_slots = get_reference_slots(
+                sv,
+                class_name,
+                instances_by_class.keys(),
+                args.container_key,
+                args.container_class,
+                scalar_slots
+            )
+            print(f"{class_name} reference slots: {ref_slots}")
+
+            flat_records = []
+            list_fields = set()
+
             for inst in records:
                 raw = inst.dict(exclude_unset=True) if isinstance(inst, YAMLRoot) else inst
-                flat = flatten_dict(raw, parent_key=top_key)
-                all_records.append(flat)
+                flat = flatten_dict(raw)
+                print(f"Flattened keys for class {class_name}: {list(flat.keys())}")
 
-        df = pd.DataFrame(all_records)
-        df.to_csv(Path(args.output_dir) / "wide_output.tsv", sep="\t", index=False)
-        print("Wrote: wide_output.tsv")
-        return
+                # Get all slots for the class
+                all_slots = sv.class_slots(class_name, attributes=True)
 
-    class_instances = {}
-    collect_instances_by_class(data, class_instances, schema_classes, mapping)
+                # Determine which slots represent nested classes and should be excluded
+                excluded_nested_slots = {
+                    s for s in all_slots
+                    if (
+                        sv.get_slot(s)
+                        and sv.get_slot(s).range in instances_by_class.keys()
+                        and s not in ref_slots  # preserve dynamically identified linking keys
+                    )
+                }
+                print(f"Excluding nested class slots for {class_name}: {excluded_nested_slots}")
 
-    for class_name, instances in class_instances.items():
-        slot_order = get_slot_order(sv, class_name)
-        instances = remove_nested_class_fields(instances, class_name, sv)
+                # Filter flattened keys: include scalar and reference slots, exclude nested class slots
+                filtered = {
+                    k: v for k, v in flat.items()
+                    if (
+                        any(k.endswith(f"__{s}") or k == s for s in scalar_slots + ref_slots)
+                        and not any(k == s or k.endswith(f"__{s}") for s in excluded_nested_slots)
+                    )
+                }
 
-        flat_records = []
-        list_fields = set()
+                for k, v in filtered.items():
+                    if isinstance(v, list):
+                        list_fields.add(k)
+                flat_records.append(filtered)
 
-        for inst in instances:
-            raw = inst.dict(exclude_unset=True) if isinstance(inst, YAMLRoot) else inst
-            flat = flatten_dict(raw)
-            for k, v in flat.items():
-                if isinstance(v, list):
-                    list_fields.add(k)
-            flat_records.append(flat)
+            if args.list_style == "explode":
+                flat_records = explode_rows(flat_records, list_fields)
+            else:
+                flat_records = join_lists(flat_records, list_fields)
 
-        if args.list_style == "explode":
-            flat_records = explode_rows(flat_records, list_fields)
-        else:
-            flat_records = join_lists(flat_records, list_fields)
+            df = pd.DataFrame(flat_records)
+            print(f"{class_name} columns in output: {df.columns.tolist()}")
 
-        df = pd.DataFrame(flat_records)
-        slot_cols = list(slot_order)
-        extra_cols = [c for c in df.columns if c not in slot_cols]
-        df = df[[c for c in slot_cols if c in df.columns] + extra_cols]
+            slot_order = [s for s in scalar_slots if s in df.columns]
+            extra_cols = [c for c in df.columns if c not in slot_order]
+            df = df[slot_order + extra_cols]
 
-        out_path = Path(args.output_dir) / f"{class_name}.tsv"
-        df.to_csv(out_path, sep="\t", index=False)
-        print(f"Wrote: {out_path}")
+            out_path = Path(args.output_dir) / f"{class_name}.tsv"
+            df.to_csv(out_path, sep="\t", index=False)
+            print(f"Wrote: {out_path}")
 
 
 if __name__ == "__main__":
