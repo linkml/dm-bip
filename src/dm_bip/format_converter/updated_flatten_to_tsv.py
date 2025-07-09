@@ -9,6 +9,7 @@ import argparse
 import itertools
 import json
 from pathlib import Path
+
 import pandas as pd
 import yaml
 from linkml_runtime.utils.schemaview import SchemaView
@@ -71,23 +72,23 @@ def get_slot_order(schemaview: SchemaView, class_name: str):
 
 def get_scalar_slots(sv: SchemaView, class_name: str, instance_class_names: set):
     """
-    Return a list of scalar (non-nested) slot names for a given class.
+    Get the scalar slot names for a class.
 
-    This function filters the slots of the specified class to include only those
-    whose ranges are not themselves other classes present in the instance data,
-    i.e., slots that point to scalar values like strings, numbers, enums, or dates.
-
-    Parameters:
-        sv (SchemaView): The LinkML schema view.
-        class_name (str): The name of the class to inspect.
-        instance_class_names (set): Set of all class names found in the instance data
-                                    (used to exclude nested class slots).
+    Args:
+        sv: The LinkML schema view.
+        class_name: The name of the class to inspect.
+        instance_class_names: Set of all class names found in the instance data.
 
     Returns:
-        List[str]: A list of slot names that are scalar fields for the given class.
+        A list of slot names that are scalar fields for the given class.
+
+    Notes:
+        Scalar slots are those whose ranges are not other collected classes.
+        They usually include strings, numbers, enums, or dates.
+
     """
     scalar_slots = []
-    print(f"\n\n")
+    print("\n\n")
     for slot_name in sv.class_slots(class_name, attributes=True):
         slot = sv.get_slot(slot_name)
         if slot is None:
@@ -110,23 +111,17 @@ def get_reference_slots(
     """
     Identify reference-type slots for a given class.
 
-    This function returns slot names that reference other classes without embedding
-    them (i.e., they are not inlined and not multivalued), or that refer to classes
-    not being flattened in the current output (e.g., external classes).
-
-    Reference slots are used to retain scalar-style linking fields such as
-    'associated_participant' that serve as foreign keys to another table.
-
-    Parameters:
-        schemaview (SchemaView): The LinkML schema view.
-        class_name (str): The class to inspect.
-        instance_class_names (Iterable[str]): The set of class names found in the instance data.
-        container_key (str, optional): Not currently used, reserved for future logic.
-        container_class (str, optional): Not currently used, reserved for future logic.
-        scalar_slots (List[str], optional): List of known scalar slots to exclude from reference detection.
+    Args:
+        schemaview: The LinkML schema view.
+        class_name: The class to inspect.
+        instance_class_names: The set of class names found in the instance data.
+        container_key: Not currently used, reserved for future logic.
+        container_class: Not currently used, reserved for future logic.
+        scalar_slots: List of known scalar slots to exclude from reference detection.
 
     Returns:
-        List[str]: A list of slot names that should be treated as scalar references to other classes.
+        A list of slot names that should be treated as scalar references to other classes.
+
     """
     scalar_slots = set(scalar_slots or [])
     reference_slots = []
@@ -182,6 +177,7 @@ def collect_instances_by_class(instance_data, container_key, container_class, sv
 
 
 def main():
+    """Flatten linkml file to multiple TSV files, one for each model class in the data."""
     parser = argparse.ArgumentParser(description="Flatten all top-level classes in LinkML data to TSV")
     parser.add_argument("schema", help="Path to LinkML schema (YAML)")
     parser.add_argument("input", help="Input YAML instance file")
