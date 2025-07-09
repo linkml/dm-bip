@@ -56,8 +56,7 @@ def join_lists(records, list_keys, join_str=","):
             value = record.get(k)
             if isinstance(value, list):
                 record[k] = join_str.join(
-                    json.dumps(item, separators=(",", ":")) if isinstance(item, dict) else str(item)
-                    for item in value
+                    json.dumps(item, separators=(",", ":")) if isinstance(item, dict) else str(item) for item in value
                 )
     return records
 
@@ -100,7 +99,14 @@ def get_scalar_slots(sv: SchemaView, class_name: str, instance_class_names: set)
     return scalar_slots
 
 
-def get_reference_slots(schemaview: SchemaView, class_name: str, instance_class_names, container_key=None, container_class=None, scalar_slots=None):
+def get_reference_slots(
+    schemaview: SchemaView,
+    class_name: str,
+    instance_class_names,
+    container_key=None,
+    container_class=None,
+    scalar_slots=None,
+):
     """
     Identify reference-type slots for a given class.
 
@@ -134,11 +140,7 @@ def get_reference_slots(schemaview: SchemaView, class_name: str, instance_class_
             continue
 
         # Reference to another class but not embedded (i.e., inlined=False)
-        if (
-            slot.range in instance_class_names and
-            not slot.inlined and
-            not slot.multivalued
-        ):
+        if slot.range in instance_class_names and not slot.inlined and not slot.multivalued:
             reference_slots.append(slot.name)
 
         # Also include if it refers to a class that is NOT included in our flattened output
@@ -179,7 +181,6 @@ def collect_instances_by_class(instance_data, container_key, container_class, sv
     return collected
 
 
-
 def main():
     parser = argparse.ArgumentParser(description="Flatten all top-level classes in LinkML data to TSV")
     parser.add_argument("schema", help="Path to LinkML schema (YAML)")
@@ -207,12 +208,7 @@ def main():
             print(f"{class_name} scalar slots: {scalar_slots}")
 
             ref_slots = get_reference_slots(
-                sv,
-                class_name,
-                instances_by_class.keys(),
-                args.container_key,
-                args.container_class,
-                scalar_slots
+                sv, class_name, instances_by_class.keys(), args.container_key, args.container_class, scalar_slots
             )
             print(f"{class_name} reference slots: {ref_slots}")
 
@@ -229,7 +225,8 @@ def main():
 
                 # Determine which slots represent nested classes and should be excluded
                 excluded_nested_slots = {
-                    s for s in all_slots
+                    s
+                    for s in all_slots
                     if (
                         sv.get_slot(s)
                         and sv.get_slot(s).range in instances_by_class.keys()
@@ -240,7 +237,8 @@ def main():
 
                 # Filter flattened keys: include scalar and reference slots, exclude nested class slots
                 filtered = {
-                    k: v for k, v in flat.items()
+                    k: v
+                    for k, v in flat.items()
                     if (
                         any(k.endswith(f"__{s}") or k == s for s in scalar_slots + ref_slots)
                         and not any(k == s or k.endswith(f"__{s}") for s in excluded_nested_slots)

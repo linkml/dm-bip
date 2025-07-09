@@ -691,7 +691,7 @@ classes:
 
   Document:
     is_a: Entity
-    description: A collection of information intented to be understood together as a whole, and codified in human-readable form.
+    description: A collection of information intended to be understood together as a whole, and codified in human-readable form.
     attributes:
       document_type:
         description: The high-level type of the document (e.g.  'publication', 'pathology report')
@@ -740,7 +740,7 @@ classes:
         range: SpecimenTypeEnum
         required: false
       analyte_type:
-        description: For specimens of type 'analyte' (or an 'aliquot' derived from an analyte), this is the category of chemcial the analyte of interest represents (e.g. DNA, RNA)
+        description: For specimens of type 'analyte' (or an 'aliquot' derived from an analyte), this is the category of chemical the analyte of interest represents (e.g. DNA, RNA)
         examples:
         - value: DNA
         - value: FFPE DNA
@@ -1549,7 +1549,7 @@ enums:
         description: 'This data use modifier indicates that use of the data is limited to not-for-profit organizations and not-for-profit use, non-commercial use.'
         meaning: DUO:0000018
       IRB:
-        description: 'This data use modifier indicates that the requestor must provide documentation of local IRB/ERB approval.'
+        description: 'This data use modifier indicates that the requester must provide documentation of local IRB/ERB approval.'
         meaning: DUO:0000021
 
   EthnicityEnum:
