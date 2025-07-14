@@ -15,6 +15,8 @@ import yaml
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
+from collections import defaultdict
+
 
 def flatten_dict(d, parent_key="", sep="__"):
     """Flatten dictionary."""
@@ -200,6 +202,73 @@ def main():
     else:
         instances_by_class = collect_instances_by_class(data, args.container_key, args.container_class, sv)
 
+        # Track which classes are used via inlined usage only (based on data) so that output files are not generated for these classes
+        referenced_classes = set()
+        slot_usage_by_class = defaultdict(list)
+
+        # Determine actual usage of each class in the instance data
+        for container in data.get(args.container_key, []):
+            def walk(obj, parent_class=None):
+                if isinstance(obj, dict):
+                    for k, v in obj.items():
+                        if isinstance(v, dict):
+                            class_range = None
+                            if parent_class:
+                                try:
+                                    slot = sv.induced_slot(k, parent_class)
+                                    class_range = slot.range if slot else None
+                                except:
+                                    continue
+                            if class_range:
+                                referenced_classes.add(class_range)
+                                slot_usage_by_class[class_range].append((parent_class, k))
+                            walk(v, class_range)
+                        elif isinstance(v, list):
+                            for item in v:
+                                if isinstance(item, dict):
+                                    class_range = None
+                                    if parent_class:
+                                        try:
+                                            slot = sv.induced_slot(k, parent_class)
+                                            class_range = slot.range if slot else None
+                                        except:
+                                            continue
+                                    if class_range:
+                                        referenced_classes.add(class_range)
+                                        slot_usage_by_class[class_range].append((parent_class, k))
+                                    walk(item, class_range)
+            walk(container, args.container_class)
+
+        # Identify classes with no IDs and only inlined usage in data
+        classes_to_skip = []
+
+        for cls, records in instances_by_class.items():
+            if cls == args.container_class:
+                continue  # Never skip the container class
+
+            id_slot = sv.get_identifier_slot(cls)
+            has_id = any(isinstance(r, dict) and id_slot and r.get(id_slot.name) for r in records)
+
+            if has_id:
+                continue
+
+            # Check if all usage of the class is in inlined slots
+            all_inlined_in_data = True
+            for parent_cls, slot_name in slot_usage_by_class.get(cls, []):
+                slot = sv.induced_slot(slot_name, parent_cls)
+                if slot and not slot.inlined:
+                    all_inlined_in_data = False
+                    break
+
+            if all_inlined_in_data:
+                print(f"Skipping class '{cls}' — no IDs and only used inlined in data.")
+                classes_to_skip.append(cls)
+
+        instances_by_class = {
+            k: v for k, v in instances_by_class.items() if k not in classes_to_skip
+        }
+
+
         for class_name, records in instances_by_class.items():
             scalar_slots = get_scalar_slots(sv, class_name, instances_by_class.keys())
             print(f"{class_name} scalar slots: {scalar_slots}")
@@ -261,9 +330,12 @@ def main():
             extra_cols = [c for c in df.columns if c not in slot_order]
             df = df[slot_order + extra_cols]
 
-            out_path = Path(args.output_dir) / f"{class_name}.tsv"
-            df.to_csv(out_path, sep="\t", index=False)
-            print(f"Wrote: {out_path}")
+            if not df.dropna(how="all").empty:
+                out_path = Path(args.output_dir) / f"{class_name}.tsv"
+                df.to_csv(out_path, sep="\t", index=False)
+                print(f"Wrote: {out_path}")
+            else:
+                print(f"Skipped writing {class_name}.tsv because no meaningful data was found.")
 
 
 if __name__ == "__main__":
