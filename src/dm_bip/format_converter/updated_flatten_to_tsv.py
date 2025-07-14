@@ -93,8 +93,9 @@ def get_scalar_slots(sv: SchemaView, class_name: str, instance_class_names: set)
         slot = sv.get_slot(slot_name)
         if slot is None:
             continue
-        if slot.range in instance_class_names:
-            continue  # skip slots that are other classes we're collecting
+        # Exclude links to other classes that are collected as their own files
+        if slot.range in instance_class_names and not slot.inlined:
+            continue
         scalar_slots.append(slot.name)
     print(f"Scalar slots for {class_name}: {scalar_slots}")
     return scalar_slots
@@ -224,22 +225,24 @@ def main():
                     s
                     for s in all_slots
                     if (
-                        sv.get_slot(s)
-                        and sv.get_slot(s).range in instances_by_class.keys()
-                        and s not in ref_slots  # preserve dynamically identified linking keys
+                        (slot := sv.get_slot(s))
+                        and slot.range in instances_by_class.keys()
+                        and not slot.inlined  # Only exclude if NOT inlined
+                        and s not in ref_slots
                     )
                 }
                 print(f"Excluding nested class slots for {class_name}: {excluded_nested_slots}")
 
-                # Filter flattened keys: include scalar and reference slots, exclude nested class slots
+                # Filter flattened keys: include scalar and reference slots and all inlined subfields, exclude nested class slots
                 filtered = {
                     k: v
                     for k, v in flat.items()
                     if (
-                        any(k.endswith(f"__{s}") or k == s for s in scalar_slots + ref_slots)
-                        and not any(k == s or k.endswith(f"__{s}") for s in excluded_nested_slots)
+                        any(k == s or k.startswith(f"{s}__") for s in scalar_slots + ref_slots)
+                        and not any(k == s or k.startswith(f"{s}__") for s in excluded_nested_slots)
                     )
                 }
+                print(f"Filtered: {filtered}")
 
                 for k, v in filtered.items():
                     if isinstance(v, list):
