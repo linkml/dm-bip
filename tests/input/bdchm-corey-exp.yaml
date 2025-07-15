@@ -1420,6 +1420,7 @@ classes:
         multivalued: false
         required: false
         range: Quantity
+        inlined: true
       value_enum:
         description: A slot to hold an enumerated value for an Observation.
         comments:
