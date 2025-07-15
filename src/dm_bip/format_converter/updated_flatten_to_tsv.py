@@ -237,8 +237,7 @@ def main():
                                         referenced_classes.add(class_range)
                                         slot_usage_by_class[class_range].append((parent_class, k))
                                     walk(item, class_range)
-            walk(container, args.container_class)
-
+            walk(container, args.container_class)        
         # Identify classes with no IDs and only inlined usage in data
         classes_to_skip = []
 
@@ -271,7 +270,6 @@ def main():
 
         for class_name, records in instances_by_class.items():
             scalar_slots = get_scalar_slots(sv, class_name, instances_by_class.keys())
-            print(f"{class_name} scalar slots: {scalar_slots}")
 
             ref_slots = get_reference_slots(
                 sv, class_name, instances_by_class.keys(), args.container_key, args.container_class, scalar_slots
@@ -303,14 +301,23 @@ def main():
                 print(f"Excluding nested class slots for {class_name}: {excluded_nested_slots}")
 
                 # Filter flattened keys: include scalar and reference slots and all inlined subfields, exclude nested class slots
-                filtered = {
-                    k: v
-                    for k, v in flat.items()
-                    if (
-                        any(k == s or k.startswith(f"{s}__") for s in scalar_slots + ref_slots)
-                        and not any(k == s or k.startswith(f"{s}__") for s in excluded_nested_slots)
-                    )
-                }
+                print(f"\nInspecting flattened keys for filtering in class: {class_name}")
+                filtered = {}
+                for k, v in flat.items():
+                    matches_scalar_or_ref = any(k == s or k.startswith(f"{s}__") for s in scalar_slots + ref_slots)
+                    matches_excluded = any(k == s or k.startswith(f"{s}__") for s in excluded_nested_slots)
+
+                    # Fallback: If the key looks like a legitimate direct attribute (not nested),
+                    # and is not excluded, and it is not already part of scalar/ref slots,
+                    # and it is defined in the schema for this instance's actual class (e.g. subclass),
+                    # then allow it
+                    if not matches_scalar_or_ref and not matches_excluded:
+                        slot = sv.get_slot(k)
+                        if slot and slot.range not in instances_by_class.keys():
+                            matches_scalar_or_ref = True
+
+                    if matches_scalar_or_ref and not matches_excluded:
+                        filtered[k] = v
                 print(f"Filtered: {filtered}")
 
                 for k, v in filtered.items():
