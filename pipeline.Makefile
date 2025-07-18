@@ -21,10 +21,11 @@ RUN := poetry run
 
 # Configurable parameters via environment variables
 # ============
-DM_INPUT_DIR   ?=
-DM_INPUT_FILES ?=
-DM_SCHEMA_NAME ?= Schema
-DM_OUTPUT_DIR  ?= output/$(DM_SCHEMA_NAME)
+DM_INPUT_DIR ?= /sbgenomics/workspace/output/WHI_cleaned/WHI-v12-c1
+DM_INPUT_FILES ?= 
+DM_SCHEMA_NAME ?= Schema_WHI_v12_c1
+DM_OUTPUT_DIR ?= /sbgenomics/workspace/output/WHI/$(DM_SCHEMA_NAME)
+VALIDATOR_OUTPUT_DIR ?= $(DM_OUTPUT_DIR)/schema-validator-data
 
 
 # Derived output files
