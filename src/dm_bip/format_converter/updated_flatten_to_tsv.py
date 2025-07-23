@@ -8,14 +8,13 @@ and outputs TSV files for each top-level class.
 import argparse
 import itertools
 import json
+from collections import defaultdict
 from pathlib import Path
 
 import pandas as pd
 import yaml
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
-
-from collections import defaultdict
 
 
 def flatten_dict(d, parent_key="", sep="__"):
@@ -202,12 +201,14 @@ def main():
     else:
         instances_by_class = collect_instances_by_class(data, args.container_key, args.container_class, sv)
 
-        # Track which classes are used via inlined usage only (based on data) so that output files are not generated for these classes
+        # Track which classes are used via inlined usage only (based on data)
+        # so that output files are not generated for these classes
         referenced_classes = set()
         slot_usage_by_class = defaultdict(list)
 
         # Determine actual usage of each class in the instance data
         for container in data.get(args.container_key, []):
+
             def walk(obj, parent_class=None):
                 if isinstance(obj, dict):
                     for k, v in obj.items():
@@ -217,7 +218,8 @@ def main():
                                 try:
                                     slot = sv.induced_slot(k, parent_class)
                                     class_range = slot.range if slot else None
-                                except:
+                                except Exception:
+                                    print("", end="")
                                     continue
                             if class_range:
                                 referenced_classes.add(class_range)
@@ -231,13 +233,15 @@ def main():
                                         try:
                                             slot = sv.induced_slot(k, parent_class)
                                             class_range = slot.range if slot else None
-                                        except:
+                                        except Exception:
+                                            print("", end="")
                                             continue
                                     if class_range:
                                         referenced_classes.add(class_range)
                                         slot_usage_by_class[class_range].append((parent_class, k))
                                     walk(item, class_range)
-            walk(container, args.container_class)        
+
+            walk(container, args.container_class)
         # Identify classes with no IDs and only inlined usage in data
         classes_to_skip = []
 
@@ -263,10 +267,7 @@ def main():
                 print(f"Skipping class '{cls}' — no IDs and only used inlined in data.")
                 classes_to_skip.append(cls)
 
-        instances_by_class = {
-            k: v for k, v in instances_by_class.items() if k not in classes_to_skip
-        }
-
+        instances_by_class = {k: v for k, v in instances_by_class.items() if k not in classes_to_skip}
 
         for class_name, records in instances_by_class.items():
             scalar_slots = get_scalar_slots(sv, class_name, instances_by_class.keys())
@@ -300,7 +301,8 @@ def main():
                 }
                 print(f"Excluding nested class slots for {class_name}: {excluded_nested_slots}")
 
-                # Filter flattened keys: include scalar and reference slots and all inlined subfields, exclude nested class slots
+                # Filter flattened keys: include scalar and reference slots
+                # and all inlined subfields, exclude nested class slots
                 print(f"\nInspecting flattened keys for filtering in class: {class_name}")
                 filtered = {}
                 for k, v in flat.items():
