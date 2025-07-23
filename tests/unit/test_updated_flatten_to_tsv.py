@@ -1,11 +1,10 @@
 """Test flatten_dict."""
 
 import json
-from types import SimpleNamespace
 import unittest
+from types import SimpleNamespace
 
-
-from dm_bip.format_converter.updated_flatten_to_tsv import flatten_dict
+from dm_bip.format_converter.updated_flatten_to_tsv import *
 
 
 class TestFlattenDict(unittest.TestCase):
@@ -22,10 +21,9 @@ class TestFlattenDict(unittest.TestCase):
         self.assertEqual(result, expected_output)
 
 
-from dm_bip.format_converter.updated_flatten_to_tsv import explode_rows
-
-
 class TestExplodeRows(unittest.TestCase):
+    """Test the explode_rows function."""
+
     def test_explode_no_lists(self):
         records = [{"a": 1, "b": 2}]
         result = explode_rows(records, list_keys=["b"])
@@ -63,10 +61,9 @@ class TestExplodeRows(unittest.TestCase):
         self.assertEqual(result, records)
 
 
-from dm_bip.format_converter.updated_flatten_to_tsv import join_lists, get_slot_order
-
-
 class TestJoinLists(unittest.TestCase):
+    """Test the join_lists function."""
+
     def test_join_lists_no_lists(self):
         records = [{"a": "1", "b": 2}]
         result = join_lists(records, ["a", "b"])
@@ -98,10 +95,9 @@ class TestJoinLists(unittest.TestCase):
         self.assertEqual(result, expected)
 
 
-from types import SimpleNamespace
-
-
 class DummySlot:
+    """Dummy class to simulate a slot in the schema."""
+
     def __init__(self, name, range_, inlined=False, multivalued=False):
         self.name = name
         self.range = range_
@@ -110,6 +106,8 @@ class DummySlot:
 
 
 class DummySchemaView:
+    """Dummy schema view for testing."""
+
     def __init__(self):
         # Map class name -> list of slot names
         self.class_slots_map = {"TestClass": ["scalar1", "ref1", "inlined_ref", "multivalued_ref", "external_ref"]}
@@ -141,6 +139,8 @@ class DummySchemaView:
 
 
 class TestGetSlotOrder(unittest.TestCase):
+    """Test the get_slot_order function."""
+
     def setUp(self):
         self.sv = DummySchemaView()
 
