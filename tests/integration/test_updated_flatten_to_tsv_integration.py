@@ -41,7 +41,12 @@ def flattened_output_dir():
             "join",
         ]
 
-        subprocess.run(cmd, check=True)  # noqa: S603
+        try:
+            subprocess.run(cmd, check=True, capture_output=True, text=True)
+        except subprocess.CalledProcessError as e:
+            print("STDOUT:\n", e.stdout)
+            print("STDERR:\n", e.stderr)
+            raise
 
         yield out_dir  # Keeps temp dir alive during the test
 
