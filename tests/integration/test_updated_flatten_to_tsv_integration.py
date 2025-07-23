@@ -41,7 +41,7 @@ def flattened_output_dir():
             "join",
         ]
 
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, check=True) # noqa: S603
 
         yield out_dir  # Keeps temp dir alive during the test
 
