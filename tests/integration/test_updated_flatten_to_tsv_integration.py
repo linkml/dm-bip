@@ -33,10 +33,14 @@ def flattened_output_dir():
             str(SCHEMA_PATH),
             str(INSTANCE_PATH),
             str(out_dir),
-            "--container-key", "persons",
-            "--container-class", "Person",
-            "--mode", "per-class",
-            "--list-style", "join",
+            "--container-key",
+            "persons",
+            "--container-class",
+            "Person",
+            "--mode",
+            "per-class",
+            "--list-style",
+            "join",
         ]
 
         # Backup and patch sys.argv
