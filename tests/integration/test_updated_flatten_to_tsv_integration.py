@@ -1,10 +1,12 @@
 """Integration test for updated_flatten_to_tsv script."""
 
-import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
 import pytest
+
+from dm_bip.format_converter import updated_flatten_to_tsv  # <-- adjust as needed
 
 script_dir = Path(__file__).parent
 test_dir = script_dir.parent
@@ -20,35 +22,30 @@ INSTANCE_PATH = input_dir / "transformed_person_data_example.yaml"
 
 @pytest.fixture(scope="module")
 def flattened_output_dir():
-    """Run the flatten script and return the output directory."""
+    """Run the flatten script and return the output directory without subprocess."""
     output_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=output_dir, prefix="flatten-output_") as tmp:
         out_dir = Path(tmp)
 
-        cmd = [
-            "poetry",
-            "run",
-            "python",
-            str(SCRIPT_PATH),
+        # Fake CLI arguments
+        args = [
+            str(SCRIPT_PATH.name),  # Simulate script name in sys.argv[0]
             str(SCHEMA_PATH),
             str(INSTANCE_PATH),
             str(out_dir),
-            "--container-key",
-            "persons",
-            "--container-class",
-            "Person",
-            "--mode",
-            "per-class",
-            "--list-style",
-            "join",
+            "--container-key", "persons",
+            "--container-class", "Person",
+            "--mode", "per-class",
+            "--list-style", "join",
         ]
 
+        # Backup and patch sys.argv
+        old_argv = sys.argv
+        sys.argv = args
         try:
-            subprocess.run(cmd, check=True, capture_output=True, text=True)  # noqa: S603
-        except subprocess.CalledProcessError as e:
-            print("STDOUT:\n", e.stdout)
-            print("STDERR:\n", e.stderr)
-            raise
+            updated_flatten_to_tsv.main()
+        finally:
+            sys.argv = old_argv
 
         yield out_dir  # Keeps temp dir alive during the test
 
