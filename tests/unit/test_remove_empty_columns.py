@@ -11,9 +11,9 @@ class TestRemoveEmptyColumns(unittest.TestCase):
 
     def setUp(self):
         """Set up sample input data."""
-        self.input_data = "col1\tcol2\tcol3\n" "1\t\t3\n" "2\t\t4\n"  # col2 is empty and should be removed
+        self.input_data = "col1\tcol2\tcol3\n1\t\t3\n2\t\t4\n"  # col2 is empty and should be removed
 
-        self.expected_output = "col1\tcol3\n" "1\t3\n" "2\t4\n"
+        self.expected_output = "col1\tcol3\n1\t3\n2\t4\n"
 
         self.input_file = io.StringIO(self.input_data)
         self.output_file = io.StringIO()

@@ -8,6 +8,7 @@ and outputs TSV files for each top-level class.
 import argparse
 import itertools
 import json
+from collections import defaultdict
 from pathlib import Path
 
 import pandas as pd
@@ -93,8 +94,9 @@ def get_scalar_slots(sv: SchemaView, class_name: str, instance_class_names: set)
         slot = sv.get_slot(slot_name)
         if slot is None:
             continue
-        if slot.range in instance_class_names:
-            continue  # skip slots that are other classes we're collecting
+        # Exclude links to other classes that are collected as their own files
+        if slot.range in instance_class_names and not slot.inlined:
+            continue
         scalar_slots.append(slot.name)
     print(f"Scalar slots for {class_name}: {scalar_slots}")
     return scalar_slots
@@ -199,9 +201,76 @@ def main():
     else:
         instances_by_class = collect_instances_by_class(data, args.container_key, args.container_class, sv)
 
+        # Track which classes are used via inlined usage only (based on data)
+        # so that output files are not generated for these classes
+        referenced_classes = set()
+        slot_usage_by_class = defaultdict(list)
+
+        # Determine actual usage of each class in the instance data
+        for container in data.get(args.container_key, []):
+
+            def walk(obj, parent_class=None):
+                if isinstance(obj, dict):
+                    for k, v in obj.items():
+                        if isinstance(v, dict):
+                            class_range = None
+                            if parent_class:
+                                try:
+                                    slot = sv.induced_slot(k, parent_class)
+                                    class_range = slot.range if slot else None
+                                except Exception:
+                                    print("", end="")
+                                    continue
+                            if class_range:
+                                referenced_classes.add(class_range)
+                                slot_usage_by_class[class_range].append((parent_class, k))
+                            walk(v, class_range)
+                        elif isinstance(v, list):
+                            for item in v:
+                                if isinstance(item, dict):
+                                    class_range = None
+                                    if parent_class:
+                                        try:
+                                            slot = sv.induced_slot(k, parent_class)
+                                            class_range = slot.range if slot else None
+                                        except Exception:
+                                            print("", end="")
+                                            continue
+                                    if class_range:
+                                        referenced_classes.add(class_range)
+                                        slot_usage_by_class[class_range].append((parent_class, k))
+                                    walk(item, class_range)
+
+            walk(container, args.container_class)
+        # Identify classes with no IDs and only inlined usage in data
+        classes_to_skip = []
+
+        for cls, records in instances_by_class.items():
+            if cls == args.container_class:
+                continue  # Never skip the container class
+
+            id_slot = sv.get_identifier_slot(cls)
+            has_id = any(isinstance(r, dict) and id_slot and r.get(id_slot.name) for r in records)
+
+            if has_id:
+                continue
+
+            # Check if all usage of the class is in inlined slots
+            all_inlined_in_data = True
+            for parent_cls, slot_name in slot_usage_by_class.get(cls, []):
+                slot = sv.induced_slot(slot_name, parent_cls)
+                if slot and not slot.inlined:
+                    all_inlined_in_data = False
+                    break
+
+            if all_inlined_in_data:
+                print(f"Skipping class '{cls}' — no IDs and only used inlined in data.")
+                classes_to_skip.append(cls)
+
+        instances_by_class = {k: v for k, v in instances_by_class.items() if k not in classes_to_skip}
+
         for class_name, records in instances_by_class.items():
             scalar_slots = get_scalar_slots(sv, class_name, instances_by_class.keys())
-            print(f"{class_name} scalar slots: {scalar_slots}")
 
             ref_slots = get_reference_slots(
                 sv, class_name, instances_by_class.keys(), args.container_key, args.container_class, scalar_slots
@@ -224,22 +293,34 @@ def main():
                     s
                     for s in all_slots
                     if (
-                        sv.get_slot(s)
-                        and sv.get_slot(s).range in instances_by_class.keys()
-                        and s not in ref_slots  # preserve dynamically identified linking keys
+                        (slot := sv.get_slot(s))
+                        and slot.range in instances_by_class.keys()
+                        and not slot.inlined  # Only exclude if NOT inlined
+                        and s not in ref_slots
                     )
                 }
                 print(f"Excluding nested class slots for {class_name}: {excluded_nested_slots}")
 
-                # Filter flattened keys: include scalar and reference slots, exclude nested class slots
-                filtered = {
-                    k: v
-                    for k, v in flat.items()
-                    if (
-                        any(k.endswith(f"__{s}") or k == s for s in scalar_slots + ref_slots)
-                        and not any(k == s or k.endswith(f"__{s}") for s in excluded_nested_slots)
-                    )
-                }
+                # Filter flattened keys: include scalar and reference slots
+                # and all inlined subfields, exclude nested class slots
+                print(f"\nInspecting flattened keys for filtering in class: {class_name}")
+                filtered = {}
+                for k, v in flat.items():
+                    matches_scalar_or_ref = any(k == s or k.startswith(f"{s}__") for s in scalar_slots + ref_slots)
+                    matches_excluded = any(k == s or k.startswith(f"{s}__") for s in excluded_nested_slots)
+
+                    # Fallback: If the key looks like a legitimate direct attribute (not nested),
+                    # and is not excluded, and it is not already part of scalar/ref slots,
+                    # and it is defined in the schema for this instance's actual class (e.g. subclass),
+                    # then allow it
+                    if not matches_scalar_or_ref and not matches_excluded:
+                        slot = sv.get_slot(k)
+                        if slot and slot.range not in instances_by_class.keys():
+                            matches_scalar_or_ref = True
+
+                    if matches_scalar_or_ref and not matches_excluded:
+                        filtered[k] = v
+                print(f"Filtered: {filtered}")
 
                 for k, v in filtered.items():
                     if isinstance(v, list):
@@ -258,9 +339,12 @@ def main():
             extra_cols = [c for c in df.columns if c not in slot_order]
             df = df[slot_order + extra_cols]
 
-            out_path = Path(args.output_dir) / f"{class_name}.tsv"
-            df.to_csv(out_path, sep="\t", index=False)
-            print(f"Wrote: {out_path}")
+            if not df.dropna(how="all").empty:
+                out_path = Path(args.output_dir) / f"{class_name}.tsv"
+                df.to_csv(out_path, sep="\t", index=False)
+                print(f"Wrote: {out_path}")
+            else:
+                print(f"Skipped writing {class_name}.tsv because no meaningful data was found.")
 
 
 if __name__ == "__main__":
