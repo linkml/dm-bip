@@ -31,10 +31,14 @@ def flattened_output_dir():
             str(SCHEMA_PATH),
             str(INSTANCE_PATH),
             str(out_dir),
-            "--container-key", "persons",
-            "--container-class", "Person",
-            "--mode", "per-class",
-            "--list-style", "join",
+            "--container-key",
+            "persons",
+            "--container-class",
+            "Person",
+            "--mode",
+            "per-class",
+            "--list-style",
+            "join",
         ]
 
         subprocess.run(cmd, check=True)
@@ -78,6 +82,7 @@ EXPECTED_TSV_FILES = [
     "Procedure.tsv",
     "SdohObservation.tsv",
 ]
+
 
 @pytest.mark.parametrize("tsv_name", EXPECTED_TSV_FILES)
 def test_flatten_output_matches_expected(tsv_name, flattened_output_dir):

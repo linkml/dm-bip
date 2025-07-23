@@ -7,23 +7,15 @@ import unittest
 
 from dm_bip.format_converter.updated_flatten_to_tsv import flatten_dict
 
+
 class TestFlattenDict(unittest.TestCase):
     """Test the flatten_dict function."""
 
     def test_flatten_nested_dict(self):
         """Test flattening a nested dictionary with default separator."""
-        input_data = {
-            "a": 1,
-            "b": {"c": 2, "d": {"e": 3}},
-            "f": [4, 5]
-        }
+        input_data = {"a": 1, "b": {"c": 2, "d": {"e": 3}}, "f": [4, 5]}
 
-        expected_output = {
-            "a": 1,
-            "b__c": 2,
-            "b__d__e": 3,
-            "f": [4, 5]
-        }
+        expected_output = {"a": 1, "b__c": 2, "b__d__e": 3, "f": [4, 5]}
 
         result = flatten_dict(input_data)
 
@@ -31,6 +23,7 @@ class TestFlattenDict(unittest.TestCase):
 
 
 from dm_bip.format_converter.updated_flatten_to_tsv import explode_rows
+
 
 class TestExplodeRows(unittest.TestCase):
     def test_explode_no_lists(self):
@@ -70,8 +63,8 @@ class TestExplodeRows(unittest.TestCase):
         self.assertEqual(result, records)
 
 
-
 from dm_bip.format_converter.updated_flatten_to_tsv import join_lists, get_slot_order
+
 
 class TestJoinLists(unittest.TestCase):
     def test_join_lists_no_lists(self):
@@ -87,8 +80,7 @@ class TestJoinLists(unittest.TestCase):
 
     def test_join_lists_with_dicts(self):
         records = [{"a": [{"x": 1}, {"y": 2}]}]
-        expected_jsons = [json.dumps({"x": 1}, separators=(",", ":")),
-                          json.dumps({"y": 2}, separators=(",", ":"))]
+        expected_jsons = [json.dumps({"x": 1}, separators=(",", ":")), json.dumps({"y": 2}, separators=(",", ":"))]
         expected = [{"a": ",".join(expected_jsons)}]
         result = join_lists(records, ["a"])
         self.assertEqual(result, expected)
@@ -108,6 +100,7 @@ class TestJoinLists(unittest.TestCase):
 
 from types import SimpleNamespace
 
+
 class DummySlot:
     def __init__(self, name, range_, inlined=False, multivalued=False):
         self.name = name
@@ -115,12 +108,11 @@ class DummySlot:
         self.inlined = inlined
         self.multivalued = multivalued
 
+
 class DummySchemaView:
     def __init__(self):
         # Map class name -> list of slot names
-        self.class_slots_map = {
-            "TestClass": ["scalar1", "ref1", "inlined_ref", "multivalued_ref", "external_ref"]
-        }
+        self.class_slots_map = {"TestClass": ["scalar1", "ref1", "inlined_ref", "multivalued_ref", "external_ref"]}
         # Map slot name -> DummySlot object
         self.slots = {
             "scalar1": DummySlot("scalar1", "string"),
