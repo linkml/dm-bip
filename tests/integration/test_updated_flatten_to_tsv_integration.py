@@ -42,7 +42,7 @@ def flattened_output_dir():
         ]
 
         try:
-            subprocess.run(cmd, check=True, capture_output=True, text=True)
+            subprocess.run(cmd, check=True, capture_output=True, text=True)  # noqa: S603
         except subprocess.CalledProcessError as e:
             print("STDOUT:\n", e.stdout)
             print("STDERR:\n", e.stderr)
