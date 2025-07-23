@@ -26,6 +26,8 @@ def flattened_output_dir():
         out_dir = Path(tmp)
 
         cmd = [
+            "poetry",
+            "run",
             "python",
             str(SCRIPT_PATH),
             str(SCHEMA_PATH),
