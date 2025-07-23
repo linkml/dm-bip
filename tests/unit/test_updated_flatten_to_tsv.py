@@ -109,6 +109,7 @@ class DummySlot:
     """Dummy class to simulate a slot in the schema."""
 
     def __init__(self, name, range_, inlined=False, multivalued=False):
+        """Initialize a dummy slot."""
         self.name = name
         self.range = range_
         self.inlined = inlined
@@ -119,6 +120,7 @@ class DummySchemaView:
     """Dummy schema view for testing."""
 
     def __init__(self):
+        """Initialize a dummy schema view."""
         # Map class name -> list of slot names
         self.class_slots_map = {"TestClass": ["scalar1", "ref1", "inlined_ref", "multivalued_ref", "external_ref"]}
         # Map slot name -> DummySlot object

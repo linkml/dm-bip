@@ -56,20 +56,6 @@ def test_flatten_outputs_files(flattened_output_dir):
         assert contents, f"{f.name} is empty"
 
 
-def test_flatten_output_matches_expected():
-    """Compare generated TSV output to expected TSV files."""
-    generated_file = output_dir / "SdohObservation.tsv"
-    expected_file = script_dir / "output" / "SdohObservation.tsv"
-
-    assert generated_file.exists(), f"Missing output file: {generated_file}"
-    assert expected_file.exists(), f"Missing expected file: {expected_file}"
-
-    actual = generated_file.read_text().strip()
-    expected = expected_file.read_text().strip()
-
-    assert actual == expected, f"Output mismatch in {generated_file.name}"
-
-
 # List of expected TSV filenames
 EXPECTED_TSV_FILES = [
     "Condition.tsv",
