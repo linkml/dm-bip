@@ -4,7 +4,7 @@ import json
 import unittest
 from types import SimpleNamespace
 
-from dm_bip.format_converter.updated_flatten_to_tsv import *
+from dm_bip.format_converter.updated_flatten_to_tsv import explode_rows, flatten_dict, get_slot_order, join_lists
 
 
 class TestFlattenDict(unittest.TestCase):
