@@ -1,39 +1,57 @@
+from pathlib import Path
+from typing import Annotated, Optional, List
+
 import pandas as pd
+import typer
 
-# --- Read data and lookup ---
-df = pd.read_csv("../../data/BrainPower-STUDY/raw_data/TSV/HealthConditions.tsv", sep='\t')
-try:
-    lookup = pd.read_csv("condition_lookup.tsv", sep='\t')
-except FileNotFoundError:
-    lookup = pd.DataFrame(columns=["condition_name", "hpo_label", "hpo_code"])
 
-# --- Melt data to long format ---
-id_vars = ['id', 'timepoint']
-value_vars = [c for c in df.columns if c not in id_vars]
-df_long = df.melt(id_vars=id_vars, value_vars=value_vars,
-                  var_name='condition_name', value_name='has_condition')
-df_long = df_long[df_long['has_condition'] == 1]
+def melt_data(df: pd.DataFrame, id_vars: List[str], var_name: str, value_name: str):
+    """Convert data from wide format to long format.
+    Args:
+        df (pd.DataFrame): The input DataFrame in wide format.
+        id_vars (List[str]): Column(s) to keep fixed (identifier variables).
+        var_name (str): Name to use for the 'variable' column.
+        value_name (str): Name to use for the 'value' column.
 
-# --- Normalize condition names for comparison ---
-lookup['condition_name'] = lookup['condition_name'].astype(str).str.strip().str.lower()
-df_long['condition_name'] = df_long['condition_name'].astype(str).str.strip().str.lower()
+    Returns:
+        pd.DataFrame: A new DataFrame in long format.
 
-# --- Find new (unmapped) condition names ---
-known_conditions = set(lookup['condition_name'])
-all_conditions = set(df_long['condition_name'])
-new_conditions = all_conditions - known_conditions
+    """
+    value_vars = [c for c in df.columns if c not in id_vars]
 
-# --- Add new ones with blanks for future curation ---
-if new_conditions:
-    new_rows = pd.DataFrame({'condition_name': list(new_conditions),
-                             'hpo_label': ['']*len(new_conditions),
-                             'hpo_code': ['']*len(new_conditions)})
-    lookup = pd.concat([lookup, new_rows], ignore_index=True)
-    lookup = lookup.sort_values('condition_name')
-    lookup.to_csv("condition_lookup_to_fill.tsv", sep='\t', index=False)
-    print(f"Found {len(new_conditions)} new conditions. Please fill in 'condition_lookup_to_fill.tsv'.")
+    df_long = df.melt(id_vars=id_vars, value_vars=value_vars,
+                    var_name=var_name, value_name=value_name)
+    df_long = df_long[df_long[value_name] == 1]
 
-# --- Merge as usual, using current mapping ---
-df_annot = df_long.merge(lookup, on='condition_name', how='left')
+    return df_long
 
-df_annot.to_csv("conditions_long_annotated.tsv", sep='\t', index=False)
+
+def main(
+        input_file: Annotated[
+            Path,
+            typer.Option(
+                "-i", "--input_file", exists=True, help="Path to the input TSV file"),
+        ] = ...,
+        output_file: Optional[str] = typer.Option(None, "--output_file", help="Path to save the melted TSV."),
+        id_vars: str = typer.Option(..., "--id_vars", help="Comma-separated list of ID variables."),
+        var_name: str = typer.Option(..., "--var_name", help="Name of the new column header for the conditions."),
+        #value_name: str = typer.Option(..., "value", help="Name of the value column.")
+):
+    """ Melt long format file to long format. """
+    df = pd.read_csv(input_file, sep='\t')
+
+    id_vars = [x.strip() for x in id_vars.split(",")]
+
+    value_name = 'has_condition' # pass on cli if script will be generalized
+
+    melted_df = melt_data(df, id_vars, var_name, value_name)
+
+    if output_file:
+        melted_df.to_csv(output_file, sep="\t", index=False)
+        typer.echo(f"Saved melted data to: {output_file}")
+    else:
+        typer.echo(melted_df.to_string(index=False))
+
+
+if __name__ == "__main__":
+    typer.run(main)
