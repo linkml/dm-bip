@@ -47,22 +47,22 @@ cd dm-bip
 ```
 
 ## Setup Python Environment and Install Poetry
-First, we'll need to set up a Python development environment. You can either use your system `poetry` or install it within a repository virtual environment.
+First, we'll need to set up a Python development environment. You can either use your system `poetry` or install it within a repository virtual environment (recommended).
 
-### Use System Poetry
-To use you're system `poetry`, install `poetry` if you haven't already.
-```
-pip install poetry
-```
-
-### Install Poetry in a Virtual Environment
-To use poetry within a virtual environment and install `poetry` to the environment, use your system Python or install `pyenv` and select your python version with `pyenv local 3.12`. If you have just installed `pyenv`, make sure to install your intended Python version e.g. `pyenv install 3.12`. Then create a virtual environment and install poetry to it. You will also want to add `cruft` to the virtual environment to keep updated with this template.
+### Install Poetry in a Virtual Environment (recommended)
+To use poetry within a virtual environment and install `poetry` to the virtual environment, use your system Python or install `pyenv` and select your python version with `pyenv local 3.12`. If you have just installed `pyenv`, make sure to install your intended Python version e.g. `pyenv install 3.12`. Then create a virtual environment and install poetry to it. You will also want to add `cruft` to the virtual environment to keep updated with this template.
 ```
 pyenv local 3.12
 python -m venv .venv
 . .venv/bin/activate
 pip install poetry
 pip install cruft
+```
+
+### Use System Poetry
+To use you're system `poetry`, install `poetry` if you haven't already.
+```
+pip install poetry
 ```
 
 ### Install Dependencies
@@ -164,7 +164,7 @@ After running `cruft update`, the project's boilerplate code will be updated to 
 ## This section is for further setup of the project
 This section is for further setup of the project as a whole using the `monarch-project-template` and can be ignored for regular development. We should revisit this section as the project evolves and finalize the setup when appropriate.
 
-### Setting up PyPI release
+### Setting up PyPI release (developers only)
 
 For the first time, you'll need to just run the following commands:
 ```
