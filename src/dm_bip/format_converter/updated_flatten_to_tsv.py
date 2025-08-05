@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pandas as pd
 import yaml
-from linkml_runtime.utils.scherecumaview import SchemaView
+from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 
