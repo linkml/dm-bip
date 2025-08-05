@@ -156,6 +156,7 @@ def collect_instances_by_class(instance_data, container_key, container_class, sv
     collected = {}
 
     def recurse(obj, expected_class):
+        """Recursively go through child objects."""
         if isinstance(obj, dict):
             collected.setdefault(expected_class, []).append(obj)
             # Recurse into child objects based on schema-defined slots
@@ -210,6 +211,7 @@ def main():
         for container in data.get(args.container_key, []):
 
             def walk(obj, parent_class=None):
+                """Walk through each class."""
                 if isinstance(obj, dict):
                     for k, v in obj.items():
                         if isinstance(v, dict):
