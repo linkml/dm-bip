@@ -59,6 +59,14 @@ pip install poetry
 pip install cruft
 ```
 
+### Alternate option - Install Poetry in a Conda environment
+It may be more straightforward to use a Conda environment if one already exists, e.g. a PC where Python is only installed via Conda. To install poetry in Conda run these steps:
+```
+conda create --name dm-bip python=3.12
+conda activate dm-bip
+pip install poetry
+pip install cruft
+
 ### Use System Poetry
 To use you're system `poetry`, install `poetry` if you haven't already.
 ```
