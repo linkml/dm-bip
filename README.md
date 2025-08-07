@@ -66,6 +66,7 @@ conda create --name dm-bip python=3.12
 conda activate dm-bip
 pip install poetry
 pip install cruft
+```
 
 ### Use System Poetry
 To use you're system `poetry`, install `poetry` if you haven't already.
