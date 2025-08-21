@@ -38,7 +38,7 @@ lint-notebooks:
 		exit 1; \
 	fi
 	$(RUN) ruff check $(if $(CI),--output-format=github,) --exit-zero notebooks/*.ipynb \
-		$(if $(CI),| sed -e 's/^::error/::warn/',)
+		$(if $(CI),| sed -e 's/^::error/::warning/',)
 	$(RUN) ruff format --diff notebooks/*.ipynb
 
 .PHONY: fix-notebook-lint
