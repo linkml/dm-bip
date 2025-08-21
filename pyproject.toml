@@ -85,7 +85,12 @@ extend-ignore = [
 unfixable = []
 
 [tool.ruff.lint.per-file-ignores]
-"*.ipynb" = ["D"]
+"*.ipynb" = [
+    "D",
+    "S602",
+    "S603",
+    "S607",
+]
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
