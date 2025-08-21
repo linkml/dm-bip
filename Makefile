@@ -8,8 +8,6 @@ PYTHON := $(VENV)/bin/python
 
 CI ?=
 
-RUFF_FLAGS = $(if $(CI),--output-format=github,)
-
 RUN := poetry run
 
 ### Help ###
