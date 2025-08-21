@@ -37,9 +37,14 @@ lint-notebooks:
 		echo "Notebooks contain outputs. Run 'make fix-notebook-lint'."; \
 		exit 1; \
 	fi
+	ruff check $(if $(CI),--output-format=github,) --exit-zero notebooks/*.ipynb \
+		$(if $(CI),| sed -e 's/^::error/::warn/',)
+	ruff format --diff notebooks/*.ipynb
 
 .PHONY: fix-notebook-lint
 fix-notebook-lint:
 	@echo "Stripping outputs from notebooks..."
 	@find . -name '*.ipynb' ! -path "./.venv/*" ! -path "./.ipynb_checkpoints/*" -exec \
 		$(RUN) jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace --to notebook {} \;
+	ruff check --fix notebooks/*.ipynb
+	ruff format notebooks/*.ipynb
