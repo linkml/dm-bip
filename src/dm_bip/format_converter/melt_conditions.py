@@ -1,7 +1,7 @@
 """Module for melting condition data from wide format to long format."""
 
 from pathlib import Path
-from typing import Annotated, Optional, List
+from typing import Annotated, List, Optional
 
 import pandas as pd
 import typer
