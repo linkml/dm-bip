@@ -1,32 +1,36 @@
-import pandas as pd
+"""Module to join two dataframes and add a column from one dataframe to the other dataframe."""
+
 from pathlib import Path
-import typer
 from typing import Annotated, Optional
 
-"""Module to join two dataframes and add a column from one dataframe to the other dataframe."""
+import pandas as pd
+import typer
+
 
 def main(
         left_path: Annotated[
             Path,
             typer.Option(
-                "-i", "--left_path", exists=True, 
+                "-i", "--left_path", exists=True,
                 help="Path to the input TSV file to use as \'left\' dataframe in the merge."),
         ] = ...,
         right_path: Annotated[
             Path,
             typer.Option(
-                "-i", "--right_path", exists=True, 
+                "-i", "--right_path", exists=True,
                 help="Path to the input TSV file to use as \'right\' dataframe in the merge."),
         ] = ...,
-        output_file: Optional[str] = typer.Option(None, "--output_file", 
+        output_file: Optional[str] = typer.Option(None, "--output_file",
                                                   help="Path to save the melted TSV."),
-        new_column: str = typer.Option(..., "--new_column", help="Name of the new column to add to the left file"),
-        source_column: str = typer.Option(..., "--source_column", help="Column in the right file to copy into the new column"),
+        new_column: str = typer.Option(..., "--new_column",
+                                       help="Name of the new column to add to the left file"),
+        source_column: str = typer.Option(..., "--source_column",
+                                          help="Column in the right file to copy into the new column"),
         left_id: str = typer.Option("id", "--left_id", help="Join key in the left file (default: id)"),
         right_id: str = typer.Option("id", "--right_id", help="Join key in the right file (default: id)"),
-        filter_column: str = typer.Option(None, "--filter_column", 
+        filter_column: str = typer.Option(None, "--filter_column",
                                           help="Keep only rows where filter_column == filter_value (optional)"),
-        filter_value: str = typer.Option(None, "--filter_value", 
+        filter_value: str = typer.Option(None, "--filter_value",
                                          help="Keep only rows where ffilter_column == filter_value (optional)"),
         separator: str = typer.Option("\t", "--separator", help="Field separator (default: tab)")
 ):
