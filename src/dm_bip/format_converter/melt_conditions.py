@@ -1,16 +1,16 @@
-import pandas as pd
+"""Module for melting condition data from wide format to long format."""
+
 from pathlib import Path
-import typer
 from typing import Annotated, Optional, List
 
-
-"""Module for melting condition data from wide format to long format."""
+import pandas as pd
+import typer
 
 
 def melt_data(df: pd.DataFrame, id_vars: List[str], var_name: str, value_name: str):
     """
     Convert data from wide format to long format.
-    
+
     Args:
         df (pd.DataFrame): The input DataFrame in wide format.
         id_vars (List[str]): Column(s) to keep fixed (identifier variables).
@@ -21,7 +21,6 @@ def melt_data(df: pd.DataFrame, id_vars: List[str], var_name: str, value_name: s
         pd.DataFrame: A new DataFrame in long format.
 
     """
-
     value_vars = [c for c in df.columns if c not in id_vars]
 
     df_long = df.melt(id_vars=id_vars, value_vars=value_vars,
@@ -42,7 +41,6 @@ def main(
         var_name: str = typer.Option(..., "--var_name", help="Name of the new column header for the conditions."),
         #value_name: str = typer.Option(..., "value", help="Name of the value column.")
 ):
-
     """Melt long format file to long format."""
     df = pd.read_csv(input_file, sep='\t')
 
