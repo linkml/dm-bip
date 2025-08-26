@@ -23,30 +23,28 @@ def melt_data(df: pd.DataFrame, id_vars: List[str], var_name: str, value_name: s
     """
     value_vars = [c for c in df.columns if c not in id_vars]
 
-    df_long = df.melt(id_vars=id_vars, value_vars=value_vars,
-                    var_name=var_name, value_name=value_name)
+    df_long = df.melt(id_vars=id_vars, value_vars=value_vars, var_name=var_name, value_name=value_name)
     df_long = df_long[df_long[value_name] == 1]
 
     return df_long
 
 
 def main(
-        input_file: Annotated[
-            Path,
-            typer.Option(
-                "-i", "--input_file", exists=True, help="Path to the input TSV file"),
-        ] = ...,
-        output_file: Optional[str] = typer.Option(None, "--output_file", help="Path to save the melted TSV."),
-        id_vars: str = typer.Option(..., "--id_vars", help="Comma-separated list of ID variables."),
-        var_name: str = typer.Option(..., "--var_name", help="Name of the new column header for the conditions."),
-        #value_name: str = typer.Option(..., "value", help="Name of the value column.")
+    input_file: Annotated[
+        Path,
+        typer.Option("-i", "--input_file", exists=True, help="Path to the input TSV file"),
+    ] = ...,
+    output_file: Optional[str] = typer.Option(None, "--output_file", help="Path to save the melted TSV."),
+    id_vars: str = typer.Option(..., "--id_vars", help="Comma-separated list of ID variables."),
+    var_name: str = typer.Option(..., "--var_name", help="Name of the new column header for the conditions."),
+    # value_name: str = typer.Option(..., "value", help="Name of the value column.")
 ):
     """Melt long format file to long format."""
-    df = pd.read_csv(input_file, sep='\t')
+    df = pd.read_csv(input_file, sep="\t")
 
     id_vars = [x.strip() for x in id_vars.split(",")]
 
-    value_name = 'has_condition' # pass on cli if script will be generalized
+    value_name = "has_condition"  # pass on cli if script will be generalized
 
     melted_df = melt_data(df, id_vars, var_name, value_name)
 
