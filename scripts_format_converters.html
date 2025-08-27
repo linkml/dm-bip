@@ -1,0 +1,185 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scripts - Format Converters &mdash; dm-bip 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=7026087e"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            dm-bip
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_automator.html">Schema Automator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemasheets.html">Schemasheets</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">dm-bip</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Scripts - Format Converters</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/scripts_format_converters.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scripts-format-converters">
+<h1>Scripts - Format Converters<a class="headerlink" href="#scripts-format-converters" title="Link to this heading"></a></h1>
+<section id="merge-a-column-from-one-file-to-another">
+<h2>Merge a column from one file to another<a class="headerlink" href="#merge-a-column-from-one-file-to-another" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">merge_add_column.py</span></code> script is designed to take two files and widen one file, i.e. add an additional column, with data from the second file. For example, biometric data, e.g. age, may be collected at various timepoints. However, in order to map this data using <code class="docutils literal notranslate"><span class="pre">linkml-map</span></code>, rather than having one <code class="docutils literal notranslate"><span class="pre">timepoint</span></code> column with various timepoints and one age column with values for each participant at the different timepoints as separate rows, this data should be converted from a long format to a wide format where there are columns for each timepoint and the metric of interest, e.g. age_at_visit_timepoint_1. For example, for the INCLUDE LinkML model the <code class="docutils literal notranslate"><span class="pre">Participant.ageAtFirstParticipantEngagement</span></code> values for the BrainPower study are sourced from a file where the <code class="docutils literal notranslate"><span class="pre">timepoint</span></code> value equals 1 for the column <code class="docutils literal notranslate"><span class="pre">age_at_visit</span></code>. The script will convert this long data into a new column, e.g. <code class="docutils literal notranslate"><span class="pre">age_at_visit_timepoint_1</span></code> and add the age values into the column.</p>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
+<p>From the <code class="docutils literal notranslate"><span class="pre">scripts</span></code> directory run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">merge_add_column</span><span class="o">.</span><span class="n">py</span> \
+  <span class="o">--</span><span class="n">left_path</span> <span class="o">&lt;</span><span class="n">PATH</span><span class="o">-</span><span class="n">TO</span><span class="o">-</span><span class="n">INPUT</span><span class="o">-</span><span class="n">FILE_1</span><span class="o">&gt;</span> \
+  <span class="o">--</span><span class="n">right_path</span> <span class="o">&lt;</span><span class="n">PATH</span><span class="o">-</span><span class="n">TO</span><span class="o">-</span><span class="n">INPUT</span><span class="o">-</span><span class="n">FILE_2</span><span class="o">&gt;</span> \
+  <span class="o">--</span><span class="n">output_file</span> <span class="o">&lt;</span><span class="n">PATH</span><span class="o">-</span><span class="n">TO</span><span class="o">-</span><span class="n">OUTPUT</span><span class="o">-</span><span class="n">FILE</span><span class="o">&gt;</span> \
+  <span class="o">--</span><span class="n">new_column</span> <span class="n">age_at_visit_timepoint_1</span> \
+  <span class="o">--</span><span class="n">source_column</span> <span class="n">age_at_visit</span> \
+  <span class="o">--</span><span class="n">left_id</span> <span class="nb">id</span> \
+  <span class="o">--</span><span class="n">right_id</span> <span class="nb">id</span> \
+  <span class="o">--</span><span class="n">filter_column</span> <span class="n">timepoint</span> \
+  <span class="o">--</span><span class="n">filter_value</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<section id="working-example">
+<h4>Working example<a class="headerlink" href="#working-example" title="Link to this heading"></a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">merge_add_column</span><span class="o">.</span><span class="n">py</span> \
+  <span class="o">--</span><span class="n">left_path</span> <span class="o">../../../</span><span class="n">data</span><span class="o">/</span><span class="n">BrainPower</span><span class="o">-</span><span class="n">STUDY</span><span class="o">/</span><span class="n">raw_data</span><span class="o">/</span><span class="n">TSV</span><span class="o">/</span><span class="n">demographics</span><span class="o">.</span><span class="n">tsv</span> \
+  <span class="o">--</span><span class="n">right_path</span> <span class="o">../../../</span><span class="n">data</span><span class="o">/</span><span class="n">BrainPower</span><span class="o">-</span><span class="n">STUDY</span><span class="o">/</span><span class="n">raw_data</span><span class="o">/</span><span class="n">TSV</span><span class="o">/</span><span class="n">ageateventandlatency</span><span class="o">.</span><span class="n">tsv</span> \
+  <span class="o">--</span><span class="n">output_file</span> <span class="n">demographics_with_age</span><span class="o">.</span><span class="n">tsv</span> \
+  <span class="o">--</span><span class="n">new_column</span> <span class="n">age_at_visit_timepoint_1</span> \
+  <span class="o">--</span><span class="n">source_column</span> <span class="n">age_at_visit</span> \
+  <span class="o">--</span><span class="n">left_id</span> <span class="nb">id</span> \
+  <span class="o">--</span><span class="n">right_id</span> <span class="nb">id</span> \
+  <span class="o">--</span><span class="n">filter_column</span> <span class="n">timepoint</span> \
+  <span class="o">--</span><span class="n">filter_value</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>NOTE: If running the script in the linkml-map poetry environment, run as <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">run</span> <span class="pre">python</span> <span class="pre">...</span></code> after running <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">add</span> <span class="pre">pandas</span></code> since the linkml-map environment does not include pandas.</p>
+</section>
+</section>
+</section>
+<section id="melt-a-file-convert-from-wide-to-long-format">
+<h2>Melt a file - convert from wide to long format<a class="headerlink" href="#melt-a-file-convert-from-wide-to-long-format" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">melt_conditions.py</span></code> script is designed to convert a file of conditions from a long format to a wide format. This is a pre-processing script to prepare data for annotation using Harmonica. The use case for this script is when the conditions to annotate with ontology terms are listed as column headers (see Wide format file example below). The result of the script is a long format file (see Long format file example below) where each row represents one condition that the participant has based on the presence of the value 1.
+TODO: Generalize for additional values that indicates the participant was found to have the indicated condition, e.g. true, present, etc.</p>
+<section id="id1">
+<h3>Usage<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">melt_conditions</span><span class="o">.</span><span class="n">py</span> \
+  <span class="o">--</span><span class="n">input_file</span> <span class="o">&lt;</span><span class="n">PATH</span><span class="o">-</span><span class="n">TO</span><span class="o">-</span><span class="n">INPUT</span><span class="o">-</span><span class="n">FILE</span><span class="o">&gt;</span> \
+  <span class="o">--</span><span class="n">output_file</span> <span class="o">&lt;</span><span class="n">PATH</span><span class="o">-</span><span class="n">TO</span><span class="o">-</span><span class="n">OUTPUT</span><span class="o">-</span><span class="n">FILE</span><span class="o">&gt;</span> \
+  <span class="o">--</span><span class="n">id_vars_str</span> <span class="o">&lt;</span><span class="n">comma</span> <span class="n">separated</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">ID</span> <span class="n">variables</span> <span class="c1"># id,timepoint&gt; \</span>
+  <span class="o">--</span><span class="n">var_name</span> <span class="o">&lt;</span><span class="n">name</span> <span class="n">of</span> <span class="n">new</span> <span class="n">column</span> <span class="n">header</span> <span class="k">for</span> <span class="n">the</span> <span class="n">conditions</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>NOTE: If running the script in the linkml-map poetry environment, run as <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">run</span> <span class="pre">python</span> <span class="pre">...</span></code> after running <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">add</span> <span class="pre">pandas</span></code> since the linkml-map environment does not include pandas.</p>
+<section id="id2">
+<h4>Working example<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">poetry</span> <span class="n">run</span> <span class="n">python</span> <span class="n">melt_and_annotate_conditions</span><span class="o">.</span><span class="n">py</span> \
+  <span class="o">--</span><span class="n">input_file</span> <span class="o">../../../</span><span class="n">data</span><span class="o">/</span><span class="n">BrainPower</span><span class="o">-</span><span class="n">STUDY</span><span class="o">/</span><span class="n">raw_data</span><span class="o">/</span><span class="n">TSV</span><span class="o">/</span><span class="n">healthconditions</span><span class="o">.</span><span class="n">tsv</span>  \
+  <span class="o">--</span><span class="n">id_vars</span> <span class="nb">id</span><span class="p">,</span><span class="n">timepoint</span> \
+  <span class="o">--</span><span class="n">var_name</span> <span class="n">condition_name</span>
+</pre></div>
+</div>
+</section>
+<section id="example-file-formats-for-wide-and-long-formats">
+<h4>Example file formats for “wide” and “long” formats<a class="headerlink" href="#example-file-formats-for-wide-and-long-formats" title="Link to this heading"></a></h4>
+<p>Wide format</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">id</span>  <span class="n">timepoint</span> <span class="n">asd</span> <span class="n">vsd</span> <span class="n">pda</span>
+<span class="mi">123</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">1</span> <span class="mi">0</span>
+<span class="mi">124</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">1</span>
+<span class="mi">125</span> <span class="mi">1</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>Long Format</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">id</span>  <span class="n">timepoint</span> <span class="n">condition_name</span>  <span class="n">has_condition</span>
+<span class="mi">123</span> <span class="mi">1</span> <span class="n">vsd</span> <span class="mi">1</span>
+<span class="mi">124</span> <span class="mi">1</span> <span class="n">asd</span> <span class="mi">1</span>
+<span class="mi">124</span> <span class="mi">1</span> <span class="n">pda</span> <span class="mi">1</span>
+<span class="mi">125</span> <span class="mi">1</span> <span class="n">pda</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Corey Cox &lt;corey@tislab.org&gt;.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
