@@ -6,7 +6,7 @@ INSTALL_SENTINEL := $(VENV)/.install.success
 VERSION := $(shell poetry version -s)
 PYTHON := $(VENV)/bin/python
 
-LINT_EXCLUDES := tests/input tests/output
+CI ?=
 
 RUN := poetry run
 
@@ -64,14 +64,13 @@ fresh: clean clobber all
 
 
 $(INSTALL_SENTINEL): poetry.lock
-	poetry install --with dev --with docs
+	poetry install --with dev --with docs $(if $(CI),--no-interaction,)
 	touch $@
 
 $(PYTHON): $(INSTALL_SENTINEL)
 
 .PHONY: install
-install:
-	poetry install --with dev --with docs
+install: $(INSTALL_SENTINEL)
 
 git-hooks-install: .git/hooks/pre-commit
 
@@ -112,15 +111,15 @@ clobber:
 
 .PHONY: lint
 lint: $(PYTHON)
-	-$(RUN) ruff check --diff src/ tests/ --exclude $(LINT_EXCLUDES)
-	-$(RUN) ruff format --check --diff --exclude $(LINT_EXCLUDES)
+	$(RUN) ruff check $(if $(CI),--output-format=github,)
+	$(RUN) ruff format --check
 	$(MAKE) lint-notebooks
 
 
 .PHONY: format
 format: $(PYTHON)
-	-$(RUN) ruff check --fix src/ tests/ --exclude $(LINT_EXCLUDES)
-	-$(RUN) ruff format src/ tests/ --exclude $(LINT_EXCLUDES)
+	-$(RUN) ruff check --fix
+	-$(RUN) ruff format
 
 .PHONY: coverage
 coverage: $(PYTHON)
