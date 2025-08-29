@@ -15,7 +15,7 @@ The main effort of this project is to use existing [LinkML](https://linkml.io/li
 - [Cruft] (https://cruft.github.io/cruft/)
 
 # Repository Structure
- - Github wokflows:
+ - Github workflows:
    - For code quality checks (`qc.yml`)
    - Documentation deployment (`deploy-docs.yml`)
    - PyPI deployment (`pypi-publish.yml`)
