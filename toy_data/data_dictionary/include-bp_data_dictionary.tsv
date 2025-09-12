@@ -1,4 +1,5 @@
 table	variable	label	description
+> class	slot	ignore	description
 Age at Event and Latency	id	Participant ID	Participant ID ranging from 1301 to 2414.
 Age at Event and Latency	timepoint	Timepoint	Measurement time period ranging from 1 (baseline) to 5 (12 months) in 3-month increments (1: Baseline; 2: 3 Months; 3: 6 Months; 4: 9 Months; 5: 12 Months).
 Age at Event and Latency	age_at_visit	Age in Days	An exact measure of age in days calculated by subtracting the date of visit from the participant's date of birth.
