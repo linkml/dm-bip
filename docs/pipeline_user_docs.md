@@ -3,7 +3,7 @@
 ## 	Set-up Local Environment
 
 - Clone the repo at: https://github.com/linkml/dm-bip 
-- Follow the instructions in the repo README (https://github.com/linkml/dm-bip?tab=readme-ov-file#overview) up to the “Development” section.
+- Follow the instructions in the repo README (https://github.com/linkml/dm-bip?tab=readme-ov-file#overview) up to the “Pipeline user documentation” section.
 - NOTE: For Mac users, the preferred environment is to use pyenv. However, currently for Windows users, specifically WSL, if you already have Conda installed there are instructions to install the environment for the dm-bip repo using Conda. Additionally for Windows users, Git Bash is required in order to avoid file path issues in commands due to differences between Windows and Mac/Linux.
 - NOTE: If you have not previously installed `make` this should also be installed.
 
