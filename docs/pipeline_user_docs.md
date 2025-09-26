@@ -59,3 +59,57 @@ make pipeline DM_INPUT_DIR=data/YOUR-STUDY-DIRECTORY/raw_data/TSV DM_SCHEMA_NAME
 - This step can be done initially to create the implicit study specific model and validate the files against this model. Various file preprocessing steps may be needed to transform the “raw” files into a format suitable for the pipeline and this step then needs to be run again on the preprocessed files in order to create the implicit study specific model. Examples of preprocessing that may be needed are to combine all data columns for a given target LinkML model class into one data file or to annotate conditions with ontology terms.
 
 
+## Create Transformed Files
+- Since the data for each class in the transformation specification currently needs to be in one data file and the data for each slot needs to be within one column in the data file, the input files may need to be preprocesed to combine columns across data files.
+- The preprocessing can be done using any data science methods of the user’s choice e.g. R, pandas, dbt, etc.
+- Once the transformed files are generated, run the pipeline using these preprocessed files to create a new implicit study specific model files.
+
+```
+make pipeline DM_INPUT_DIR=data/YOUR-STUDY/raw_data/TSV DM_SCHEMA_NAME=YOUR_SCHEMA DM_OUTPUT_DIR=YOUR-OUTPUT-DIRECTORY -B
+```
+
+
+## Prepare Transformation Mapping specification file
+- The current suggestion is to create one mapping transformation specification file for each class in the model. The transformation mapping specification is formatted as a YAML file.
+
+
+### LinkML Transformation Spec
+- The LinkML transformation specification consists of a collection of ClassDerivation and SlotDerivation objects. See the [LinkML-Map documentation](https://linkml.io/linkml-map/) for more information.
+- The file is formatted as:
+```
+- class_derivations:
+    ClassName:
+      populated_from: filename
+      slot_derivations:
+```
+- The `ClassName` is the name of your LinkML model class, e.g. Participant.
+- The `populated_from` directly under the `ClassName` field indicates what file the data is from.
+- The `slot_derivations` are the LinkML model slots for the class.
+- Each `class_derivation` block represented in the transformation spec represents one row in your input data file.
+
+
+#### Slot Derivations
+- The slot derivations represent the LinkML model slots and provide the mapping between the “raw” data file to the target LinkML model.
+- For example, in the example below this indicates that the `participantExternalId` is populated from the id column in the “raw” data file.
+```
+slot_derivations:
+        participantExternalId:
+          populated_from: id
+```
+
+
+#### Slot Values
+- The data to populate a slot must be found within one column in one “raw” data file or be specified to be a hard-coded value.
+- Slot values can also be dynamically created, based on the single column value, using value mappings, expressions, or unit conversions.
+- Examples:
+	```
+	slot_derivations:
+		familyType:
+			value: Example Family type --> a hard-coded, constant value
+		sex:
+			populated_from: gender
+			value_mappings:
+				'1': male --> '1' in "raw" data file maps to 'male'
+				'2': female
+	```
+
