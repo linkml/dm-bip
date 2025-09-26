@@ -113,3 +113,23 @@ slot_derivations:
 				'2': female
 	```
 
+
+## File Transformations
+- For `linkml-map` and the mapping transformation specification, for each class to be populated in the target model, all of the slots of that class need to exist in one preprocessed data input file.
+- The preprocessed files can be created using your choice of tools, e.g. pandas, R functions, or a more formal ETL solution like dbt.
+
+
+### File Transformations for Annotating Conditions
+- The conditions data, e.g. weight, blood pressure, disease state, etc. can be annotated with ontology terms using the ontology annotation tool Harmonica. This tool is designed to find the most specific ontology annotation first and then widen its scope by method and ontology selection to find additional ontology terms for annotation. The results are intended to be reviewed by a curator. See the [README](../harmonica/README.md) in the harmonica directory for more details.
+- The input file format for Harmonica should contain a unique identifier, such as participant identifier and one condition per row in the file. Each row will be annotated with whichever ontologies are specified in the Harmonica config file.
+- This file format can be transformed from a raw data file containing the conditions data.
+- Once the data annotation process is complete and the results are reviewed, the file can be pivoted and merged back into the "raw"/preprocessed data file of conditions data.
+
+
+## Create LinkML formatted data
+- Once the input files have been preprocessed, run the `linkml-map` step. See the sample Jupyter notebooks in the `notebooks` directory.
+- To launch the Jupyter notebook server run: `jupyter-notebook`
+	- Within the Jupyter notebook, change the file paths and file names to match your data location
+- NOTES:
+	- Due to an issue, before running the `linkml-map step`, any values in the implicit study specific model that have a range of “enum” should be changed to a range of “string”.
+	
