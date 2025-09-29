@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Documentation for LinkML Data Model Ingest Pipeline Users &mdash; dm-bip 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=7026087e"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            dm-bip
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_automator.html">Schema Automator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemasheets.html">Schemasheets</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">dm-bip</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">User Documentation for LinkML Data Model Ingest Pipeline Users</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/pipeline_user_docs.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="user-documentation-for-linkml-data-model-ingest-pipeline-users">
+<h1>User Documentation for LinkML Data Model Ingest Pipeline Users<a class="headerlink" href="#user-documentation-for-linkml-data-model-ingest-pipeline-users" title="Link to this heading"></a></h1>
+<section id="set-up-local-environment">
+<h2>Set-up Local Environment<a class="headerlink" href="#set-up-local-environment" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Clone the repo at: https://github.com/linkml/dm-bip</p></li>
+<li><p>Follow the instructions in the repo README (https://github.com/linkml/dm-bip?tab=readme-ov-file#overview) up to the “Pipeline user documentation” section.</p></li>
+<li><p>NOTE: For Mac users, the preferred environment is to use pyenv. However, currently for Windows users, specifically WSL, if you already have Conda installed there are instructions to install the environment for the dm-bip repo using Conda. Additionally for Windows users, Git Bash is required in order to avoid file path issues in commands due to differences between Windows and Mac/Linux.</p></li>
+<li><p>NOTE: If you have not previously installed <code class="docutils literal notranslate"><span class="pre">make</span></code> this should also be installed.</p></li>
+</ul>
+</section>
+<section id="create-data-directories">
+<h2>Create data directories<a class="headerlink" href="#create-data-directories" title="Link to this heading"></a></h2>
+<p>The overall set of directories will be up to each user’s discretion. However, a structure to consider is to create the following directories under the <code class="docutils literal notranslate"><span class="pre">data</span></code> directory. Note, the <code class="docutils literal notranslate"><span class="pre">data</span></code> directory is not under git version control. First, under the <code class="docutils literal notranslate"><span class="pre">data</span></code> directory create a directory for the study you will be processing and then create the following dirctories:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── data_dictionary
+├── conditions_data
+├── target_schema
+├── linkml_formatted_data
+├── model_transformation
+├── raw_data
+└── implicit_study_specific_model
+</pre></div>
+</div>
+<p>Directory description:</p>
+<ul class="simple">
+<li><p>data_dictionary: study data dictionary files</p></li>
+<li><p>conditions_data: results of annotated conditions data</p></li>
+<li><p>target_schema: the tagged release version of the target LinkML schema</p></li>
+<li><p>linkml_formatted_data: data harmonized to the target LinkML model</p></li>
+<li><p>model_transformation: mapping transformation specification files</p></li>
+<li><p>raw_data: the original study data</p>
+<ul>
+<li><p>TSV: the “raw” data files^1^</p></li>
+<li><p>TSV_Preprocessed: preprocessed study data</p></li>
+</ul>
+</li>
+<li><p>implicit_study_specific_model (optional): data transformed to LinkML, but not harmonized to target LinkML model</p></li>
+</ul>
+<p>1 - the “raw” files are files that have been prepared for use in the data ingest pipeline as described below</p>
+</section>
+<section id="prepare-raw-files-for-data-ingest">
+<h2>Prepare “raw” files for data ingest<a class="headerlink" href="#prepare-raw-files-for-data-ingest" title="Link to this heading"></a></h2>
+<ul>
+<li><p>The files used as input into the LinkML data ingest pipeline at this time require a few minimal changes:</p>
+<ul class="simple">
+<li><p>The file must be a “.tsv” file. You can convert a file from CSV to TSV using this python one-liner:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;import pandas as pd; pd.read_csv(&#39;YOUR-FILE-NAME.csv&#39;).to_csv(&#39;YOUR-FILE-NAME.tsv&#39;, sep=&#39;</span><span class="se">\t</span><span class="s2">&#39;, index=False)&quot;</span>
+</pre></div>
+</div>
+<p>Remember to replace YOUR-FILE-NAME with your actual filename.</p>
+<ul class="simple">
+<li><p>The filenames must be all lowercase.</p></li>
+<li><p>The filenames must not contain any spaces or special characters.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="create-the-implicit-study-specific-mini-model">
+<h2>Create the implicit study specific “mini-model”<a class="headerlink" href="#create-the-implicit-study-specific-mini-model" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>The LinkML data ingest pipeline can be run over the files generally without modification of the data content in the files. However, you may want to pre-process the files to remove PHI, etc.</p></li>
+<li><p>Run the pipeline as:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">pipeline</span> <span class="n">DM_INPUT_DIR</span><span class="o">=</span><span class="n">data</span><span class="o">/</span><span class="n">YOUR</span><span class="o">-</span><span class="n">STUDY</span><span class="o">-</span><span class="n">DIRECTORY</span><span class="o">/</span><span class="n">raw_data</span><span class="o">/</span><span class="n">TSV</span> <span class="n">DM_SCHEMA_NAME</span><span class="o">=</span><span class="n">YOUR</span><span class="o">-</span><span class="n">STUDY</span><span class="o">-</span><span class="n">NAME_INCLUDE_SCHEMA</span> <span class="n">DM_OUTPUT_DIR</span><span class="o">=</span><span class="n">data</span><span class="o">/</span><span class="n">YOUR</span><span class="o">-</span><span class="n">STUDY</span><span class="o">-</span><span class="n">DIRECTORY</span><span class="o">/</span><span class="n">study_specific_model</span>
+</pre></div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>- Explanation of command parameters:
+- `DM_INPUT_DIR`:  this is the directory with your “raw” files
+- `DM_SCHEMA_NAME`: this is the name to call the resulting LinkML schema file. It will be appended with “.yaml” by the `make` goal
+- `DM_OUTPUT_DIR`: the directory to save the LinkML schema file
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This step can be done initially to create the implicit study specific model and validate the files against this model. Various file preprocessing steps may be needed to transform the “raw” files into a format suitable for the pipeline and this step then needs to be run again on the preprocessed files in order to create the implicit study specific model. Examples of preprocessing that may be needed are to combine all data columns for a given target LinkML model class into one data file or to annotate conditions with ontology terms.</p></li>
+</ul>
+</section>
+<section id="create-transformed-files">
+<h2>Create Transformed Files<a class="headerlink" href="#create-transformed-files" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Since the data for each class in the transformation specification currently needs to be in one data file and the data for each slot needs to be within one column in the data file, the input files may need to be preprocesed to combine columns across data files.</p></li>
+<li><p>The preprocessing can be done using any data science methods of the user’s choice e.g. R, pandas, dbt, etc.</p></li>
+<li><p>Once the transformed files are generated, run the pipeline using these preprocessed files to create a new implicit study specific model files.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">pipeline</span> <span class="n">DM_INPUT_DIR</span><span class="o">=</span><span class="n">data</span><span class="o">/</span><span class="n">YOUR</span><span class="o">-</span><span class="n">STUDY</span><span class="o">/</span><span class="n">raw_data</span><span class="o">/</span><span class="n">TSV</span> <span class="n">DM_SCHEMA_NAME</span><span class="o">=</span><span class="n">YOUR_SCHEMA</span> <span class="n">DM_OUTPUT_DIR</span><span class="o">=</span><span class="n">YOUR</span><span class="o">-</span><span class="n">OUTPUT</span><span class="o">-</span><span class="n">DIRECTORY</span> <span class="o">-</span><span class="n">B</span>
+</pre></div>
+</div>
+</section>
+<section id="prepare-transformation-mapping-specification-file">
+<h2>Prepare Transformation Mapping specification file<a class="headerlink" href="#prepare-transformation-mapping-specification-file" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>The current suggestion is to create one mapping transformation specification file for each class in the model. The transformation mapping specification is formatted as a YAML file.</p></li>
+</ul>
+<section id="linkml-transformation-spec">
+<h3>LinkML Transformation Spec<a class="headerlink" href="#linkml-transformation-spec" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>The LinkML transformation specification consists of a collection of ClassDerivation and SlotDerivation objects. See the <a class="reference external" href="https://linkml.io/linkml-map/">LinkML-Map documentation</a> for more information.</p></li>
+<li><p>The file is formatted as:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">class_derivations</span><span class="p">:</span>
+    <span class="n">ClassName</span><span class="p">:</span>
+      <span class="n">populated_from</span><span class="p">:</span> <span class="n">filename</span>
+      <span class="n">slot_derivations</span><span class="p">:</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">ClassName</span></code> is the name of your LinkML model class, e.g. Participant.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">populated_from</span></code> directly under the <code class="docutils literal notranslate"><span class="pre">ClassName</span></code> field indicates what file the data is from.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">slot_derivations</span></code> are the LinkML model slots for the class.</p></li>
+<li><p>Each <code class="docutils literal notranslate"><span class="pre">class_derivation</span></code> block represented in the transformation spec represents one row in your input data file.</p></li>
+</ul>
+<section id="slot-derivations">
+<h4>Slot Derivations<a class="headerlink" href="#slot-derivations" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>The slot derivations represent the LinkML model slots and provide the mapping between the “raw” data file to the target LinkML model.</p></li>
+<li><p>For example, in the example below this indicates that the <code class="docutils literal notranslate"><span class="pre">participantExternalId</span></code> is populated from the id column in the “raw” data file.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">slot_derivations</span><span class="p">:</span>
+        <span class="n">participantExternalId</span><span class="p">:</span>
+          <span class="n">populated_from</span><span class="p">:</span> <span class="nb">id</span>
+</pre></div>
+</div>
+</section>
+<section id="slot-values">
+<h4>Slot Values<a class="headerlink" href="#slot-values" title="Link to this heading"></a></h4>
+<ul>
+<li><p>The data to populate a slot must be found within one column in one “raw” data file or be specified to be a hard-coded value.</p></li>
+<li><p>Slot values can also be dynamically created, based on the single column value, using value mappings, expressions, or unit conversions.</p></li>
+<li><p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">slot_derivations</span><span class="p">:</span>
+	<span class="n">familyType</span><span class="p">:</span>
+		<span class="n">value</span><span class="p">:</span> <span class="n">Example</span> <span class="n">Family</span> <span class="nb">type</span> <span class="o">--&gt;</span> <span class="n">a</span> <span class="n">hard</span><span class="o">-</span><span class="n">coded</span><span class="p">,</span> <span class="n">constant</span> <span class="n">value</span>
+	<span class="n">sex</span><span class="p">:</span>
+		<span class="n">populated_from</span><span class="p">:</span> <span class="n">gender</span>
+		<span class="n">value_mappings</span><span class="p">:</span>
+			<span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="n">male</span> <span class="o">--&gt;</span> <span class="s1">&#39;1&#39;</span> <span class="ow">in</span> <span class="s2">&quot;raw&quot;</span> <span class="n">data</span> <span class="n">file</span> <span class="n">maps</span> <span class="n">to</span> <span class="s1">&#39;male&#39;</span>
+			<span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="n">female</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="file-transformations">
+<h2>File Transformations<a class="headerlink" href="#file-transformations" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>For <code class="docutils literal notranslate"><span class="pre">linkml-map</span></code> and the mapping transformation specification, for each class to be populated in the target model, all of the slots of that class need to exist in one preprocessed data input file.</p></li>
+<li><p>The preprocessed files can be created using your choice of tools, e.g. pandas, R functions, or a more formal ETL solution like dbt.</p></li>
+</ul>
+<section id="file-transformations-for-annotating-conditions">
+<h3>File Transformations for Annotating Conditions<a class="headerlink" href="#file-transformations-for-annotating-conditions" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>The conditions data, e.g. weight, blood pressure, disease state, etc. can be annotated with ontology terms using the ontology annotation tool Harmonica. This tool is designed to find the most specific ontology annotation first and then widen its scope by method and ontology selection to find additional ontology terms for annotation. The results are intended to be reviewed by a curator. See the <span class="xref myst">README</span> in the harmonica directory for more details.</p></li>
+<li><p>The input file format for Harmonica should contain a unique identifier, such as participant identifier and one condition per row in the file. Each row will be annotated with whichever ontologies are specified in the Harmonica config file.</p></li>
+<li><p>This file format can be transformed from a raw data file containing the conditions data.</p></li>
+<li><p>Once the data annotation process is complete and the results are reviewed, the file can be pivoted and merged back into the “raw”/preprocessed data file of conditions data.</p></li>
+</ul>
+</section>
+</section>
+<section id="create-linkml-formatted-data">
+<h2>Create LinkML formatted data<a class="headerlink" href="#create-linkml-formatted-data" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Once the input files have been preprocessed, run the <code class="docutils literal notranslate"><span class="pre">linkml-map</span></code> step. See the sample Jupyter notebooks in the <code class="docutils literal notranslate"><span class="pre">notebooks</span></code> directory.</p></li>
+<li><p>To launch the Jupyter notebook server run: <code class="docutils literal notranslate"><span class="pre">jupyter-notebook</span></code></p>
+<ul>
+<li><p>Within the Jupyter notebook, change the file paths and file names to match your data location</p></li>
+</ul>
+</li>
+<li><p>NOTES:</p>
+<ul>
+<li><p>Due to an issue, before running the <code class="docutils literal notranslate"><span class="pre">linkml-map</span> <span class="pre">step</span></code>, any values in the implicit study specific model that have a range of “enum” should be changed to a range of “string”.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Corey Cox &lt;corey@tislab.org&gt;.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
