@@ -95,7 +95,19 @@ poetry self add "poetry-dynamic-versioning[plugin]"
 poetry add poetry-dynamic-versioning
 ```
 
-#### Verify the setup is working
+# Test to see if everything is wired properly
+When you have finished downloading and installing the repo, we can run the project by it's name to ensure everything is setup up properly.
+```
+poetry run dm-bip run
+```
+Should return "Hello, World"
+
+To run commands within the poetry environment either preface the command with `poetry run`, i.e. `poetry run /path-to/my-command --options` or open the poetry shell with `poetry shell`. You should also be able to activate the virtual environment directly, `.venv/bin/activate` and run the command within the virtual environment like `dm-bip run`.
+
+# Pipeline user documentation
+For users of the pipeline, see the [pipeline user documentation](./docs/pipeline_user_docs.md) for details on how to run the pipeline and generate data formatted for your LinkML model.
+
+#### Verify Development setup
 Once we have everything set up, we should run `tox` and  to make sure that the setup is correct and functioning.
 ```
 poetry run tox
@@ -114,15 +126,6 @@ This should run all the bullets mentioned above under the `tox` configuration an
 And as the last line says: `congratulations :)`!! Your project is ready to evolve!
 
 > If you have an error running `tox` your python dependencies may be out of sync and you may be able to fix it by running `poetry lock` and then running `tox` again.
-
-# Final test to see everything is wired properly
-When you have finished downloading and installing the repo, we can run the project by it's name to ensure everything is setup up properly.
-```
-poetry run dm-bip run
-```
-Should return "Hello, World"
-
-To run commands within the poetry environment either preface the command with `poetry run`, i.e. `poetry run /path-to/my-command --options` or open the poetry shell with `poetry shell`. You should also be able to activate the virtual environment directly, `.venv/bin/activate` and run the command within the virtual environment like `dm-bip run`.
 
 # Development
 Now the repository is cloned, installed, and we have verified everything is working. We are ready for development. Please create issues at the main repository and work on development by creating branches within the main repo or within your own fork and pushing those commits to the main branch via PRs on GitHub.
