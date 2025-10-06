@@ -42,7 +42,7 @@ def get_spec_files(directory, search_string):
     file_paths = [Path(p.strip()) for p in result.stdout.strip().split("\n") if p.strip().endswith((".yaml", ".yml"))]
     return sorted(file_paths, key=lambda p: p.stem)
 
-def multi_spec_transform(data_loader, spec_files, source_schema, target_schema):
+def multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview):
     for file in spec_files:
         print(f"{file.stem}", end="", flush=True)
         try:
@@ -56,8 +56,8 @@ def multi_spec_transform(data_loader, spec_files, source_schema, target_schema):
                     rows = data_loader[pht_id]
 
                     transformer = ObjectTransformer(unrestricted_eval=True)
-                    transformer.source_schemaview = SchemaView(source_schema)
-                    transformer.target_schemaview = SchemaView(target_schema)
+                    transformer.source_schemaview = source_schemaview
+                    transformer.target_schemaview = target_schemaview
                     transformer.create_transformer_specification(block)
 
                     for row in rows:
@@ -133,7 +133,7 @@ def get_schema(schema_path):
     sv = SchemaView(schema_path)
     return sv.schema
 
-def process_entities(entities, data_loader, var_dir, source_schema, target_schema, stream_func,
+def process_entities(entities, data_loader, var_dir, source_schemaview, target_schemaview, stream_func,
                      output_dir, output_prefix, output_postfix, output_type, chunk_size=1000):
 
     start = time.perf_counter()
@@ -146,7 +146,7 @@ def process_entities(entities, data_loader, var_dir, source_schema, target_schem
         print(f"Starting {entity}")
         output_path = f"{output_dir}/{output_prefix}-{entity}-{output_postfix}.{output_type}"
 
-        iterable = multi_spec_transform(data_loader, spec_files, source_schema, target_schema)
+        iterable = multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview)
         chunks = chunked(iterable, chunk_size)
         key_name = entity.lower() + "s"
 
@@ -168,8 +168,8 @@ def process_entities(entities, data_loader, var_dir, source_schema, target_schem
     print(f"Time: {end - start:.2f} seconds")
 
 def main(
-    source_schema_path,
-    target_schema_path,
+    source_schema,
+    target_schema,
     data_dir,
     var_dir,
     output_dir,
@@ -178,8 +178,8 @@ def main(
     output_type="jsonl",
     chunk_size=1000,
 ):
-    source_schema = get_schema(source_schema_path)
-    target_schema = get_schema(target_schema_path)
+    source_schemaview = SchemaView(get_schema(source_schema))
+    target_schemaview = SchemaView(get_schema(target_schema))
 
     data_loader = DataLoader(data_dir)
 
@@ -200,7 +200,7 @@ def main(
     stream_map = {"json": json_stream, "jsonl": jsonl_stream, "tsv": tsv_stream, "yaml": yaml_stream}
     stream_func = stream_map[output_type]
 
-    process_entities(entities, data_loader, var_dir, source_schema, target_schema, stream_func,
+    process_entities(entities, data_loader, var_dir, source_schemaview, target_schemaview, stream_func,
                      output_dir, output_prefix, output_postfix, output_type, chunk_size)
 
 if __name__ == "__main__":
