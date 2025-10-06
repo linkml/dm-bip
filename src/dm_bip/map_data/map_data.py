@@ -77,7 +77,7 @@ def json_stream(chunks, key_name):
         js = json.dumps({key_name: chunk}, ensure_ascii=False)
         yield js if i == 0 else ",".join(js.splitlines()[1:-1])
 
-def jsonl_stream(chunks):
+def jsonl_stream(chunks, key_name=None):
     for chunk in chunks:
         yield "".join(json.dumps(obj, ensure_ascii=False) + "\n" for obj in chunk)
 
@@ -129,91 +129,94 @@ def rewrite_header_and_pad(chunks, final_header, sep="\t"):
     for chunk in chunks:
         yield "".join(pad_lines(chunk))
 
-# source_sv = SchemaView("/sbgenomics/project-files/COPDGene/COPDGene_HMB_Schema.yaml")
-# source_sv = SchemaView("/sbgenomics/workspace/output/Schema_FHS_v31_c1/schema-automator-data/Schema_FHS_v31_c1.yaml")
-# source_sv = SchemaView("/sbgenomics/workspace/output/CHS/Schema_CHS_v7_c1/Schema_CHS_v7_c1.yaml")
-# source_sv = SchemaView("/sbgenomics/workspace/output/HCHS_SOL_cleaned/Schema_HCHS_SOL_v1_c1.yaml")
-# source_sv = SchemaView("/sbgenomics/workspace/output/MESA/Schema_MESA_v13_c1/Schema_MESA_v13_c1.yaml")
-# source_sv = SchemaView("/sbgenomics/workspace/output/WHI/Schema_WHI_v12_c1/Schema_WHI_v12_c1.yaml")
-# source_sv = SchemaView("/sbgenomics/workspace/output/ARIC/Schema_ARIC_v8_c1/Schema_ARIC_v8_c1.yaml")
-# source_sv = SchemaView("/sbgenomics/workspace/output/JHS/Schema_JHS_v7_c1/Schema_JHS_v7_c1.yaml")
-source_sv = SchemaView("/sbgenomics/workspace/output/CARDIA/Schema_CARDIA_v3_c1/Schema_CARDIA_v3_c1.yaml")
-source_schema = source_sv.schema
+def get_schema(schema_path):
+    sv = SchemaView(schema_path)
+    return sv.schema
 
-target_sv = SchemaView("/sbgenomics/workspace/NHLBI-BDC-DMC-HM/src/bdchm/schema/bdchm.yaml")
-target_schema = target_sv.schema
+def process_entities(entities, data_loader, var_dir, source_schema, target_schema, stream_func,
+                     output_dir, output_prefix, output_postfix, output_type, chunk_size=1000):
 
-# var_dir = "/sbgenomics/workspace/NHLBI-BDC-DMC-HV/priority_variables_transform/COPDGene-ingest/"
-# var_dir = "/sbgenomics/workspace/NHLBI-BDC-DMC-HV/priority_variables_transform/FHS-ingest/"
-# var_dir = "/sbgenomics/workspace/NHLBI-BDC-DMC-HV/priority_variables_transform/CHS-ingest/"
-# var_dir = "/sbgenomics/workspace/NHLBI-BDC-DMC-HV/priority_variables_transform/HCHS-ingest/"
-# var_dir = "/sbgenomics/workspace/NHLBI-BDC-DMC-HV/priority_variables_transform/MESA-ingest/"
-# var_dir = "/sbgenomics/workspace/NHLBI-BDC-DMC-HV/priority_variables_transform/WHI-ingest/"
-# var_dir = "/sbgenomics/workspace/NHLBI-BDC-DMC-HV/priority_variables_transform/ARIC-ingest/"
-# var_dir = "/sbgenomics/workspace/NHLBI-BDC-DMC-HV/priority_variables_transform/JHS-ingest/"
-var_dir = "/sbgenomics/workspace/NHLBI-BDC-DMC-HV/priority_variables_transform/CARDIA-ingest/"
+    start = time.perf_counter()
+    for entity in entities:
+        spec_files = get_spec_files(var_dir, f"^    {entity}:")
+        if not spec_files:
+            print(f"Skipping {entity} (no spec files)")
+            continue
 
-output_base = "/sbgenomics/output-files/TSV_output"
-study_top_dir = "JHS_cleaned"
-study_dir = "JHS-v7-c1"
-data_version = "JHS-v7-c1"
-consent_label = "HMB-IRB-NPU"
-
-os.makedirs(f"{output_base}/{study_dir}/", exist_ok=True)
-# output_type = "json"
-# output_type = "jsonl"
-output_type = "tsv"
-# output_type = "yaml"
-
-stream_map = {"json": json_stream, "jsonl": jsonl_stream, "tsv": tsv_stream, "yaml": yaml_stream}
-stream_func = stream_map[output_type]
-
-data_loader = DataLoader("/sbgenomics/workspace/output/" + study_top_dir + "/" + data_version + "/")
-
-entities = [
-    "Condition",
-    "Demography",
-    "DrugExposure",
-    "MeasurementObservation",
-    "Observation",
-    "Participant",
-    "Person",
-    "Procedure",
-    "ResearchStudy",
-    "SdohObservation",
-]
-
-start = time.perf_counter()
-for entity in entities:
-    spec_files = get_spec_files(var_dir, f"^    {entity}:")
-    if spec_files:
         print(f"Starting {entity}")
-    else:
-        print(f"Skipping {entity} (no spec files)")
-        continue
+        output_path = f"{output_dir}/{output_prefix}-{entity}-{output_postfix}.{output_type}"
 
-    output_path = f"{output_base}/{study_dir}/{data_version}-{entity}-{consent_label}-data.{output_type}"
+        iterable = multi_spec_transform(data_loader, spec_files, source_schema, target_schema)
+        chunks = chunked(iterable, chunk_size)
+        key_name = entity.lower() + "s"
 
-    subset = spec_files
+        with open(output_path, "w") as f:
+            for chunk in stream_func(chunks, key_name):
+                f.write(chunk)
 
-    iterable = multi_spec_transform(data_loader, subset, source_schema, target_schema)
-    chunk_size = 1000
-    chunks = chunked(iterable, chunk_size)
+        if hasattr(stream_func, "headers"):
+            print(f"Rewriting {entity} (headers changed)")
+            tmp_path = output_path + ".tmp"
+            with open(output_path, "r") as src, open(tmp_path, "w") as dst:
+                chunks = chunked(src, chunk_size)
+                dst.writelines(rewrite_header_and_pad(chunks, stream_func.headers))
+            os.replace(tmp_path, output_path)
 
-    key_name = entity.lower() + "s"
-    with open(output_path, "w") as f:
-        for chunk in stream_func(chunks, key_name):
-            f.write(chunk)
+        print(f"{entity} Complete")
 
-    if hasattr(stream_func, "headers"):
-        print(f"Rewriting {entity} (headers changed)")
-        tmp_path = output_path + ".tmp"
-        with open(output_path, "r") as src, open(tmp_path, "w") as dst:
-            chunks = chunked(src, chunk_size)
-            dst.writelines(rewrite_header_and_pad(chunks, stream_func.headers))
-        os.replace(tmp_path, output_path)
+    end = time.perf_counter()
+    print(f"Time: {end - start:.2f} seconds")
 
-    print(f"{entity} Complete")
+def main(
+    source_schema_path,
+    target_schema_path,
+    data_dir,
+    var_dir,
+    output_dir,
+    output_prefix,
+    output_postfix,
+    output_type="jsonl",
+    chunk_size=1000,
+):
+    source_schema = get_schema(source_schema_path)
+    target_schema = get_schema(target_schema_path)
 
-end = time.perf_counter()
-print(f"Time: {end - start:.2f} seconds")
+    data_loader = DataLoader(data_dir)
+
+    entities = [
+        "Condition",
+        "Demography",
+        "DrugExposure",
+        "MeasurementObservation",
+        "Observation",
+        "Participant",
+        "Person",
+        "Procedure",
+        "ResearchStudy",
+        "SdohObservation",
+    ]
+
+    os.makedirs(output_dir, exist_ok=True)
+    stream_map = {"json": json_stream, "jsonl": jsonl_stream, "tsv": tsv_stream, "yaml": yaml_stream}
+    stream_func = stream_map[output_type]
+
+    process_entities(entities, data_loader, var_dir, source_schema, target_schema, stream_func,
+                     output_dir, output_prefix, output_postfix, output_type, chunk_size)
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run LinkML-Map transformation")
+    parser.add_argument("--source_schema", required=True)
+    parser.add_argument("--target_schema", required=True)
+    parser.add_argument("--var_dir", required=True)
+    parser.add_argument("--data_dir", required=True)
+    parser.add_argument("--output_dir", required=True)
+    parser.add_argument("--output_prefix", required=True)
+    parser.add_argument("--output_postfix", required=True)
+    parser.add_argument("--output_type", default="tsv", choices=["json", "jsonl", "tsv", "yaml"])
+    parser.add_argument("--chunk_size", type=int, default=1000)
+
+    args = parser.parse_args()
+    main(**vars(args))
+
