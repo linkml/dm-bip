@@ -1,39 +1,58 @@
+"""Module for transforming data using LinkML-Map schemas and specifications."""
+
+import json
+import os
+import shutil
+import subprocess
+import time
+import traceback
+from pathlib import Path
+
+import yaml
 from flatten_dict import flatten
 from flatten_dict.reducers import make_reducer
-import json
 from linkml.validator.loaders import TsvLoader
 from linkml_map.transformer.object_transformer import ObjectTransformer
 from linkml_runtime import SchemaView
 from more_itertools import chunked
-import os
-from pathlib import Path
-import subprocess
-import time
-import traceback
-import yaml
+
 
 class DataLoader:
+    """Load TSV files based on populated_from identifiers."""
+
     def __init__(self, base_path):
+        """Initialize with the base directory containing TSV files."""
         self.base_path = base_path
 
     def __getitem__(self, pht_id):
+        """Load instances from the TSV file corresponding to the given populated_from identifier."""
         file_path = os.path.join(self.base_path, f"{pht_id}.tsv")
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"No TSV file found for {pht_id} at {file_path}")
         return TsvLoader(os.path.join(self.base_path, f"{pht_id}.tsv")).iter_instances()
 
     def __contains__(self, pht_id):
+        """Check if a TSV file exists for the given populated_from identifier."""
         return os.path.exists(os.path.join(self.base_path, f"{pht_id}.tsv"))
-    
+
+
 def get_spec_files(directory, search_string):
     """
     Find YAML files in the directory that contain the search_string.
+
     Returns a sorted list of matching file paths.
     """
     directory = Path(directory)
+    grep_path = shutil.which("grep")
+    if grep_path is None:
+        raise RuntimeError("grep not found on system PATH")
 
-    result = subprocess.run(
-        ["grep", "-rl", search_string, str(directory)], stdout=subprocess.PIPE, text=True, check=False
+    # Safe subprocess call: no shell, trusted executable, literal args
+    result = subprocess.run(  # noqa: S603
+        [grep_path, "-rl", search_string, str(directory)],
+        stdout=subprocess.PIPE,
+        text=True,
+        check=False,
     )
 
     if result.returncode != 0 or not result.stdout.strip():
@@ -42,7 +61,9 @@ def get_spec_files(directory, search_string):
     file_paths = [Path(p.strip()) for p in result.stdout.strip().split("\n") if p.strip().endswith((".yaml", ".yml"))]
     return sorted(file_paths, key=lambda p: p.stem)
 
+
 def multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview):
+    """Apply multiple LinkML-Map specifications to data and yield transformed objects."""
     for file in spec_files:
         print(f"{file.stem}", end="", flush=True)
         block = None
@@ -71,21 +92,29 @@ def multi_spec_transform(data_loader, spec_files, source_schemaview, target_sche
             traceback.print_exc()
             raise
 
+
 def json_stream(chunks, key_name):
+    """Convert chunks of objects to JSON format."""
     for i, chunk in enumerate(chunks):
         js = json.dumps({key_name: chunk}, ensure_ascii=False)
         yield js if i == 0 else ",".join(js.splitlines()[1:-1])
 
+
 def jsonl_stream(chunks, key_name=None):
+    """Convert chunks of objects to JSON Lines format."""
     for chunk in chunks:
         yield "".join(json.dumps(obj, ensure_ascii=False) + "\n" for obj in chunk)
 
+
 def yaml_stream(chunks, key_name):
+    """Convert chunks of objects to YAML format."""
     for i, chunk in enumerate(chunks):
         yaml_str = yaml.dump({key_name: chunk}, default_flow_style=False)
         yield yaml_str if i == 0 else "\n".join(yaml_str.splitlines()[1:]) + "\n"
 
+
 def tsv_stream(chunks, key_name=None, sep="\t", reducer_str="__"):
+    """Convert chunks of objects to TSV format with dynamic headers."""
     initial_headers = []
     headers = []
     reducer = make_reducer(reducer_str)
@@ -107,7 +136,9 @@ def tsv_stream(chunks, key_name=None, sep="\t", reducer_str="__"):
     if headers != initial_headers:
         tsv_stream.headers = headers
 
+
 def rewrite_header_and_pad(chunks, final_header, sep="\t"):
+    """Rewrite the header of TSV chunks and pad rows with missing columns."""
     header_count = len(final_header)
     header_line = sep.join(final_header) + "\n"
 
@@ -126,13 +157,27 @@ def rewrite_header_and_pad(chunks, final_header, sep="\t"):
     for chunk in chunks:
         yield "".join(pad_lines(chunk))
 
+
 def get_schema(schema_path):
+    """Load and return a LinkML schema from the given path."""
     sv = SchemaView(schema_path)
     return sv.schema
 
-def process_entities(entities, data_loader, var_dir, source_schemaview, target_schemaview, stream_func,
-                     output_dir, output_prefix, output_postfix, output_type, chunk_size=1000):
 
+def process_entities(
+    entities,
+    data_loader,
+    var_dir,
+    source_schemaview,
+    target_schemaview,
+    stream_func,
+    output_dir,
+    output_prefix,
+    output_postfix,
+    output_type,
+    chunk_size=1000,
+):
+    """Process each entity and write to output files."""
     start = time.perf_counter()
     for entity in entities:
         spec_files = get_spec_files(var_dir, f"^    {entity}:")
@@ -164,6 +209,7 @@ def process_entities(entities, data_loader, var_dir, source_schemaview, target_s
     end = time.perf_counter()
     print(f"Time: {end - start:.2f} seconds")
 
+
 def main(
     source_schema,
     target_schema,
@@ -175,6 +221,7 @@ def main(
     output_type="jsonl",
     chunk_size=1000,
 ):
+    """Run LinkML-Map transformation from command line arguments."""
     source_schemaview = SchemaView(get_schema(source_schema))
     target_schemaview = SchemaView(get_schema(target_schema))
 
@@ -197,8 +244,20 @@ def main(
     stream_map = {"json": json_stream, "jsonl": jsonl_stream, "tsv": tsv_stream, "yaml": yaml_stream}
     stream_func = stream_map[output_type]
 
-    process_entities(entities, data_loader, var_dir, source_schemaview, target_schemaview, stream_func,
-                     output_dir, output_prefix, output_postfix, output_type, chunk_size)
+    process_entities(
+        entities,
+        data_loader,
+        var_dir,
+        source_schemaview,
+        target_schemaview,
+        stream_func,
+        output_dir,
+        output_prefix,
+        output_postfix,
+        output_type,
+        chunk_size,
+    )
+
 
 if __name__ == "__main__":
     import argparse
@@ -216,4 +275,3 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     main(**vars(args))
-
