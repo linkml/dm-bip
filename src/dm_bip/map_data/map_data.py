@@ -1,16 +1,16 @@
-import json
-import os
-import subprocess
-import time
-from pathlib import Path
 from flatten_dict import flatten
 from flatten_dict.reducers import make_reducer
-import yaml
-
+import json
 from linkml.validator.loaders import TsvLoader
 from linkml_map.transformer.object_transformer import ObjectTransformer
 from linkml_runtime import SchemaView
 from more_itertools import chunked
+import os
+from pathlib import Path
+import subprocess
+import time
+import traceback
+import yaml
 
 class DataLoader:
     def __init__(self, base_path):
@@ -45,6 +45,7 @@ def get_spec_files(directory, search_string):
 def multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview):
     for file in spec_files:
         print(f"{file.stem}", end="", flush=True)
+        block = None
         try:
             with open(file) as f:
                 specs = yaml.safe_load(f)
@@ -67,8 +68,6 @@ def multi_spec_transform(data_loader, spec_files, source_schemaview, target_sche
         except Exception as e:
             print(f"\n⚠️  Error processing {file}: {e.__class__.__name__} - {e}")
             print(block)
-            import traceback
-
             traceback.print_exc()
             raise
 
@@ -89,8 +88,6 @@ def yaml_stream(chunks, key_name):
 def tsv_stream(chunks, key_name=None, sep="\t", reducer_str="__"):
     initial_headers = []
     headers = []
-
-    sep = "\t"
     reducer = make_reducer(reducer_str)
     for chunk in chunks:
         for obj in chunk:
