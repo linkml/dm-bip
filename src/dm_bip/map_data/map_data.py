@@ -49,10 +49,11 @@ def get_spec_files(directory, search_string):
 
     # Safe subprocess call: no shell, trusted executable, literal args
     result = subprocess.run(  # noqa: S603
-        [grep_path, "-rl", search_string, str(directory)],
+        [grep_path, "-rl", "--", search_string, str(directory)],
         stdout=subprocess.PIPE,
         text=True,
         check=False,
+        shell=False,
     )
 
     if result.returncode != 0 or not result.stdout.strip():
@@ -77,7 +78,7 @@ def multi_spec_transform(data_loader, spec_files, source_schemaview, target_sche
                     pht_id = class_spec["populated_from"]
                     rows = data_loader[pht_id]
 
-                    transformer = ObjectTransformer(unrestricted_eval=True)
+                    transformer = ObjectTransformer()
                     transformer.source_schemaview = source_schemaview
                     transformer.target_schemaview = target_schemaview
                     transformer.create_transformer_specification(block)
