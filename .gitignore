@@ -2,6 +2,9 @@
 
 ### Note: Some subdirectories (e.g. data/, output/) have their own .gitignore files.
 
+# IDE
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
