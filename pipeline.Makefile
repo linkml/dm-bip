@@ -25,14 +25,19 @@ DM_INPUT_DIR   ?=
 DM_INPUT_FILES ?=
 DM_SCHEMA_NAME ?= Schema
 DM_OUTPUT_DIR  ?= output/$(DM_SCHEMA_NAME)
-
+DM_TRANS_SPEC_DIR ?=
+DM_MAP_TARGET_SCHEMA ?=
+DM_MAP_OUTPUT_TYPE ?= yaml
+DM_MAP_CHUNK_SIZE ?= 10000
 
 # Derived output files
 # ============
 SCHEMA_FILE                 := $(DM_OUTPUT_DIR)/$(DM_SCHEMA_NAME).yaml
 VALIDATE_OUTPUT_DIR         := $(DM_OUTPUT_DIR)/validation-logs
 VALIDATED_FILES_LIST        := $(VALIDATE_OUTPUT_DIR)/input-files.txt
-
+MAPPING_OUTPUT_DIR          := $(DM_OUTPUT_DIR)/mapped-data
+MAPPING_PREFIX              :=
+MAPPING_POSTFIX             :=
 
 # Logging files
 # ============
@@ -147,7 +152,7 @@ help::
 .DEFAULT_GOAL := pipeline
 
 .PHONY: pipeline
-pipeline: $(VALIDATION_SUCCESS_SENTINEL)
+pipeline: $(MAPPING_SUCCESS_SENTINEL)
 
 .PHONY: pipeline-debug
 pipeline-debug:
@@ -322,3 +327,38 @@ validate-clean:
 .PHONY: validate-debug
 validate-debug:
 	@:$(info $(DEBUG))
+
+# Mapping (Transformation) Goals
+# ==============================
+
+# Sentinel file to indicate mapping is complete
+MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
+
+.PHONY: map-data
+map-data: $(MAPPING_SUCCESS_SENTINEL)
+
+$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_VALIDATE_LOG) $(DM_MAP_TARGET_SCHEMA) $(DM_TRANS_SPEC_DIR)
+	@echo "Running LinkML-Map transformation..."
+	@mkdir -p $(MAPPING_OUTPUT_DIR)
+	$(RUN) python path/to/your_mapping_script.py \
+		--source_schema $(SCHEMA_FILE) \
+		--target_schema $(DM_MAP_TARGET_SCHEMA) \
+		--data_dir $(DM_INPUT_DIR) \
+		--var_dir $(DM_TRANS_SPEC_DIR) \
+		--output_dir $(MAPPING_OUTPUT_DIR) \
+		--output_prefix $(MAPPING_PREFIX) \
+		--output_postfix "$(MAPPING_POSTFIX)" \
+		--output_type $(DM_MAP_OUTPUT_TYPE) \
+		--chunk_size $(DM_MAP_CHUNK_SIZE)
+	@echo "✓ Data mapping complete. Output written to $(MAPPING_OUTPUT_DIR)"
+	@touch $@
+
+.PHONY: map-debug
+map-debug:
+	@echo "DM_TRANS_SPEC_DIR: $(DM_TRANS_SPEC_DIR)"
+	@echo "DM_MAP_TARGET_SCHEMA: $(DM_MAP_TARGET_SCHEMA)"
+	@echo "MAPPING_OUTPUT_DIR: $(MAPPING_OUTPUT_DIR)"
+
+.PHONY: map-clean
+map-clean:
+	rm -rf $(MAPPING_OUTPUT_DIR)
