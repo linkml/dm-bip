@@ -27,6 +27,8 @@ DM_SCHEMA_NAME ?= Schema
 DM_OUTPUT_DIR  ?= output/$(DM_SCHEMA_NAME)
 DM_TRANS_SPEC_DIR ?=
 DM_MAP_TARGET_SCHEMA ?=
+DM_MAPPING_PREFIX ?=
+DM_MAPPING_POSTFIX ?=
 DM_MAP_OUTPUT_TYPE ?= yaml
 DM_MAP_CHUNK_SIZE ?= 10000
 
@@ -36,8 +38,6 @@ SCHEMA_FILE                 := $(DM_OUTPUT_DIR)/$(DM_SCHEMA_NAME).yaml
 VALIDATE_OUTPUT_DIR         := $(DM_OUTPUT_DIR)/validation-logs
 VALIDATED_FILES_LIST        := $(VALIDATE_OUTPUT_DIR)/input-files.txt
 MAPPING_OUTPUT_DIR          := $(DM_OUTPUT_DIR)/mapped-data
-MAPPING_PREFIX              :=
-MAPPING_POSTFIX             :=
 
 # Logging files
 # ============
@@ -340,14 +340,14 @@ map-data: $(MAPPING_SUCCESS_SENTINEL)
 $(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_VALIDATE_LOG) $(DM_MAP_TARGET_SCHEMA) $(DM_TRANS_SPEC_DIR)
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
-	$(RUN) python path/to/your_mapping_script.py \
+	$(RUN) python ./src/dm_bip/map_data/map_data.py \
 		--source_schema $(SCHEMA_FILE) \
 		--target_schema $(DM_MAP_TARGET_SCHEMA) \
 		--data_dir $(DM_INPUT_DIR) \
 		--var_dir $(DM_TRANS_SPEC_DIR) \
 		--output_dir $(MAPPING_OUTPUT_DIR) \
-		--output_prefix $(MAPPING_PREFIX) \
-		--output_postfix "$(MAPPING_POSTFIX)" \
+		--output_prefix $(DM_MAPPING_PREFIX) \
+		--output_postfix "$(DM_MAPPING_POSTFIX)" \
 		--output_type $(DM_MAP_OUTPUT_TYPE) \
 		--chunk_size $(DM_MAP_CHUNK_SIZE)
 	@echo "✓ Data mapping complete. Output written to $(MAPPING_OUTPUT_DIR)"
