@@ -152,7 +152,8 @@ help::
 .DEFAULT_GOAL := pipeline
 
 .PHONY: pipeline
-pipeline: $(MAPPING_SUCCESS_SENTINEL)
+# pipeline: $(MAPPING_SUCCESS_SENTINEL)
+pipeline: $(VALIDATION_SUCCESS_SENTINEL)
 
 .PHONY: pipeline-debug
 pipeline-debug:
@@ -337,7 +338,7 @@ MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
 .PHONY: map-data
 map-data: $(MAPPING_SUCCESS_SENTINEL)
 
-$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_VALIDATE_LOG) $(DM_MAP_TARGET_SCHEMA) $(DM_TRANS_SPEC_DIR)
+$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(DM_MAP_TARGET_SCHEMA) $(DM_TRANS_SPEC_DIR)
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
 	$(RUN) python ./src/dm_bip/map_data/map_data.py \
