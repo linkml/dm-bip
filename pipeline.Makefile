@@ -152,8 +152,8 @@ help::
 .DEFAULT_GOAL := pipeline
 
 .PHONY: pipeline
-# pipeline: $(MAPPING_SUCCESS_SENTINEL)
-pipeline: $(VALIDATION_SUCCESS_SENTINEL)
+pipeline: $(MAPPING_SUCCESS_SENTINEL)
+# pipeline: $(VALIDATION_SUCCESS_SENTINEL)
 
 .PHONY: pipeline-debug
 pipeline-debug:
@@ -332,6 +332,23 @@ validate-debug:
 # Mapping (Transformation) Goals
 # ==============================
 
+MAP_TARGET_SCHEMA_FILE := $(DM_MAP_TARGET_SCHEMA)
+
+MAP_TRANS_SPEC_FILES := $(shell find $(DM_TRANS_SPEC_DIR) -maxdepth 1 -type f -name '*.yaml' 2>/dev/null)
+
+# Call this function in any recipe that depends on input files
+check_map_input_files = \
+    $(if $(wildcard $(MAP_TARGET_SCHEMA_FILE)),,\
+        $(info Target schema file missing: $(MAP_TARGET_SCHEMA_FILE))\
+        $(info $(DEBUG))\
+        $(error No target schema file detected) \
+    ) \
+    $(if $(MAP_TRANS_SPEC_FILES),,\
+        $(info No transformation spec files found in $(DM_TRANS_SPEC_DIR))\
+        $(info $(DEBUG))\
+        $(error No transformation spec files detected) \
+    )
+
 # Sentinel file to indicate mapping is complete
 MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
 
@@ -339,6 +356,7 @@ MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
 map-data: $(MAPPING_SUCCESS_SENTINEL)
 
 $(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(DM_MAP_TARGET_SCHEMA) $(DM_TRANS_SPEC_DIR)
+	@$(call check_map_input_files)
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
 	$(RUN) python ./src/dm_bip/map_data/map_data.py \
