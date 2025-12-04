@@ -1,0 +1,1 @@
+The make_yaml subfolder is for converting Stata code files (.do files) that autogenerate YAML code files into Python.
