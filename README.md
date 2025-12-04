@@ -93,7 +93,7 @@ This should run all the bullets mentioned above under the `tox` configuration an
 
 And as the last line says: `congratulations :)`!! Your project is ready to evolve!
 
-> If you have an error running `tox` your python dependencies may be out of sync and you may be able to fix it by running `poetry lock` and then running `tox` again.
+> If you have an error running `tox` your python dependencies may be out of sync; try `uv lock` and then run `uv run tox` again.
 
 # Development
 Now the repository is cloned, installed, and we have verified everything is working. We are ready for development. Please create issues at the main repository and work on development by creating branches within the main repo or within your own fork and pushing those commits to the main branch via PRs on GitHub.
@@ -105,7 +105,7 @@ make test
 ```
 Or you can test directly with `pytest` which can be nice for only running specific tests.
 ```
-poetry run pytest
+uv run pytest
 ```
 
 ## Linting
@@ -115,7 +115,7 @@ make lint
 ```
 Alternatively, you can run the linting direclty with `ruff`.
 ```
-poetry run ruff --check --diff --exclude tests/input tests/output
+uv run ruff --check --diff --exclude tests/input tests/output
 ```
 
 # Updating the project after initial setup
@@ -148,8 +148,8 @@ This section is for further setup of the project as a whole using the `monarch-p
 
 For the first time, you'll need to just run the following commands:
 ```
-poetry build
-poetry publish -u YOUR_PYPI_USERNAME -p YOUR_PYPI_PASSWORD
+uv build
+uv publish -u YOUR_PYPI_USERNAME -p YOUR_PYPI_PASSWORD
 ```
 This will release a 0.0.0 version of your project on PyPI.
 
