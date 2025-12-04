@@ -24,8 +24,13 @@ dm-bip = "dm_bip.cli:main"
 dev = [
     "pytest>=8.3.2",
     "tox>=4.16.0",
+    "tox-uv>=1.11.3",
     "pre-commit>=3.3.3",
     "ruff>=0.12.9",
+    "coverage>=7.3.0",
+    "codespell>=2.4.1",
+    "docstr-coverage>=2.3.2",
+    "rstfmt>=0.0.14",
     "ipykernel>=6.29.5,<7",
     "notebook>=7.4.2,<8",
 ]
