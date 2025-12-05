@@ -1,4 +1,4 @@
-RUN := poetry run
+RUN := uv run
 
 
 # DM-BIP PIPELINE

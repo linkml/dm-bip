@@ -3,12 +3,11 @@ MAKEFLAGS += --no-builtin-variables
 
 VENV := .venv
 INSTALL_SENTINEL := $(VENV)/.install.success
-VERSION := $(shell poetry version -s)
 PYTHON := $(VENV)/bin/python
 
 CI ?=
 
-RUN := poetry run
+RUN := uv run
 
 ### Help ###
 .PHONY: help
@@ -63,8 +62,8 @@ all: install
 fresh: clean clobber all
 
 
-$(INSTALL_SENTINEL): poetry.lock
-	poetry install --with dev --with docs $(if $(CI),--no-interaction,)
+$(INSTALL_SENTINEL): uv.lock
+	uv sync --frozen --group docs $(if $(CI),--no-progress,)
 	touch $@
 
 $(PYTHON): $(INSTALL_SENTINEL)

@@ -11,7 +11,7 @@ The main effort of this project is to use existing [LinkML](https://linkml.io/li
 
 # Requirements
 - Python >= 3.12 (Note: Downgraded to 3.12 due to linkml-runtime issue in 3.13, patch forthcoming)
-- [Poetry](https://python-poetry.org/docs/#installation)
+- [uv](https://docs.astral.sh/uv/)
 - [Cruft] (https://cruft.github.io/cruft/)
 
 # Repository Structure
@@ -25,7 +25,7 @@ The main effort of this project is to use existing [LinkML](https://linkml.io/li
      - `main_file.py`
      - `cli.py` for [`click`](https://click.palletsprojects.com) commands.
  - `tests` directory with a very basic test.
- - `poetry` compatible `pyproject.toml` file containing minimal package requirements.
+ - `uv` compatible `pyproject.toml` file containing minimal package requirements.
  - `tox.ini` file containing configuration for:
    -  `coverage-clean`
    -  `lint`
@@ -46,71 +46,39 @@ Then, change to the newly created project directory.
 cd dm-bip
 ```
 
-## Setup Python Environment and Install Poetry
-First, we'll need to set up a Python development environment. You can either use your system `poetry` or install it within a repository virtual environment (recommended).
+### Install uv
 
-### Install Poetry in a Virtual Environment (recommended)
-To use poetry within a virtual environment and install `poetry` to the virtual environment, use your system Python or install `pyenv` and select your python version with `pyenv local 3.12`. If you have just installed `pyenv`, make sure to install your intended Python version e.g. `pyenv install 3.12`. Then create a virtual environment and install poetry to it. You will also want to add `cruft` to the virtual environment to keep updated with this template.
-```
-pyenv local 3.12
-python -m venv .venv
-. .venv/bin/activate
-pip install poetry
-pip install cruft
-```
+`uv` is "an extremely fast Python package and project manager, written in Rust."
 
-### Alternate option - Install Poetry in a Conda environment
-It may be more straightforward to use a Conda environment if one already exists, e.g. a PC where Python is only installed via Conda. To install poetry in Conda run these steps:
-```
-conda create --name dm-bip python=3.12
-conda activate dm-bip
-pip install poetry
-pip install cruft
-```
+For Mac, Linux, or Windows install commands, see https://docs.astral.sh/uv/getting-started/installation/
 
-### Use System Poetry
-To use you're system `poetry`, install `poetry` if you haven't already.
-```
-pip install poetry
-```
+### Setup environment
 
-### Install Dependencies
-Now that we have the basic repository set up and the background dependencies, we can set up the dependencies for the rest of the project. First, we'll use poetry to install project dependencies.
-```
-poetry install
-```
+`uv sync` ensures the Python version, virtual environment, and dependencies are all installed.
 
-If you are managing `poetry` and `cruft` in the local virtual environment rather than using your own system wide poetry you may want to use the `env` group. If you are doing development within the repository you also want to use the `dev` group with your poetry install.
 ```
-poetry install --with env --with dev
-```
-
-### Add `poetry-dynamic-versioning` as a plugin
-Our usage of poetry requires the dynamic versionining plugin.
-```
-poetry self add "poetry-dynamic-versioning[plugin]"
-```
-**Note**: If you are using a Linux system and the above doesn't work giving you the following error `Invalid PEP 440 version: ...`, you could alternatively run:
-```
-poetry add poetry-dynamic-versioning
+uv sync
 ```
 
 # Test to see if everything is wired properly
-When you have finished downloading and installing the repo, we can run the project by it's name to ensure everything is setup up properly.
-```
-poetry run dm-bip run
-```
-Should return "Hello, World"
 
-To run commands within the poetry environment either preface the command with `poetry run`, i.e. `poetry run /path-to/my-command --options` or open the poetry shell with `poetry shell`. You should also be able to activate the virtual environment directly, `.venv/bin/activate` and run the command within the virtual environment like `dm-bip run`.
+When you have finished downloading and installing the repo, we can run the project by it's name to ensure everything is setup up properly.
+
+```
+→ uv run dm-bip run
+Hello, World!
+```
+
+To run commands within the virtual environment, preface the command with `uv run`. Alternatively, you can also activate the virtual environment directly, `.venv/bin/activate` and then run commands within the virtual environment like `dm-bip run`.
 
 # Pipeline user documentation
+
 For users of the pipeline, see the [pipeline user documentation](./docs/pipeline_user_docs.md) for details on how to run the pipeline and generate data formatted for your LinkML model.
 
 #### Verify Development setup
 Once we have everything set up, we should run `tox` and  to make sure that the setup is correct and functioning.
 ```
-poetry run tox
+uv run tox
 ```
 
 This should run all the bullets mentioned above under the `tox` configuration and ideally you should see the following at the end of the run:
@@ -125,7 +93,7 @@ This should run all the bullets mentioned above under the `tox` configuration an
 
 And as the last line says: `congratulations :)`!! Your project is ready to evolve!
 
-> If you have an error running `tox` your python dependencies may be out of sync and you may be able to fix it by running `poetry lock` and then running `tox` again.
+> If you have an error running `tox` your python dependencies may be out of sync; try `uv lock` and then run `uv run tox` again.
 
 # Development
 Now the repository is cloned, installed, and we have verified everything is working. We are ready for development. Please create issues at the main repository and work on development by creating branches within the main repo or within your own fork and pushing those commits to the main branch via PRs on GitHub.
@@ -137,7 +105,7 @@ make test
 ```
 Or you can test directly with `pytest` which can be nice for only running specific tests.
 ```
-poetry run pytest
+uv run pytest
 ```
 
 ## Linting
@@ -147,7 +115,7 @@ make lint
 ```
 Alternatively, you can run the linting direclty with `ruff`.
 ```
-poetry run ruff --check --diff --exclude tests/input tests/output
+uv run ruff --check --diff --exclude tests/input tests/output
 ```
 
 # Updating the project after initial setup
@@ -180,8 +148,8 @@ This section is for further setup of the project as a whole using the `monarch-p
 
 For the first time, you'll need to just run the following commands:
 ```
-poetry build
-poetry publish -u YOUR_PYPI_USERNAME -p YOUR_PYPI_PASSWORD
+uv build
+uv publish -u YOUR_PYPI_USERNAME -p YOUR_PYPI_PASSWORD
 ```
 This will release a 0.0.0 version of your project on PyPI.
 

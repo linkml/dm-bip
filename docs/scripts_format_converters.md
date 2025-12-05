@@ -31,7 +31,7 @@ python merge_add_column.py \
   --filter_column timepoint \
   --filter_value 1
   ```
-  NOTE: If running the script in the linkml-map poetry environment, run as `poetry run python ...` after running `poetry add pandas` since the linkml-map environment does not include pandas.
+  NOTE: If running the script in the linkml-map uv environment, run as `uv run python ...` after adding `pandas` to that environment (it is not included by default).
 
 
 ## Melt a file - convert from wide to long format
@@ -46,12 +46,12 @@ python melt_conditions.py \
   --id_vars_str <comma separated list of ID variables # id,timepoint> \
   --var_name <name of new column header for the conditions>
 ```
-NOTE: If running the script in the linkml-map poetry environment, run as `poetry run python ...` after running `poetry add pandas` since the linkml-map environment does not include pandas.
+NOTE: If running the script in the linkml-map uv environment, run as `uv run python ...` after adding `pandas` to that environment (it is not included by default).
 
 
 #### Working example
 ```
-poetry run python melt_and_annotate_conditions.py \
+uv run python melt_and_annotate_conditions.py \
   --input_file ../../../data/BrainPower-STUDY/raw_data/TSV/healthconditions.tsv  \
   --id_vars id,timepoint \
   --var_name condition_name
@@ -74,6 +74,3 @@ id  timepoint condition_name  has_condition
 124 1 pda 1
 125 1 pda 1
 ```
-
-
-  

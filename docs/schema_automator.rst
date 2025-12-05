@@ -9,7 +9,7 @@ Overview
 
 Installation
 -------------
-The ``pyproject.toml`` file includes Schema Automator as a dependency. If you have already followed the "Getting Started" instructions in this project's README, you can run: ``poetry update`` to ensure your environment includes Schema Automator.
+The ``pyproject.toml`` file includes Schema Automator as a dependency. If you have already followed the "Getting Started" instructions in this project's README, you can run: ``uv sync --upgrade schema-automator`` to ensure your environment includes Schema Automator.
 
 
 Usage

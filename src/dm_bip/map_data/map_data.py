@@ -144,6 +144,7 @@ def rewrite_header_and_pad(chunks, final_header, sep="\t"):
     header_line = sep.join(final_header) + "\n"
 
     def pad_lines(chunk):
+        """Pad each row in a chunk to match the final header width."""
         out_lines = []
         for line in chunk:
             fields = line.rstrip("\n").split(sep)

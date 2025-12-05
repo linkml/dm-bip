@@ -1,4 +1,4 @@
-RUN := poetry run
+RUN := uv run
 
 # Configurable parameters via environment variables
 KERNEL_NAME ?= dm-bip
