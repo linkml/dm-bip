@@ -46,7 +46,9 @@ def toy_data_pipeline_output():
     if proc.returncode != 0:
         if "No target schema file detected" not in proc.stderr:
             temp_dir.cleanup()
-            raise RuntimeError(f"Could not run pipeline from toy data. stderr from `make schema-create`:\n\n{proc.stderr}")
+            raise RuntimeError(
+                f"Could not run pipeline from toy data. stderr from `make schema-create`:\n\n{proc.stderr}"
+            )
 
     yield toy_data_output_dir
 
