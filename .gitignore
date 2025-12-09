@@ -134,6 +134,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+.DS_Store
+
 harmonica/tmp/
 config/config.yml
 
