@@ -17,13 +17,13 @@ To verify everything is working, run:
 
 .. code-block:: bash
 
-    poetry run tox
+    uv run tox
 
 To test the project:
 
 .. code-block:: bash
 
-    poetry run dm-bip run
+    uv run dm-bip run
 
 This should return "Hello, World".
 
