@@ -138,3 +138,6 @@ dmypy.json
 
 harmonica/tmp/
 config/config.yml
+
+# Claude Code local config
+CLAUDE.local.md
