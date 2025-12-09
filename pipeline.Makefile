@@ -154,7 +154,6 @@ help::
 
 .PHONY: pipeline
 pipeline: $(MAPPING_SUCCESS_SENTINEL)
-# pipeline: $(VALIDATION_SUCCESS_SENTINEL)
 
 .PHONY: pipeline-debug
 pipeline-debug:
