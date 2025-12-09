@@ -6,7 +6,7 @@ Installation
 Requirements:
 -------------
 - Python >= 3.12 (Note: Downgraded to 3.12 due to linkml-runtime issue in 3.13, patch forthcoming)
-- [Poetry](https://python-poetry.org/docs/#installation)
+- [uv](https://docs.astral.sh/uv/)
 - [Cruft](https://cruft.github.io/cruft/)
 
 To install and set up the project:
@@ -16,20 +16,15 @@ To install and set up the project:
     git clone https://github.com/amc-corey-cox/dm-bip.git
     cd dm-bip
 
-Using System Poetry:
+Using uv (default):
 
 .. code-block:: bash
 
-    pip install poetry
-    poetry install
+    uv sync
 
-Using Virtual Environment:
+Using Virtual Environment explicitly:
 
 .. code-block:: bash
 
     pyenv local 3.12
-    python -m venv .venv
-    . .venv/bin/activate
-    pip install poetry
-    pip install cruft
-    poetry install --with env
+    uv sync

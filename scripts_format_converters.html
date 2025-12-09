@@ -105,7 +105,7 @@
   <span class="o">--</span><span class="n">filter_value</span> <span class="mi">1</span>
 </pre></div>
 </div>
-<p>NOTE: If running the script in the linkml-map poetry environment, run as <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">run</span> <span class="pre">python</span> <span class="pre">...</span></code> after running <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">add</span> <span class="pre">pandas</span></code> since the linkml-map environment does not include pandas.</p>
+<p>NOTE: If running the script in the linkml-map uv environment, run as <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">python</span> <span class="pre">...</span></code> after adding <code class="docutils literal notranslate"><span class="pre">pandas</span></code> to that environment (it is not included by default).</p>
 </section>
 </section>
 </section>
@@ -122,10 +122,10 @@ TODO: Generalize for additional values that indicates the participant was found 
   <span class="o">--</span><span class="n">var_name</span> <span class="o">&lt;</span><span class="n">name</span> <span class="n">of</span> <span class="n">new</span> <span class="n">column</span> <span class="n">header</span> <span class="k">for</span> <span class="n">the</span> <span class="n">conditions</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>NOTE: If running the script in the linkml-map poetry environment, run as <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">run</span> <span class="pre">python</span> <span class="pre">...</span></code> after running <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">add</span> <span class="pre">pandas</span></code> since the linkml-map environment does not include pandas.</p>
+<p>NOTE: If running the script in the linkml-map uv environment, run as <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">python</span> <span class="pre">...</span></code> after adding <code class="docutils literal notranslate"><span class="pre">pandas</span></code> to that environment (it is not included by default).</p>
 <section id="id2">
 <h4>Working example<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">poetry</span> <span class="n">run</span> <span class="n">python</span> <span class="n">melt_and_annotate_conditions</span><span class="o">.</span><span class="n">py</span> \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">run</span> <span class="n">python</span> <span class="n">melt_and_annotate_conditions</span><span class="o">.</span><span class="n">py</span> \
   <span class="o">--</span><span class="n">input_file</span> <span class="o">../../../</span><span class="n">data</span><span class="o">/</span><span class="n">BrainPower</span><span class="o">-</span><span class="n">STUDY</span><span class="o">/</span><span class="n">raw_data</span><span class="o">/</span><span class="n">TSV</span><span class="o">/</span><span class="n">healthconditions</span><span class="o">.</span><span class="n">tsv</span>  \
   <span class="o">--</span><span class="n">id_vars</span> <span class="nb">id</span><span class="p">,</span><span class="n">timepoint</span> \
   <span class="o">--</span><span class="n">var_name</span> <span class="n">condition_name</span>
