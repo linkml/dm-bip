@@ -48,6 +48,7 @@ DATA_VALIDATE_FILES_DIR     := $(VALIDATE_OUTPUT_DIR)/data-validation
 DATA_VALIDATE_ERRORS_DIR    := $(VALIDATE_OUTPUT_DIR)/data-validation-errors
 
 VALIDATION_SUCCESS_SENTINEL := $(VALIDATE_OUTPUT_DIR)/_data_validation_complete
+MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
 
 
 # Pipeline inputs
@@ -348,9 +349,6 @@ check_map_input_files = \
         $(info $(DEBUG))\
         $(error No transformation spec files detected) \
     )
-
-# Sentinel file to indicate mapping is complete
-MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
 
 .PHONY: map-data
 map-data: $(MAPPING_SUCCESS_SENTINEL)
