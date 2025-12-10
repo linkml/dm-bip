@@ -9,92 +9,92 @@ This Gantt chart represents the development roadmap for the next phase of dm-bip
 displayMode: compact
 ---
 gantt
-    title Data Model-Based Ingestion Pipeline Roadmap
-    dateFormat  YYYY-MM-DD
+   title Data Model-Based Ingestion Pipeline Roadmap
+   dateFormat  YYYY-MM-DD
 
-    section Release Control
-    Tracking Issue #186                     :milestone, 2025-12-10, 0d
+   section Release Control
+   Tracking Issue #186                     :milestone, 2025-12-10, 0d
 
-    section 1
-    Create a new development Roadmap (#172)             :active, 2025-12-10, 2026-01-15
-    Re-align Tracking Tickets and Tasks (#173)          :2025-12-15, 2026-01-31
-    Update Dependencies and Release Strategy (#180)     :2026-01-01, 2026-02-15
-    First dm-bip release (#193)                         :2026-01-15, 2026-02-28
-    Automate Release creation process (#194)            :2026-02-01, 2026-03-15
-    Improve Documentation (#50)                         :2026-01-01, 2026-03-31
-    Add Markdown plugin for Sphinx (#41)                :2026-02-15, 2026-03-31
+   section 1
+   Create a new development Roadmap (#172)             :active, 2025-12-10, 2026-01-15
+   Re-align Tracking Tickets and Tasks (#173)          :2025-12-15, 2026-01-31
+   Update Dependencies and Release Strategy (#180)     :2026-01-01, 2026-02-15
+   First dm-bip release (#193)                         :2026-01-15, 2026-02-28
+   Automate Release creation process (#194)            :2026-02-01, 2026-03-15
+   Improve Documentation (#50)                         :2026-01-01, 2026-03-31
+   Add Markdown plugin for Sphinx (#41)                :2026-02-15, 2026-03-31
 
-    section Pilot Data Delivery
-    Tracking Issue #185                     :milestone, 2025-12-10, 0d
+   section Pilot Data Delivery
+   Tracking Issue #185                     :milestone, 2025-12-10, 0d
 
-    section 2
-    Independent Re-ingestion of Dataset (#171)          :active, 2025-12-10, 2026-02-28
+   section 2
+   Independent Re-ingestion of Dataset (#171)          :active, 2025-12-10, 2026-02-28
 
-    section Quality Control
-    Tracking Issue #187                     :milestone, 2026-01-01, 0d
+   section Quality Control
+   Tracking Issue #187                     :milestone, 2026-01-01, 0d
 
-    section 3
-    Fix Measurement Observation Sets (#174)             :2026-01-01, 2026-02-15
-    Create QC Documentation (#195)                      :2026-01-15, 2026-03-15
-    Create QC metrics (#196)                            :2026-02-01, 2026-04-15
+   section 3
+   Fix Measurement Observation Sets (#174)             :2026-01-01, 2026-02-15
+   Create QC Documentation (#195)                      :2026-01-15, 2026-03-15
+   Create QC metrics (#196)                            :2026-02-01, 2026-04-15
 
-    section Pipeline Improvement
-    Tracking Issue #188                     :milestone, 2026-01-15, 0d
+   section Pipeline Improvement
+   Tracking Issue #188                     :milestone, 2026-01-15, 0d
 
-    section 4
-    Add tooling for SchemaAutomator/Schemasheets (#80)  :2026-01-15, 2026-03-01
-    Generalize map_data.py with INCLUDE mapping (#166)  :2026-02-01, 2026-03-15
-    Add data mapping to automation (#167)               :2026-02-15, 2026-04-01
-    Enable offset calculations in LinkML-Map (#169)     :2026-03-01, 2026-04-15
-    Create a Dockerfile for containerization (#176)     :2026-03-15, 2026-05-01
-    Add Containerization to Makefile (#177)             :2026-04-01, 2026-05-15
-    Add Docker to Dependencies (#179)                   :2026-04-15, 2026-06-01
+   section 4
+   Add tooling for SchemaAutomator/Schemasheets (#80)  :2026-01-15, 2026-03-01
+   Generalize map_data.py with INCLUDE mapping (#166)  :2026-02-01, 2026-03-15
+   Add data mapping to automation (#167)               :2026-02-15, 2026-04-01
+   Enable offset calculations in LinkML-Map (#169)     :2026-03-01, 2026-04-15
+   Create a Dockerfile for containerization (#176)     :2026-03-15, 2026-05-01
+   Add Containerization to Makefile (#177)             :2026-04-01, 2026-05-15
+   Add Docker to Dependencies (#179)                   :2026-04-15, 2026-06-01
 
-    section Audit Logs
-    Tracking Issue #189                     :milestone, 2026-02-01, 0d
+   section Audit Logs
+   Tracking Issue #189                     :milestone, 2026-02-01, 0d
 
-    section 5
-    Define audit log requirements                       :2026-02-01, 2026-03-15
-    Implement human-readable logging                    :2026-03-01, 2026-05-01
+   section 5
+   Define audit log requirements                       :2026-02-01, 2026-03-15
+   Implement human-readable logging                    :2026-03-01, 2026-05-01
 
-    section DMC Integration
-    Tracking Issue #191                     :milestone, 2026-03-01, 0d
+   section DMC Integration
+   Tracking Issue #191                     :milestone, 2026-03-01, 0d
 
-    section 6
-    Add Containerization with Docker (#90)              :2026-03-01, 2026-04-15
-    make a data dictionary template (#103)              :2026-03-15, 2026-05-01
-    Improve Data Cleanup and add to Makefile (#170)     :2026-04-01, 2026-05-15
-    Incorporate Stata YAML authoring tool (#175)        :2026-04-15, 2026-06-01
-    Create GitHub workflow to container registry (#201) :2026-05-01, 2026-06-15
-    Add variable digest files to pipeline (#204)        :2026-05-15, 2026-07-01
+   section 6
+   Add Containerization with Docker (#90)              :2026-03-01, 2026-04-15
+   make a data dictionary template (#103)              :2026-03-15, 2026-05-01
+   Improve Data Cleanup and add to Makefile (#170)     :2026-04-01, 2026-05-15
+   Incorporate Stata YAML authoring tool (#175)        :2026-04-15, 2026-06-01
+   Create GitHub workflow to container registry (#201) :2026-05-01, 2026-06-15
+   Add variable digest files to pipeline (#204)        :2026-05-15, 2026-07-01
 
-    section Schema/Spec Explorer
-    Tracking Issue #190                     :milestone, 2026-03-15, 0d
+   section Schema/Spec Explorer
+   Tracking Issue #190                     :milestone, 2026-03-15, 0d
 
-    section 7
-    Evaluate dynamic schema explorer                    :2026-03-15, 2026-05-01
-    Integrate explorer with pipeline                    :2026-04-15, 2026-06-15
+   section 7
+   Evaluate dynamic schema explorer                    :2026-03-15, 2026-05-01
+   Integrate explorer with pipeline                    :2026-04-15, 2026-06-15
 
-    section BDC User On-Demand
-    Tracking Issue #192                     :milestone, 2026-04-01, 0d
+   section BDC User On-Demand
+   Tracking Issue #192                     :milestone, 2026-04-01, 0d
 
-    section 8
-    Post Pilot Toy Dataset Improvement (#117)           :2026-04-01, 2026-05-15
-    Update README.md to current usage (#144)            :2026-04-15, 2026-05-31
-    Packages without wheels for Python 3.13 (#151)      :2026-05-01, 2026-06-15
-    Seven Bridges integration planning                  :2026-05-15, 2026-07-15
-    User harmonization workflow                         :2026-06-15, 2026-08-15
+   section 8
+   Post Pilot Toy Dataset Improvement (#117)           :2026-04-01, 2026-05-15
+   Update README.md to current usage (#144)            :2026-04-15, 2026-05-31
+   Packages without wheels for Python 3.13 (#151)      :2026-05-01, 2026-06-15
+   Seven Bridges integration planning                  :2026-05-15, 2026-07-15
+   User harmonization workflow                         :2026-06-15, 2026-08-15
 
-    section AI Curation
-    Tracking Issue #197                     :milestone, 2026-05-01, 0d
+   section AI Curation
+   Tracking Issue #197                     :milestone, 2026-05-01, 0d
 
-    section 9
-    Independent run of AI curation API (#198)           :2026-05-01, 2026-06-15
-    Create script to run AI API (#199)                  :2026-06-01, 2026-07-15
-    Integrate AI curation into pipeline                 :2026-07-01, 2026-09-15
+   section 9
+   Independent run of AI curation API (#198)           :2026-05-01, 2026-06-15
+   Create script to run AI API (#199)                  :2026-06-01, 2026-07-15
+   Integrate AI curation into pipeline                 :2026-07-01, 2026-09-15
 
-    axisFormat %B
-    tickInterval 1month
+   axisFormat %B
+   tickInterval 1month
 ```
 
 # Project Outline
