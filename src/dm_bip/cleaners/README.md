@@ -18,7 +18,7 @@ Extracts condition column headers from a TSV file starting at a specified column
 ./extract_conditions.sh data/study/conditions.tsv 3
 ```
 
-This creates `conditions-conditions.tsv` in the same directory with unique condition names.
+This creates a file named `<base_name>-conditions.tsv` in the same directory, where `<base_name>` is the input filename without its extension. For example, if the input is `conditions.tsv`, the output will be `conditions-conditions.tsv`; if the input is `study.tsv`, the output will be `study-conditions.tsv`. The output file contains unique condition names.
 
 ---
 
@@ -27,7 +27,7 @@ This creates `conditions-conditions.tsv` in the same directory with unique condi
 Cleans dbGaP TSV file headers by:
 1. Removing metadata lines up to the first blank line
 2. Replacing `##` with `dbGaP_Subject_ID`
-3. Cleaning up PHV identifiers (removing version suffixes)
+3. Cleaning up phv identifiers (removing version suffixes)
 
 **Usage:**
 ```bash

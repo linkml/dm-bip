@@ -12,7 +12,7 @@ The main effort of this project is to use existing [LinkML](https://linkml.io/li
 # Requirements
 - Python >= 3.11, <= 3.13
 - [uv](https://docs.astral.sh/uv/)
-- [Cruft] (https://cruft.github.io/cruft/)
+- [Cruft](https://cruft.github.io/cruft/)
 
 # Repository Structure
  - Github workflows:

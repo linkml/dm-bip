@@ -1,6 +1,6 @@
 # Make YAML
 
-Tools for converting Stata code files (.do files) that auto-generate YAML transformation specifications into Python.
+Tools for converting Stata scripts (.do files) that generate YAML transformation specifications into equivalent Python scripts.
 
 ## Status
 
