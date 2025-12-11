@@ -1,0 +1,33 @@
+name: ToyTargetSchema
+description: Target schema for toy data transformation example
+id: https://w3id.org/ToyTargetSchema
+prefixes:
+  linkml: https://w3id.org/linkml/
+  target: https://w3id.org/ToyTargetSchema/
+imports:
+  - linkml:types
+default_prefix: target
+default_range: string
+
+classes:
+  Person:
+    description: A person in the study with demographic information
+    attributes:
+      id:
+        identifier: true
+      gender:
+      race:
+      ethnicity:
+      age:
+        range: integer
+
+  Participant:
+    description: A study participant with consent and study info
+    attributes:
+      id:
+        identifier: true
+      external_id:
+      has_asthma:
+      has_diabetes:
+      consent:
+      study:

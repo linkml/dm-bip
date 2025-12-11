@@ -1,0 +1,14 @@
+- class_derivations:
+    Person:
+      populated_from: demographics
+      slot_derivations:
+        id:
+          populated_from: subject_id
+        gender:
+          populated_from: sex
+        race:
+          populated_from: race
+        ethnicity:
+          populated_from: ethnicity
+        age:
+          populated_from: age_at_index
