@@ -5,15 +5,15 @@ Installation
 
 Requirements:
 -------------
-- Python >= 3.12 (Note: Downgraded to 3.12 due to linkml-runtime issue in 3.13, patch forthcoming)
-- [uv](https://docs.astral.sh/uv/)
-- [Cruft](https://cruft.github.io/cruft/)
+- Python >= 3.11, <= 3.13
+- `uv <https://docs.astral.sh/uv/>`_
+- `Cruft <https://cruft.github.io/cruft/>`_
 
 To install and set up the project:
 
 .. code-block:: bash
 
-    git clone https://github.com/amc-corey-cox/dm-bip.git
+    git clone https://github.com/linkml/dm-bip.git
     cd dm-bip
 
 Using uv (default):
