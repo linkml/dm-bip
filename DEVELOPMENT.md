@@ -108,19 +108,19 @@ This outline captures the main features shown in the project roadmap above, orga
 
 ## 1. Release Control (Tracking: #186)
 Procedures for controlling releases of tool-chains, repositories, and data sets.
-- [x] Move to uv as Python manager (#178)
-- [x] Reporting for JIRA (#182)
-- [ ] Create a new development Roadmap (#172)
-- [ ] Re-align Tracking Tickets and Development Tasks (#173)
+- [x] Move to uv as Python manager (#178) - Roman
+- [x] Reporting for JIRA (#182) - Corey
+- [ ] Create a new development Roadmap (#172) - Corey
+- [ ] Re-align Tracking Tickets and Development Tasks (#173) - Corey
 - [ ] Update Dependencies and Create Release Strategy (#180)
-- [ ] First dm-bip release (#193)
-- [ ] Automate Release creation process (#194)
-- [ ] Improve Documentation (#50)
-- [ ] Add Markdown plugin for Sphinx (#41)
+- [ ] First dm-bip release (#193) - Corey
+- [ ] Automate Release creation process (#194) - Corey
+- [ ] Improve Documentation (#50) - Corey
+- [ ] Add Markdown plugin for Sphinx (#41) - Patrick
 
 ## 2. Pilot Data Delivery (Tracking: #185)
 Preparation, ingestion, and QC of the original pilot data set.
-- [ ] Independent Re-ingestion of Dataset (#171)
+- [ ] Independent Re-ingestion of Dataset (#171) - Roman, Corey
 
 ## 3. Quality Control (Tracking: #187)
 Procedures and workflows for quality control.
@@ -132,14 +132,14 @@ Procedures and workflows for quality control.
 Improving automation, testing, workflows, and integration.
 - [x] Full Ingestions Pipeline v2.0 (#168)
 - [x] Create a Dockerfile for containerization (#176)
-- [x] Add Docker to Dependencies (#179)
-- [ ] Add tooling for SchemaAutomator/Schemasheets (#80)
-- [ ] Generalize map_data.py with INCLUDE mapping (#166)
+- [x] Add Docker to Dependencies (#179) - Vessie, Corey
+- [ ] Add tooling for SchemaAutomator/Schemasheets (#80) - Trish
+- [ ] Generalize map_data.py with INCLUDE mapping (#166) - Trish, Corey
 - [ ] Add data mapping to automation (#167)
-- [ ] Enable offset calculations in LinkML-Map (#169)
+- [ ] Enable offset calculations in LinkML-Map (#169) - Madan
 - [ ] Add Containerization to Makefile (#177)
-- [ ] Create tests for mapping script (#210)
-- [ ] Enum derivations (#211)
+- [ ] Create tests for mapping script (#210) - Corey
+- [ ] Enum derivations (#211) - Roman, Corey
 
 ## 5. Audit Logs (Tracking: #189)
 Logging, auditability, and human-readable data provenance.
@@ -148,13 +148,13 @@ Logging, auditability, and human-readable data provenance.
 
 ## 6. DMC Integration (Tracking: #191)
 Integrating the Harmonization Pipeline into DMC pre-ingestion.
-- [ ] Add Containerization with Docker (#90)
-- [ ] Make a data dictionary template (#103)
-- [ ] Improve Data Cleanup and add to Makefile (#170)
+- [ ] Add Containerization with Docker (#90) - Patrick, Stephen
+- [ ] Make a data dictionary template (#103) - Trish
+- [ ] Improve Data Cleanup and add to Makefile (#170) - Roman, Corey
 - [ ] Incorporate Stata YAML authoring tool (#175)
-- [ ] Create GitHub workflow to container registry (#201)
+- [ ] Create GitHub workflow to container registry (#201) - Patrick
 - [ ] Add variable digest files to pipeline (#204)
-- [ ] Update Docker with uv (#208)
+- [ ] Update Docker with uv (#208) - Vessie, Corey
 
 ## 7. Schema/Spec Explorer (Tracking: #190)
 Dynamic Schema or Transformation Specification explorer tools.
@@ -164,13 +164,13 @@ Dynamic Schema or Transformation Specification explorer tools.
 ## 8. BDC User On-Demand (Tracking: #192)
 Bringing the Harmonization Pipeline to BDC for user on-demand harmonization.
 - [ ] Post Pilot Toy Dataset Improvement (#117)
-- [ ] Update README.md to current usage (#144)
-- [ ] Packages without wheels for Python 3.13 (#151)
+- [ ] Update README.md to current usage (#144) - Roman, Corey
+- [ ] Packages without wheels for Python 3.13 (#151) - Patrick
 - [ ] Seven Bridges integration planning
 - [ ] User harmonization workflow
 
 ## 9. AI Curation (Tracking: #197)
 AI curation pipeline for improving data curation and specification creation.
 - [ ] Independent run of AI curation API (#198)
-- [ ] Create script to run AI API (#199)
+- [ ] Create script to run AI API (#199) - Corey
 - [ ] Integrate AI curation into pipeline
