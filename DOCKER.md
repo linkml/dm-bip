@@ -9,7 +9,7 @@ docker build -t dm-bip-env .
 The image's default command is:
 
 ```
-poetry run dm-bip run
+uv run dm-bip run
 ```
 
 To start the container and run the default command:
