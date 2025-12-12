@@ -16,6 +16,8 @@ gantt
     Tracking Issue #186                     :milestone, 2025-12-10, 0d
 
     section 1 
+    Move to uv as Python manager (#178)                 :done, 2025-11-01, 2025-12-01
+    Reporting for JIRA (#182)                           :done, 2025-11-15, 2025-12-10
     Create a new development Roadmap (#172)             :active, 2025-12-10, 2026-01-15
     Re-align Tracking Tickets and Tasks (#173)          :2025-12-15, 2026-01-31
     Update Dependencies and Release Strategy (#180)     :2026-01-01, 2026-02-15
@@ -42,13 +44,16 @@ gantt
     Tracking Issue #188                     :milestone, 2026-01-15, 0d
 
     section 4 
+    Full Ingestions Pipeline v2.0 (#168)                :done, 2025-10-01, 2025-12-01
+    Create a Dockerfile for containerization (#176)     :done, 2025-11-01, 2025-12-15
+    Add Docker to Dependencies (#179)                   :done, 2025-11-15, 2025-12-20
     Add tooling for SchemaAutomator/Schemasheets (#80)  :2026-01-15, 2026-03-01
     Generalize map_data.py with INCLUDE mapping (#166)  :2026-02-01, 2026-03-15
     Add data mapping to automation (#167)               :2026-02-15, 2026-04-01
     Enable offset calculations in LinkML-Map (#169)     :2026-03-01, 2026-04-15
-    Create a Dockerfile for containerization (#176)     :2026-03-15, 2026-05-01
     Add Containerization to Makefile (#177)             :2026-04-01, 2026-05-15
-    Add Docker to Dependencies (#179)                   :2026-04-15, 2026-06-01
+    Create tests for mapping script (#210)              :2026-04-15, 2026-06-01
+    Enum derivations (#211)                             :2026-05-01, 2026-06-15
 
     section Audit Logs
     Tracking Issue #189                     :milestone, 2026-02-01, 0d
@@ -67,6 +72,7 @@ gantt
     Incorporate Stata YAML authoring tool (#175)        :2026-04-15, 2026-06-01
     Create GitHub workflow to container registry (#201) :2026-05-01, 2026-06-15
     Add variable digest files to pipeline (#204)        :2026-05-15, 2026-07-01
+    Update Docker with uv (#208)                        :2026-06-01, 2026-07-15
 
     section Schema/Spec Explorer
     Tracking Issue #190                     :milestone, 2026-03-15, 0d
@@ -102,6 +108,8 @@ This outline captures the main features shown in the project roadmap above, orga
 
 ## 1. Release Control (Tracking: #186)
 Procedures for controlling releases of tool-chains, repositories, and data sets.
+- [x] Move to uv as Python manager (#178)
+- [x] Reporting for JIRA (#182)
 - [ ] Create a new development Roadmap (#172)
 - [ ] Re-align Tracking Tickets and Development Tasks (#173)
 - [ ] Update Dependencies and Create Release Strategy (#180)
@@ -122,6 +130,9 @@ Procedures and workflows for quality control.
 
 ## 4. Pipeline Improvement (Tracking: #188)
 Improving automation, testing, workflows, and integration.
+- [x] Full Ingestions Pipeline v2.0 (#168)
+- [x] Create a Dockerfile for containerization (#176)
+- [x] Add Docker to Dependencies (#179)
 - [ ] Add tooling for SchemaAutomator/Schemasheets (#80)
 - [ ] Generalize map_data.py with INCLUDE mapping (#166)
 - [ ] Add data mapping to automation (#167)
