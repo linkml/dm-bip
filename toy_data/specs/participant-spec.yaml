@@ -1,0 +1,16 @@
+- class_derivations:
+    Participant:
+      populated_from: subject
+      slot_derivations:
+        id:
+          populated_from: subject_id
+        external_id:
+          populated_from: participant.id
+        has_asthma:
+          populated_from: asthma
+        has_diabetes:
+          populated_from: diabetes
+        consent:
+          populated_from: consent_codes
+        study:
+          populated_from: study.id

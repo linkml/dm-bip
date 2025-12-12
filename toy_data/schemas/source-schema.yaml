@@ -1,0 +1,37 @@
+name: ToySourceSchema
+description: Simplified source schema for toy data (no enums for easier transformation)
+id: https://w3id.org/ToySourceSchema
+prefixes:
+  linkml: https://w3id.org/linkml/
+  source: https://w3id.org/ToySourceSchema/
+imports:
+  - linkml:types
+default_prefix: source
+default_range: string
+
+classes:
+  demographics:
+    description: Demographics data from demographics.tsv
+    attributes:
+      subject_id:
+        identifier: true
+      sex:
+      population:
+      race:
+      ethnicity:
+      age_at_index:
+        range: integer
+
+  subject:
+    description: Subject data from subject.tsv
+    attributes:
+      subject_id:
+        identifier: true
+      asthma:
+      stroke:
+      heart_disease:
+      diabetes:
+      consent_codes:
+      study.id:
+      project.id:
+      participant.id:

@@ -129,7 +129,7 @@ def tsv_stream(chunks, key_name=None, sep="\t", reducer_str="__"):
 
             if len(initial_headers) == 0:
                 yield sep.join(headers) + "\n"
-                initial_headers = headers
+                initial_headers = list(headers)
 
             row = sep.join(str(flat.get(h, "")) for h in headers)
             yield row + "\n"
