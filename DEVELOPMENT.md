@@ -35,13 +35,13 @@ gantt
 
     section 1 
     Reporting for JIRA (#182)                           :done, i182, 2025-09-01, 2025-10-10
-    Create a new development Roadmap (#172)             :active, i172, 2025-09-20, 2025-12-15
+    Create a new development Roadmap (#172)             :done, i172, 2025-09-20, 2025-12-15
     Move to uv as Python manager (#178)                 :done, i178, 2025-09-20, 2025-12-01
     Re-align Tracking Tickets and Tasks (#173)          :active, i173, 2025-10-10, 2025-12-20
     Update Dependencies and Release Strategy (#180)     :i180, 2025-12-20, 2026-02-28
     First dm-bip release (#193)                         :active, i193, 2025-10-01, 2025-12-20
     Automate Release creation process (#194)            :active, i194, 2025-12-01, 2026-02-15
-    Improve Documentation (#50)                         :active, i50, 2025-12-15, 2026-01-31
+    Improve Documentation (#50)                         :done, i50, 2025-12-15, 2026-01-31
     Add Markdown plugin for Sphinx (#41)                :i41, 2026-01-31, 2026-03-31
 
     section Pilot Data Delivery 
@@ -72,12 +72,13 @@ gantt
     Enum derivations (#211)                             :i211, 2026-01-01, 2026-03-15
     Add tooling for SchemaAutomator/Schemasheets (#80)  :i80, 2025-11-15, 2026-02-01
     Generalize map_data.py with INCLUDE mapping (#166)  :i166, 2026-02-01, 2026-04-25
+    Add Containerization with Docker (#90)              :i90, 2026-02-01, 2026-04-15
 
     section Audit Logs
     Tracking Issue #189                     :crit, t189, 2025-09-30, 5w
 
-    section 5 
-    Define audit log requirements                       :2026-02-15, 2026-04-15
+    section 5
+    Define Audit Log Requirements (#213)               :i213, 2026-02-15, 2026-04-15
 
     section DMC Integration
     Tracking Issue #191                     :crit, t191, 2025-09-30, 5w
@@ -88,6 +89,7 @@ gantt
     Add variable digest files to pipeline (#204)        :active, i204, 2025-12-10, 2026-03-01
     make a data dictionary template (#103)              :i103, 2026-03-01, 2026-05-01
     Create GitHub workflow to container registry (#201) :i201, 2026-03-01, 2026-05-15
+    Update Docker with uv (#208)                        :i208, 2026-03-01, 2026-05-01
 
     section BDC User On-Demand
     Tracking Issue #192                     :crit, t192, 2025-09-30, 5w
@@ -109,7 +111,6 @@ gantt
     click t187 href "https://github.com/linkml/dm-bip/issues/187"
     click t188 href "https://github.com/linkml/dm-bip/issues/188"
     click t189 href "https://github.com/linkml/dm-bip/issues/189"
-    click t190 href "https://github.com/linkml/dm-bip/issues/190"
     click t191 href "https://github.com/linkml/dm-bip/issues/191"
     click t192 href "https://github.com/linkml/dm-bip/issues/192"
     click t197 href "https://github.com/linkml/dm-bip/issues/197"
@@ -148,6 +149,7 @@ gantt
     click i208 href "https://github.com/linkml/dm-bip/issues/208"
     click i210 href "https://github.com/linkml/dm-bip/issues/210"
     click i211 href "https://github.com/linkml/dm-bip/issues/211"
+    click i213 href "https://github.com/linkml/dm-bip/issues/213"
 
     axisFormat %B
     tickInterval 1month
@@ -160,12 +162,12 @@ This outline captures the main features shown in the project roadmap above, orga
 Procedures for controlling releases of tool-chains, repositories, and data sets.
 - [x] Move to uv as Python manager (#178) - Roman
 - [x] Reporting for JIRA (#182) - Corey
-- [ ] Create a new development Roadmap (#172) - Corey
+- [x] Create a new development Roadmap (#172) - Corey
 - [ ] Re-align Tracking Tickets and Development Tasks (#173) - Corey
 - [ ] Update Dependencies and Create Release Strategy (#180)
 - [ ] First dm-bip release (#193) - Corey
 - [ ] Automate Release creation process (#194) - Corey
-- [ ] Improve Documentation (#50) - Corey
+- [x] Improve Documentation (#50) - Corey
 - [ ] Add Markdown plugin for Sphinx (#41) - Patrick
 
 ## 2. Pilot Data Delivery (Tracking: #185)
@@ -188,17 +190,17 @@ Improving automation, testing, workflows, and integration.
 - [ ] Add data mapping to automation (#167)
 - [ ] Enable offset calculations in LinkML-Map (#169) - Madan
 - [ ] Add Containerization to Makefile (#177)
+- [ ] Add Containerization with Docker (#90) - Patrick, Vessie
 - [ ] Create tests for mapping script (#210) - Corey
 - [ ] Enum derivations (#211) - Roman, Corey
 
 ## 5. Audit Logs (Tracking: #189)
 Logging, auditability, and human-readable data provenance.
-- [ ] Define audit log requirements
+- [ ] Define Audit Log Requirements (#213)
 - [ ] Implement human-readable logging
 
 ## 6. DMC Integration (Tracking: #191)
 Integrating the Harmonization Pipeline into DMC pre-ingestion.
-- [ ] Add Containerization with Docker (#90) - Patrick, Stephen
 - [ ] Make a data dictionary template (#103) - Trish
 - [ ] Improve Data Cleanup and add to Makefile (#170) - Roman, Corey
 - [ ] Incorporate Stata YAML authoring tool (#175)
@@ -206,21 +208,16 @@ Integrating the Harmonization Pipeline into DMC pre-ingestion.
 - [ ] Add variable digest files to pipeline (#204)
 - [ ] Update Docker with uv (#208) - Vessie, Corey
 
-## 7. Schema/Spec Explorer (Tracking: #190)
-Dynamic Schema or Transformation Specification explorer tools.
-- [ ] Evaluate dynamic schema explorer
-- [ ] Integrate explorer with pipeline
-
-## 8. BDC User On-Demand (Tracking: #192)
+## 7. BDC User On-Demand (Tracking: #192)
 Bringing the Harmonization Pipeline to BDC for user on-demand harmonization.
 - [ ] Post Pilot Toy Dataset Improvement (#117)
-- [ ] Update README.md to current usage (#144) - Roman, Corey
+- [x] Update README.md to current usage (#144) - Roman, Corey
 - [ ] Packages without wheels for Python 3.13 (#151) - Patrick
 - [ ] Seven Bridges integration planning
 - [ ] User harmonization workflow
 
-## 9. AI Curation (Tracking: #197)
+## 8. AI Curation (Tracking: #197)
 AI curation pipeline for improving data curation and specification creation.
-- [ ] Independent run of AI curation API (#198)
+- [x] Independent run of AI curation API (#198)
 - [ ] Create script to run AI API (#199) - Corey
 - [ ] Integrate AI curation into pipeline
