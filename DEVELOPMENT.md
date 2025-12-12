@@ -6,98 +6,103 @@ This Gantt chart represents a starting point for understanding the timeline for 
 
 ```mermaid
 ---
-displayMode: compact
+---
+config:
+  theme: dark
+  themeVariables:
+    taskBkgColor: '#8a8a8a'
+    taskBorderColor: '#9a9a9a'
+    activeTaskBkgColor: '#8b5cf6'
+    activeTaskBorderColor: '#7c3aed'
+    doneTaskBkgColor: '#238636'
+    doneTaskBorderColor: '#2ea043'
+    critBkgColor: '#0891b2'
+    critBorderColor: '#06b6d4'
+  gantt:
+    displayMode: compact
 ---
 gantt
     title Data Model-Based Ingestion Pipeline Roadmap
     dateFormat  YYYY-MM-DD
 
     section Release Control
-    Tracking Issue #186                     :milestone, t186, 2025-12-10, 0d
+    Q1 Start (Sept)     :milestone, q1, 2025-09-01, 0d
+    Q2 Start (Dec)      :milestone, q2, 2025-12-01, 0d
+    Q3 Start (Mar)      :milestone, q3, 2026-03-01, 0d
+    Q4 Start (Jun)      :milestone, q4, 2026-06-01, 0d
+    Q4 End (Aug)        :milestone, q4end, 2026-08-31, 0d
+    Tracking Issue #186                     :crit, t186,2025-09-30, 5w
 
     section 1 
-    Move to uv as Python manager (#178)                 :done, i178, 2025-11-01, 2025-12-01
-    Reporting for JIRA (#182)                           :done, i182, 2025-11-15, 2025-12-10
-    Create a new development Roadmap (#172)             :active, i172, 2025-12-10, 2026-01-15
-    Re-align Tracking Tickets and Tasks (#173)          :i173, 2025-12-15, 2026-01-31
-    Update Dependencies and Release Strategy (#180)     :i180, 2026-01-01, 2026-02-15
-    First dm-bip release (#193)                         :i193, 2026-01-15, 2026-02-28
-    Automate Release creation process (#194)            :i194, 2026-02-01, 2026-03-15
-    Improve Documentation (#50)                         :i50, 2026-01-01, 2026-03-31
-    Add Markdown plugin for Sphinx (#41)                :i41, 2026-02-15, 2026-03-31
+    Reporting for JIRA (#182)                           :done, i182, 2025-09-01, 2025-10-10
+    Create a new development Roadmap (#172)             :active, i172, 2025-09-20, 2025-12-15
+    Move to uv as Python manager (#178)                 :done, i178, 2025-09-20, 2025-12-01
+    Re-align Tracking Tickets and Tasks (#173)          :active, i173, 2025-10-10, 2025-12-20
+    Update Dependencies and Release Strategy (#180)     :i180, 2025-12-20, 2026-02-28
+    First dm-bip release (#193)                         :active, i193, 2025-10-01, 2025-12-20
+    Automate Release creation process (#194)            :active, i194, 2025-12-01, 2026-02-15
+    Improve Documentation (#50)                         :active, i50, 2025-12-15, 2026-01-31
+    Add Markdown plugin for Sphinx (#41)                :i41, 2026-01-31, 2026-03-31
 
     section Pilot Data Delivery 
-    Tracking Issue #185                     :milestone, t185, 2025-12-10, 0d
+    Tracking Issue #185                     :crit, t185, 2025-09-30, 5w
 
     section 2 
-    Independent Re-ingestion of Dataset (#171)          :active, i171, 2025-12-10, 2026-02-28
+    Independent Re-ingestion of Dataset (#171)          :active, i171, 2025-09-25, 2025-12-31
 
     section Quality Control 
-    Tracking Issue #187                     :milestone, t187, 2026-01-01, 0d
+    Tracking Issue #187                     :crit, t187, 2025-09-30, 5w
 
     section 3 
-    Fix Measurement Observation Sets (#174)             :i174, 2026-01-01, 2026-02-15
-    Create QC Documentation (#195)                      :i195, 2026-01-15, 2026-03-15
-    Create QC metrics (#196)                            :i196, 2026-02-01, 2026-04-15
+    Fix Measurement Observation Sets (#174)             :active, i174, 2025-12-10, 2026-02-15
+    Create QC metrics (#196)                            :i196, 2026-01-01, 2026-02-15
+    Create QC Documentation (#195)                      :i195, 2026-02-15, 2026-04-15
 
     section Pipeline Improvement
-    Tracking Issue #188                     :milestone, t188, 2026-01-15, 0d
+    Tracking Issue #188                     :crit, t188, 2025-09-30, 5w
 
     section 4 
-    Full Ingestions Pipeline v2.0 (#168)                :done, i168, 2025-10-01, 2025-12-01
-    Create a Dockerfile for containerization (#176)     :done, i176, 2025-11-01, 2025-12-15
-    Add Docker to Dependencies (#179)                   :done, i179, 2025-11-15, 2025-12-20
-    Add tooling for SchemaAutomator/Schemasheets (#80)  :i80, 2026-01-15, 2026-03-01
-    Generalize map_data.py with INCLUDE mapping (#166)  :i166, 2026-02-01, 2026-03-15
-    Add data mapping to automation (#167)               :i167, 2026-02-15, 2026-04-01
-    Enable offset calculations in LinkML-Map (#169)     :i169, 2026-03-01, 2026-04-15
-    Add Containerization to Makefile (#177)             :i177, 2026-04-01, 2026-05-15
-    Create tests for mapping script (#210)              :i210, 2026-04-15, 2026-06-01
-    Enum derivations (#211)                             :i211, 2026-05-01, 2026-06-15
+    Full Ingestions Pipeline v2.0 (#168)                :done, i168, 2025-08-15, 2025-11-01
+    Create a Dockerfile for containerization (#176)     :done, i176, 2025-09-05, 2025-11-15
+    Add Docker to Dependencies (#179)                   :done, i179, 2025-09-01, 2025-11-01
+    Add data mapping to automation (#167)               :active, i167, 2025-11-01, 2026-01-01
+    Create tests for mapping script (#210)              :active, i210, 2026-01-01, 2026-03-01
+    Add Containerization to Makefile (#177)             :active, i177, 2025-11-01, 2026-01-15
+    Enable offset calculations in LinkML-Map (#169)     :active, i169, 2025-09-20, 2026-01-01
+    Enum derivations (#211)                             :i211, 2026-01-01, 2026-03-15
+    Add tooling for SchemaAutomator/Schemasheets (#80)  :i80, 2025-11-15, 2026-02-01
+    Generalize map_data.py with INCLUDE mapping (#166)  :i166, 2026-02-01, 2026-04-25
 
     section Audit Logs
-    Tracking Issue #189                     :milestone, t189, 2026-02-01, 0d
+    Tracking Issue #189                     :crit, t189, 2025-09-30, 5w
 
     section 5 
-    Define audit log requirements                       :2026-02-01, 2026-03-15
-    Implement human-readable logging                    :2026-03-01, 2026-05-01
+    Define audit log requirements                       :2026-02-15, 2026-04-15
 
     section DMC Integration
-    Tracking Issue #191                     :milestone, t191, 2026-03-01, 0d
+    Tracking Issue #191                     :crit, t191, 2025-09-30, 5w
 
     section 6 
-    Add Containerization with Docker (#90)              :i90, 2026-03-01, 2026-04-15
-    make a data dictionary template (#103)              :i103, 2026-03-15, 2026-05-01
-    Improve Data Cleanup and add to Makefile (#170)     :i170, 2026-04-01, 2026-05-15
-    Incorporate Stata YAML authoring tool (#175)        :i175, 2026-04-15, 2026-06-01
-    Create GitHub workflow to container registry (#201) :i201, 2026-05-01, 2026-06-15
-    Add variable digest files to pipeline (#204)        :i204, 2026-05-15, 2026-07-01
-    Update Docker with uv (#208)                        :i208, 2026-06-01, 2026-07-15
-
-    section Schema/Spec Explorer
-    Tracking Issue #190                     :milestone, t190, 2026-03-15, 0d
-
-    section 7 
-    Evaluate dynamic schema explorer                    :2026-03-15, 2026-05-01
-    Integrate explorer with pipeline                    :2026-04-15, 2026-06-15
+    Incorporate Stata YAML authoring tool (#175)        :active, i175, 2025-11-15, 2026-02-01
+    Improve Data Cleanup and add to Makefile (#170)     :active, i170, 2025-12-10, 2026-02-20
+    Add variable digest files to pipeline (#204)        :active, i204, 2025-12-10, 2026-03-01
+    make a data dictionary template (#103)              :i103, 2026-03-01, 2026-05-01
+    Create GitHub workflow to container registry (#201) :i201, 2026-03-01, 2026-05-15
 
     section BDC User On-Demand
-    Tracking Issue #192                     :milestone, t192, 2026-04-01, 0d
+    Tracking Issue #192                     :crit, t192, 2025-09-30, 5w
 
-    section 8 
-    Post Pilot Toy Dataset Improvement (#117)           :i117, 2026-04-01, 2026-05-15
-    Update README.md to current usage (#144)            :i144, 2026-04-15, 2026-05-31
-    Packages without wheels for Python 3.13 (#151)      :i151, 2026-05-01, 2026-06-15
-    Seven Bridges integration planning                  :2026-05-15, 2026-07-15
-    User harmonization workflow                         :2026-06-15, 2026-08-15
+    section 7 
+    Update README.md to current usage (#144)            :done, i144, 2025-10-01, 2025-12-15
+    Post Pilot Toy Dataset Improvement (#117)           :active, i117, 2025-12-10, 2026-03-15
+    Packages without wheels for Python 3.13 (#151)      :i151, 2026-03-01, 2026-06-15
 
     section AI Curation
-    Tracking Issue #197                     :milestone, t197, 2026-05-01, 0d
+    Tracking Issue #197                     :crit, t197, 2025-09-30, 5w
 
-    section 9 
-    Independent run of AI curation API (#198)           :i198, 2026-05-01, 2026-06-15
-    Create script to run AI API (#199)                  :i199, 2026-06-01, 2026-07-15
-    Integrate AI curation into pipeline                 :2026-07-01, 2026-09-15
+    section 8 
+    Independent run of AI curation API (#198)           :done, i198, 2025-11-01, 2025-12-31
+    Create script to run AI API (#199)                  :i199, 2025-12-31, 2026-02-15
 
     click t186 href "https://github.com/linkml/dm-bip/issues/186"
     click t185 href "https://github.com/linkml/dm-bip/issues/185"
