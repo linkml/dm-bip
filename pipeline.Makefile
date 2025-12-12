@@ -21,18 +21,23 @@ RUN := uv run
 
 # Configurable parameters via environment variables
 # ============
-DM_INPUT_DIR   ?= /sbgenomics/workspace/output/CARDIA_cleaned/CARDIA-v3-c1
+DM_INPUT_DIR   ?=
 DM_INPUT_FILES ?=
-DM_SCHEMA_NAME ?= Schema_CARDIA_v3_c1
-DM_OUTPUT_DIR  ?= /sbgenomics/workspace/output/CARDIA/$(DM_SCHEMA_NAME)
-
+DM_SCHEMA_NAME ?= Schema
+DM_OUTPUT_DIR  ?= output/$(DM_SCHEMA_NAME)
+DM_TRANS_SPEC_DIR ?=
+DM_MAP_TARGET_SCHEMA ?=
+DM_MAPPING_PREFIX ?=
+DM_MAPPING_POSTFIX ?=
+DM_MAP_OUTPUT_TYPE ?= yaml
+DM_MAP_CHUNK_SIZE ?= 10000
 
 # Derived output files
 # ============
 SCHEMA_FILE                 := $(DM_OUTPUT_DIR)/$(DM_SCHEMA_NAME).yaml
 VALIDATE_OUTPUT_DIR         := $(DM_OUTPUT_DIR)/validation-logs
 VALIDATED_FILES_LIST        := $(VALIDATE_OUTPUT_DIR)/input-files.txt
-
+MAPPING_OUTPUT_DIR          := $(DM_OUTPUT_DIR)/mapped-data
 
 # Logging files
 # ============
@@ -43,6 +48,7 @@ DATA_VALIDATE_FILES_DIR     := $(VALIDATE_OUTPUT_DIR)/data-validation
 DATA_VALIDATE_ERRORS_DIR    := $(VALIDATE_OUTPUT_DIR)/data-validation-errors
 
 VALIDATION_SUCCESS_SENTINEL := $(VALIDATE_OUTPUT_DIR)/_data_validation_complete
+MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
 
 
 # Pipeline inputs
@@ -147,7 +153,7 @@ help::
 .DEFAULT_GOAL := pipeline
 
 .PHONY: pipeline
-pipeline: $(VALIDATION_SUCCESS_SENTINEL)
+pipeline: $(MAPPING_SUCCESS_SENTINEL)
 
 .PHONY: pipeline-debug
 pipeline-debug:
@@ -322,3 +328,53 @@ validate-clean:
 .PHONY: validate-debug
 validate-debug:
 	@:$(info $(DEBUG))
+
+# Mapping (Transformation) Goals
+# ==============================
+
+MAP_TARGET_SCHEMA_FILE := $(DM_MAP_TARGET_SCHEMA)
+
+MAP_TRANS_SPEC_FILES := $(shell find $(DM_TRANS_SPEC_DIR) -maxdepth 1 -type f -name '*.yaml' 2>/dev/null)
+
+# Call this function in any recipe that depends on input files
+check_map_input_files = \
+    $(if $(wildcard $(MAP_TARGET_SCHEMA_FILE)),,\
+        $(info Target schema file missing: $(MAP_TARGET_SCHEMA_FILE))\
+        $(info $(DEBUG))\
+        $(error No target schema file detected) \
+    ) \
+    $(if $(MAP_TRANS_SPEC_FILES),,\
+        $(info No transformation spec files found in $(DM_TRANS_SPEC_DIR))\
+        $(info $(DEBUG))\
+        $(error No transformation spec files detected) \
+    )
+
+.PHONY: map-data
+map-data: $(MAPPING_SUCCESS_SENTINEL)
+
+$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL)
+	@$(call check_map_input_files)
+	@echo "Running LinkML-Map transformation..."
+	@mkdir -p $(MAPPING_OUTPUT_DIR)
+	$(RUN) python ./src/dm_bip/map_data/map_data.py \
+		--source_schema $(SCHEMA_FILE) \
+		--target_schema $(DM_MAP_TARGET_SCHEMA) \
+		--data_dir $(DM_INPUT_DIR) \
+		--var_dir $(DM_TRANS_SPEC_DIR) \
+		--output_dir $(MAPPING_OUTPUT_DIR) \
+		--output_prefix $(DM_MAPPING_PREFIX) \
+		--output_postfix "$(DM_MAPPING_POSTFIX)" \
+		--output_type $(DM_MAP_OUTPUT_TYPE) \
+		--chunk_size $(DM_MAP_CHUNK_SIZE)
+	@echo "✓ Data mapping complete. Output written to $(MAPPING_OUTPUT_DIR)"
+	@touch $@
+
+.PHONY: map-debug
+map-debug:
+	@echo "DM_TRANS_SPEC_DIR: $(DM_TRANS_SPEC_DIR)"
+	@echo "DM_MAP_TARGET_SCHEMA: $(DM_MAP_TARGET_SCHEMA)"
+	@echo "MAPPING_OUTPUT_DIR: $(MAPPING_OUTPUT_DIR)"
+
+.PHONY: map-clean
+map-clean:
+	rm -rf $(MAPPING_OUTPUT_DIR)

@@ -188,7 +188,7 @@ def process_entities(
             continue
 
         print(f"Starting {entity}")
-        output_path = f"{output_dir}/{output_prefix}-{entity}-{output_postfix}.{output_type}"
+        output_path = f"{output_dir}/{'-'.join(x for x in [output_prefix, entity, output_postfix] if x)}.{output_type}"
 
         iterable = multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview)
         chunks = chunked(iterable, chunk_size)
@@ -270,8 +270,8 @@ if __name__ == "__main__":
     parser.add_argument("--var_dir", required=True)
     parser.add_argument("--data_dir", required=True)
     parser.add_argument("--output_dir", required=True)
-    parser.add_argument("--output_prefix", required=True)
-    parser.add_argument("--output_postfix", required=True)
+    parser.add_argument("--output_prefix", default="")
+    parser.add_argument("--output_postfix", default="")
     parser.add_argument("--output_type", default="tsv", choices=["json", "jsonl", "tsv", "yaml"])
     parser.add_argument("--chunk_size", type=int, default=1000)
 
