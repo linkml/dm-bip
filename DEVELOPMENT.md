@@ -6,7 +6,6 @@ This Gantt chart represents a starting point for understanding the timeline for 
 
 ```mermaid
 ---
----
 config:
   theme: dark
   themeVariables:
@@ -30,7 +29,6 @@ gantt
     Q2 Start (Dec)      :milestone, q2, 2025-12-01, 0d
     Q3 Start (Mar)      :milestone, q3, 2026-03-01, 0d
     Q4 Start (Jun)      :milestone, q4, 2026-06-01, 0d
-    Q4 End (Aug)        :milestone, q4end, 2026-08-31, 0d
     Tracking Issue #186                     :crit, t186,2025-09-30, 5w
 
     section 1 
@@ -38,7 +36,7 @@ gantt
     Create a new development Roadmap (#172)             :done, i172, 2025-09-20, 2025-12-15
     Move to uv as Python manager (#178)                 :done, i178, 2025-09-20, 2025-12-01
     Re-align Tracking Tickets and Tasks (#173)          :active, i173, 2025-10-10, 2025-12-20
-    Update Dependencies and Release Strategy (#180)     :i180, 2025-12-20, 2026-02-28
+    Update Dependencies and Release Strategy (#180)     :i180, 2025-12-20, 2026-03-28
     First dm-bip release (#193)                         :active, i193, 2025-10-01, 2025-12-20
     Automate Release creation process (#194)            :active, i194, 2025-12-01, 2026-02-15
     Improve Documentation (#50)                         :done, i50, 2025-12-15, 2026-01-31
@@ -70,14 +68,14 @@ gantt
     Add Containerization to Makefile (#177)             :active, i177, 2025-11-01, 2026-01-15
     Enable offset calculations in LinkML-Map (#169)     :active, i169, 2025-09-20, 2026-01-01
     Enum derivations (#211)                             :i211, 2026-01-01, 2026-03-15
-    Add tooling for SchemaAutomator/Schemasheets (#80)  :i80, 2025-11-15, 2026-02-01
+    Add tooling for SchemaAutomator/Schemasheets (#80)  :i80, 2025-11-15, 2026-02-10
     Generalize map_data.py with INCLUDE mapping (#166)  :i166, 2026-02-01, 2026-04-25
-    Add Containerization with Docker (#90)              :i90, 2026-02-01, 2026-04-15
+    Add Containerization with Docker (#90)              :i90, 2026-02-10, 2026-05-15
 
     section Audit Logs
     Tracking Issue #189                     :crit, t189, 2025-09-30, 5w
 
-    section 5
+    section 5 
     Define Audit Log Requirements (#213)               :i213, 2026-02-15, 2026-04-15
 
     section DMC Integration
@@ -103,8 +101,8 @@ gantt
     Tracking Issue #197                     :crit, t197, 2025-09-30, 5w
 
     section 8 
-    Independent run of AI curation API (#198)           :done, i198, 2025-11-01, 2025-12-31
-    Create script to run AI API (#199)                  :i199, 2025-12-31, 2026-02-15
+    Independent run of AI curation API (#198)           :done, i198, 2025-10-20, 2025-12-31
+    Create script to run AI API (#199)                  :i199, 2025-12-31, 2026-03-15
 
     click t186 href "https://github.com/linkml/dm-bip/issues/186"
     click t185 href "https://github.com/linkml/dm-bip/issues/185"
