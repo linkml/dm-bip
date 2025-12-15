@@ -403,7 +403,7 @@ def linkml_test_setup():
 
 def test_multi_spec_transform_transforms_data(linkml_test_setup):
     """Test that multi_spec_transform applies transformations correctly."""
-    spec_files = get_spec_files(linkml_test_setup["spec_dir"], "    Person:")
+    spec_files = get_spec_files(linkml_test_setup["spec_dir"], "^    Person:")
     results = list(
         multi_spec_transform(
             linkml_test_setup["data_loader"],
@@ -423,7 +423,7 @@ def test_multi_spec_transform_transforms_data(linkml_test_setup):
 
 def test_multi_spec_transform_participant(linkml_test_setup):
     """Test transformation of Participant entity."""
-    spec_files = get_spec_files(linkml_test_setup["spec_dir"], "    Participant:")
+    spec_files = get_spec_files(linkml_test_setup["spec_dir"], "^    Participant:")
     results = list(
         multi_spec_transform(
             linkml_test_setup["data_loader"],
