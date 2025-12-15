@@ -32,7 +32,7 @@ gantt
     Tracking Issue #186                     :crit, t186,2025-09-30, 5w
 
     section 1 
-    Reporting for JIRA (#182)                           :done, i182, 2025-09-01, 2025-10-10
+    Reporting for JIRA (#182)                           :done, i182, 2025-08-01, 2025-10-10
     Create a new development Roadmap (#172)             :done, i172, 2025-09-20, 2025-12-15
     Move to uv as Python manager (#178)                 :done, i178, 2025-09-20, 2025-12-01
     Re-align Tracking Tickets and Tasks (#173)          :active, i173, 2025-10-10, 2025-12-20
@@ -41,12 +41,17 @@ gantt
     Automate Release creation process (#194)            :active, i194, 2025-12-01, 2026-02-15
     Improve Documentation (#50)                         :done, i50, 2025-12-15, 2026-01-31
     Add Markdown plugin for Sphinx (#41)                :i41, 2026-01-31, 2026-03-31
+    Move Harmonica to external tool (#215)             :i215, 2026-02-15, 2026-05-12
+    Implement Code Coverage Monitoring (#217)          :i217, 2025-12-20, 2026-03-15
+    Improve Test Coverage (#218)                       :i218, 2026-03-15, 2026-05-10
+    Fix linting errors in notebooks (#219)             :i219, 2026-04-01, 2026-05-27
 
     section Pilot Data Delivery 
     Tracking Issue #185                     :crit, t185, 2025-09-30, 5w
 
     section 2 
     Independent Re-ingestion of Dataset (#171)          :active, i171, 2025-09-25, 2025-12-31
+    Ensure all Cohort groups are ingested (#221)       :i221, 2025-12-31, 2026-04-11
 
     section Quality Control 
     Tracking Issue #187                     :crit, t187, 2025-09-30, 5w
@@ -71,12 +76,14 @@ gantt
     Add tooling for SchemaAutomator/Schemasheets (#80)  :i80, 2025-11-15, 2026-02-10
     Generalize map_data.py with INCLUDE mapping (#166)  :i166, 2026-02-01, 2026-04-25
     Add Containerization with Docker (#90)              :i90, 2026-02-10, 2026-05-15
+    Implement data mapping from multiple classes (#222) :i222, 2026-03-01, 2026-05-27
 
     section Audit Logs
     Tracking Issue #189                     :crit, t189, 2025-09-30, 5w
 
     section 5 
     Define Audit Log Requirements (#213)               :i213, 2026-02-15, 2026-04-15
+    Replace print() with logging module (#223)         :i223, 2026-03-15, 2026-06-10
 
     section DMC Integration
     Tracking Issue #191                     :crit, t191, 2025-09-30, 5w
@@ -95,7 +102,9 @@ gantt
     section 7 
     Update README.md to current usage (#144)            :done, i144, 2025-10-01, 2025-12-15
     Post Pilot Toy Dataset Improvement (#117)           :active, i117, 2025-12-10, 2026-03-15
-    Packages without wheels for Python 3.13 (#151)      :i151, 2026-03-01, 2026-06-15
+    Packages without wheels for Python 3.13 (#151)      :i151, 2026-03-01, 2026-05-15
+    Implement or remove CLI (#216)                     :i216, 2026-03-01, 2026-05-10
+    Remove Hardcoded entity list (#220)                :i220, 2026-02-15, 2026-05-10
 
     section AI Curation
     Tracking Issue #197                     :crit, t197, 2025-09-30, 5w
@@ -148,6 +157,15 @@ gantt
     click i210 href "https://github.com/linkml/dm-bip/issues/210"
     click i211 href "https://github.com/linkml/dm-bip/issues/211"
     click i213 href "https://github.com/linkml/dm-bip/issues/213"
+    click i215 href "https://github.com/linkml/dm-bip/issues/215"
+    click i216 href "https://github.com/linkml/dm-bip/issues/216"
+    click i217 href "https://github.com/linkml/dm-bip/issues/217"
+    click i218 href "https://github.com/linkml/dm-bip/issues/218"
+    click i219 href "https://github.com/linkml/dm-bip/issues/219"
+    click i220 href "https://github.com/linkml/dm-bip/issues/220"
+    click i221 href "https://github.com/linkml/dm-bip/issues/221"
+    click i222 href "https://github.com/linkml/dm-bip/issues/222"
+    click i223 href "https://github.com/linkml/dm-bip/issues/223"
 
     axisFormat %B
     tickInterval 1month
@@ -167,10 +185,15 @@ Procedures for controlling releases of tool-chains, repositories, and data sets.
 - [ ] Automate Release creation process (#194) - Corey
 - [x] Improve Documentation (#50) - Corey
 - [ ] Add Markdown plugin for Sphinx (#41) - Patrick
+- [ ] Move Harmonica (OntoAnntate) to external tool (#215)
+- [ ] Implement Code Coverage Monitoring (#217)
+- [ ] Improve Test Coverage (#218)
+- [ ] Fix linting errors in notebooks (#219)
 
 ## 2. Pilot Data Delivery (Tracking: #185)
 Preparation, ingestion, and QC of the original pilot data set.
 - [ ] Independent Re-ingestion of Dataset (#171) - Roman, Corey
+- [ ] Ensure all Cohort groups are ingested (#221)
 
 ## 3. Quality Control (Tracking: #187)
 Procedures and workflows for quality control.
@@ -191,10 +214,12 @@ Improving automation, testing, workflows, and integration.
 - [ ] Add Containerization with Docker (#90) - Patrick, Vessie
 - [ ] Create tests for mapping script (#210) - Corey
 - [ ] Enum derivations (#211) - Roman, Corey
+- [ ] Implement data mapping from multiple classes (#222)
 
 ## 5. Audit Logs (Tracking: #189)
 Logging, auditability, and human-readable data provenance.
 - [ ] Define Audit Log Requirements (#213)
+- [ ] Replace print() statements with logging module (#223)
 - [ ] Implement human-readable logging
 
 ## 6. DMC Integration (Tracking: #191)
@@ -211,6 +236,8 @@ Bringing the Harmonization Pipeline to BDC for user on-demand harmonization.
 - [ ] Post Pilot Toy Dataset Improvement (#117)
 - [x] Update README.md to current usage (#144) - Roman, Corey
 - [ ] Packages without wheels for Python 3.13 (#151) - Patrick
+- [ ] Implement or remove CLI (#216)
+- [ ] Remove Hardcoded entity list from map_data.py (#220)
 - [ ] Seven Bridges integration planning
 - [ ] User harmonization workflow
 
