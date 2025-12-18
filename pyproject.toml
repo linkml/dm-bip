@@ -15,6 +15,7 @@ dependencies = [
     "linkml-map==0.3.9-rc1",
     "typing-extensions>=4.0,<5",
     "flatten-dict>=0.4.2,<0.5",
+    "typer>=0.20.0",
 ]
 
 [project.scripts]

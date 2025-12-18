@@ -1,48 +1,51 @@
 """Module for transforming data using LinkML-Map schemas and specifications."""
 
-import json
 import os
 import shutil
 import subprocess
 import time
 import traceback
 from pathlib import Path
+from typing import Annotated, Any, Generator
 
+import typer
 import yaml
-from flatten_dict import flatten
-from flatten_dict.reducers import make_reducer
 from linkml.validator.loaders import TsvLoader
 from linkml_map.transformer.object_transformer import ObjectTransformer
 from linkml_runtime import SchemaView
+from linkml_runtime.linkml_model import SchemaDefinition
 from more_itertools import chunked
+
+from dm_bip.map_data.streams import StreamFormat, TSVStream, make_stream
 
 
 class DataLoader:
     """Load TSV files based on populated_from identifiers."""
 
-    def __init__(self, base_path):
+    def __init__(self, base_path: Path):
         """Initialize with the base directory containing TSV files."""
         self.base_path = base_path
 
-    def __getitem__(self, pht_id):
+    def __getitem__(self, pht_id: str):
         """Load instances from the TSV file corresponding to the given populated_from identifier."""
-        file_path = os.path.join(self.base_path, f"{pht_id}.tsv")
-        if not os.path.exists(file_path):
+        file_path = self.base_path / f"{pht_id}.tsv"
+
+        if not file_path.exists():
             raise FileNotFoundError(f"No TSV file found for {pht_id} at {file_path}")
-        return TsvLoader(os.path.join(self.base_path, f"{pht_id}.tsv")).iter_instances()
+
+        return TsvLoader(file_path).iter_instances()
 
     def __contains__(self, pht_id):
         """Check if a TSV file exists for the given populated_from identifier."""
-        return os.path.exists(os.path.join(self.base_path, f"{pht_id}.tsv"))
+        return (self.base_path / f"{pht_id}.tsv").exists()
 
 
-def get_spec_files(directory, search_string):
+def get_spec_files(directory: Path, search_string: str) -> list[Path]:
     """
     Find YAML files in the directory that contain the search_string.
 
     Returns a sorted list of matching file paths.
     """
-    directory = Path(directory)
     grep_path = shutil.which("grep")
     if grep_path is None:
         raise RuntimeError("grep not found on system PATH")
@@ -59,11 +62,17 @@ def get_spec_files(directory, search_string):
     if result.returncode != 0 or not result.stdout.strip():
         return []
 
-    file_paths = [Path(p.strip()) for p in result.stdout.strip().split("\n") if p.strip().endswith((".yaml", ".yml"))]
-    return sorted(file_paths, key=lambda p: p.stem)
+    matches = [Path(p.strip()) for p in result.stdout.strip().split("\n")]
+    yaml_paths = [p for p in matches if p.suffix in (".yaml", ".yml")]
+    return sorted(yaml_paths, key=lambda p: p.stem)
 
 
-def multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview):
+def multi_spec_transform(
+    data_loader: DataLoader,
+    spec_files: list[Path],
+    source_schemaview: SchemaView,
+    target_schemaview: SchemaView,
+) -> Generator[dict[str, Any], None, None]:
     """Apply multiple LinkML-Map specifications to data and yield transformed objects."""
     for file in spec_files:
         print(f"{file.stem}", end="", flush=True)
@@ -78,9 +87,10 @@ def multi_spec_transform(data_loader, spec_files, source_schemaview, target_sche
                     pht_id = class_spec["populated_from"]
                     rows = data_loader[pht_id]
 
-                    transformer = ObjectTransformer()
-                    transformer.source_schemaview = source_schemaview
-                    transformer.target_schemaview = target_schemaview
+                    transformer = ObjectTransformer(
+                        source_schemaview=source_schemaview,
+                        target_schemaview=target_schemaview,
+                    )
                     transformer.create_transformer_specification(block)
 
                     for row in rows:
@@ -94,91 +104,31 @@ def multi_spec_transform(data_loader, spec_files, source_schemaview, target_sche
             raise
 
 
-def json_stream(chunks, key_name):
-    """Convert chunks of objects to JSON format."""
-    for i, chunk in enumerate(chunks):
-        js = json.dumps({key_name: chunk}, ensure_ascii=False)
-        yield js if i == 0 else ",".join(js.splitlines()[1:-1])
-
-
-def jsonl_stream(chunks, key_name=None):
-    """Convert chunks of objects to JSON Lines format."""
-    for chunk in chunks:
-        yield "".join(json.dumps(obj, ensure_ascii=False) + "\n" for obj in chunk)
-
-
-def yaml_stream(chunks, key_name):
-    """Convert chunks of objects to YAML format."""
-    for i, chunk in enumerate(chunks):
-        yaml_str = yaml.dump({key_name: chunk}, default_flow_style=False)
-        yield yaml_str if i == 0 else "\n".join(yaml_str.splitlines()[1:]) + "\n"
-
-
-def tsv_stream(chunks, key_name=None, sep="\t", reducer_str="__"):
-    """Convert chunks of objects to TSV format with dynamic headers."""
-    initial_headers = []
-    headers = []
-    reducer = make_reducer(reducer_str)
-    for chunk in chunks:
-        for obj in chunk:
-            flat = flatten(obj, reducer=reducer)
-
-            for k in flat.keys():
-                if k not in headers:
-                    headers.append(k)
-
-            if len(initial_headers) == 0:
-                yield sep.join(headers) + "\n"
-                initial_headers = list(headers)
-
-            row = sep.join(str(flat.get(h, "")) for h in headers)
-            yield row + "\n"
-
-    if headers != initial_headers:
-        tsv_stream.headers = headers
-
-
-def rewrite_header_and_pad(chunks, final_header, sep="\t"):
-    """Rewrite the header of TSV chunks and pad rows with missing columns."""
-    header_count = len(final_header)
-    header_line = sep.join(final_header) + "\n"
-
-    def pad_lines(chunk):
-        """Pad each row in a chunk to match the final header width."""
-        out_lines = []
-        for line in chunk:
-            fields = line.rstrip("\n").split(sep)
-            if len(fields) < header_count:
-                fields.extend([""] * (header_count - len(fields)))
-            out_lines.append(sep.join(fields) + "\n")
-        return out_lines
-
-    first_chunk = next(chunks, None)
-    yield header_line + "".join(pad_lines(first_chunk[1:]))
-
-    for chunk in chunks:
-        yield "".join(pad_lines(chunk))
-
-
-def get_schema(schema_path):
+def get_schema(schema_path: Path) -> SchemaDefinition:
     """Load and return a LinkML schema from the given path."""
     sv = SchemaView(schema_path)
-    return sv.schema
+    schema = sv.schema
+
+    # FIXME: When would schema be None? I don't know, but that's what's in the types.
+    if schema is None:
+        raise ValueError()
+
+    return schema
 
 
 def process_entities(
+    *,
     entities,
     data_loader,
     var_dir,
     source_schemaview,
     target_schemaview,
-    stream_func,
     output_dir,
     output_prefix,
     output_postfix,
     output_type,
     chunk_size=1000,
-):
+) -> None:
     """Process each entity and write to output files."""
     start = time.perf_counter()
     for entity in entities:
@@ -194,16 +144,18 @@ def process_entities(
         chunks = chunked(iterable, chunk_size)
         key_name = entity.lower() + "s"
 
-        with open(output_path, "w") as f:
-            for chunk in stream_func(chunks, key_name):
-                f.write(chunk)
+        stream = make_stream(output_type, key_name=key_name)
 
-        if hasattr(stream_func, "headers"):
+        with open(output_path, "w") as f:
+            for output in stream.process(chunks):
+                f.write(output)
+
+        if isinstance(stream, TSVStream) and stream.must_update_headers:
             print(f"Rewriting {entity} (headers changed)")
             tmp_path = output_path + ".tmp"
             with open(output_path, "r") as src, open(tmp_path, "w") as dst:
                 chunks = chunked(src, chunk_size)
-                dst.writelines(rewrite_header_and_pad(chunks, stream_func.headers))
+                dst.writelines(TSVStream.rewrite_header_and_pad(chunks, stream.next_headers))
             os.replace(tmp_path, output_path)
 
         print(f"{entity} Complete")
@@ -213,15 +165,61 @@ def process_entities(
 
 
 def main(
-    source_schema,
-    target_schema,
-    data_dir,
-    var_dir,
-    output_dir,
-    output_prefix,
-    output_postfix,
-    output_type="jsonl",
-    chunk_size=1000,
+    source_schema: Annotated[
+        Path,
+        typer.Option(
+            exists=True,
+            file_okay=True,
+            dir_okay=False,
+        ),
+    ],
+    target_schema: Annotated[
+        Path,
+        typer.Option(
+            exists=True,
+            file_okay=True,
+            dir_okay=False,
+        ),
+    ],
+    data_dir: Annotated[
+        Path,
+        typer.Option(
+            exists=True,
+            file_okay=False,
+            dir_okay=True,
+        ),
+    ],
+    var_dir: Annotated[
+        Path,
+        typer.Option(
+            exists=True,
+            file_okay=False,
+            dir_okay=True,
+        ),
+    ],
+    output_dir: Annotated[
+        Path,
+        typer.Option(
+            file_okay=False,
+            dir_okay=True,
+        ),
+    ],
+    output_prefix: Annotated[
+        str,
+        typer.Option(),
+    ],
+    output_postfix: Annotated[
+        str,
+        typer.Option(),
+    ],
+    output_type: Annotated[
+        StreamFormat,
+        typer.Option(),
+    ] = "jsonl",
+    chunk_size: Annotated[
+        int,
+        typer.Option(),
+    ] = 1000,
 ):
     """Run LinkML-Map transformation from command line arguments."""
     source_schemaview = SchemaView(get_schema(source_schema))
@@ -243,37 +241,20 @@ def main(
     ]
 
     os.makedirs(output_dir, exist_ok=True)
-    stream_map = {"json": json_stream, "jsonl": jsonl_stream, "tsv": tsv_stream, "yaml": yaml_stream}
-    stream_func = stream_map[output_type]
 
     process_entities(
-        entities,
-        data_loader,
-        var_dir,
-        source_schemaview,
-        target_schemaview,
-        stream_func,
-        output_dir,
-        output_prefix,
-        output_postfix,
-        output_type,
-        chunk_size,
+        entities=entities,
+        data_loader=data_loader,
+        var_dir=var_dir,
+        source_schemaview=source_schemaview,
+        target_schemaview=target_schemaview,
+        output_dir=output_dir,
+        output_prefix=output_prefix,
+        output_postfix=output_postfix,
+        output_type=output_type,
+        chunk_size=chunk_size,
     )
 
 
 if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Run LinkML-Map transformation")
-    parser.add_argument("--source_schema", required=True)
-    parser.add_argument("--target_schema", required=True)
-    parser.add_argument("--var_dir", required=True)
-    parser.add_argument("--data_dir", required=True)
-    parser.add_argument("--output_dir", required=True)
-    parser.add_argument("--output_prefix", required=True)
-    parser.add_argument("--output_postfix", required=True)
-    parser.add_argument("--output_type", default="tsv", choices=["json", "jsonl", "tsv", "yaml"])
-    parser.add_argument("--chunk_size", type=int, default=1000)
-
-    args = parser.parse_args()
-    main(**vars(args))
+    typer.run(main)
