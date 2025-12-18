@@ -61,9 +61,9 @@ Compare GitHub state to DEVELOPMENT.md and categorize:
 - Move end date EARLIER - ask user with justification
 
 **For new issues:**
-- Place at end of section's timeline
-- Use ~6 week duration as default
-- Suggest dates based on section's existing range
+- Place after all existing issues under the same tracker issue
+- Use 8 week duration as default
+- Start date should begin after the last existing issue in that section ends
 
 ### 5. Apply Changes
 
