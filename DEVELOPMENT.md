@@ -37,7 +37,7 @@ gantt
     Move to uv as Python manager (#178)                 :done, i178, 2025-09-20, 2025-12-01
     Re-align Tracking Tickets and Tasks (#173)          :active, i173, 2025-10-10, 2025-12-20
     Update Dependencies and Release Strategy (#180)     :i180, 2025-12-20, 2026-03-28
-    First dm-bip release (#193)                         :active, i193, 2025-10-01, 2025-12-20
+    First dm-bip release (#193)                         :done, i193, 2025-10-01, 2025-12-19
     Automate Release creation process (#194)            :active, i194, 2025-12-01, 2026-02-15
     Improve Documentation (#50)                         :done, i50, 2025-12-15, 2026-01-31
     Add Markdown plugin for Sphinx (#41)                :i41, 2026-01-31, 2026-03-31
@@ -45,12 +45,14 @@ gantt
     Implement Code Coverage Monitoring (#217)          :i217, 2025-12-20, 2026-03-15
     Improve Test Coverage (#218)                       :i218, 2026-03-15, 2026-05-10
     Fix linting errors in notebooks (#219)             :i219, 2026-04-01, 2026-05-27
+    Silent Exception in updated_flatten_to_tsv (#226) :i226, 2026-03-01, 2026-05-15
+    Mixed CLI frameworks (#227)                       :i227, 2025-11-20, 2026-03-01
 
     section Pilot Data Delivery 
     Tracking Issue #185                     :crit, t185, 2025-09-30, 5w
 
     section 2 
-    Independent Re-ingestion of Dataset (#171)          :active, i171, 2025-09-25, 2025-12-31
+    Independent Re-ingestion of Dataset (#171)          :done, i171, 2025-09-25, 2025-12-19
     Ensure all Cohort groups are ingested (#221)       :i221, 2025-12-31, 2026-04-11
 
     section Quality Control 
@@ -68,8 +70,8 @@ gantt
     Full Ingestions Pipeline v2.0 (#168)                :done, i168, 2025-08-15, 2025-11-01
     Create a Dockerfile for containerization (#176)     :done, i176, 2025-09-05, 2025-11-15
     Add Docker to Dependencies (#179)                   :done, i179, 2025-09-01, 2025-11-01
-    Add data mapping to automation (#167)               :active, i167, 2025-11-01, 2026-01-01
-    Create tests for mapping script (#210)              :active, i210, 2026-01-01, 2026-03-01
+    Add data mapping to automation (#167)               :done, i167, 2025-11-01, 2026-01-01
+    Create tests for mapping script (#210)              :done, i210, 2025-10-01, 2025-12-20
     Add Containerization to Makefile (#177)             :active, i177, 2025-11-01, 2026-01-15
     Enable offset calculations in LinkML-Map (#169)     :active, i169, 2025-09-20, 2026-01-01
     Enum derivations (#211)                             :i211, 2026-01-01, 2026-03-15
@@ -77,6 +79,7 @@ gantt
     Generalize map_data.py with INCLUDE mapping (#166)  :i166, 2026-02-01, 2026-04-25
     Add Containerization with Docker (#90)              :i90, 2026-02-10, 2026-05-15
     Implement data mapping from multiple classes (#222) :i222, 2026-03-01, 2026-05-27
+    Tweak prefix and postfix in the Makefile (#230)    :i230, 2026-01-01, 2026-04-01
 
     section Audit Logs
     Tracking Issue #189                     :crit, t189, 2025-09-30, 5w
@@ -90,10 +93,10 @@ gantt
 
     section 6 
     Incorporate Stata YAML authoring tool (#175)        :active, i175, 2025-11-15, 2026-02-01
-    Improve Data Cleanup and add to Makefile (#170)     :active, i170, 2025-12-10, 2026-02-20
+    Improve Data Cleanup and add to Makefile (#170)     :active, i170, 2025-12-10, 2026-03-20
     Add variable digest files to pipeline (#204)        :active, i204, 2025-12-10, 2026-03-01
     make a data dictionary template (#103)              :i103, 2026-03-01, 2026-05-01
-    Create GitHub workflow to container registry (#201) :i201, 2026-03-01, 2026-05-15
+    Create GitHub workflow to container registry (#201) :i201, 2026-02-01, 2026-05-15
     Update Docker with uv (#208)                        :i208, 2026-03-01, 2026-05-01
 
     section BDC User On-Demand
@@ -101,10 +104,10 @@ gantt
 
     section 7 
     Update README.md to current usage (#144)            :done, i144, 2025-10-01, 2025-12-15
-    Post Pilot Toy Dataset Improvement (#117)           :active, i117, 2025-12-10, 2026-03-15
+    Post Pilot Toy Dataset Improvement (#117)           :active, i117, 2025-12-15, 2026-03-01
     Packages without wheels for Python 3.13 (#151)      :i151, 2026-03-01, 2026-05-15
-    Implement or remove CLI (#216)                     :i216, 2026-03-01, 2026-05-10
-    Remove Hardcoded entity list (#220)                :i220, 2026-02-15, 2026-05-10
+    Implement or remove CLI (#216)                     :done, i216, 2025-12-01, 2026-01-19
+    Remove Hardcoded entity list (#220)                :i220, 2026-01-19, 2026-04-10
 
     section AI Curation
     Tracking Issue #197                     :crit, t197, 2025-09-30, 5w
@@ -166,6 +169,9 @@ gantt
     click i221 href "https://github.com/linkml/dm-bip/issues/221"
     click i222 href "https://github.com/linkml/dm-bip/issues/222"
     click i223 href "https://github.com/linkml/dm-bip/issues/223"
+    click i226 href "https://github.com/linkml/dm-bip/issues/226"
+    click i227 href "https://github.com/linkml/dm-bip/issues/227"
+    click i230 href "https://github.com/linkml/dm-bip/issues/230"
 
     axisFormat %B
     tickInterval 1month
@@ -181,7 +187,7 @@ Procedures for controlling releases of tool-chains, repositories, and data sets.
 - [x] Create a new development Roadmap (#172) - Corey
 - [ ] Re-align Tracking Tickets and Development Tasks (#173) - Corey
 - [ ] Update Dependencies and Create Release Strategy (#180)
-- [ ] First dm-bip release (#193) - Corey
+- [x] First dm-bip release (#193) - Corey
 - [ ] Automate Release creation process (#194) - Corey
 - [x] Improve Documentation (#50) - Corey
 - [ ] Add Markdown plugin for Sphinx (#41) - Patrick
@@ -189,10 +195,12 @@ Procedures for controlling releases of tool-chains, repositories, and data sets.
 - [ ] Implement Code Coverage Monitoring (#217)
 - [ ] Improve Test Coverage (#218)
 - [ ] Fix linting errors in notebooks (#219)
+- [ ] Silent Exception in updated_flatten_to_tsv (#226)
+- [ ] Mixed CLI frameworks (#227)
 
 ## 2. Pilot Data Delivery (Tracking: #185)
 Preparation, ingestion, and QC of the original pilot data set.
-- [ ] Independent Re-ingestion of Dataset (#171) - Roman, Corey
+- [x] Independent Re-ingestion of Dataset (#171) - Roman, Corey
 - [ ] Ensure all Cohort groups are ingested (#221)
 
 ## 3. Quality Control (Tracking: #187)
@@ -208,13 +216,14 @@ Improving automation, testing, workflows, and integration.
 - [x] Add Docker to Dependencies (#179) - Vessie, Corey
 - [ ] Add tooling for SchemaAutomator/Schemasheets (#80) - Trish
 - [ ] Generalize map_data.py with INCLUDE mapping (#166) - Trish, Corey
-- [ ] Add data mapping to automation (#167)
+- [x] Add data mapping to automation (#167)
 - [ ] Enable offset calculations in LinkML-Map (#169) - Madan
 - [ ] Add Containerization to Makefile (#177)
 - [ ] Add Containerization with Docker (#90) - Patrick, Vessie
-- [ ] Create tests for mapping script (#210) - Corey
+- [x] Create tests for mapping script (#210) - Corey
 - [ ] Enum derivations (#211) - Roman, Corey
 - [ ] Implement data mapping from multiple classes (#222)
+- [ ] Tweak prefix and postfix in the Makefile (#230) - Corey
 
 ## 5. Audit Logs (Tracking: #189)
 Logging, auditability, and human-readable data provenance.
@@ -236,7 +245,7 @@ Bringing the Harmonization Pipeline to BDC for user on-demand harmonization.
 - [ ] Post Pilot Toy Dataset Improvement (#117)
 - [x] Update README.md to current usage (#144) - Roman, Corey
 - [ ] Packages without wheels for Python 3.13 (#151) - Patrick
-- [ ] Implement or remove CLI (#216)
+- [x] Implement or remove CLI (#216)
 - [ ] Remove Hardcoded entity list from map_data.py (#220)
 - [ ] Seven Bridges integration planning
 - [ ] User harmonization workflow
