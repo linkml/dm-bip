@@ -119,7 +119,7 @@ class TSVStream(Stream):
                 # Set headers on initial run
                 if self.current_headers is None:
                     yield self.sep.join(self.next_headers) + "\n"
-                    self.current_headers = self.next_headers
+                    self.current_headers = list(self.next_headers)
 
                 row = self.sep.join(str(flat.get(h, "")) for h in self.current_headers)
                 yield row + "\n"
