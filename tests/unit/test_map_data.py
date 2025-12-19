@@ -13,14 +13,15 @@ from dm_bip.map_data.map_data import (
     DataLoader,
     get_schema,
     get_spec_files,
-    json_stream,
-    jsonl_stream,
     main,
     multi_spec_transform,
     process_entities,
-    rewrite_header_and_pad,
-    tsv_stream,
-    yaml_stream,
+)
+from dm_bip.map_data.streams import (
+    JSONLStream,
+    JSONStream,
+    TSVStream,
+    YAMLStream,
 )
 
 # Path to toy_data directory
@@ -83,40 +84,30 @@ def spec_files_dir(temp_dir):
     return temp_dir
 
 
-@pytest.fixture(autouse=True)
-def reset_tsv_stream_headers():
-    """Reset tsv_stream.headers before and after each test."""
-    if hasattr(tsv_stream, "headers"):
-        del tsv_stream.headers
-    yield
-    if hasattr(tsv_stream, "headers"):
-        del tsv_stream.headers
-
-
 # --- DataLoader Tests ---
 
 
 def test_dataloader_init_stores_base_path(data_loader_dir):
     """Test that __init__ stores the base path correctly."""
-    loader = DataLoader(data_loader_dir)
-    assert loader.base_path == data_loader_dir
+    loader = DataLoader(Path(data_loader_dir))
+    assert loader.base_path == Path(data_loader_dir)
 
 
 def test_dataloader_contains_returns_true_for_existing_file(data_loader_dir):
     """Test __contains__ returns True when file exists."""
-    loader = DataLoader(data_loader_dir)
+    loader = DataLoader(Path(data_loader_dir))
     assert "test_data" in loader
 
 
 def test_dataloader_contains_returns_false_for_missing_file(data_loader_dir):
     """Test __contains__ returns False when file does not exist."""
-    loader = DataLoader(data_loader_dir)
+    loader = DataLoader(Path(data_loader_dir))
     assert "nonexistent" not in loader
 
 
 def test_dataloader_getitem_returns_iterator_for_existing_file(data_loader_dir):
     """Test __getitem__ returns an iterator of instances from TSV."""
-    loader = DataLoader(data_loader_dir)
+    loader = DataLoader(Path(data_loader_dir))
     instances = list(loader["test_data"])
     assert len(instances) == 2
     # TsvLoader may coerce types, so check values loosely
@@ -129,7 +120,7 @@ def test_dataloader_getitem_returns_iterator_for_existing_file(data_loader_dir):
 
 def test_dataloader_getitem_raises_for_missing_file(data_loader_dir):
     """Test __getitem__ raises FileNotFoundError for missing files."""
-    loader = DataLoader(data_loader_dir)
+    loader = DataLoader(Path(data_loader_dir))
     with pytest.raises(FileNotFoundError) as exc_info:
         loader["nonexistent"]
     assert "nonexistent" in str(exc_info.value)
@@ -177,13 +168,14 @@ def test_get_spec_files_handles_yml_extension(spec_files_dir):
     assert "test_spec" in stems
 
 
-# --- json_stream Tests ---
+# --- JSONStream Tests ---
 
 
 def test_json_stream_single_chunk():
     """Test JSON output with a single chunk."""
     chunks = [[{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]]
-    result = list(json_stream(chunks, "persons"))
+    stream = JSONStream(key_name="persons")
+    result = list(stream.process(iter(chunks)))
     assert len(result) == 1
     parsed = json.loads(result[0])
     assert parsed["persons"] == [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
@@ -192,24 +184,27 @@ def test_json_stream_single_chunk():
 def test_json_stream_multiple_chunks():
     """Test JSON output with multiple chunks."""
     chunks = [[{"id": 1}], [{"id": 2}]]
-    result = list(json_stream(chunks, "items"))
+    stream = JSONStream(key_name="items")
+    result = list(stream.process(iter(chunks)))
     assert len(result) == 2
     assert '"items"' in result[0]
 
 
 def test_json_stream_empty():
     """Test JSON output with no chunks."""
-    result = list(json_stream([], "items"))
+    stream = JSONStream(key_name="items")
+    result = list(stream.process(iter([])))
     assert result == []
 
 
-# --- jsonl_stream Tests ---
+# --- JSONLStream Tests ---
 
 
 def test_jsonl_stream_single_chunk():
     """Test JSONL output with a single chunk."""
     chunks = [[{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]]
-    result = list(jsonl_stream(chunks))
+    stream = JSONLStream()
+    result = list(stream.process(iter(chunks)))
     assert len(result) == 1
     lines = result[0].strip().split("\n")
     assert len(lines) == 2
@@ -220,7 +215,8 @@ def test_jsonl_stream_single_chunk():
 def test_jsonl_stream_multiple_chunks():
     """Test JSONL output with multiple chunks."""
     chunks = [[{"id": 1}], [{"id": 2}]]
-    result = list(jsonl_stream(chunks))
+    stream = JSONLStream()
+    result = list(stream.process(iter(chunks)))
     assert len(result) == 2
     assert json.loads(result[0].strip()) == {"id": 1}
     assert json.loads(result[1].strip()) == {"id": 2}
@@ -229,18 +225,20 @@ def test_jsonl_stream_multiple_chunks():
 def test_jsonl_stream_each_object_on_own_line():
     """Test that each object is on its own line."""
     chunks = [[{"a": 1}, {"b": 2}, {"c": 3}]]
-    result = list(jsonl_stream(chunks))
+    stream = JSONLStream()
+    result = list(stream.process(iter(chunks)))
     lines = result[0].strip().split("\n")
     assert len(lines) == 3
 
 
-# --- yaml_stream Tests ---
+# --- YAMLStream Tests ---
 
 
 def test_yaml_stream_single_chunk():
     """Test YAML output with a single chunk."""
     chunks = [[{"id": 1, "name": "Alice"}]]
-    result = list(yaml_stream(chunks, "persons"))
+    stream = YAMLStream(key_name="persons")
+    result = list(stream.process(iter(chunks)))
     assert len(result) == 1
     parsed = yaml.safe_load(result[0])
     assert parsed["persons"] == [{"id": 1, "name": "Alice"}]
@@ -249,18 +247,20 @@ def test_yaml_stream_single_chunk():
 def test_yaml_stream_multiple_chunks():
     """Test YAML output with multiple chunks."""
     chunks = [[{"id": 1}], [{"id": 2}]]
-    result = list(yaml_stream(chunks, "items"))
+    stream = YAMLStream(key_name="items")
+    result = list(stream.process(iter(chunks)))
     assert len(result) == 2
     assert "items:" in result[0]
 
 
-# --- tsv_stream Tests ---
+# --- TSVStream Tests ---
 
 
 def test_tsv_stream_basic_output():
     """Test basic TSV output with flat objects."""
     chunks = [[{"id": "1", "name": "Alice"}, {"id": "2", "name": "Bob"}]]
-    result = list(tsv_stream(chunks))
+    stream = TSVStream(sep="\t", reducer_str="__")
+    result = list(stream.process(iter(chunks)))
     lines = "".join(result).strip().split("\n")
     assert len(lines) == 3  # header + 2 rows
     headers = lines[0].split("\t")
@@ -271,7 +271,8 @@ def test_tsv_stream_basic_output():
 def test_tsv_stream_nested_objects_flattened():
     """Test that nested objects are flattened with separator."""
     chunks = [[{"id": "1", "person": {"name": "Alice", "age": 30}}]]
-    result = list(tsv_stream(chunks))
+    stream = TSVStream(sep="\t", reducer_str="__")
+    result = list(stream.process(iter(chunks)))
     lines = "".join(result).strip().split("\n")
     headers = lines[0].split("\t")
     assert "person__name" in headers
@@ -281,7 +282,8 @@ def test_tsv_stream_nested_objects_flattened():
 def test_tsv_stream_custom_separator():
     """Test custom column separator."""
     chunks = [[{"id": "1", "name": "Alice"}]]
-    result = list(tsv_stream(chunks, sep=","))
+    stream = TSVStream(sep=",", reducer_str="__")
+    result = list(stream.process(iter(chunks)))
     lines = "".join(result).strip().split("\n")
     assert "," in lines[0]
 
@@ -290,7 +292,8 @@ def test_tsv_stream_missing_values_empty_string():
     """Test that missing values become empty strings when key is in headers."""
     # First object establishes headers, second object is missing a key
     chunks = [[{"id": "1", "name": "Alice"}, {"id": "2"}]]
-    result = list(tsv_stream(chunks))
+    stream = TSVStream(sep="\t", reducer_str="__")
+    result = list(stream.process(iter(chunks)))
     # Parse without strip() to preserve empty trailing columns
     lines = "".join(result).rstrip("\n").split("\n")
     headers = lines[0].split("\t")
@@ -302,23 +305,25 @@ def test_tsv_stream_missing_values_empty_string():
     assert row2_values[name_idx] == ""
 
 
-def test_tsv_stream_headers_attribute_set_when_headers_change():
-    """Test that tsv_stream.headers is set when new columns appear after first row."""
+def test_tsv_stream_must_update_headers_when_headers_change():
+    """Test that must_update_headers is set when new columns appear after first row."""
     chunks = [[{"id": "1"}], [{"id": "2", "new_col": "value"}]]
-    list(tsv_stream(chunks))
-    # Headers attribute should be set because new columns appeared
-    assert hasattr(tsv_stream, "headers")
-    assert "new_col" in tsv_stream.headers
+    stream = TSVStream(sep="\t", reducer_str="__")
+    list(stream.process(iter(chunks)))
+    # must_update_headers should be True because new columns appeared
+    assert stream.must_update_headers
+    assert "new_col" in stream.next_headers
 
 
-def test_tsv_stream_headers_attribute_not_set_when_consistent():
-    """Test that headers attribute is not set when columns are consistent."""
+def test_tsv_stream_must_update_headers_false_when_consistent():
+    """Test that must_update_headers is False when columns are consistent."""
     chunks = [[{"id": "1", "name": "A"}, {"id": "2", "name": "B"}]]
-    list(tsv_stream(chunks))
-    assert not hasattr(tsv_stream, "headers")
+    stream = TSVStream(sep="\t", reducer_str="__")
+    list(stream.process(iter(chunks)))
+    assert not stream.must_update_headers
 
 
-# --- rewrite_header_and_pad Tests ---
+# --- TSVStream.rewrite_header_and_pad Tests ---
 
 
 def test_rewrite_header_and_pad_rewrites_header():
@@ -326,7 +331,7 @@ def test_rewrite_header_and_pad_rewrites_header():
     original_lines = ["a\tb\n", "1\t2\n", "3\t4\n"]
     chunks = iter([original_lines])
     final_header = ["a", "b", "c"]
-    result = list(rewrite_header_and_pad(chunks, final_header))
+    result = list(TSVStream.rewrite_header_and_pad(chunks, final_header))
     combined = "".join(result)
     lines = combined.strip().split("\n")
     assert lines[0] == "a\tb\tc"
@@ -338,7 +343,7 @@ def test_rewrite_header_and_pad_pads_short_rows():
     original_lines = ["a\tb\n", "1\t2\n"]
     chunks = iter([original_lines])
     final_header = ["a", "b", "c"]
-    result = list(rewrite_header_and_pad(chunks, final_header))
+    result = list(TSVStream.rewrite_header_and_pad(chunks, final_header))
     combined = "".join(result)
     # Parse without strip() to preserve empty trailing columns
     lines = combined.rstrip("\n").split("\n")
@@ -354,7 +359,7 @@ def test_rewrite_header_and_pad_multiple_chunks():
     chunk2 = ["3\t4\n"]
     chunks = iter([chunk1, chunk2])
     final_header = ["a", "b", "c"]
-    result = list(rewrite_header_and_pad(chunks, final_header))
+    result = list(TSVStream.rewrite_header_and_pad(chunks, final_header))
     combined = "".join(result)
     lines = combined.strip().split("\n")
     assert len(lines) == 3  # header + 2 data rows
@@ -365,7 +370,7 @@ def test_rewrite_header_and_pad_custom_separator():
     original_lines = ["a,b\n", "1,2\n"]
     chunks = iter([original_lines])
     final_header = ["a", "b", "c"]
-    result = list(rewrite_header_and_pad(chunks, final_header, sep=","))
+    result = list(TSVStream.rewrite_header_and_pad(chunks, final_header, sep=","))
     combined = "".join(result)
     lines = combined.strip().split("\n")
     assert lines[0] == "a,b,c"
@@ -465,7 +470,6 @@ def test_process_entities_creates_output_files(linkml_test_setup, temp_dir):
         var_dir=linkml_test_setup["spec_dir"],
         source_schemaview=linkml_test_setup["source_sv"],
         target_schemaview=linkml_test_setup["target_sv"],
-        stream_func=jsonl_stream,
         output_dir=temp_dir,
         output_prefix="test",
         output_postfix="v1",
@@ -492,7 +496,6 @@ def test_process_entities_skips_missing_specs(linkml_test_setup, temp_dir):
         var_dir=linkml_test_setup["spec_dir"],
         source_schemaview=linkml_test_setup["source_sv"],
         target_schemaview=linkml_test_setup["target_sv"],
-        stream_func=jsonl_stream,
         output_dir=temp_dir,
         output_prefix="test",
         output_postfix="v1",
@@ -512,7 +515,6 @@ def test_process_entities_multiple_entities(linkml_test_setup, temp_dir):
         var_dir=linkml_test_setup["spec_dir"],
         source_schemaview=linkml_test_setup["source_sv"],
         target_schemaview=linkml_test_setup["target_sv"],
-        stream_func=jsonl_stream,
         output_dir=temp_dir,
         output_prefix="test",
         output_postfix="v1",
@@ -531,7 +533,6 @@ def test_process_entities_tsv_output(linkml_test_setup, temp_dir):
         var_dir=linkml_test_setup["spec_dir"],
         source_schemaview=linkml_test_setup["source_sv"],
         target_schemaview=linkml_test_setup["target_sv"],
-        stream_func=tsv_stream,
         output_dir=temp_dir,
         output_prefix="test",
         output_postfix="v1",
@@ -558,11 +559,11 @@ def test_main_creates_output_directory(temp_dir):
     # main() will try to process the hardcoded entity list, most won't have specs
     # but it should still create the directory
     main(
-        source_schema=str(TOY_DATA / "schemas/source-schema.yaml"),
-        target_schema=str(TOY_DATA / "schemas/target-schema.yaml"),
-        data_dir=str(TOY_DATA / "raw_data"),
-        var_dir=str(TOY_DATA / "specs"),
-        output_dir=str(output_dir),
+        source_schema=TOY_DATA / "schemas/source-schema.yaml",
+        target_schema=TOY_DATA / "schemas/target-schema.yaml",
+        data_dir=TOY_DATA / "raw_data",
+        var_dir=TOY_DATA / "specs",
+        output_dir=output_dir,
         output_prefix="test",
         output_postfix="v1",
         output_type="jsonl",
