@@ -13,6 +13,7 @@ Chunk = list[dict[str, Any]]
 Chunks = Iterator[Chunk]
 StreamOutput = Generator[str, None, None]
 
+
 def make_stream(fmt: StreamFormat, **kwargs) -> "Stream":
     """
     Create a data stream.
@@ -46,7 +47,6 @@ def make_stream(fmt: StreamFormat, **kwargs) -> "Stream":
 
         case _:
             raise ValueError("Invalid stream format.")
-
 
 
 class Stream(abc.ABC):
