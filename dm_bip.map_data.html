@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dm_bip.map_data package &mdash; dm-bip 0.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=7026087e"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            dm-bip
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline_user_docs.html">User Documentation for LinkML Data Model Ingest Pipeline Users</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema_automator.html">Schema Automator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemasheets.html">Schemasheets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts_format_converters.html">Scripts - Format Converters</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">dm-bip</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">dm_bip.map_data package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/dm_bip.map_data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dm-bip-map-data-package">
+<h1>dm_bip.map_data package<a class="headerlink" href="#dm-bip-map-data-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-dm_bip.map_data.map_data">
+<span id="dm-bip-map-data-map-data-module"></span><h2>dm_bip.map_data.map_data module<a class="headerlink" href="#module-dm_bip.map_data.map_data" title="Link to this heading"></a></h2>
+<p>Module for transforming data using LinkML-Map schemas and specifications.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dm_bip.map_data.map_data.DataLoader">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.map_data.</span></span><span class="sig-name descname"><span class="pre">DataLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.map_data.DataLoader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Load TSV files based on populated_from identifiers.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dm_bip.map_data.map_data.get_schema">
+<span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.map_data.</span></span><span class="sig-name descname"><span class="pre">get_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.map_data.get_schema" title="Link to this definition"></a></dt>
+<dd><p>Load and return a LinkML schema from the given path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaDefinition</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dm_bip.map_data.map_data.get_spec_files">
+<span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.map_data.</span></span><span class="sig-name descname"><span class="pre">get_spec_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_string</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.map_data.get_spec_files" title="Link to this definition"></a></dt>
+<dd><p>Find YAML files in the directory that contain the search_string.</p>
+<p>Returns a sorted list of matching file paths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dm_bip.map_data.map_data.main">
+<span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.map_data.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_postfix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jsonl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.map_data.main" title="Link to this definition"></a></dt>
+<dd><p>Run LinkML-Map transformation from command line arguments.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dm_bip.map_data.map_data.multi_spec_transform">
+<span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.map_data.</span></span><span class="sig-name descname"><span class="pre">multi_spec_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_schemaview</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_schemaview</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.map_data.multi_spec_transform" title="Link to this definition"></a></dt>
+<dd><p>Apply multiple LinkML-Map specifications to data and yield transformed objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dm_bip.map_data.map_data.process_entities">
+<span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.map_data.</span></span><span class="sig-name descname"><span class="pre">process_entities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">entities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_schemaview</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_schemaview</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_postfix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.map_data.process_entities" title="Link to this definition"></a></dt>
+<dd><p>Process each entity and write to output files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-dm_bip.map_data.streams">
+<span id="dm-bip-map-data-streams-module"></span><h2>dm_bip.map_data.streams module<a class="headerlink" href="#module-dm_bip.map_data.streams" title="Link to this heading"></a></h2>
+<p>Data structures for creating streamed output from chunked input data.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dm_bip.map_data.streams.JSONLStream">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">JSONLStream</span></span><a class="headerlink" href="#dm_bip.map_data.streams.JSONLStream" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dm_bip.map_data.streams.Stream" title="dm_bip.map_data.streams.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a></p>
+<p>Convert chunks of objects to JSONL format.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dm_bip.map_data.streams.JSONLStream.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.JSONLStream.process" title="Link to this definition"></a></dt>
+<dd><p>Serialize the output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dm_bip.map_data.streams.JSONStream">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">JSONStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.JSONStream" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dm_bip.map_data.streams.Stream" title="dm_bip.map_data.streams.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a></p>
+<p>Convert chunks of objects to JSON format.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dm_bip.map_data.streams.JSONStream.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.JSONStream.process" title="Link to this definition"></a></dt>
+<dd><p>Serialize the output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dm_bip.map_data.streams.Stream">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">Stream</span></span><a class="headerlink" href="#dm_bip.map_data.streams.Stream" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Serialize chunks into an output format.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dm_bip.map_data.streams.Stream.process">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.Stream.process" title="Link to this definition"></a></dt>
+<dd><p>Process a series of chunks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dm_bip.map_data.streams.TSVStream">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">TSVStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.TSVStream" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dm_bip.map_data.streams.Stream" title="dm_bip.map_data.streams.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a></p>
+<p>Convert chunks of objects to TSV format.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dm_bip.map_data.streams.TSVStream.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.TSVStream.process" title="Link to this definition"></a></dt>
+<dd><p>Serialize the output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dm_bip.map_data.streams.TSVStream.rewrite_header_and_pad">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rewrite_header_and_pad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_headers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\\t'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.TSVStream.rewrite_header_and_pad" title="Link to this definition"></a></dt>
+<dd><p>Rewrite the header of TSV chunks and pad rows with missing columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dm_bip.map_data.streams.YAMLStream">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">YAMLStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.YAMLStream" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dm_bip.map_data.streams.Stream" title="dm_bip.map_data.streams.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a></p>
+<p>Convert chunks of objects to YAML format.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dm_bip.map_data.streams.YAMLStream.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.YAMLStream.process" title="Link to this definition"></a></dt>
+<dd><p>Serialize the output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dm_bip.map_data.streams.make_stream">
+<span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">make_stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.make_stream" title="Link to this definition"></a></dt>
+<dd><p>Create a data stream.</p>
+<p>Note: kwargs are validated at runtime, not enforced at the callsite. This was on purpose, to make construction at
+the callsite more ergonomic. In the future, we may want to ditch this function, and just enforce type safety at
+the callsite.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#dm_bip.map_data.streams.Stream" title="dm_bip.map_data.streams.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-dm_bip.map_data">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dm_bip.map_data" title="Link to this heading"></a></h2>
+<p>Map data module for LinkML-Map transformations.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Corey Cox &lt;corey@tislab.org&gt;.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,6 +1,14 @@
 dm\_bip package
 ===============
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dm_bip.map_data
+
 Submodules
 ----------
 
