@@ -93,10 +93,10 @@ gantt
 
     section 6 
     Incorporate Stata YAML authoring tool (#175)        :active, i175, 2025-11-15, 2026-02-01
-    Improve Data Cleanup and add to Makefile (#170)     :active, i170, 2025-12-10, 2026-02-20
+    Improve Data Cleanup and add to Makefile (#170)     :active, i170, 2025-12-10, 2026-03-20
     Add variable digest files to pipeline (#204)        :active, i204, 2025-12-10, 2026-03-01
     make a data dictionary template (#103)              :i103, 2026-03-01, 2026-05-01
-    Create GitHub workflow to container registry (#201) :i201, 2026-03-01, 2026-05-15
+    Create GitHub workflow to container registry (#201) :i201, 2026-02-01, 2026-05-15
     Update Docker with uv (#208)                        :i208, 2026-03-01, 2026-05-01
 
     section BDC User On-Demand
@@ -104,10 +104,10 @@ gantt
 
     section 7 
     Update README.md to current usage (#144)            :done, i144, 2025-10-01, 2025-12-15
-    Post Pilot Toy Dataset Improvement (#117)           :active, i117, 2025-12-15, 2026-02-15
+    Post Pilot Toy Dataset Improvement (#117)           :active, i117, 2025-12-15, 2026-03-01
     Packages without wheels for Python 3.13 (#151)      :i151, 2026-03-01, 2026-05-15
     Implement or remove CLI (#216)                     :done, i216, 2025-12-01, 2026-01-19
-    Remove Hardcoded entity list (#220)                :i220, 2026-01-19, 2026-03-10
+    Remove Hardcoded entity list (#220)                :i220, 2026-01-19, 2026-04-10
 
     section AI Curation
     Tracking Issue #197                     :crit, t197, 2025-09-30, 5w
