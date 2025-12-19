@@ -119,6 +119,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# mise
+mise.toml
+
 # Spyder project settings
 .spyderproject
 .spyproject

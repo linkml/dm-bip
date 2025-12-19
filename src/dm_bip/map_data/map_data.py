@@ -138,7 +138,7 @@ def process_entities(
             continue
 
         print(f"Starting {entity}")
-        output_path = f"{output_dir}/{output_prefix}-{entity}-{output_postfix}.{output_type}"
+        output_path = f"{output_dir}/{'-'.join(x for x in [output_prefix, entity, output_postfix] if x)}.{output_type}"
 
         iterable = multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview)
         chunks = chunked(iterable, chunk_size)
