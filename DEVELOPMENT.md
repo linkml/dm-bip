@@ -46,7 +46,7 @@ gantt
     Improve Test Coverage (#218)                       :i218, 2026-03-15, 2026-05-10
     Fix linting errors in notebooks (#219)             :i219, 2026-04-01, 2026-05-27
     Silent Exception in updated_flatten_to_tsv (#226) :i226, 2026-03-01, 2026-05-15
-    Mixed CLI frameworks (#227)                       :i227, 2026-04-01, 2026-05-15
+    Mixed CLI frameworks (#227)                       :i227, 2025-11-20, 2026-03-01
 
     section Pilot Data Delivery 
     Tracking Issue #185                     :crit, t185, 2025-09-30, 5w
@@ -70,7 +70,7 @@ gantt
     Full Ingestions Pipeline v2.0 (#168)                :done, i168, 2025-08-15, 2025-11-01
     Create a Dockerfile for containerization (#176)     :done, i176, 2025-09-05, 2025-11-15
     Add Docker to Dependencies (#179)                   :done, i179, 2025-09-01, 2025-11-01
-    Add data mapping to automation (#167)               :done, i167, 2025-11-01, 2025-12-19
+    Add data mapping to automation (#167)               :done, i167, 2025-11-01, 2026-01-01
     Create tests for mapping script (#210)              :done, i210, 2025-10-01, 2025-12-20
     Add Containerization to Makefile (#177)             :active, i177, 2025-11-01, 2026-01-15
     Enable offset calculations in LinkML-Map (#169)     :active, i169, 2025-09-20, 2026-01-01
