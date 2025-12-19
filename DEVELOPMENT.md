@@ -6,190 +6,243 @@ This Gantt chart represents a starting point for understanding the timeline for 
 
 ```mermaid
 ---
-displayMode: compact
+config:
+  theme: dark
+  themeVariables:
+    taskBkgColor: '#8a8a8a'
+    taskBorderColor: '#9a9a9a'
+    activeTaskBkgColor: '#8b5cf6'
+    activeTaskBorderColor: '#7c3aed'
+    doneTaskBkgColor: '#238636'
+    doneTaskBorderColor: '#2ea043'
+    critBkgColor: '#0891b2'
+    critBorderColor: '#06b6d4'
+  gantt:
+    displayMode: compact
 ---
 gantt
     title Data Model-Based Ingestion Pipeline Roadmap
     dateFormat  YYYY-MM-DD
 
-    section Data Access
-    -                                       :done, 2025-07-15, 0d
+    section Release Control
+    Q1 Start (Sept)     :milestone, q1, 2025-09-01, 0d
+    Q2 Start (Dec)      :milestone, q2, 2025-12-01, 0d
+    Q3 Start (Mar)      :milestone, q3, 2026-03-01, 0d
+    Q4 Start (Jun)      :milestone, q4, 2026-06-01, 0d
+    Tracking Issue #186                     :crit, t186,2025-09-30, 5w
 
     section 1 
-    Preferred Data Access Deadline          :crit, milestone, 2025-02-28, 1d
-    Critical Data Access Deadline           :crit, milestone, 2025-03-15, 1d
-    Absolute Latest Data Access Deadline    :crit, milestone, 2025-05-01, 1d
+    Reporting for JIRA (#182)                           :done, i182, 2025-08-01, 2025-10-10
+    Create a new development Roadmap (#172)             :done, i172, 2025-09-20, 2025-12-15
+    Move to uv as Python manager (#178)                 :done, i178, 2025-09-20, 2025-12-01
+    Re-align Tracking Tickets and Tasks (#173)          :active, i173, 2025-10-10, 2025-12-20
+    Update Dependencies and Release Strategy (#180)     :i180, 2025-12-20, 2026-03-28
+    First dm-bip release (#193)                         :active, i193, 2025-10-01, 2025-12-20
+    Automate Release creation process (#194)            :active, i194, 2025-12-01, 2026-02-15
+    Improve Documentation (#50)                         :done, i50, 2025-12-15, 2026-01-31
+    Add Markdown plugin for Sphinx (#41)                :i41, 2026-01-31, 2026-03-31
+    Move Harmonica to external tool (#215)             :i215, 2026-02-15, 2026-05-12
+    Implement Code Coverage Monitoring (#217)          :i217, 2025-12-20, 2026-03-15
+    Improve Test Coverage (#218)                       :i218, 2026-03-15, 2026-05-10
+    Fix linting errors in notebooks (#219)             :i219, 2026-04-01, 2026-05-27
 
-    section Joint Working Group 
-    Leads - Patrick, Corey                  :done, 2025-01-10, 0d
+    section Pilot Data Delivery 
+    Tracking Issue #185                     :crit, t185, 2025-09-30, 5w
 
     section 2 
-    Development Setup & Documentation       :done, 2025-01-01, 2025-04-15
-    Build & Deployment Tools (Makefile)     :done, 2025-02-10, 2025-06-15
+    Independent Re-ingestion of Dataset (#171)          :active, i171, 2025-09-25, 2025-12-31
+    Ensure all Cohort groups are ingested (#221)       :i221, 2025-12-31, 2026-04-11
 
-    section Data Sets
-    Leads - Corey, Patrick, Madan           :done, 2025-01-10, 0d
+    section Quality Control 
+    Tracking Issue #187                     :crit, t187, 2025-09-30, 5w
 
     section 3 
-    Initial Toy Data                        :done, 2025-01-01, 2025-03-01
-    Robust Toy Data for Build & Test        :done, 2025-02-15, 2025-04-01
-    Initial Synthetic Data                  :done, 2025-02-10, 2025-04-01
-    Synthetic Data (Prioritized Variables)  :done, 2025-02-20, 2025-06-01
+    Fix Measurement Observation Sets (#174)             :active, i174, 2025-12-10, 2026-02-15
+    Create QC metrics (#196)                            :i196, 2026-01-01, 2026-02-15
+    Create QC Documentation (#195)                      :i195, 2026-02-15, 2026-04-15
 
-    section Schema Generation
-    Leads - Trish, Corey                    :done, 2025-01-10, 0d
+    section Pipeline Improvement
+    Tracking Issue #188                     :crit, t188, 2025-09-30, 5w
 
     section 4 
-    Schema Toy Data                         :done, 2025-02-01, 2025-03-08
-    Verify Schema Automator on Toy Data     :done, 2025-02-10, 2025-04-01
-    Synthetic Data for Schema Automator     :done, 2025-02-20, 2025-05-15
-    Schema Automator on Synthetic Data      :done, 2025-03-15, 2025-06-01
-    Use Schema Automator on Real Data       :done, 2025-04-01, 2025-07-01
-    Close Schema Automator Gaps             :done, 2025-04-15, 2025-07-01
-    Schema Sheets & Toy/Synthetic Data      :done, 2025-03-01, 2025-05-01
-    Annotation of Data                      :active, 2025-04-01, 2025-06-01
+    Full Ingestions Pipeline v2.0 (#168)                :done, i168, 2025-08-15, 2025-11-01
+    Create a Dockerfile for containerization (#176)     :done, i176, 2025-09-05, 2025-11-15
+    Add Docker to Dependencies (#179)                   :done, i179, 2025-09-01, 2025-11-01
+    Add data mapping to automation (#167)               :active, i167, 2025-11-01, 2026-01-01
+    Create tests for mapping script (#210)              :active, i210, 2026-01-01, 2026-03-01
+    Add Containerization to Makefile (#177)             :active, i177, 2025-11-01, 2026-01-15
+    Enable offset calculations in LinkML-Map (#169)     :active, i169, 2025-09-20, 2026-01-01
+    Enum derivations (#211)                             :i211, 2026-01-01, 2026-03-15
+    Add tooling for SchemaAutomator/Schemasheets (#80)  :i80, 2025-11-15, 2026-02-10
+    Generalize map_data.py with INCLUDE mapping (#166)  :i166, 2026-02-01, 2026-04-25
+    Add Containerization with Docker (#90)              :i90, 2026-02-10, 2026-05-15
+    Implement data mapping from multiple classes (#222) :i222, 2026-03-01, 2026-05-27
 
-    section Schema Validator
-    Lead - Madan                            :done, 2025-01-10, 0d
+    section Audit Logs
+    Tracking Issue #189                     :crit, t189, 2025-09-30, 5w
 
     section 5 
-    Schema Validator Toy Data               :done, 2025-02-10, 2025-03-30
-    Add Schema Validator & Write Tests      :done, 2025-02-10, 2025-04-01
-    Synthetic Data for Schema Validator     :done, 2025-02-20, 2025-05-15
-    Schema Validator on Real Data           :done, 2025-04-01, 2025-07-01
+    Define Audit Log Requirements (#213)               :i213, 2026-02-15, 2026-04-15
+    Replace print() with logging module (#223)         :i223, 2026-03-15, 2026-06-10
 
-    section Schema Data Map
-    Lead - BDC Data Model Team, Corey       :active, 2025-01-10, 0d
+    section DMC Integration
+    Tracking Issue #191                     :crit, t191, 2025-09-30, 5w
 
     section 6 
-    Manually Curated Data Map               :2025-03-015, 2025-06-01
-    Attempt Automatic Map Generation        :2025-05-01, 2025-07-01
+    Incorporate Stata YAML authoring tool (#175)        :active, i175, 2025-11-15, 2026-02-01
+    Improve Data Cleanup and add to Makefile (#170)     :active, i170, 2025-12-10, 2026-02-20
+    Add variable digest files to pipeline (#204)        :active, i204, 2025-12-10, 2026-03-01
+    make a data dictionary template (#103)              :i103, 2026-03-01, 2026-05-01
+    Create GitHub workflow to container registry (#201) :i201, 2026-03-01, 2026-05-15
+    Update Docker with uv (#208)                        :i208, 2026-03-01, 2026-05-01
 
-    section LinkML Map 
-    Lead - Corey                            :done, 2025-01-10, 0d
+    section BDC User On-Demand
+    Tracking Issue #192                     :crit, t192, 2025-09-30, 5w
 
     section 7 
-    LinkML Map Toy Data                     :active, 2025-02-01, 2025-03-08
-    Add LinkML Map                          :active, 2025-02-10, 2025-04-01
-    Synthetic Data for LinkML Map           :active, 2025-03-15, 2025-06-01
-    Real Data with LinkML Map               :2025-04-01, 2025-07-01
-    Remediate Mapping Issues                :2025-05-01, 2025-07-01
+    Update README.md to current usage (#144)            :done, i144, 2025-10-01, 2025-12-15
+    Post Pilot Toy Dataset Improvement (#117)           :active, i117, 2025-12-10, 2026-03-15
+    Packages without wheels for Python 3.13 (#151)      :i151, 2026-03-01, 2026-05-15
+    Implement or remove CLI (#216)                     :i216, 2026-03-01, 2026-05-10
+    Remove Hardcoded entity list (#220)                :i220, 2026-02-15, 2026-05-10
 
-    section Preprocessing
-    Lead -- Patrick, TBD                         :done, 2025-01-10, 0d
+    section AI Curation
+    Tracking Issue #197                     :crit, t197, 2025-09-30, 5w
 
     section 8 
-    Simple Data Cleaning Scripts            :done, 2025-02-01, 2025-04-15
-    Scripts for Complex Mappings [postponed, canceled]            :done, 2025-04-15, 2025-07-01
+    Independent run of AI curation API (#198)           :done, i198, 2025-10-20, 2025-12-31
+    Create script to run AI API (#199)                  :i199, 2025-12-31, 2026-03-15
 
-    section Exec & Deploy
-    Leads - Patrick, Stephen, Pierette                 :done, 2025-01-10, 0d
-
-    section 9 
-    Containerized Deployment (AWS, GCP)     :2025-03-15, 2025-06-15
-    Local Execution with Automation         :2025-04-01, 2025-07-01
-
-    section Final Pipeline Run
-    Leads - Corey, Stephen, Pierette        :done, 2025-01-10, 0d
-
-    section 10 
-    Full Pipeline with Synthetic Data       :2025-04-01, 2025-06-01
-    Single Real Data Set Through Pipeline   :2025-04-15, 2025-06-15
-    Fully Automated Pipeline for Cloud      :2025-04-15, 2025-07-01
-    Fully Automated Pipeline for Local      :2025-04-01, 2025-06-15
-    Final Run & Harmonization               :2025-05-15, 2025-07-01
+    click t186 href "https://github.com/linkml/dm-bip/issues/186"
+    click t185 href "https://github.com/linkml/dm-bip/issues/185"
+    click t187 href "https://github.com/linkml/dm-bip/issues/187"
+    click t188 href "https://github.com/linkml/dm-bip/issues/188"
+    click t189 href "https://github.com/linkml/dm-bip/issues/189"
+    click t191 href "https://github.com/linkml/dm-bip/issues/191"
+    click t192 href "https://github.com/linkml/dm-bip/issues/192"
+    click t197 href "https://github.com/linkml/dm-bip/issues/197"
+    click i41 href "https://github.com/linkml/dm-bip/issues/41"
+    click i50 href "https://github.com/linkml/dm-bip/issues/50"
+    click i80 href "https://github.com/linkml/dm-bip/issues/80"
+    click i90 href "https://github.com/linkml/dm-bip/issues/90"
+    click i103 href "https://github.com/linkml/dm-bip/issues/103"
+    click i117 href "https://github.com/linkml/dm-bip/issues/117"
+    click i144 href "https://github.com/linkml/dm-bip/issues/144"
+    click i151 href "https://github.com/linkml/dm-bip/issues/151"
+    click i166 href "https://github.com/linkml/dm-bip/issues/166"
+    click i167 href "https://github.com/linkml/dm-bip/issues/167"
+    click i168 href "https://github.com/linkml/dm-bip/issues/168"
+    click i169 href "https://github.com/linkml/dm-bip/issues/169"
+    click i170 href "https://github.com/linkml/dm-bip/issues/170"
+    click i171 href "https://github.com/linkml/dm-bip/issues/171"
+    click i172 href "https://github.com/linkml/dm-bip/issues/172"
+    click i173 href "https://github.com/linkml/dm-bip/issues/173"
+    click i174 href "https://github.com/linkml/dm-bip/issues/174"
+    click i175 href "https://github.com/linkml/dm-bip/issues/175"
+    click i176 href "https://github.com/linkml/dm-bip/issues/176"
+    click i177 href "https://github.com/linkml/dm-bip/issues/177"
+    click i178 href "https://github.com/linkml/dm-bip/issues/178"
+    click i179 href "https://github.com/linkml/dm-bip/issues/179"
+    click i180 href "https://github.com/linkml/dm-bip/issues/180"
+    click i182 href "https://github.com/linkml/dm-bip/issues/182"
+    click i193 href "https://github.com/linkml/dm-bip/issues/193"
+    click i194 href "https://github.com/linkml/dm-bip/issues/194"
+    click i195 href "https://github.com/linkml/dm-bip/issues/195"
+    click i196 href "https://github.com/linkml/dm-bip/issues/196"
+    click i198 href "https://github.com/linkml/dm-bip/issues/198"
+    click i199 href "https://github.com/linkml/dm-bip/issues/199"
+    click i201 href "https://github.com/linkml/dm-bip/issues/201"
+    click i204 href "https://github.com/linkml/dm-bip/issues/204"
+    click i208 href "https://github.com/linkml/dm-bip/issues/208"
+    click i210 href "https://github.com/linkml/dm-bip/issues/210"
+    click i211 href "https://github.com/linkml/dm-bip/issues/211"
+    click i213 href "https://github.com/linkml/dm-bip/issues/213"
+    click i215 href "https://github.com/linkml/dm-bip/issues/215"
+    click i216 href "https://github.com/linkml/dm-bip/issues/216"
+    click i217 href "https://github.com/linkml/dm-bip/issues/217"
+    click i218 href "https://github.com/linkml/dm-bip/issues/218"
+    click i219 href "https://github.com/linkml/dm-bip/issues/219"
+    click i220 href "https://github.com/linkml/dm-bip/issues/220"
+    click i221 href "https://github.com/linkml/dm-bip/issues/221"
+    click i222 href "https://github.com/linkml/dm-bip/issues/222"
+    click i223 href "https://github.com/linkml/dm-bip/issues/223"
 
     axisFormat %B
     tickInterval 1month
 ```
 
 # Project Outline
-This outline captures the main features shown in the project roadmap above. This outline can be more detailed and contains some project steps that are less useful in the top-level roadmap. We should plan to refine the use of these tools over time to capture the parts of the project that need to be represented at a top-level plan and a more detailed overview that collects all of the parts we are working on.
+This outline captures the main features shown in the project roadmap above, organized by tracking issue. Each section corresponds to a GANTT chart section and its associated GitHub tracking issue. Sub-issues are listed under each tracking category.
 
-1. ✔️**Joint Working Repository - Lead -- Patrick Golden** 
-    1. Overall Project Documentation - Ongoing
-    1. Automatic Project Documentation Deployment - Ongoing
-    1. Project Testing Suite - Initial - Completed, Needs Sub-tasks
-    1. Automated Pre-Commit Project Testing - Completed
-    1. Automated Build and Deployment Toolset - Makefile - Ongoing
-1. ✔️**Ingest-Wide Toy Data Set - Lead -- Corey Cox & Patrick Golden** 
-    1. Single Toy Data Set for Testing and Build Environment Validation Across Full Pipeline - Initial - Completed
-    1. Integration of Toy Data Set with Automated Build/Test Harness - ?
-1. ✔️**Ingest-Wide Synthetic Data Set - Assigned -- Corey Cox, Patrick Golden, Madan** 
-    1. Initial Synthetic Data Set Based on Data Available (BDC Synthetic) - In Progress
-    1. Initial Synthetic Data Set Generated from BDC Model identified variables - Not Started
-        1. NOTE: Initial Toy dataset replaced the need for synthetic dataset as Corey had to build the data set froms scratch to accompdate for what would have been needed from synthetic dataset.
-1. ✔️**Schema Automator - Lead -- Trish Whetzel, helping -- Corey Cox** 
-    1. Add Schema-Automator to Project and verify it works - Completed
-        1. Had to Downgrade Python Version from 3.13 to 3.12 for now
-        1. Used BDC Synthetic Data and produced Schema, no true testing or validation
-        1. Add Schema-Automator usage and installation process to documentation
-    1. Create Toy Data Set to verify functionality and start testing harness
-    1. Verify Schema-Automator works on Toy Data Set and Write Tests
-    1. Create Synthetic Data Set for advanced Schema-Automator functionality
-    1. Verify Schema-Automator works on Synthetic Data Set and Write Tests
-    1. Use Schema-Automator on a real data set and evaluate gaps
-    1. Close Schema Automator Gaps
-        1. Add richer data to synthetic or toy data set to represent gaps
-        1. Development on Schema Automator to add functionality
-        1. Development on Upstream Complex Mapper for hard to add functionality
-1. ✔️**Schema Sheets for Data Dictionary - Lead -- Trish Whetzel** 
-    1. Add Schema Sheets as additional tool to create data models
-1. ▶️**Annotation of the Data - Lead -- Trish Whetzel** 
-    1. Move to the repo - completed
-    1. Make the tool generalizeable/configurable to allow the tool to prioritize certain resources vs the others depending on need and the use case.
-    1. Add instructions on how to add ontologies by use case     
-1. ✔️**Schema Validator - Lead -- Madan** 
-    1. Add Schema Validator to project and verify it works
-    1. Create Toy Data Set to verify functionality and start testing harness
-        1. Toy Data Set resembling output of Schema Automator
-        1. Toy Data Set of data input to Schema Automator to validate to Schema
-        1. Valid and invalid data sets for testing
-    1. Verify Schema Validator works for Toy Data Set and Write Tests
-    1. Create Synthetic Data Set for Schema Validatory and Write Tests
-    1. Use Schema Validator on real data with Schema Automator generated schema
-1. ▶️**Schema Data Map - Yaml file that describes the map from one data model to another** 
-    1. Manually Curated data map from BDC Data Model Team
-    1. Attempt Automatic generation of map from LLM working group
-1. ▶️**LinkML Mapper - Doing the Transformation  - Lead -- Corey Cox** 
-    1. Add LinkML Mapper to Project and verify it works
-    1. Create Toy Data for LinkML Mapper functionality
-        1. Toy Data Set used for Schema Automator Schema generation
-        1. Schema Automator derived implicit data model from toy data set
-        1. Toy Subset of the BDC Model appropriate for Toy Data set
-        1. Toy Schema Data Map appropriate for all of the above Toy Data set items
-    1. Verify LinkML Mapper works on toy data set
-    1. Create Synthetic Data set for LinkML Mappers
-        1. Synthetic Data set covering reasonable subset of real data
-        1. Schema Automator derived data model for above synthetic data
-        1. Appropriate Subset (or full set) of BDC Data Model
-        1. Data map appropriate to the above synthetic data items
-    1. Use LinkML Mapper on real data set using upstream ingest pipeline tool artifacts
-    1. Remediate mappings that can't be performed by LinkML Mapper
-        1. Identify variables that LinkML Mapper is unable to perform harmonization and mapping
-        1. Create Issues in LinkML Mapper and assess feasibility of adding functionality to LinkML Mapper
-        1. Add functionality to LinkML Mapper or add scripts to Complex Data Mapper on a per-variable manner
-    1. Perform full ingest data transform with LinkML Mapper on real data
-1. ✔️**Simple Data Cleaner - Lead -- Patrick Golden** 
-    1. Simple scripts necessary for Data cleaning outside of ingest pipeline
-        1. Poorly formatted Enums (Male, male, M, 1 - all meaning male)
-        1. Bad missing data representation (i.e. 9 for no data)
-        1. Empty columns
-        1. Other bad data practices we can’t expect our ingest to handle
-1. ❎**Complex Data Mapper - postponed, canceled as not planned**
-    1. One-off scripts on per dataset basis to map data that is too complex for the tools as the exist
-    1. Create these as-needed for each variable that cannot be cleanly mapped with LinkML Mapper
-1. **Execution and Deployment pipeline - Lead -- BDC -- Patrick and Stephen, INCLUDE -- Pierette Lo**
-    1. Wrapping tools and steps into containers for deployment to cloud environments (BDC Catalyst through AWS, Google Cloud)
-    1. Local system execution of pipeline in fully automated way if possible or with checkpoints and human-in-the-loop.
-1. **Running all data through pipeline to produce a harmonized whole - Lead -- BDC -- Corey Cox with Stephen Hwang, INCLUDE -- Pierette Lo**
-    1. With the final robust synthetic data set, run the full pipeline with both Cloud and Local architectures
-    1. Run a single data set all the way through the pipeline either on Cloud or Local architecture
-    1. Create Fully automated pipelines for real-world data set
-        1. With initial working real-world data set create a full automated pipeline for Cloud Architecture
-        1. Create fully automated pipeline for Local architecture
-        1. Test over all appropriate systems
-    1. Run the full pipeline on all of the target data sets with the appropriate architecture
-        1. Identify failures and gaps for each of the data sets
-        1. Fill identified gaps with issues and development in the approprite tool or Complex Data Mapper
-        1. Final run for each data set to the harmonized model
+## 1. Release Control (Tracking: #186)
+Procedures for controlling releases of tool-chains, repositories, and data sets.
+- [x] Move to uv as Python manager (#178) - Roman
+- [x] Reporting for JIRA (#182) - Corey
+- [x] Create a new development Roadmap (#172) - Corey
+- [ ] Re-align Tracking Tickets and Development Tasks (#173) - Corey
+- [ ] Update Dependencies and Create Release Strategy (#180)
+- [ ] First dm-bip release (#193) - Corey
+- [ ] Automate Release creation process (#194) - Corey
+- [x] Improve Documentation (#50) - Corey
+- [ ] Add Markdown plugin for Sphinx (#41) - Patrick
+- [ ] Move Harmonica (OntoAnntate) to external tool (#215)
+- [ ] Implement Code Coverage Monitoring (#217)
+- [ ] Improve Test Coverage (#218)
+- [ ] Fix linting errors in notebooks (#219)
+
+## 2. Pilot Data Delivery (Tracking: #185)
+Preparation, ingestion, and QC of the original pilot data set.
+- [ ] Independent Re-ingestion of Dataset (#171) - Roman, Corey
+- [ ] Ensure all Cohort groups are ingested (#221)
+
+## 3. Quality Control (Tracking: #187)
+Procedures and workflows for quality control.
+- [ ] Fix Measurement Observation Sets (#174)
+- [ ] Create QC Documentation (#195)
+- [ ] Create QC metrics (#196)
+
+## 4. Pipeline Improvement (Tracking: #188)
+Improving automation, testing, workflows, and integration.
+- [x] Full Ingestions Pipeline v2.0 (#168)
+- [x] Create a Dockerfile for containerization (#176)
+- [x] Add Docker to Dependencies (#179) - Vessie, Corey
+- [ ] Add tooling for SchemaAutomator/Schemasheets (#80) - Trish
+- [ ] Generalize map_data.py with INCLUDE mapping (#166) - Trish, Corey
+- [ ] Add data mapping to automation (#167)
+- [ ] Enable offset calculations in LinkML-Map (#169) - Madan
+- [ ] Add Containerization to Makefile (#177)
+- [ ] Add Containerization with Docker (#90) - Patrick, Vessie
+- [ ] Create tests for mapping script (#210) - Corey
+- [ ] Enum derivations (#211) - Roman, Corey
+- [ ] Implement data mapping from multiple classes (#222)
+
+## 5. Audit Logs (Tracking: #189)
+Logging, auditability, and human-readable data provenance.
+- [ ] Define Audit Log Requirements (#213)
+- [ ] Replace print() statements with logging module (#223)
+- [ ] Implement human-readable logging
+
+## 6. DMC Integration (Tracking: #191)
+Integrating the Harmonization Pipeline into DMC pre-ingestion.
+- [ ] Make a data dictionary template (#103) - Trish
+- [ ] Improve Data Cleanup and add to Makefile (#170) - Roman, Corey
+- [ ] Incorporate Stata YAML authoring tool (#175)
+- [ ] Create GitHub workflow to container registry (#201) - Patrick
+- [ ] Add variable digest files to pipeline (#204)
+- [ ] Update Docker with uv (#208) - Vessie, Corey
+
+## 7. BDC User On-Demand (Tracking: #192)
+Bringing the Harmonization Pipeline to BDC for user on-demand harmonization.
+- [ ] Post Pilot Toy Dataset Improvement (#117)
+- [x] Update README.md to current usage (#144) - Roman, Corey
+- [ ] Packages without wheels for Python 3.13 (#151) - Patrick
+- [ ] Implement or remove CLI (#216)
+- [ ] Remove Hardcoded entity list from map_data.py (#220)
+- [ ] Seven Bridges integration planning
+- [ ] User harmonization workflow
+
+## 8. AI Curation (Tracking: #197)
+AI curation pipeline for improving data curation and specification creation.
+- [x] Independent run of AI curation API (#198)
+- [ ] Create script to run AI API (#199) - Corey
+- [ ] Integrate AI curation into pipeline

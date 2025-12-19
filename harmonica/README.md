@@ -2,7 +2,7 @@
 Annotate data with ontology terms.
 
 ## Prerequisites
-The prerequisites to run the script are maintained within the `pyproject.toml` file. To update your virtual environment run `poetry install`.
+The prerequisites to run the script are maintained within the `pyproject.toml` file. To update your virtual environment run `uv sync`.
 
 ## Usage
 ### Python

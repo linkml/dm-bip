@@ -33,7 +33,7 @@ Repository Structure
 - `src/` - Contains the main source code
 - `tests/` - Basic unit tests
 - `.github/workflows/` - GitHub Actions for CI/CD
-- `pyproject.toml` - Poetry configuration file
+- `pyproject.toml` - Project configuration and dependencies (managed with uv)
 - `tox.ini` - Configuration for linting, testing, and code quality checks
 
 .. toctree::
@@ -41,8 +41,10 @@ Repository Structure
    :caption: Contents
 
    installation
+   pipeline_user_docs
    schema_automator
    schemasheets
+   scripts_format_converters
 
 
 Indices and tables

@@ -5,7 +5,6 @@ import logging
 import click
 
 from dm_bip import __version__
-from dm_bip.main import demo
 
 __all__ = [
     "main",
@@ -19,12 +18,7 @@ logger = logging.getLogger(__name__)
 @click.option("-q", "--quiet")
 @click.version_option(__version__)
 def main(verbose: int, quiet: bool):
-    """
-    CLI for dm-bip.
-
-    :param verbose: Verbosity while running.
-    :param quiet: Boolean to be quiet or verbose.
-    """
+    """CLI for dm-bip."""
     if verbose >= 2:
         logger.setLevel(level=logging.DEBUG)
     elif verbose == 1:
@@ -37,8 +31,9 @@ def main(verbose: int, quiet: bool):
 
 @main.command()
 def run():
-    """Run the dm-bip's demo command."""
-    demo()
+    """Display usage information for the dm-bip pipeline."""
+    click.echo("The dm-bip pipeline is run using make.")
+    click.echo("Run 'make help' to see available targets and usage information.")
 
 
 if __name__ == "__main__":

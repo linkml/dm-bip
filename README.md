@@ -10,9 +10,9 @@ The purpose of this repository is to coordinate the efforts of multiple projects
 The main effort of this project is to use existing [LinkML](https://linkml.io/linkml/) tools to the extent possible and fill in gaps between these tools with simple scripts. Whenever possible, the goal should be to move created middle-ware tools within this repository either upstream to the data submitters or into the LinkML tools in use.
 
 # Requirements
-- Python >= 3.12 (Note: Downgraded to 3.12 due to linkml-runtime issue in 3.13, patch forthcoming)
+- Python >= 3.11, <= 3.13
 - [uv](https://docs.astral.sh/uv/)
-- [Cruft] (https://cruft.github.io/cruft/)
+- [Cruft](https://cruft.github.io/cruft/)
 
 # Repository Structure
  - Github workflows:
@@ -20,10 +20,11 @@ The main effort of this project is to use existing [LinkML](https://linkml.io/li
    - Documentation deployment (`deploy-docs.yml`)
    - PyPI deployment (`pypi-publish.yml`)
  - `docs` directory with `Sphinx` configuration files and an `index.rst`file.
- - `src` directory structure with the `project_name` directory within it.
-   - Within the `project_name` directory, there are 2 python files:
-     - `main_file.py`
+ - `src` directory structure with the `dm_bip` package.
+   - Within the `dm_bip` directory, there are core python files:
+     - `main.py` - Core entry point
      - `cli.py` for [`click`](https://click.palletsprojects.com) commands.
+   - Plus subdirectories for pipeline functionality: `cleaners/`, `format_converter/`, `map_data/`
  - `tests` directory with a very basic test.
  - `uv` compatible `pyproject.toml` file containing minimal package requirements.
  - `tox.ini` file containing configuration for:
