@@ -2,41 +2,27 @@ FROM python:3.12-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Poetry / pip config
-ENV POETRY_VERSION=1.8.4 \
-    POETRY_NO_INTERACTION=1 \
-    PIP_NO_CACHE_DIR=1 \
-    # Force Poetry to create a virtualenv instead of reusing system site-packages
-    POETRY_VIRTUALENVS_CREATE=true \
-    POETRY_DYNAMIC_VERSIONING_BYPASS=true
-
 # System dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
         git \
+        curl \
     && rm -rf /var/lib/apt/lists/*
 
-# 🔹 Make sure the global tooling is modern enough for Poetry's installer
-RUN pip install --upgrade pip setuptools wheel packaging
 
-# Install Poetry + Cruft
-RUN pip install "poetry==${POETRY_VERSION}" cruft
+#Address Copilot suggestion to install the official uv Docker image and pin the tag so for stability
+COPY --from=ghcr.io/astral-sh/uv:0.9.22 /uv /uvx /usr/local/bin/
+
+ENV PATH="/root/.local/bin:$PATH"
 
 WORKDIR /app
 
+# Copy dependency files first for caching  
+COPY pyproject.toml uv.lock ./  
 
-# Copy dependency files first for caching
-#COPY pyproject.toml poetry.lock* ./
+# Install dependencies using uv
+RUN uv sync --frozen
 
-# Copy the entire project
-COPY . .
-
-# Install dependencies using the same groups as on your local machine
-# Uses the lock file; will run inside Poetry's own virtualenv
-RUN poetry install --with env --with dev
-
-
-
-# Default command – adjust if needed
-CMD ["poetry", "run", "dm-bip", "run"]
+# Default command
+CMD ["uv", "run", "dm-bip", "run"]
