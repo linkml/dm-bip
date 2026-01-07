@@ -10,14 +10,16 @@ RUN apt-get update && \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
+#Address Copilot suggestion to install the official uv Docker image and pin the tag so for stability
+COPY --from=ghcr.io/astral-sh/uv:0.9.22 /uv /uvx /usr/local/bin/
+
 ENV PATH="/root/.local/bin:$PATH"
 
 WORKDIR /app
 
-# Copy the entire project
-COPY . .
+# Copy dependency files first for caching  
+COPY pyproject.toml uv.lock ./  
 
 # Install dependencies using uv
 RUN uv sync --frozen
