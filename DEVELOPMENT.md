@@ -84,7 +84,7 @@ gantt
     section Audit Logs
     Tracking Issue #189                     :crit, t189, 2025-09-30, 5w
 
-    section 5
+    section 5 
     Define Audit Log Requirements (#213)               :i213, 2026-02-15, 2026-04-15
     Replace print() with logging module (#223)         :i223, 2026-03-15, 2026-06-10
     Schema-automator validation type issues (#232)     :i232, 2026-06-10, 2026-08-05
