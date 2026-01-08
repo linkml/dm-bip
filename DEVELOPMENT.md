@@ -35,7 +35,7 @@ gantt
     Reporting for JIRA (#182)                           :done, i182, 2025-08-01, 2025-10-10
     Create a new development Roadmap (#172)             :done, i172, 2025-09-20, 2025-12-15
     Move to uv as Python manager (#178)                 :done, i178, 2025-09-20, 2025-12-01
-    Re-align Tracking Tickets and Tasks (#173)          :active, i173, 2025-10-10, 2025-12-20
+    Re-align Tracking Tickets and Tasks (#173)          :done, i173, 2025-10-10, 2025-12-20
     Update Dependencies and Release Strategy (#180)     :i180, 2025-12-20, 2026-03-28
     First dm-bip release (#193)                         :done, i193, 2025-10-01, 2025-12-19
     Automate Release creation process (#194)            :active, i194, 2025-12-01, 2026-02-15
@@ -77,16 +77,18 @@ gantt
     Enum derivations (#211)                             :i211, 2026-01-01, 2026-03-15
     Add tooling for SchemaAutomator/Schemasheets (#80)  :i80, 2025-11-15, 2026-02-10
     Generalize map_data.py with INCLUDE mapping (#166)  :i166, 2026-02-01, 2026-04-25
-    Add Containerization with Docker (#90)              :i90, 2026-02-10, 2026-05-15
-    Implement data mapping from multiple classes (#222) :i222, 2026-03-01, 2026-05-27
+    Add Containerization with Docker (#90)              :done, i90, 2026-02-10, 2026-05-15
+    Implement data mapping from multiple classes (#222) :done, i222, 2026-03-01, 2026-05-27
     Tweak prefix and postfix in the Makefile (#230)    :i230, 2026-01-01, 2026-04-01
 
     section Audit Logs
     Tracking Issue #189                     :crit, t189, 2025-09-30, 5w
 
-    section 5 
+    section 5
     Define Audit Log Requirements (#213)               :i213, 2026-02-15, 2026-04-15
     Replace print() with logging module (#223)         :i223, 2026-03-15, 2026-06-10
+    Schema-automator validation type issues (#232)     :i232, 2026-06-10, 2026-08-05
+    Schema-automator optional null handling (#233)     :i233, 2026-08-05, 2026-09-30
 
     section DMC Integration
     Tracking Issue #191                     :crit, t191, 2025-09-30, 5w
@@ -97,7 +99,7 @@ gantt
     Add variable digest files to pipeline (#204)        :active, i204, 2025-12-10, 2026-03-01
     make a data dictionary template (#103)              :i103, 2026-03-01, 2026-05-01
     Create GitHub workflow to container registry (#201) :i201, 2026-02-01, 2026-05-15
-    Update Docker with uv (#208)                        :i208, 2026-03-01, 2026-05-01
+    Update Docker with uv (#208)                        :done, i208, 2026-03-01, 2026-05-01
 
     section BDC User On-Demand
     Tracking Issue #192                     :crit, t192, 2025-09-30, 5w
@@ -172,6 +174,8 @@ gantt
     click i226 href "https://github.com/linkml/dm-bip/issues/226"
     click i227 href "https://github.com/linkml/dm-bip/issues/227"
     click i230 href "https://github.com/linkml/dm-bip/issues/230"
+    click i232 href "https://github.com/linkml/dm-bip/issues/232"
+    click i233 href "https://github.com/linkml/dm-bip/issues/233"
 
     axisFormat %B
     tickInterval 1month
@@ -185,7 +189,7 @@ Procedures for controlling releases of tool-chains, repositories, and data sets.
 - [x] Move to uv as Python manager (#178) - Roman
 - [x] Reporting for JIRA (#182) - Corey
 - [x] Create a new development Roadmap (#172) - Corey
-- [ ] Re-align Tracking Tickets and Development Tasks (#173) - Corey
+- [x] Re-align Tracking Tickets and Development Tasks (#173) - Corey
 - [ ] Update Dependencies and Create Release Strategy (#180)
 - [x] First dm-bip release (#193) - Corey
 - [ ] Automate Release creation process (#194) - Corey
@@ -219,16 +223,18 @@ Improving automation, testing, workflows, and integration.
 - [x] Add data mapping to automation (#167)
 - [ ] Enable offset calculations in LinkML-Map (#169) - Madan
 - [ ] Add Containerization to Makefile (#177)
-- [ ] Add Containerization with Docker (#90) - Patrick, Vessie
+- [x] Add Containerization with Docker (#90) - Patrick, Vessie
 - [x] Create tests for mapping script (#210) - Corey
 - [ ] Enum derivations (#211) - Roman, Corey
-- [ ] Implement data mapping from multiple classes (#222)
+- [x] Implement data mapping from multiple classes (#222)
 - [ ] Tweak prefix and postfix in the Makefile (#230) - Corey
 
 ## 5. Audit Logs (Tracking: #189)
 Logging, auditability, and human-readable data provenance.
 - [ ] Define Audit Log Requirements (#213)
 - [ ] Replace print() statements with logging module (#223)
+- [ ] Schema-automator validation type issues (#232) - Madan
+- [ ] Schema-automator optional null handling (#233) - Madan
 - [ ] Implement human-readable logging
 
 ## 6. DMC Integration (Tracking: #191)
@@ -238,7 +244,7 @@ Integrating the Harmonization Pipeline into DMC pre-ingestion.
 - [ ] Incorporate Stata YAML authoring tool (#175)
 - [ ] Create GitHub workflow to container registry (#201) - Patrick
 - [ ] Add variable digest files to pipeline (#204)
-- [ ] Update Docker with uv (#208) - Vessie, Corey
+- [x] Update Docker with uv (#208) - Vessie, Corey
 
 ## 7. BDC User On-Demand (Tracking: #192)
 Bringing the Harmonization Pipeline to BDC for user on-demand harmonization.
