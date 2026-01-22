@@ -32,21 +32,19 @@ jobs:
           username: ${{ vars.SB_REGISTRY_USERNAME }}
           password: ${{ secrets.SB_REGISTRY_PASSWORD }}
 
-      - name: Docker metadata (tags/labels)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_PROJECT }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=sha,format=short
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+      - name: Build Docker image
+        run: |
+          docker build -t $IMAGE_NAME .
 
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      - name: Tag image
+        run: |
+          IMAGE_URI=${{ secrets.SB_REGISTRY }}/${{ secrets.SB_REGISTRY_PROJECT }}/$IMAGE_NAME
+          docker tag $IMAGE_NAME $IMAGE_URI:${{ github.sha }}
+          docker tag $IMAGE_NAME $IMAGE_URI:latest
+
+      - name: Push image
+        run: |
+          IMAGE_URI=${{ secrets.SB_REGISTRY }}/${{ secrets.SB_REGISTRY_PROJECT }}/$IMAGE_NAME
+          docker push $IMAGE_URI:${{ github.sha }}
+          docker push $IMAGE_URI:latest
          
