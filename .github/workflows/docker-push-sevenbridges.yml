@@ -39,11 +39,11 @@ jobs:
 
       - name: Tag image
         run: |
-          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_PROJECT }}/$IMAGE_NAME
+          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}//${{ vars.SB_REGISTRY_PROJECT }}/$IMAGE_NAME
           docker tag $IMAGE_NAME $IMAGE_URI:latest
 
       - name: Push image
         run: |
-          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_PROJECT }}/$IMAGE_NAME
+          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ vars.SB_REGISTRY_PROJECT }}/$IMAGE_NAME
           docker push $IMAGE_URI:latest
          
