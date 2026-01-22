@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 env:
-  IMAGE_NAME: dm-bip
+  IMAGE_NAME: dm-bip-env
 
 jobs:
   build-and-push:
@@ -34,12 +34,12 @@ jobs:
 
       - name: Build Docker image
         run: |
+          docker build -t dm-bip-env .
           docker build -t $IMAGE_NAME .
 
       - name: Tag image
         run: |
           IMAGE_URI=${{ secrets.SB_REGISTRY }}/${{ secrets.SB_REGISTRY_PROJECT }}/$IMAGE_NAME
-          docker tag $IMAGE_NAME $IMAGE_URI:${{ github.sha }}
           docker tag $IMAGE_NAME $IMAGE_URI:latest
 
       - name: Push image
