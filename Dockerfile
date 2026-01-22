@@ -18,11 +18,13 @@ ENV PATH="/root/.local/bin:$PATH"
 
 WORKDIR /app
 
-# Copy dependency files first for caching  
-COPY pyproject.toml uv.lock ./  
+# Copy dependency files first for caching
+# COPY pyproject.toml uv.lock README.md ./ 
+COPY . ./
 
 # Install dependencies using uv
 RUN uv sync --frozen
 
 # Default command
-CMD ["uv", "run", "dm-bip", "run"]
+# This no longer works CMD ["uv", "run", "dm-bip", "run"]
+CMD ["uv", "run", "dm-bip", "test"]
