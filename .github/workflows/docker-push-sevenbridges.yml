@@ -45,6 +45,5 @@ jobs:
       - name: Push image
         run: |
           IMAGE_URI=${{ secrets.SB_REGISTRY }}/${{ secrets.SB_REGISTRY_PROJECT }}/$IMAGE_NAME
-          docker push $IMAGE_URI:${{ github.sha }}
           docker push $IMAGE_URI:latest
          
