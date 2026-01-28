@@ -98,8 +98,8 @@ def multi_spec_transform(
                     for row in rows:
                         mapped = transformer.map_object(row, source_type=pht_id)
                         yield mapped
-        except Exception as e:
-            logger.exception("Error processing %s: %s - %s\nBlock: %s", file, e.__class__.__name__, e, block)
+        except Exception:
+            logger.exception("Error processing %s\nBlock: %s", file, block)
             raise
 
 
@@ -256,4 +256,8 @@ def main(
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
     typer.run(main)
