@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dm_bip.map_data package &mdash; dm-bip 0.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=7026087e"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -83,7 +83,7 @@
 <p>Module for transforming data using LinkML-Map schemas and specifications.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dm_bip.map_data.map_data.DataLoader">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.map_data.</span></span><span class="sig-name descname"><span class="pre">DataLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.map_data.DataLoader" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.map_data.</span></span><span class="sig-name descname"><span class="pre">DataLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.map_data.DataLoader" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Load TSV files based on populated_from identifiers.</p>
 </dd></dl>
@@ -113,7 +113,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dm_bip.map_data.map_data.main">
-<span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.map_data.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_postfix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jsonl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.map_data.main" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.map_data.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_schema</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_postfix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jsonl'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.map_data.main" title="Link to this definition"></a></dt>
 <dd><p>Run LinkML-Map transformation from command line arguments.</p>
 </dd></dl>
 
@@ -145,7 +145,7 @@
 <p>Data structures for creating streamed output from chunked input data.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dm_bip.map_data.streams.JSONLStream">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">JSONLStream</span></span><a class="headerlink" href="#dm_bip.map_data.streams.JSONLStream" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">JSONLStream</span></span><a class="headerlink" href="#dm_bip.map_data.streams.JSONLStream" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dm_bip.map_data.streams.Stream" title="dm_bip.map_data.streams.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a></p>
 <p>Convert chunks of objects to JSONL format.</p>
 <dl class="py method">
@@ -163,7 +163,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dm_bip.map_data.streams.JSONStream">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">JSONStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.JSONStream" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">JSONStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.JSONStream" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dm_bip.map_data.streams.Stream" title="dm_bip.map_data.streams.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a></p>
 <p>Convert chunks of objects to JSON format.</p>
 <dl class="py method">
@@ -181,12 +181,12 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dm_bip.map_data.streams.Stream">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">Stream</span></span><a class="headerlink" href="#dm_bip.map_data.streams.Stream" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">Stream</span></span><a class="headerlink" href="#dm_bip.map_data.streams.Stream" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Serialize chunks into an output format.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dm_bip.map_data.streams.Stream.process">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.Stream.process" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.Stream.process" title="Link to this definition"></a></dt>
 <dd><p>Process a series of chunks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -199,7 +199,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dm_bip.map_data.streams.TSVStream">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">TSVStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.TSVStream" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">TSVStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.TSVStream" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dm_bip.map_data.streams.Stream" title="dm_bip.map_data.streams.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a></p>
 <p>Convert chunks of objects to TSV format.</p>
 <dl class="py method">
@@ -215,7 +215,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dm_bip.map_data.streams.TSVStream.rewrite_header_and_pad">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rewrite_header_and_pad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_headers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\\t'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.TSVStream.rewrite_header_and_pad" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">rewrite_header_and_pad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chunks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_headers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\\t'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.TSVStream.rewrite_header_and_pad" title="Link to this definition"></a></dt>
 <dd><p>Rewrite the header of TSV chunks and pad rows with missing columns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -228,7 +228,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dm_bip.map_data.streams.YAMLStream">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">YAMLStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.YAMLStream" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.streams.</span></span><span class="sig-name descname"><span class="pre">YAMLStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.streams.YAMLStream" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dm_bip.map_data.streams.Stream" title="dm_bip.map_data.streams.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">Stream</span></code></a></p>
 <p>Convert chunks of objects to YAML format.</p>
 <dl class="py method">
