@@ -362,15 +362,15 @@ $(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL)
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
 	$(RUN) python ./src/dm_bip/map_data/map_data.py \
-		--source_schema $(SCHEMA_FILE) \
-		--target_schema $(DM_MAP_TARGET_SCHEMA) \
-		--data_dir $(DM_INPUT_DIR) \
-		--var_dir $(DM_TRANS_SPEC_DIR) \
-		--output_dir $(MAPPING_OUTPUT_DIR) \
-		$(if $(DM_MAPPING_PREFIX),--output_prefix $(DM_MAPPING_PREFIX)) \
-		$(if $(DM_MAPPING_POSTFIX),--output_postfix "$(DM_MAPPING_POSTFIX)") \
-		--output_type $(DM_MAP_OUTPUT_TYPE) \
-		--chunk_size $(DM_MAP_CHUNK_SIZE)
+		--source-schema $(SCHEMA_FILE) \
+		--target-schema $(DM_MAP_TARGET_SCHEMA) \
+		--data-dir $(DM_INPUT_DIR) \
+		--var-dir $(DM_TRANS_SPEC_DIR) \
+		--output-dir $(MAPPING_OUTPUT_DIR) \
+		$(if $(DM_MAPPING_PREFIX),--output-prefix $(DM_MAPPING_PREFIX)) \
+		$(if $(DM_MAPPING_POSTFIX),--output-postfix "$(DM_MAPPING_POSTFIX)") \
+		--output-type $(DM_MAP_OUTPUT_TYPE) \
+		--chunk-size $(DM_MAP_CHUNK_SIZE)
 	@echo "✓ Data mapping complete. Output written to $(MAPPING_OUTPUT_DIR)"
 	@touch $@
 
