@@ -207,11 +207,11 @@ def main(
     output_prefix: Annotated[
         str,
         typer.Option(),
-    ],
+    ] = "",
     output_postfix: Annotated[
         str,
         typer.Option(),
-    ],
+    ] = "",
     output_type: Annotated[
         StreamFormat,
         typer.Option(),
