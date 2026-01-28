@@ -17,7 +17,12 @@ RUN := uv run
 #
 # All other variables are derived from these.
 
-
+# External config file support
+# ============
+# Use CONFIG=path/to/file.mk to load variables from an external file.
+# The config file should set variables using make syntax (e.g., DM_INPUT_DIR = /path).
+CONFIG ?=
+-include $(CONFIG)
 
 # Configurable parameters via environment variables
 # ============
