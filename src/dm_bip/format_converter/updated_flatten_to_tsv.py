@@ -8,6 +8,7 @@ and outputs TSV files for each top-level class.
 import argparse
 import itertools
 import json
+import logging
 from collections import defaultdict
 from pathlib import Path
 
@@ -15,6 +16,8 @@ import pandas as pd
 import yaml
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
+
+logger = logging.getLogger(__name__)
 
 
 def flatten_dict(d, parent_key="", sep="__"):
@@ -89,7 +92,6 @@ def get_scalar_slots(sv: SchemaView, class_name: str, instance_class_names: set)
 
     """
     scalar_slots = []
-    print("\n\n")
     for slot_name in sv.class_slots(class_name, attributes=True):
         slot = sv.get_slot(slot_name)
         if slot is None:
@@ -98,7 +100,7 @@ def get_scalar_slots(sv: SchemaView, class_name: str, instance_class_names: set)
         if slot.range in instance_class_names and not slot.inlined:
             continue
         scalar_slots.append(slot.name)
-    print(f"Scalar slots for {class_name}: {scalar_slots}")
+    logger.debug("Scalar slots for %s: %s", class_name, scalar_slots)
     return scalar_slots
 
 
@@ -175,7 +177,7 @@ def collect_instances_by_class(instance_data, container_key, container_class, sv
     for top_level_obj in container_data:
         recurse(top_level_obj, container_class)
 
-    print(f"\nCollected instances for classes: {list(collected.keys())}")
+    logger.info("Collected instances for classes: %s", list(collected.keys()))
     return collected
 
 
@@ -221,7 +223,7 @@ def main():
                                     slot = sv.induced_slot(k, parent_class)
                                     class_range = slot.range if slot else None
                                 except Exception:
-                                    print("", end="")
+                                    logger.debug("Could not induce slot %s for class %s", k, parent_class)
                                     continue
                             if class_range:
                                 referenced_classes.add(class_range)
@@ -236,7 +238,7 @@ def main():
                                             slot = sv.induced_slot(k, parent_class)
                                             class_range = slot.range if slot else None
                                         except Exception:
-                                            print("", end="")
+                                            logger.debug("Could not induce slot %s for class %s", k, parent_class)
                                             continue
                                     if class_range:
                                         referenced_classes.add(class_range)
@@ -266,7 +268,7 @@ def main():
                     break
 
             if all_inlined_in_data:
-                print(f"Skipping class '{cls}' — no IDs and only used inlined in data.")
+                logger.info("Skipping class '%s' — no IDs and only used inlined in data.", cls)
                 classes_to_skip.append(cls)
 
         instances_by_class = {k: v for k, v in instances_by_class.items() if k not in classes_to_skip}
@@ -277,7 +279,7 @@ def main():
             ref_slots = get_reference_slots(
                 sv, class_name, instances_by_class.keys(), args.container_key, args.container_class, scalar_slots
             )
-            print(f"{class_name} reference slots: {ref_slots}")
+            logger.debug("%s reference slots: %s", class_name, ref_slots)
 
             flat_records = []
             list_fields = set()
@@ -285,7 +287,7 @@ def main():
             for inst in records:
                 raw = inst.dict(exclude_unset=True) if isinstance(inst, YAMLRoot) else inst
                 flat = flatten_dict(raw)
-                print(f"Flattened keys for class {class_name}: {list(flat.keys())}")
+                logger.debug("Flattened keys for class %s: %s", class_name, list(flat.keys()))
 
                 # Get all slots for the class
                 all_slots = sv.class_slots(class_name, attributes=True)
@@ -301,11 +303,11 @@ def main():
                         and s not in ref_slots
                     )
                 }
-                print(f"Excluding nested class slots for {class_name}: {excluded_nested_slots}")
+                logger.debug("Excluding nested class slots for %s: %s", class_name, excluded_nested_slots)
 
                 # Filter flattened keys: include scalar and reference slots
                 # and all inlined subfields, exclude nested class slots
-                print(f"\nInspecting flattened keys for filtering in class: {class_name}")
+                logger.debug("Inspecting flattened keys for filtering in class: %s", class_name)
                 filtered = {}
                 for k, v in flat.items():
                     matches_scalar_or_ref = any(k == s or k.startswith(f"{s}__") for s in scalar_slots + ref_slots)
@@ -322,7 +324,7 @@ def main():
 
                     if matches_scalar_or_ref and not matches_excluded:
                         filtered[k] = v
-                print(f"Filtered: {filtered}")
+                logger.debug("Filtered: %s", filtered)
 
                 for k, v in filtered.items():
                     if isinstance(v, list):
@@ -335,7 +337,7 @@ def main():
                 flat_records = join_lists(flat_records, list_fields)
 
             df = pd.DataFrame(flat_records)
-            print(f"{class_name} columns in output: {df.columns.tolist()}")
+            logger.debug("%s columns in output: %s", class_name, df.columns.tolist())
 
             slot_order = [s for s in scalar_slots if s in df.columns]
             extra_cols = [c for c in df.columns if c not in slot_order]
@@ -344,10 +346,14 @@ def main():
             if not df.dropna(how="all").empty:
                 out_path = Path(args.output_dir) / f"{class_name}.tsv"
                 df.to_csv(out_path, sep="\t", index=False)
-                print(f"Wrote: {out_path}")
+                logger.info("Wrote: %s", out_path)
             else:
-                print(f"Skipped writing {class_name}.tsv because no meaningful data was found.")
+                logger.warning("Skipped writing %s.tsv because no meaningful data was found.", class_name)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
     main()

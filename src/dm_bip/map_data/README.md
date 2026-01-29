@@ -10,30 +10,30 @@ The `map_data.py` module transforms source data to a target LinkML schema using 
 
 ```bash
 python map_data.py \
-    --source_schema path/to/source_schema.yaml \
-    --target_schema path/to/target_schema.yaml \
-    --data_dir path/to/input/tsv/files/ \
-    --var_dir path/to/transformation/specs/ \
-    --output_dir path/to/output/ \
-    --output_prefix study_name \
-    --output_postfix v1 \
-    --output_type tsv \
-    --chunk_size 1000
+    --source-schema path/to/source_schema.yaml \
+    --target-schema path/to/target_schema.yaml \
+    --data-dir path/to/input/tsv/files/ \
+    --var-dir path/to/transformation/specs/ \
+    --output-dir path/to/output/ \
+    --output-prefix study_name \
+    --output-postfix v1 \
+    --output-type tsv \
+    --chunk-size 1000
 ```
 
 ## Arguments
 
 | Argument | Required | Description |
 |----------|----------|-------------|
-| `--source_schema` | Yes | Path to the source LinkML schema YAML |
-| `--target_schema` | Yes | Path to the target LinkML schema YAML |
-| `--data_dir` | Yes | Directory containing input TSV files |
-| `--var_dir` | Yes | Directory containing transformation specification YAML files |
-| `--output_dir` | Yes | Directory for output files |
-| `--output_prefix` | Yes | Prefix for output filenames |
-| `--output_postfix` | Yes | Postfix for output filenames |
-| `--output_type` | No | Output format: `json`, `jsonl`, `tsv`, or `yaml` (default: `tsv`) |
-| `--chunk_size` | No | Number of records to process per chunk (default: 1000) |
+| `--source-schema` | Yes | Path to the source LinkML schema YAML |
+| `--target-schema` | Yes | Path to the target LinkML schema YAML |
+| `--data-dir` | Yes | Directory containing input TSV files |
+| `--var-dir` | Yes | Directory containing transformation specification YAML files |
+| `--output-dir` | Yes | Directory for output files |
+| `--output-prefix` | No | Prefix for output filenames |
+| `--output-postfix` | No | Postfix for output filenames |
+| `--output-type` | No | Output format: `json`, `jsonl`, `tsv`, or `yaml` (default: `jsonl`) |
+| `--chunk-size` | No | Number of records to process per chunk (default: 1000) |
 
 ## Output
 
@@ -59,12 +59,12 @@ Transformation specs are YAML files in the `var_dir` that define how to map sour
 
 ```bash
 python map_data.py \
-    --source_schema data/study/implicit_schema.yaml \
-    --target_schema data/bdc_model/bdc_model.yaml \
-    --data_dir data/study/preprocessed/ \
-    --var_dir data/study/transformation_specs/ \
-    --output_dir output/study/ \
-    --output_prefix STUDY \
-    --output_postfix harmonized \
-    --output_type tsv
+    --source-schema data/study/implicit_schema.yaml \
+    --target-schema data/bdc_model/bdc_model.yaml \
+    --data-dir data/study/preprocessed/ \
+    --var-dir data/study/transformation_specs/ \
+    --output-dir output/study/ \
+    --output-prefix STUDY \
+    --output-postfix harmonized \
+    --output-type tsv
 ```

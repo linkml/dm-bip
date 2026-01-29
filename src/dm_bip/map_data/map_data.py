@@ -1,10 +1,10 @@
 """Module for transforming data using LinkML-Map schemas and specifications."""
 
+import logging
 import os
 import shutil
 import subprocess
 import time
-import traceback
 from pathlib import Path
 from typing import Annotated, Any, Generator
 
@@ -17,6 +17,8 @@ from linkml_runtime.linkml_model import SchemaDefinition
 from more_itertools import chunked
 
 from dm_bip.map_data.streams import StreamFormat, TSVStream, make_stream
+
+logger = logging.getLogger(__name__)
 
 
 class DataLoader:
@@ -75,14 +77,14 @@ def multi_spec_transform(
 ) -> Generator[dict[str, Any], None, None]:
     """Apply multiple LinkML-Map specifications to data and yield transformed objects."""
     for file in spec_files:
-        print(f"{file.stem}", end="", flush=True)
+        logger.info("Processing spec file: %s", file.stem)
         block = None
         try:
             with open(file) as f:
                 specs = yaml.safe_load(f)
             for block in specs:
                 derivation = block["class_derivations"]
-                print(".", end="", flush=True)
+                logger.debug("Processing derivation block")
                 for _, class_spec in derivation.items():
                     pht_id = class_spec["populated_from"]
                     rows = data_loader[pht_id]
@@ -96,11 +98,8 @@ def multi_spec_transform(
                     for row in rows:
                         mapped = transformer.map_object(row, source_type=pht_id)
                         yield mapped
-            print("")
-        except Exception as e:
-            print(f"\n⚠️  Error processing {file}: {e.__class__.__name__} - {e}")
-            print(block)
-            traceback.print_exc()
+        except Exception:
+            logger.exception("Error processing %s | Block: %s", file, block)
             raise
 
 
@@ -134,10 +133,10 @@ def process_entities(
     for entity in entities:
         spec_files = get_spec_files(var_dir, f"^    {entity}:")
         if not spec_files:
-            print(f"Skipping {entity} (no spec files)")
+            logger.info("Skipping %s (no spec files)", entity)
             continue
 
-        print(f"Starting {entity}")
+        logger.info("Starting %s", entity)
         output_path = f"{output_dir}/{'-'.join(x for x in [output_prefix, entity, output_postfix] if x)}.{output_type}"
 
         iterable = multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview)
@@ -151,17 +150,17 @@ def process_entities(
                 f.write(output)
 
         if isinstance(stream, TSVStream) and stream.must_update_headers:
-            print(f"Rewriting {entity} (headers changed)")
+            logger.info("Rewriting %s (headers changed)", entity)
             tmp_path = output_path + ".tmp"
             with open(output_path, "r") as src, open(tmp_path, "w") as dst:
                 chunks = chunked(src, chunk_size)
                 dst.writelines(TSVStream.rewrite_header_and_pad(chunks, stream.next_headers))
             os.replace(tmp_path, output_path)
 
-        print(f"{entity} Complete")
+        logger.info("%s Complete", entity)
 
     end = time.perf_counter()
-    print(f"Time: {end - start:.2f} seconds")
+    logger.info("Time: %.2f seconds", end - start)
 
 
 def main(
@@ -257,4 +256,8 @@ def main(
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
     typer.run(main)
