@@ -201,8 +201,8 @@ def main(
     schema: Annotated[Path, typer.Argument(help="Path to LinkML schema (YAML)")],
     input_file: Annotated[Path, typer.Argument(help="Input YAML instance file")],
     output_dir: Annotated[Path, typer.Argument(help="Output directory for TSV files")],
-    container_key: Annotated[str, typer.Option(help="Top-level key in instance data (e.g., 'persons')")],
-    container_class: Annotated[str, typer.Option(help="Class name for the top-level key (e.g., 'Person')")],
+    container_key: Annotated[str, typer.Option(help="Top-level key in instance data (e.g., 'persons')")] = ...,
+    container_class: Annotated[str, typer.Option(help="Class name for the top-level key (e.g., 'Person')")] = ...,
     mode: Annotated[OutputMode, typer.Option(help="Output mode")] = OutputMode.per_class,
     list_style: Annotated[ListStyle, typer.Option(help="How to handle list values")] = ListStyle.join,
 ):
