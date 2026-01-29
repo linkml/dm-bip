@@ -37,6 +37,16 @@ DM_MAPPING_POSTFIX ?=
 DM_MAP_OUTPUT_TYPE ?= yaml
 DM_MAP_CHUNK_SIZE ?= 10000
 
+# Schema generation options
+# ============
+# Set DM_ENUM_THRESHOLD to control automatic enum creation.
+# Default 1.0 disables enum creation (ratio can never exceed 1.0).
+# Set to 0.1 (schema-automator default) to enable enum inference.
+DM_ENUM_THRESHOLD ?= 1.0
+# Maximum number of distinct values for a column to be considered an enum.
+# Set to 0 to disable enum creation based on size.
+DM_MAX_ENUM_SIZE ?= 0
+
 # Derived output files
 # ============
 SCHEMA_FILE                 := $(DM_OUTPUT_DIR)/$(DM_SCHEMA_NAME).yaml
@@ -178,7 +188,10 @@ schema-clean:
 $(SCHEMA_FILE): $(INPUT_FILES)
 	@:$(call check_input_files)
 	mkdir -p $(@D)
-	$(RUN) schemauto generalize-tsvs -n $(DM_SCHEMA_NAME) $^ -o $@
+	$(RUN) schemauto generalize-tsvs -n $(DM_SCHEMA_NAME) \
+		--enum-threshold $(DM_ENUM_THRESHOLD) \
+		--max-enum-size $(DM_MAX_ENUM_SIZE) \
+		$^ -o $@
 	@echo
 	@echo "  Created schema at $@"
 	@echo
