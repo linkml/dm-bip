@@ -99,7 +99,7 @@ def multi_spec_transform(
                         mapped = transformer.map_object(row, source_type=pht_id)
                         yield mapped
         except Exception:
-            logger.exception("Error processing %s\nBlock: %s", file, block)
+            logger.exception("Error processing %s | Block: %s", file, block)
             raise
 
 
