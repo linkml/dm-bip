@@ -7,7 +7,6 @@ requires-python = ">=3.11,<=3.13"
 readme = "README.md"
 license = "MIT"
 dependencies = [
-    "click",
     "importlib-metadata>=8.2.0",
     "pandas>=2.2.3,<3",
     "schema-automator==0.5.4-rc1",
@@ -19,7 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-dm-bip = "dm_bip.cli:main"
+dm-bip = "dm_bip.cli:app"
 
 [dependency-groups]
 dev = [
