@@ -5,19 +5,35 @@ This script loads a LinkML model and a YAML instance file, flattens the data,
 and outputs TSV files for each top-level class.
 """
 
-import argparse
 import itertools
 import json
 import logging
 from collections import defaultdict
+from enum import Enum
 from pathlib import Path
+from typing import Annotated
 
 import pandas as pd
+import typer
 import yaml
 from linkml_runtime.utils.schemaview import SchemaView
 from linkml_runtime.utils.yamlutils import YAMLRoot
 
 logger = logging.getLogger(__name__)
+
+
+class OutputMode(str, Enum):
+    """Output mode for flattening."""
+
+    wide = "wide"
+    per_class = "per-class"
+
+
+class ListStyle(str, Enum):
+    """How to handle list values."""
+
+    join = "join"
+    explode = "explode"
 
 
 def flatten_dict(d, parent_key="", sep="__"):
@@ -181,28 +197,26 @@ def collect_instances_by_class(instance_data, container_key, container_class, sv
     return collected
 
 
-def main():
-    """Flatten linkml file to multiple TSV files, one for each model class in the data."""
-    parser = argparse.ArgumentParser(description="Flatten all top-level classes in LinkML data to TSV")
-    parser.add_argument("schema", help="Path to LinkML schema (YAML)")
-    parser.add_argument("input", help="Input YAML instance file")
-    parser.add_argument("output_dir", help="Output directory for TSV files")
-    parser.add_argument("--container-key", required=True, help="Top-level key in instance data (e.g., 'persons')")
-    parser.add_argument("--container-class", required=True, help="Class name for the top-level key (e.g., 'Person')")
-    parser.add_argument("--mode", choices=["wide", "per-class"], default="per-class", help="Output mode")
-    parser.add_argument("--list-style", choices=["join", "explode"], default="join", help="How to handle list values")
-    args = parser.parse_args()
-
-    sv = SchemaView(args.schema)
-    with open(args.input) as f:
+def main(
+    schema: Annotated[Path, typer.Argument(help="Path to LinkML schema (YAML)")],
+    input_file: Annotated[Path, typer.Argument(help="Input YAML instance file")],
+    output_dir: Annotated[Path, typer.Argument(help="Output directory for TSV files")],
+    container_key: Annotated[str, typer.Option(help="Top-level key in instance data (e.g., 'persons')")] = ...,
+    container_class: Annotated[str, typer.Option(help="Class name for the top-level key (e.g., 'Person')")] = ...,
+    mode: Annotated[OutputMode, typer.Option(help="Output mode")] = OutputMode.per_class,
+    list_style: Annotated[ListStyle, typer.Option(help="How to handle list values")] = ListStyle.join,
+):
+    """Flatten LinkML YAML data to multiple TSV files, one for each model class."""
+    sv = SchemaView(schema)
+    with open(input_file) as f:
         data = yaml.safe_load(f)
 
-    Path(args.output_dir).mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    if args.mode == "wide":
+    if mode == OutputMode.wide:
         raise NotImplementedError("Only per-class mode is supported in this version.")
     else:
-        instances_by_class = collect_instances_by_class(data, args.container_key, args.container_class, sv)
+        instances_by_class = collect_instances_by_class(data, container_key, container_class, sv)
 
         # Track which classes are used via inlined usage only (based on data)
         # so that output files are not generated for these classes
@@ -210,7 +224,7 @@ def main():
         slot_usage_by_class = defaultdict(list)
 
         # Determine actual usage of each class in the instance data
-        for container in data.get(args.container_key, []):
+        for container in data.get(container_key, []):
 
             def walk(obj, parent_class=None):
                 """Walk through each class."""
@@ -245,12 +259,12 @@ def main():
                                         slot_usage_by_class[class_range].append((parent_class, k))
                                     walk(item, class_range)
 
-            walk(container, args.container_class)
+            walk(container, container_class)
         # Identify classes with no IDs and only inlined usage in data
         classes_to_skip = []
 
         for cls, records in instances_by_class.items():
-            if cls == args.container_class:
+            if cls == container_class:
                 continue  # Never skip the container class
 
             id_slot = sv.get_identifier_slot(cls)
@@ -277,7 +291,7 @@ def main():
             scalar_slots = get_scalar_slots(sv, class_name, instances_by_class.keys())
 
             ref_slots = get_reference_slots(
-                sv, class_name, instances_by_class.keys(), args.container_key, args.container_class, scalar_slots
+                sv, class_name, instances_by_class.keys(), container_key, container_class, scalar_slots
             )
             logger.debug("%s reference slots: %s", class_name, ref_slots)
 
@@ -331,7 +345,7 @@ def main():
                         list_fields.add(k)
                 flat_records.append(filtered)
 
-            if args.list_style == "explode":
+            if list_style == ListStyle.explode:
                 flat_records = explode_rows(flat_records, list_fields)
             else:
                 flat_records = join_lists(flat_records, list_fields)
@@ -344,7 +358,7 @@ def main():
             df = df[slot_order + extra_cols]
 
             if not df.dropna(how="all").empty:
-                out_path = Path(args.output_dir) / f"{class_name}.tsv"
+                out_path = Path(output_dir) / f"{class_name}.tsv"
                 df.to_csv(out_path, sep="\t", index=False)
                 logger.info("Wrote: %s", out_path)
             else:
@@ -356,4 +370,4 @@ if __name__ == "__main__":
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
-    main()
+    typer.run(main)
