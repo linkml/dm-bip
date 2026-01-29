@@ -39,12 +39,16 @@ DM_MAP_CHUNK_SIZE ?= 10000
 
 # Schema generation options
 # ============
-# Set DM_ENUM_THRESHOLD to control automatic enum creation.
-# Default 1.0 disables enum creation (ratio can never exceed 1.0).
-# Set to 0.1 (schema-automator default) to enable enum inference.
+# Enum inference is controlled by both DM_ENUM_THRESHOLD and DM_MAX_ENUM_SIZE.
+# To enable enum inference, set BOTH variables (e.g., DM_ENUM_THRESHOLD=0.1 and DM_MAX_ENUM_SIZE=50).
+#
+# DM_ENUM_THRESHOLD: ratio of distinct values to total rows for enum consideration.
+#   Default 1.0 disables threshold-based enum creation (ratio cannot exceed 1.0).
+#   Set to 0.1 (schema-automator default) to enable.
 DM_ENUM_THRESHOLD ?= 1.0
-# Maximum number of distinct values for a column to be considered an enum.
-# Set to 0 to disable enum creation based on size.
+# DM_MAX_ENUM_SIZE: maximum distinct values for a column to be considered an enum.
+#   Default 0 disables size-based enum creation.
+#   Set to 50 (schema-automator default) to enable.
 DM_MAX_ENUM_SIZE ?= 0
 
 # Derived output files
@@ -103,10 +107,12 @@ VALIDATE_SUCCESS_LOGS := $(INPUT_FILE_KEYS:%=$(DATA_VALIDATE_FILES_DIR)/%/succes
 # ============
 define DEBUG
 Configured variables:
-  DM_SCHEMA_NAME = $(DM_SCHEMA_NAME)
-  DM_INPUT_DIR   = $(DM_INPUT_DIR)
-  DM_INPUT_FILES = $(DM_INPUT_FILES)
-  DM_OUTPUT_DIR  = $(DM_OUTPUT_DIR)
+  DM_SCHEMA_NAME     = $(DM_SCHEMA_NAME)
+  DM_INPUT_DIR       = $(DM_INPUT_DIR)
+  DM_INPUT_FILES     = $(DM_INPUT_FILES)
+  DM_OUTPUT_DIR      = $(DM_OUTPUT_DIR)
+  DM_ENUM_THRESHOLD  = $(DM_ENUM_THRESHOLD)
+  DM_MAX_ENUM_SIZE   = $(DM_MAX_ENUM_SIZE)
 
 Generated variables
   input files:                    $(if $(INPUT_FILES),$(INPUT_FILES),(none))
