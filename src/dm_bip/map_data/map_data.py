@@ -260,4 +260,5 @@ if __name__ == "__main__":
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
+    logging.getLogger("linkml_runtime").setLevel(logging.WARNING)
     typer.run(main)
