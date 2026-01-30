@@ -65,6 +65,7 @@ SCHEMA_VALIDATE_LOG         := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-schema-v
 DATA_VALIDATE_LOG           := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-data-validate.log
 DATA_VALIDATE_FILES_DIR     := $(VALIDATE_OUTPUT_DIR)/data-validation
 DATA_VALIDATE_ERRORS_DIR    := $(VALIDATE_OUTPUT_DIR)/data-validation-errors
+MAPPING_LOG                 := $(MAPPING_OUTPUT_DIR)/mapping.log
 
 VALIDATION_SUCCESS_SENTINEL := $(VALIDATE_OUTPUT_DIR)/_data_validation_complete
 MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
@@ -124,6 +125,7 @@ Generated logs:
   data validation log:            $(DATA_VALIDATE_LOG)
   data validation logs by file:   $(DATA_VALIDATE_FILES_DIR)
   data validation errors by file: $(DATA_VALIDATE_ERRORS_DIR)
+  mapping log:                    $(MAPPING_LOG)
 
 endef
 
@@ -389,8 +391,10 @@ $(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL)
 		$(if $(DM_MAPPING_PREFIX),--output-prefix $(DM_MAPPING_PREFIX)) \
 		$(if $(DM_MAPPING_POSTFIX),--output-postfix "$(DM_MAPPING_POSTFIX)") \
 		--output-type $(DM_MAP_OUTPUT_TYPE) \
-		--chunk-size $(DM_MAP_CHUNK_SIZE)
+		--chunk-size $(DM_MAP_CHUNK_SIZE) \
+		2>&1 | tee $(MAPPING_LOG)
 	@echo "✓ Data mapping complete. Output written to $(MAPPING_OUTPUT_DIR)"
+	@echo "Mapping log written to $(MAPPING_LOG)"
 	@touch $@
 
 .PHONY: map-debug
@@ -398,6 +402,7 @@ map-debug:
 	@echo "DM_TRANS_SPEC_DIR: $(DM_TRANS_SPEC_DIR)"
 	@echo "DM_MAP_TARGET_SCHEMA: $(DM_MAP_TARGET_SCHEMA)"
 	@echo "MAPPING_OUTPUT_DIR: $(MAPPING_OUTPUT_DIR)"
+	@echo "MAPPING_LOG: $(MAPPING_LOG)"
 
 .PHONY: map-clean
 map-clean:
