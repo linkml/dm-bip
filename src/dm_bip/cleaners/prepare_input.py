@@ -1,3 +1,8 @@
+"""
+Generalized utility to standardize dbGaP raw archives.
+Removes metadata headers, filters tables based on mapping specs, 
+and outputs standardized TSVs for LinkML validation.
+"""
 import os
 import re
 import gzip
@@ -30,53 +35,46 @@ def get_required_phts(mapping_dir, verbose=False):
 
 def clean_dbgap_content(line_iterator, verbose=False):
     """
-    Standardizes dbGaP file streams by:
-    1. Stripping all metadata (lines starting with # or blank).
-    2. Identifying the first valid row as the header.
-    3. Cleaning the header (removing ## markers and phv version suffixes).
-    4. Prepending dbGaP_Subject_ID if the first column is unlabeled.
+    Standardizes dbGaP file streams for the DMC pipeline.
+    Ensures 'dbGaP_Subject_ID' is the anchor and all phv accessions are preserved.
     """
+    phv_accessions = []
     header_processed = False
 
     for line in line_iterator:
-        clean_line = line.strip()
-
-        # STEP 1: Skip metadata (#) and empty lines. 
-        # We don't stop until we hit the actual header row.
-        if line.startswith('#') or clean_line == "":
+        # STEP 1: Capture Accession IDs from the '##' line
+        if line.startswith('##'):
+            # Strip hashes and version suffixes (.v1.p1.c1)
+            raw_parts = line.lstrip('#').strip().split('\t')
+            # Clean each part to get just the 'phvXXXXXXXX'
+            phv_accessions = [re.sub(r'(phv\d{8})\..*', r'\1', p).strip() for p in raw_parts if p.strip()]
             continue
 
-        # STEP 2: Process the Header Row
-        # This is the first line that is NOT metadata and NOT empty.
+        # STEP 2: Skip other metadata comments
+        if line.startswith('#'):
+            continue
+
+        # STEP 3: Identify the Names Row and construct the Hybrid Header
         if not header_processed:
-            if verbose: print(f"   [Verbose] Raw Header Detected: {line[:60]}...")
-            
-            # Remove leading '##' and any adjacent whitespace or tabs.
-            # This handles both '## phv...' and '##\tphv...' (found in pht001872).
-            line = re.sub(r'^##\s*', '', line)
-            
-            # Ensure the Subject ID column is properly labeled.
-            # If the line now starts with a variable ID (phv), we must prepend the ID label
-            # to keep the column count and LinkML mapping consistent.
-            if line.startswith('phv') or "Subject_ID" not in line:
-                line = "dbGaP_Subject_ID\t" + line
-            
-            # Clean variable IDs: Strip suffixes (e.g., phv00123456.v1.p1 -> phv00123456).
-            # This is critical so variable names match the LinkML YAML keys.
-            line = re.sub(r'(phv\d{8})\.[^\s\t]*', r'\1', line)
-            
-            header_processed = True
-            if verbose: print(f"   [Verbose] Final Standardized Header: {line[:80]}...")
-            yield line
-            continue
+            if "dbGaP_Subject_ID" in line:
+                if verbose: print(f"   [Verbose] Reconstructing header for mapping alignment...")
+                
+                # The first column is ALWAYS 'dbGaP_Subject_ID'.
+                # We then append the FULL list of phvs we found.
+                # This ensures phv00113019 is included.
+                hybrid_header = ["dbGaP_Subject_ID"] + phv_accessions
+                
+                header_processed = True
+                yield "\t".join(hybrid_header) + "\n"
+                continue
+            else:
+                continue
 
-        # STEP 3: Stream the raw data rows.
-        # Skip redundant header rows if the dbGaP file happens to repeat them.
-        if "dbGaP_Subject_ID" in line and not line.startswith("dbGaP_Subject_ID"):
-            if verbose: print("   [Verbose] Skipping redundant header row.")
-            continue
-            
-        yield line
+        # STEP 4: Stream the raw data rows
+        if line.strip():
+            if "Intentionally Blank" in line:
+                continue
+            yield line
 
 def main():
     parser = argparse.ArgumentParser(description="Clean and standardize dbGaP files for Pipeline Input")
