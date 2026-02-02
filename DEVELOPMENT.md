@@ -47,8 +47,8 @@ gantt
     Implement Code Coverage Monitoring (#217)           :i217, 2026-02-05, 2026-05-15
     Improve Test Coverage (#218)                        :i218, 2026-03-15, 2026-06-10
     Fix linting errors in notebooks (#219)              :i219, 2026-04-01, 2026-06-15
-    Silent Exception in updated_flatten_to_tsv (#226)   :i226, 2026-03-01, 2026-06-15
-    Mixed CLI frameworks (#227)                         :active, i227, 2025-12-20, 2026-03-01
+    Silent Exception in updated_flatten_to_tsv (#226)   :done, i226, 2026-03-01, 2026-06-15
+    Mixed CLI frameworks (#227)                         :done, i227, 2025-12-20, 2026-03-01
 
     section Pilot Data Delivery 
     Tracking Issue #185                     :crit, t185,2025-10-10, 6w
@@ -80,15 +80,18 @@ gantt
     Add tooling for SchemaAutomator/Schemasheets (#80)  :i80, 2026-03-15, 2026-07-10
     Generalize map_data.py with INCLUDE mapping (#166)  :i166, 2026-02-01, 2026-07-25
     Add Containerization with Docker (#90)              :done, i90, 2025-12-20, 2026-03-15
-    Implement data mapping from multiple classes (#222) :i222, 2026-02-01, 2026-05-27
-    Tweak prefix and postfix in the Makefile (#230)     :active, i230, 2026-01-01, 2026-04-10
+    Implement data mapping from multiple classes (#222) :done, i222, 2026-02-01, 2026-05-27
+    Tweak prefix and postfix in the Makefile (#230)     :done, i230, 2026-01-01, 2026-04-10
+    Add CONFIG include support (#237)                   :done, i237, 2026-01-15, 2026-02-02
+    LinkML-Map GUID generation (#235)                   :i235, 2026-02-03, 2026-04-01
 
     section Audit Logs
     Tracking Issue #189                     :crit, t189, 2025-10-10, 6w
 
     section 5 
     Define Audit Log Requirements (#213)               :i213, 2026-04-30, 2026-08-10
-    Replace print() with logging module (#223)         :i223, 2026-04-10, 2026-06-30
+    Replace print() with logging module (#223)         :done, i223, 2026-04-10, 2026-06-30
+    Add log file for mapping step (#243)               :done, i243, 2026-01-30, 2026-02-02
     Schema-automator validation type issues (#232)     :active, i232, 2026-01-01, 2026-04-30
     Schema-automator optional null handling (#233)     :active, i233, 2026-01-01, 2026-04-10
 
@@ -178,6 +181,9 @@ gantt
     click i230 href "https://github.com/linkml/dm-bip/issues/230"
     click i232 href "https://github.com/linkml/dm-bip/issues/232"
     click i233 href "https://github.com/linkml/dm-bip/issues/233"
+    click i235 href "https://github.com/linkml/dm-bip/issues/235"
+    click i237 href "https://github.com/linkml/dm-bip/issues/237"
+    click i243 href "https://github.com/linkml/dm-bip/issues/243"
 
     axisFormat %B
     tickInterval 1month
@@ -201,8 +207,8 @@ Procedures for controlling releases of tool-chains, repositories, and data sets.
 - [ ] Implement Code Coverage Monitoring (#217)
 - [ ] Improve Test Coverage (#218)
 - [ ] Fix linting errors in notebooks (#219)
-- [ ] Silent Exception in updated_flatten_to_tsv (#226)
-- [ ] Mixed CLI frameworks (#227)
+- [x] Silent Exception in updated_flatten_to_tsv (#226)
+- [x] Mixed CLI frameworks (#227)
 
 ## 2. Pilot Data Delivery (Tracking: #185)
 Preparation, ingestion, and QC of the original pilot data set.
@@ -228,13 +234,16 @@ Improving automation, testing, workflows, and integration.
 - [x] Add Containerization with Docker (#90) - Patrick, Vessie
 - [x] Create tests for mapping script (#210) - Corey
 - [ ] Enum derivations (#211) - Roman, Corey
-- [ ] Implement data mapping from multiple classes (#222)
-- [ ] Tweak prefix and postfix in the Makefile (#230) - Corey
+- [x] Implement data mapping from multiple classes (#222)
+- [x] Tweak prefix and postfix in the Makefile (#230) - Corey
+- [x] Add CONFIG include support to pipeline Makefile (#237) - Corey
+- [ ] LinkML-Map needs to be able to make GUIDs (#235)
 
 ## 5. Audit Logs (Tracking: #189)
 Logging, auditability, and human-readable data provenance.
 - [ ] Define Audit Log Requirements (#213)
-- [ ] Replace print() statements with logging module (#223)
+- [x] Replace print() statements with logging module (#223)
+- [x] Add log file for mapping step (#243)
 - [ ] Schema-automator validation type issues (#232) - Madan
 - [ ] Schema-automator optional null handling (#233) - Madan
 - [ ] Implement human-readable logging
