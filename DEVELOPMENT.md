@@ -82,16 +82,16 @@ gantt
     Add Containerization with Docker (#90)              :done, i90, 2025-12-20, 2026-03-15
     Implement data mapping from multiple classes (#222) :done, i222, 2026-02-01, 2026-05-27
     Tweak prefix and postfix in the Makefile (#230)     :done, i230, 2026-01-01, 2026-04-10
-    Add CONFIG include support (#237)                   :done, i237, 2026-01-15, 2026-02-02
-    LinkML-Map GUID generation (#235)                   :i235, 2026-02-03, 2026-04-01
+    Add CONFIG include support (#237)                   :done, i237, 2025-11-01, 2026-02-02
+    LinkML-Map GUID generation (#235)                   :i235, 2026-02-03, 2026-05-01
 
     section Audit Logs
     Tracking Issue #189                     :crit, t189, 2025-10-10, 6w
 
     section 5 
     Define Audit Log Requirements (#213)               :i213, 2026-04-30, 2026-08-10
-    Replace print() with logging module (#223)         :done, i223, 2026-04-10, 2026-06-30
-    Add log file for mapping step (#243)               :done, i243, 2026-01-30, 2026-02-02
+    Replace print() with logging module (#223)         :done, i223, 2026-03-10, 2026-06-30
+    Add log file for mapping step (#243)               :done, i243, 2025-11-15, 2026-02-02
     Schema-automator validation type issues (#232)     :active, i232, 2026-01-01, 2026-04-30
     Schema-automator optional null handling (#233)     :active, i233, 2026-01-01, 2026-04-10
 
