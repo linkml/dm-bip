@@ -4,6 +4,8 @@ This document contains the project development outline and assignments as well a
 # Project Roadmap
 This Gantt chart represents a starting point for understanding the timeline for our development and serves a roadmap for our development stages. This a high-level chart showing the different parts of the project and how development time can ovelap. Currently, this is non-finalized and is intended only as a starting point for discussing the relative timelines of tasks.
 
+**Note:** Date ranges represent planned timeline slots for visual layout, not actual work dates. Issues marked `:done` are confirmed closed in GitHub regardless of their displayed date range.
+
 ```mermaid
 ---
 config:
