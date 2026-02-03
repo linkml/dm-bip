@@ -99,6 +99,21 @@ Key Make variables for pipeline runs:
 
 ---
 
+## GitHub Practices
+
+### Issues
+- **Never edit issue bodies after creation** - use comments for updates
+- **Use native sub-issues** - link via GraphQL `addSubIssue` mutation, not task lists in body
+- **Add labels when creating issues** - always include the appropriate tracking label
+- **Link to tracking issues** - all work issues should be sub-issues of a tracking issue
+
+### Pull Requests
+- **Don't amend/force-push** unless explicitly requested - create new commits instead
+- **Reply to review comments**, then resolve conversations
+- **Check CI status** before requesting review
+
+---
+
 ## Quick Reference
 
 | Task | Command |
