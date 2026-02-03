@@ -44,7 +44,7 @@ def toy_data_pipeline_output():
     # Pipeline is expected to fail at the mapping step (no target schema configured)
     # but validation should still complete successfully
     if proc.returncode != 0:
-        if "No target schema file detected" not in proc.stderr:
+        if "Target schema file missing" not in proc.stderr:
             temp_dir.cleanup()
             raise RuntimeError(
                 f"Could not run pipeline from toy data. stderr from `make schema-create`:\n\n{proc.stderr}"
@@ -65,7 +65,7 @@ def test_pipeline_no_input():
     )
 
     assert result.returncode > 0
-    assert "no input files detected" in result.stderr
+    assert "No input files detected" in result.stderr
 
 
 def test_pipeline(toy_data_pipeline_output: Path):
