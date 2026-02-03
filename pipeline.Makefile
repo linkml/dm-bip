@@ -1,9 +1,9 @@
 RUN := uv run
 
-
 # DM-BIP PIPELINE
 # ============
 # The pipeline consists of these steps:
+#   0. Prepare raw dbGaP files (New cleaning step)
 #   1. Create the schema with schema-automator
 #   2. Validate the data files with `linkml validate`
 #   3. Transform the data files with `linkml-map` (TODO)
@@ -36,6 +36,12 @@ DM_MAPPING_PREFIX ?=
 DM_MAPPING_POSTFIX ?=
 DM_MAP_OUTPUT_TYPE ?= yaml
 DM_MAP_CHUNK_SIZE ?= 10000
+
+# --- Raw Data Preparation Variables ---
+# The raw directory containing .txt.gz files
+DM_RAW_SOURCE ?=
+# The directory containing the YAML mapping files for the study filtering
+DM_MAPPING_SPEC ?= $(DM_TRANS_SPEC_DIR)
 
 # Schema generation options
 # ============
@@ -111,6 +117,7 @@ Configured variables:
   DM_SCHEMA_NAME     = $(DM_SCHEMA_NAME)
   DM_INPUT_DIR       = $(DM_INPUT_DIR)
   DM_INPUT_FILES     = $(DM_INPUT_FILES)
+  DM_RAW_SOURCE      = $(DM_RAW_SOURCE)
   DM_OUTPUT_DIR      = $(DM_OUTPUT_DIR)
   DM_ENUM_THRESHOLD  = $(DM_ENUM_THRESHOLD)
   DM_MAX_ENUM_SIZE   = $(DM_MAX_ENUM_SIZE)
@@ -176,12 +183,29 @@ help::
 .DEFAULT_GOAL := pipeline
 
 .PHONY: pipeline
-pipeline: $(MAPPING_SUCCESS_SENTINEL)
+pipeline:
+	@$(MAKE) prepare-input
+	@$(MAKE) $(MAPPING_SUCCESS_SENTINEL)
 
 .PHONY: pipeline-debug
 pipeline-debug:
 	@:$(info $(DEBUG))
 
+# Preparation Step
+# ============
+.PHONY: prepare-input
+prepare-input:
+	@if [ -n "$(DM_RAW_SOURCE)" ]; then \
+		echo "--- [0/3] Cleaning and standardizing raw dbGaP files ---"; \
+		mkdir -p $(DM_INPUT_DIR); \
+		$(RUN) python src/dm_bip/cleaners/prepare_input.py \
+			--source $(DM_RAW_SOURCE) \
+			--mapping $(DM_MAPPING_SPEC) \
+			--output $(DM_INPUT_DIR) \
+			--verbose; \
+	else \
+		echo "--- Skipping cleaning step (DM_RAW_SOURCE not set) ---"; \
+	fi
 
 
 # Schema creation goals
