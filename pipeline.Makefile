@@ -87,12 +87,15 @@ endif
 
 # Pipeline inputs
 # ============
+# When DM_RAW_SOURCE is set, INPUT_FILES comes from the included .mk file
+ifndef DM_RAW_SOURCE
 ifdef DM_INPUT_FILES
 	INPUT_FILES := $(DM_INPUT_FILES)
 else ifdef DM_INPUT_DIR
 	INPUT_FILES := $(shell find $(DM_INPUT_DIR) -type f -regex '.*\.[ct]sv' 2> /dev/null)
 else
 	INPUT_FILES :=
+endif
 endif
 
 # Generic check macro: $(call check_required,VALUE,error message)
