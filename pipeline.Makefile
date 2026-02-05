@@ -222,11 +222,12 @@ $(PREPARED_INPUT_MK):
 .PHONY: prepare-input
 prepare-input: $(PREPARED_INPUT_MK)
 
+endif
+
+# Always available - safe to run even if file doesn't exist
 .PHONY: prepare-clean
 prepare-clean:
 	rm -f $(PREPARED_INPUT_MK)
-
-endif
 
 
 # Schema creation goals
