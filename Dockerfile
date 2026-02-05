@@ -28,3 +28,4 @@ RUN uv sync --frozen
 # Default command
 # This no longer works CMD ["uv", "run", "dm-bip", "run"]
 CMD ["uv", "run", "dm-bip", "test"]
+
