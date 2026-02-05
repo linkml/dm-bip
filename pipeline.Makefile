@@ -1,9 +1,9 @@
 RUN := uv run
 
-
 # DM-BIP PIPELINE
 # ============
 # The pipeline consists of these steps:
+#   0. Prepare raw dbGaP files (New cleaning step)
 #   1. Create the schema with schema-automator
 #   2. Validate the data files with `linkml validate`
 #   3. Transform the data files with `linkml-map` (TODO)
@@ -17,7 +17,12 @@ RUN := uv run
 #
 # All other variables are derived from these.
 
-
+# External config file support
+# ============
+# Use CONFIG=path/to/file.mk to load variables from an external file.
+# The config file should set variables using make syntax (e.g., DM_INPUT_DIR = /path).
+CONFIG ?=
+-include $(CONFIG)
 
 # Configurable parameters via environment variables
 # ============
@@ -31,6 +36,26 @@ DM_MAPPING_PREFIX ?=
 DM_MAPPING_POSTFIX ?=
 DM_MAP_OUTPUT_TYPE ?= yaml
 DM_MAP_CHUNK_SIZE ?= 10000
+
+# --- Raw Data Preparation Variables ---
+# The raw directory containing .txt.gz files
+DM_RAW_SOURCE ?=
+# The directory containing the YAML mapping files for the study filtering
+DM_MAPPING_SPEC ?= $(DM_TRANS_SPEC_DIR)
+
+# Schema generation options
+# ============
+# Enum inference is controlled by both DM_ENUM_THRESHOLD and DM_MAX_ENUM_SIZE.
+# To enable enum inference, set BOTH variables (e.g., DM_ENUM_THRESHOLD=0.1 and DM_MAX_ENUM_SIZE=50).
+#
+# DM_ENUM_THRESHOLD: ratio of distinct values to total rows for enum consideration.
+#   Default 1.0 disables threshold-based enum creation (ratio cannot exceed 1.0).
+#   Set to 0.1 (schema-automator default) to enable.
+DM_ENUM_THRESHOLD ?= 1.0
+# DM_MAX_ENUM_SIZE: maximum distinct values for a column to be considered an enum.
+#   Default 0 disables size-based enum creation.
+#   Set to 50 (schema-automator default) to enable.
+DM_MAX_ENUM_SIZE ?= 0
 
 # Derived output files
 # ============
@@ -46,6 +71,7 @@ SCHEMA_VALIDATE_LOG         := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-schema-v
 DATA_VALIDATE_LOG           := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-data-validate.log
 DATA_VALIDATE_FILES_DIR     := $(VALIDATE_OUTPUT_DIR)/data-validation
 DATA_VALIDATE_ERRORS_DIR    := $(VALIDATE_OUTPUT_DIR)/data-validation-errors
+MAPPING_LOG                 := $(MAPPING_OUTPUT_DIR)/mapping.log
 
 VALIDATION_SUCCESS_SENTINEL := $(VALIDATE_OUTPUT_DIR)/_data_validation_complete
 MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
@@ -88,10 +114,13 @@ VALIDATE_SUCCESS_LOGS := $(INPUT_FILE_KEYS:%=$(DATA_VALIDATE_FILES_DIR)/%/succes
 # ============
 define DEBUG
 Configured variables:
-  DM_SCHEMA_NAME = $(DM_SCHEMA_NAME)
-  DM_INPUT_DIR   = $(DM_INPUT_DIR)
-  DM_INPUT_FILES = $(DM_INPUT_FILES)
-  DM_OUTPUT_DIR  = $(DM_OUTPUT_DIR)
+  DM_SCHEMA_NAME     = $(DM_SCHEMA_NAME)
+  DM_INPUT_DIR       = $(DM_INPUT_DIR)
+  DM_INPUT_FILES     = $(DM_INPUT_FILES)
+  DM_RAW_SOURCE      = $(DM_RAW_SOURCE)
+  DM_OUTPUT_DIR      = $(DM_OUTPUT_DIR)
+  DM_ENUM_THRESHOLD  = $(DM_ENUM_THRESHOLD)
+  DM_MAX_ENUM_SIZE   = $(DM_MAX_ENUM_SIZE)
 
 Generated variables
   input files:                    $(if $(INPUT_FILES),$(INPUT_FILES),(none))
@@ -103,6 +132,7 @@ Generated logs:
   data validation log:            $(DATA_VALIDATE_LOG)
   data validation logs by file:   $(DATA_VALIDATE_FILES_DIR)
   data validation errors by file: $(DATA_VALIDATE_ERRORS_DIR)
+  mapping log:                    $(MAPPING_LOG)
 
 endef
 
@@ -153,12 +183,29 @@ help::
 .DEFAULT_GOAL := pipeline
 
 .PHONY: pipeline
-pipeline: $(MAPPING_SUCCESS_SENTINEL)
+pipeline:
+	@$(MAKE) prepare-input
+	@$(MAKE) $(MAPPING_SUCCESS_SENTINEL)
 
 .PHONY: pipeline-debug
 pipeline-debug:
 	@:$(info $(DEBUG))
 
+# Preparation Step
+# ============
+.PHONY: prepare-input
+prepare-input:
+	@if [ -n "$(DM_RAW_SOURCE)" ]; then \
+		echo "--- [0/3] Cleaning and standardizing raw dbGaP files ---"; \
+		mkdir -p $(DM_INPUT_DIR); \
+		$(RUN) python src/dm_bip/cleaners/prepare_input.py \
+			--source $(DM_RAW_SOURCE) \
+			--mapping $(DM_MAPPING_SPEC) \
+			--output $(DM_INPUT_DIR) \
+			--verbose; \
+	else \
+		echo "--- Skipping cleaning step (DM_RAW_SOURCE not set) ---"; \
+	fi
 
 
 # Schema creation goals
@@ -173,7 +220,10 @@ schema-clean:
 $(SCHEMA_FILE): $(INPUT_FILES)
 	@:$(call check_input_files)
 	mkdir -p $(@D)
-	$(RUN) schemauto generalize-tsvs -n $(DM_SCHEMA_NAME) $^ -o $@
+	$(RUN) schemauto generalize-tsvs -n $(DM_SCHEMA_NAME) \
+		--enum-threshold $(DM_ENUM_THRESHOLD) \
+		--max-enum-size $(DM_MAX_ENUM_SIZE) \
+		$^ -o $@
 	@echo
 	@echo "  Created schema at $@"
 	@echo
@@ -357,16 +407,18 @@ $(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL)
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
 	$(RUN) python ./src/dm_bip/map_data/map_data.py \
-		--source_schema $(SCHEMA_FILE) \
-		--target_schema $(DM_MAP_TARGET_SCHEMA) \
-		--data_dir $(DM_INPUT_DIR) \
-		--var_dir $(DM_TRANS_SPEC_DIR) \
-		--output_dir $(MAPPING_OUTPUT_DIR) \
-		--output_prefix $(DM_MAPPING_PREFIX) \
-		--output_postfix "$(DM_MAPPING_POSTFIX)" \
-		--output_type $(DM_MAP_OUTPUT_TYPE) \
-		--chunk_size $(DM_MAP_CHUNK_SIZE)
+		--source-schema $(SCHEMA_FILE) \
+		--target-schema $(DM_MAP_TARGET_SCHEMA) \
+		--data-dir $(DM_INPUT_DIR) \
+		--var-dir $(DM_TRANS_SPEC_DIR) \
+		--output-dir $(MAPPING_OUTPUT_DIR) \
+		$(if $(DM_MAPPING_PREFIX),--output-prefix $(DM_MAPPING_PREFIX)) \
+		$(if $(DM_MAPPING_POSTFIX),--output-postfix "$(DM_MAPPING_POSTFIX)") \
+		--output-type $(DM_MAP_OUTPUT_TYPE) \
+		--chunk-size $(DM_MAP_CHUNK_SIZE) \
+		2>&1 | tee $(MAPPING_LOG)
 	@echo "✓ Data mapping complete. Output written to $(MAPPING_OUTPUT_DIR)"
+	@echo "Mapping log written to $(MAPPING_LOG)"
 	@touch $@
 
 .PHONY: map-debug
@@ -374,6 +426,7 @@ map-debug:
 	@echo "DM_TRANS_SPEC_DIR: $(DM_TRANS_SPEC_DIR)"
 	@echo "DM_MAP_TARGET_SCHEMA: $(DM_MAP_TARGET_SCHEMA)"
 	@echo "MAPPING_OUTPUT_DIR: $(MAPPING_OUTPUT_DIR)"
+	@echo "MAPPING_LOG: $(MAPPING_LOG)"
 
 .PHONY: map-clean
 map-clean:

@@ -1,12 +1,12 @@
 """Integration test for updated_flatten_to_tsv script."""
 
-import sys
 import tempfile
 from pathlib import Path
 
 import pytest
 
-from dm_bip.format_converter import updated_flatten_to_tsv  # <-- adjust as needed
+from dm_bip.format_converter import updated_flatten_to_tsv
+from dm_bip.format_converter.updated_flatten_to_tsv import ListStyle, OutputMode
 
 script_dir = Path(__file__).parent
 test_dir = script_dir.parent
@@ -15,7 +15,6 @@ root_dir = test_dir.parent
 input_dir = test_dir / "input"
 output_dir = test_dir / "output"
 
-SCRIPT_PATH = root_dir / "src" / "dm_bip" / "format_converter" / "updated_flatten_to_tsv.py"
 SCHEMA_PATH = input_dir / "bdchm-corey-exp.yaml"
 INSTANCE_PATH = input_dir / "transformed_person_data_example.yaml"
 
@@ -27,29 +26,16 @@ def flattened_output_dir():
     with tempfile.TemporaryDirectory(dir=output_dir, prefix="flatten-output_") as tmp:
         out_dir = Path(tmp)
 
-        # Fake CLI arguments
-        args = [
-            str(SCRIPT_PATH.name),  # Simulate script name in sys.argv[0]
-            str(SCHEMA_PATH),
-            str(INSTANCE_PATH),
-            str(out_dir),
-            "--container-key",
-            "persons",
-            "--container-class",
-            "Person",
-            "--mode",
-            "per-class",
-            "--list-style",
-            "join",
-        ]
-
-        # Backup and patch sys.argv
-        old_argv = sys.argv
-        sys.argv = args
-        try:
-            updated_flatten_to_tsv.main()
-        finally:
-            sys.argv = old_argv
+        # Call main directly with arguments
+        updated_flatten_to_tsv.main(
+            schema=SCHEMA_PATH,
+            input_file=INSTANCE_PATH,
+            output_dir=out_dir,
+            container_key="persons",
+            container_class="Person",
+            mode=OutputMode.per_class,
+            list_style=ListStyle.join,
+        )
 
         yield out_dir  # Keeps temp dir alive during the test
 
