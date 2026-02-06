@@ -8,12 +8,17 @@ RUN := uv run
 #   2. Validate the data files with `linkml validate`
 #   3. Transform the data files with `linkml-map` (TODO)
 
-# There are four configurable parameters:
+# Primary configurable parameters:
 #
-#   1. DM_INPUT_DIR - Input CSV and/or TSV files
-#   2. DM_INPUT_FILES - Input directory containing CSV and/or TSV files
-#   3. DM_SCHEMA_NAME - The name of the schema
-#   4. DM_OUTPUT_DIR - The directory where all generated files go
+#   DM_SCHEMA_NAME   - The name of the schema (default: Schema)
+#   DM_OUTPUT_DIR    - The directory where all generated files go
+#   DM_INPUT_DIR     - Directory containing CSV and/or TSV files
+#   DM_INPUT_FILES   - Explicit list of input files (overrides DM_INPUT_DIR)
+#
+# For raw dbGaP data preparation:
+#
+#   DM_RAW_SOURCE    - Directory containing raw .txt.gz files
+#   DM_MAPPING_SPEC  - Directory containing YAML mapping files for filtering
 #
 # All other variables are derived from these.
 
