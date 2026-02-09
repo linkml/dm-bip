@@ -11,6 +11,7 @@ from linkml_runtime import SchemaView
 
 from dm_bip.map_data.map_data import (
     DataLoader,
+    discover_entities,
     get_schema,
     get_spec_files,
     main,
@@ -58,21 +59,21 @@ def spec_files_dir(temp_dir):
     # YAML file with search string
     yaml_match = os.path.join(temp_dir, "match_spec.yaml")
     with open(yaml_match, "w") as f:
-        f.write("class_derivations:\n")
+        f.write("- class_derivations:\n")
         f.write("    Participant:\n")
         f.write("      populated_from: test_data\n")
 
     # Another YAML file with search string
     yaml_match2 = os.path.join(temp_dir, "another_spec.yaml")
     with open(yaml_match2, "w") as f:
-        f.write("class_derivations:\n")
+        f.write("- class_derivations:\n")
         f.write("    Participant:\n")
         f.write("      populated_from: other_data\n")
 
     # YAML file without the search string
     yaml_no_match = os.path.join(temp_dir, "no_match.yaml")
     with open(yaml_no_match, "w") as f:
-        f.write("class_derivations:\n")
+        f.write("- class_derivations:\n")
         f.write("    Person:\n")
         f.write("      populated_from: person_data\n")
 
@@ -166,6 +167,70 @@ def test_get_spec_files_handles_yml_extension(spec_files_dir):
     result = get_spec_files(spec_files_dir, "    Participant:")
     stems = [p.stem for p in result]
     assert "test_spec" in stems
+
+
+# --- discover_entities Tests ---
+
+
+def test_discover_entities_finds_top_level_classes(spec_files_dir):
+    """Test that discover_entities finds entity names from class_derivations."""
+    result = discover_entities(Path(spec_files_dir))
+    assert "Participant" in result
+    assert "Person" in result
+
+
+def test_discover_entities_returns_sorted(spec_files_dir):
+    """Test that results are sorted alphabetically."""
+    result = discover_entities(Path(spec_files_dir))
+    assert result == sorted(result)
+
+
+def test_discover_entities_ignores_nested_object_derivations(temp_dir):
+    """Test that nested class_derivations inside object_derivations are excluded."""
+    spec_file = os.path.join(temp_dir, "measurement.yaml")
+    with open(spec_file, "w") as f:
+        f.write(
+            "- class_derivations:\n"
+            "    MeasurementObservation:\n"
+            "      populated_from: test_data\n"
+            "      slot_derivations:\n"
+            "        value_quantity:\n"
+            "          object_derivations:\n"
+            "          - class_derivations:\n"
+            "              Quantity:\n"
+            "                populated_from: test_data\n"
+        )
+    result = discover_entities(Path(temp_dir))
+    assert "MeasurementObservation" in result
+    assert "Quantity" not in result
+
+
+def test_discover_entities_empty_directory(temp_dir):
+    """Test that an empty directory returns an empty list."""
+    result = discover_entities(Path(temp_dir))
+    assert result == []
+
+
+def test_discover_entities_skips_non_list_yaml(temp_dir):
+    """Test that YAML files with non-list content are skipped."""
+    spec_file = os.path.join(temp_dir, "config.yaml")
+    with open(spec_file, "w") as f:
+        f.write("name: test\nversion: 1\n")
+    result = discover_entities(Path(temp_dir))
+    assert result == []
+
+
+def test_discover_entities_deduplicates(temp_dir):
+    """Test that duplicate entity names across files are deduplicated."""
+    for name in ["spec1.yaml", "spec2.yaml"]:
+        with open(os.path.join(temp_dir, name), "w") as f:
+            f.write(
+                "- class_derivations:\n"
+                "    Person:\n"
+                "      populated_from: test_data\n"
+            )
+    result = discover_entities(Path(temp_dir))
+    assert result.count("Person") == 1
 
 
 # --- JSONStream Tests ---
@@ -613,8 +678,7 @@ def test_main_creates_output_directory(temp_dir):
     output_dir = Path(temp_dir) / "new_output"
     assert not output_dir.exists()
 
-    # main() will try to process the hardcoded entity list, most won't have specs
-    # but it should still create the directory
+    # main() discovers entities from spec files and processes them
     main(
         source_schema=TOY_DATA / "schemas/source-schema.yaml",
         target_schema=TOY_DATA / "schemas/target-schema.yaml",

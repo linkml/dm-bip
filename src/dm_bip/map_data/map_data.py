@@ -103,6 +103,29 @@ def multi_spec_transform(
             raise
 
 
+def discover_entities(var_dir: Path) -> list[str]:
+    """
+    Discover entity names from top-level class_derivations in spec files.
+
+    Scans all YAML files in var_dir and collects the unique class names
+    from top-level class_derivations blocks. Nested class_derivations
+    (inside object_derivations) are ignored since those represent
+    sub-components like Quantity, not standalone entities.
+
+    Returns a sorted list of entity names.
+    """
+    entities: set[str] = set()
+    for yaml_file in sorted(var_dir.glob("*.yaml")):
+        with open(yaml_file) as f:
+            specs = yaml.safe_load(f)
+        if not isinstance(specs, list):
+            continue
+        for block in specs:
+            if isinstance(block, dict) and "class_derivations" in block:
+                entities.update(block["class_derivations"].keys())
+    return sorted(entities)
+
+
 def get_schema(schema_path: Path) -> SchemaDefinition:
     """Load and return a LinkML schema from the given path."""
     sv = SchemaView(schema_path)
@@ -226,18 +249,8 @@ def main(
 
     data_loader = DataLoader(data_dir)
 
-    entities = [
-        "Condition",
-        "Demography",
-        "DrugExposure",
-        "MeasurementObservation",
-        "Observation",
-        "Participant",
-        "Person",
-        "Procedure",
-        "ResearchStudy",
-        "SdohObservation",
-    ]
+    entities = discover_entities(var_dir)
+    logger.info("Discovered entities: %s", entities)
 
     os.makedirs(output_dir, exist_ok=True)
 
