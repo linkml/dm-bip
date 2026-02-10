@@ -1,19 +1,18 @@
 """
+BDC Harmonization Ingest Validator (Cohort-Agnostic).
+
 =============================================================================
-BDC Harmonization Ingest Validator (Cohort-Agnostic)
-=============================================================================
-Project: NHLBI BioData Catalyst (BDC) Data Management Center (DMC) 
+Project: NHLBI BioData Catalyst (BDC) Data Management Core (DMC)
 Phase:   Post-Pilot Cleanup & Documentation
-Version: 2.0.0
 
 PURPOSE:
-This tool serves as a "Quality Gate" between the raw dbGaP ingestion and the 
-core LinkML transformation pipeline (The Factory). It ensures that the 
-pre-processing script (prepare_input.py) has correctly normalized the data 
+This tool serves as a "Quality Gate" between the raw dbGaP ingestion and the
+core LinkML transformation pipeline (The Factory). It ensures that the
+pre-processing script (prepare_input.py) has correctly normalized the data
 for ingestion.
 
 FUNCTIONALITY:
-1. Coverage Scan: Dynamically identifies all PHT files required by the 
+1. Coverage Scan: Dynamically identifies all PHT files required by the
    Harmonized Variables (HV) Dictionary for a specific cohort.
 2. Contract Validation:
    - Filename: Verifies PHT-based naming convention.
@@ -23,21 +22,22 @@ FUNCTIONALITY:
    - Integrity: Validates record counts against read-only raw sources.
 
 GOVERNANCE & RULES:
-- Operates on the 'Triad' architecture: HM (Blueprint), HV (Dictionary), 
+- Operates on the 'Triad' architecture: HM (Blueprint), HV (Dictionary),
   and dm-bip (Factory).
-- Read-Only Compliance: Streams compressed raw data to bypass enclave 
+- Read-Only Compliance: Streams compressed raw data to bypass enclave
   directory mount restrictions.
 - Success/Failure reporting follows the Project's QC reporting standards.
 
 =============================================================================
 """
 
-import os
-import gzip
-import pandas as pd
-import re
-import yaml
 import glob
+import gzip
+import os
+import re
+
+import pandas as pd
+import yaml
 
 # =============================================================================
 # GLOBAL CONFIGURATION & DEFAULTS
@@ -64,11 +64,12 @@ HV_REPO_DIR = "/sbgenomics/workspace/NHLBI-BDC-DMC-HV/priority_variables_transfo
 
 # =============================================================================
 
+
 class IngestValidator:
+    """Validate BDC ingest files against source specifications."""
+
     def __init__(self, cohort, raw_dir, cleaned_dir, hv_dir):
-        """
-        Initializes the validator with project-specific paths.
-        """
+        """Initialize the validator with project-specific paths."""
         self.cohort = cohort
         self.raw_dir = raw_dir
         self.cleaned_dir = cleaned_dir
@@ -76,16 +77,18 @@ class IngestValidator:
 
     def get_required_phts(self):
         """
-        Variable-to-File Coverage Scan (FP-006):
-        Parses all YAML files in the cohort's HV directory to identify 
-        which PHT tables are required for harmonization. This ensures 
-        the ingest matches the mapping SME requirements.
+        Parse YAML files to identify required PHT tables.
+
+        Variable-to-File Coverage Scan (FP-006): Reads all YAML files in the
+        cohort's HV directory to identify which PHT tables are required for
+        harmonization. This ensures the ingest matches the mapping SME
+        requirements.
         """
         required_phts = set()
         yaml_files = glob.glob(os.path.join(self.hv_ingest_path, "*.yaml"))
-        
+
         if not yaml_files:
-            print(f"⚠️ Warning: No YAML files found in {self.hv_ingest_path}")
+            print(f"Warning: No YAML files found in {self.hv_ingest_path}")
             return []
 
         for y_file in yaml_files:
@@ -98,18 +101,20 @@ class IngestValidator:
                     required_phts.update(found)
                 except yaml.YAMLError:
                     print(f"Error parsing {y_file}")
-        
+
         return sorted(list(required_phts))
 
     def get_raw_expectations(self, gz_path):
         """
-        Read-Only Expectation Extraction:
-        Streams the compressed raw file (read-only) to extract PHV order 
-        and record counts without unzipping to disk, bypassing mount limits.
+        Extract PHV order and record counts from compressed raw file.
+
+        Read-Only Expectation Extraction: Streams the compressed raw file
+        (read-only) to extract PHV order and record counts without unzipping
+        to disk, bypassing mount limits.
         """
         phv_list = []
         data_row_count = 0
-        
+
         with gzip.open(gz_path, 'rt', encoding='utf-8') as f:
             for line in f:
                 if line.startswith('##'):
@@ -123,12 +128,14 @@ class IngestValidator:
 
     def validate_file(self, pht):
         """
-        Strict Contract Validation:
-        Performs the check of the cleaned file against the raw source.
-        Checks: Filename, Anchor Column, PHV Sequence, and Row Integrity.
+        Validate cleaned file against raw source specifications.
+
+        Strict Contract Validation: Performs checks of the cleaned file
+        against the raw source. Validates: Filename, Anchor Column, PHV
+        Sequence, and Row Integrity.
         """
         cleaned_file = os.path.join(self.cleaned_dir, f"{pht}.tsv")
-        
+
         # 1. Presence Check
         if not os.path.exists(cleaned_file):
             return False, "File missing in cleaned directory"
@@ -138,11 +145,11 @@ class IngestValidator:
         raw_matches = glob.glob(os.path.join(self.raw_dir, f"*{pht}*.txt.gz"))
         if not raw_matches:
             return False, f"No raw source .txt.gz found containing '{pht}'"
-        
+
         try:
             expected_phvs, expected_records = self.get_raw_expectations(raw_matches[0])
             expected_header = ['dbGaP_Subject_ID'] + expected_phvs
-            
+
             # Load cleaned data
             df_actual = pd.read_csv(cleaned_file, sep='\t')
             actual_header = list(df_actual.columns)
@@ -152,7 +159,7 @@ class IngestValidator:
             if actual_header != expected_header:
                 if len(actual_header) != len(expected_header):
                     return False, f"Col count mismatch (Expected {len(expected_header)}, got {len(actual_header)})"
-                return False, f"Column order violation or naming mismatch"
+                return False, "Column order violation or naming mismatch"
 
             # Check Row Integrity
             if actual_records != expected_records:
@@ -165,21 +172,25 @@ class IngestValidator:
 
     def run_full_scan(self):
         """
-        Executive Execution Loop:
-        Scans all required files and prints a pass/fail summary report.
+        Scan required files and print pass/fail summary report.
+
+        Executive Execution Loop: Scans all required files and prints a
+        pass/fail summary report.
         """
         print(f"--- BDC Ingest Validation: {self.cohort} ---")
         required_phts = self.get_required_phts()
         print(f"Scanning for {len(required_phts)} required PHT tables...\n")
 
         summary = {"PASS": 0, "FAIL": 0}
-        
+
         for pht in required_phts:
             success, message = self.validate_file(pht)
-            status = "✅ PASS" if success else "❌ FAIL"
-            if success: summary["PASS"] += 1
-            else: summary["FAIL"] += 1
-            
+            status = "PASS" if success else "FAIL"
+            if success:
+                summary["PASS"] += 1
+            else:
+                summary["FAIL"] += 1
+
             print(f"{status} | {pht}.tsv: {message}")
 
         print("\n" + "="*40)
@@ -187,6 +198,7 @@ class IngestValidator:
         print(f"PASSED: {summary['PASS']}")
         print(f"FAILED: {summary['FAIL']}")
         print("="*40)
+
 
 if __name__ == "__main__":
     validator = IngestValidator(
