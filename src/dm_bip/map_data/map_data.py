@@ -117,8 +117,12 @@ def discover_entities(var_dir: Path) -> list[str]:
     entities: set[str] = set()
     yaml_files = sorted([*var_dir.rglob("*.yaml"), *var_dir.rglob("*.yml")])
     for yaml_file in yaml_files:
-        with open(yaml_file) as f:
-            specs = yaml.safe_load(f)
+        try:
+            with open(yaml_file) as f:
+                specs = yaml.safe_load(f)
+        except (OSError, yaml.YAMLError) as e:
+            logger.warning("Skipping spec file %s due to read/parse error: %s", yaml_file, e)
+            continue
         if not isinstance(specs, list):
             continue
         for block in specs:
@@ -252,6 +256,8 @@ def main(
 
     entities = discover_entities(var_dir)
     logger.info("Discovered entities: %s", entities)
+    if not entities:
+        logger.warning("No entities discovered in %s - pipeline will produce no outputs", var_dir)
 
     os.makedirs(output_dir, exist_ok=True)
 
