@@ -224,11 +224,7 @@ def test_discover_entities_deduplicates(temp_dir):
     """Test that duplicate entity names across files are deduplicated."""
     for name in ["spec1.yaml", "spec2.yaml"]:
         with open(os.path.join(temp_dir, name), "w") as f:
-            f.write(
-                "- class_derivations:\n"
-                "    Person:\n"
-                "      populated_from: test_data\n"
-            )
+            f.write("- class_derivations:\n    Person:\n      populated_from: test_data\n")
     result = discover_entities(Path(temp_dir))
     assert result.count("Person") == 1
 
