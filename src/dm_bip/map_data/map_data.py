@@ -115,7 +115,8 @@ def discover_entities(var_dir: Path) -> list[str]:
     Returns a sorted list of entity names.
     """
     entities: set[str] = set()
-    for yaml_file in sorted(var_dir.glob("*.yaml")):
+    yaml_files = sorted([*var_dir.rglob("*.yaml"), *var_dir.rglob("*.yml")])
+    for yaml_file in yaml_files:
         with open(yaml_file) as f:
             specs = yaml.safe_load(f)
         if not isinstance(specs, list):

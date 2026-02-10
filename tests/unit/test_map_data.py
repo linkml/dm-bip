@@ -229,6 +229,26 @@ def test_discover_entities_deduplicates(temp_dir):
     assert result.count("Person") == 1
 
 
+def test_discover_entities_finds_yml_extension(temp_dir):
+    """Test that .yml files are also discovered."""
+    yml_file = os.path.join(temp_dir, "visit_spec.yml")
+    with open(yml_file, "w") as f:
+        f.write("- class_derivations:\n    Visit:\n      populated_from: test_data\n")
+    result = discover_entities(Path(temp_dir))
+    assert "Visit" in result
+
+
+def test_discover_entities_finds_specs_in_subdirectories(temp_dir):
+    """Test that specs in subdirectories are discovered recursively."""
+    subdir = os.path.join(temp_dir, "temporal", "FHS")
+    os.makedirs(subdir)
+    spec_file = os.path.join(subdir, "visit.yaml")
+    with open(spec_file, "w") as f:
+        f.write("- class_derivations:\n    Visit:\n      populated_from: test_data\n")
+    result = discover_entities(Path(temp_dir))
+    assert "Visit" in result
+
+
 # --- JSONStream Tests ---
 
 
