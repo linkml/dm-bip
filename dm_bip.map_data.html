@@ -89,6 +89,22 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dm_bip.map_data.map_data.discover_entities">
+<span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.map_data.</span></span><span class="sig-name descname"><span class="pre">discover_entities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.map_data.discover_entities" title="Link to this definition"></a></dt>
+<dd><p>Discover entity names from top-level class_derivations in spec files.</p>
+<p>Scans all YAML files in var_dir and collects the unique class names
+from top-level class_derivations blocks. Nested class_derivations
+(inside object_derivations) are ignored since those represent
+sub-components like Quantity, not standalone entities.</p>
+<p>Returns a sorted list of entity names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dm_bip.map_data.map_data.get_schema">
 <span class="sig-prename descclassname"><span class="pre">dm_bip.map_data.map_data.</span></span><span class="sig-name descname"><span class="pre">get_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dm_bip.map_data.map_data.get_schema" title="Link to this definition"></a></dt>
 <dd><p>Load and return a LinkML schema from the given path.</p>
