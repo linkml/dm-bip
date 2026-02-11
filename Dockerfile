@@ -25,6 +25,10 @@ COPY . ./
 # Install dependencies using uv
 RUN uv sync --frozen
 
+# Clone the repos
+RUN git clone --branch v1.1.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git
+RUN git clone --branch v1.0.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git
+
 # Default command
 # This no longer works CMD ["uv", "run", "dm-bip", "run"]
 CMD ["uv", "run", "dm-bip", "test"]
