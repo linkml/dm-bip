@@ -68,10 +68,10 @@ def validate_mapping_integrity():
     print(f"   Target Study : {STUDY_ID}")
     print(f"   Logic Source : {HV_LOGIC_DIR}")
     print("=" * 85 + "\n")
-    
+
     # Discovery: Find all YAML transformation files
     yaml_files = glob.glob(os.path.join(HV_LOGIC_DIR, "*.yaml"))
-    
+
     mismatches = []        # Store error records for CSV export
     checked_count = 0      # Counter for total variables validated
     header_cache = {}      # Local cache to prevent redundant disk I/O
@@ -79,7 +79,7 @@ def validate_mapping_integrity():
     # Iterate through each transformation file
     for yaml_path in yaml_files:
         current_yaml = os.path.basename(yaml_path)
-        
+
         with open(yaml_path, 'r') as f:
             try:
                 # Load YAML - handles both single dict and list-based LinkML-Map formats
@@ -95,16 +95,16 @@ def validate_mapping_integrity():
                 # Process only configuration blocks (ignore metadata lists)
                 if not isinstance(item, dict):
                     continue
-                
+
                 # Navigate to the class_derivations (e.g., Person, Demography)
                 derivations = item.get('class_derivations', {})
                 for class_name, details in derivations.items():
-                    
+
                     # Get the PHT identifier (e.g., pht001490)
                     source_pht = details.get('populated_from')
                     if not source_pht:
                         continue
-                    
+
                     # ---------------------------------------------------------
                     # HEADER CACHE MANAGEMENT
                     # ---------------------------------------------------------
@@ -118,7 +118,7 @@ def validate_mapping_integrity():
                             # Log missing data files which prevent validation
                             print(f"⚠️  DATA MISSING: {source_pht}.tsv not found in ingest folder.")
                             header_cache[source_pht] = None
-                    
+
                     actual_columns = header_cache[source_pht]
                     if actual_columns is None:
                         continue
@@ -130,18 +130,18 @@ def validate_mapping_integrity():
                     for slot_name, slot_details in slots.items():
                         # Extract the mapped variable (e.g., phv00123456)
                         phv_mapped = slot_details.get('populated_from')
-                        
+
                         # Process only standard PHV strings (ignore functions/constants)
                         if isinstance(phv_mapped, str) and 'phv' in phv_mapped.lower():
                             checked_count += 1
-                            
+
                             # THE CORE TEST: Check if PHV exists in the actual source file
                             if phv_mapped not in actual_columns:
-                                
+
                                 # Generate official dbGaP deep-link for remediation
                                 pht_num = ''.join(filter(str.isdigit, source_pht))
                                 dbgap_url = f"https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/dataset.cgi?study_id={STUDY_ID}&pht={pht_num}"
-                                
+
                                 # Highlight Join Key failures (Cause of 59-row expansion issue)
                                 is_critical = "YES" if slot_name == "associated_participant" else "NO"
 
@@ -169,14 +169,14 @@ def validate_mapping_integrity():
     print("AUDIT SUMMARY")
     print(f"   Total YAMLs Analyzed     : {len(yaml_files)}")
     print(f"   Total Variables Validated : {checked_count}")
-    
+
     if not mismatches:
         print("\n✅ STATUS: All PHV references verified. Mapping Logic is consistent.")
     else:
         # Sort report: Critical Join Key errors at the top
         df_err = pd.DataFrame(mismatches).sort_values(by='CRITICAL_JOIN_KEY', ascending=False)
         df_err.to_csv(AUDIT_OUTPUT_FILE, index=False)
-        
+
         crit_n = len(df_err[df_err['CRITICAL_JOIN_KEY'] == "YES"])
         print(f"\n❌ STATUS: Found {len(mismatches)} invalid variable references.")
         print(f"   - {crit_n} errors identified as CRITICAL (affecting Join Keys).")
