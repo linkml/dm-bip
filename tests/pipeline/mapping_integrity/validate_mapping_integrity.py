@@ -1,14 +1,14 @@
 """
-=============================================================================
-BDC Mapping Integrity Validator & Auditor (v1.4.1)
+BDC Mapping Integrity Validator & Auditor (v1.4.1).
+
 =============================================================================
 Project: NHLBI BioData Catalyst (BDC) Data Management Center (DMC)
 Component: Harmonization Pipeline Static Analysis
 Scope: Phase 0.5 - Pre-Harmonization Logic Validation
 
 PURPOSE:
-This tool validates the referential integrity of Harmonized Variable (HV) 
-transformation YAML files. It cross-references the mapping logic against the 
+This tool validates the referential integrity of Harmonized Variable (HV)
+transformation YAML files. It cross-references the mapping logic against the
 physical dbGaP source datasets (PHTs) to ensure every variable (PHV) exists.
 
 TECHNICAL SCOPE:
@@ -18,7 +18,7 @@ TECHNICAL SCOPE:
 4. AUDIT TRAIL: Generates a CSV report with official dbGaP metadata links.
 
 URL LOGIC:
-Builds deep-links using the study_id and pht_id to allow human verification 
+Builds deep-links using the study_id and pht_id to allow human verification
 of variable metadata directly on the NCBI dbGaP website.
 
 GOVERNANCE:
@@ -30,10 +30,11 @@ NHLBI BDC DMC Engineering Team
 =============================================================================
 """
 
-import os
-import yaml
-import pandas as pd
 import glob
+import os
+
+import pandas as pd
+import yaml
 
 # =============================================================================
 # 1. GLOBAL CONFIGURATION
@@ -57,14 +58,16 @@ AUDIT_OUTPUT_FILE = "mapping_integrity_audit.csv"
 
 def validate_mapping_integrity():
     """
-    Main execution logic. Parses HV YAMLs, extracts PHV mappings, and 
-    validates them against physical file headers cached in memory.
+    Execute mapping integrity validation.
+
+    Parse HV YAMLs, extract PHV mappings, and validate them against physical
+    file headers cached in memory.
     """
-    print(f"\n" + "="*85)
-    print(f"🚀 INITIALIZING BDC MAPPING INTEGRITY AUDIT (SC-010)")
+    print("\n" + "=" * 85)
+    print("🚀 INITIALIZING BDC MAPPING INTEGRITY AUDIT (SC-010)")
     print(f"   Target Study : {STUDY_ID}")
     print(f"   Logic Source : {HV_LOGIC_DIR}")
-    print("="*85 + "\n")
+    print("=" * 85 + "\n")
     
     # Discovery: Find all YAML transformation files
     yaml_files = glob.glob(os.path.join(HV_LOGIC_DIR, "*.yaml"))
@@ -90,7 +93,7 @@ def validate_mapping_integrity():
 
             for item in configs:
                 # Process only configuration blocks (ignore metadata lists)
-                if not isinstance(item, dict): 
+                if not isinstance(item, dict):
                     continue
                 
                 # Navigate to the class_derivations (e.g., Person, Demography)
@@ -99,7 +102,7 @@ def validate_mapping_integrity():
                     
                     # Get the PHT identifier (e.g., pht001490)
                     source_pht = details.get('populated_from')
-                    if not source_pht: 
+                    if not source_pht:
                         continue
                     
                     # ---------------------------------------------------------
@@ -114,10 +117,10 @@ def validate_mapping_integrity():
                         else:
                             # Log missing data files which prevent validation
                             print(f"⚠️  DATA MISSING: {source_pht}.tsv not found in ingest folder.")
-                            header_cache[source_pht] = None 
+                            header_cache[source_pht] = None
                     
                     actual_columns = header_cache[source_pht]
-                    if actual_columns is None: 
+                    if actual_columns is None:
                         continue
 
                     # ---------------------------------------------------------
@@ -163,7 +166,7 @@ def validate_mapping_integrity():
     # 3. AUDIT COMPLETION & DATA EXPORT
     # =========================================================================
     print("-" * 85)
-    print(f"AUDIT SUMMARY")
+    print("AUDIT SUMMARY")
     print(f"   Total YAMLs Analyzed     : {len(yaml_files)}")
     print(f"   Total Variables Validated : {checked_count}")
     
@@ -178,8 +181,9 @@ def validate_mapping_integrity():
         print(f"\n❌ STATUS: Found {len(mismatches)} invalid variable references.")
         print(f"   - {crit_n} errors identified as CRITICAL (affecting Join Keys).")
         print(f"\n📝 Full Audit Trail saved to: {AUDIT_OUTPUT_FILE}")
-        print(f"   Resolve CRITICAL errors first to fix row expansion issues.")
+        print("   Resolve CRITICAL errors first to fix row expansion issues.")
     print("-" * 85 + "\n")
 
 if __name__ == "__main__":
     validate_mapping_integrity()
+
