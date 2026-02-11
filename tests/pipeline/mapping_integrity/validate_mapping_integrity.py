@@ -56,6 +56,7 @@ AUDIT_OUTPUT_FILE = "mapping_integrity_audit.csv"
 # 2. CORE VALIDATION ENGINE
 # =============================================================================
 
+
 def validate_mapping_integrity():
     """
     Execute mapping integrity validation.
@@ -113,10 +114,14 @@ def validate_mapping_integrity():
                         tsv_path = os.path.join(CLEANED_DATA_DIR, f"{source_pht}.tsv")
                         if os.path.exists(tsv_path):
                             # Read only the header row
-                            header_cache[source_pht] = pd.read_csv(tsv_path, sep='\t', nrows=0).columns.tolist()
+                            header_cache[source_pht] = pd.read_csv(
+                                tsv_path, sep='\t', nrows=0
+                            ).columns.tolist()
                         else:
                             # Log missing data files which prevent validation
-                            print(f"⚠️  DATA MISSING: {source_pht}.tsv not found in ingest folder.")
+                            print(
+                                f"⚠️  DATA MISSING: {source_pht}.tsv not found in ingest folder."
+                            )
                             header_cache[source_pht] = None
 
                     actual_columns = header_cache[source_pht]
@@ -143,7 +148,11 @@ def validate_mapping_integrity():
                                 dbgap_url = f"https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/dataset.cgi?study_id={STUDY_ID}&pht={pht_num}"
 
                                 # Highlight Join Key failures (Cause of 59-row expansion issue)
-                                is_critical = "YES" if slot_name == "associated_participant" else "NO"
+                                is_critical = (
+                                    "YES"
+                                    if slot_name == "associated_participant"
+                                    else "NO"
+                                )
 
                                 error_entry = {
                                     'CRITICAL_JOIN_KEY': is_critical,
@@ -157,9 +166,15 @@ def validate_mapping_integrity():
                                 mismatches.append(error_entry)
 
                                 # DUAL OUTPUT: Immediate console notification
-                                tag = "🚨 [CRITICAL]" if is_critical == "YES" else "❌ [ERROR]"
+                                tag = (
+                                    "🚨 [CRITICAL]"
+                                    if is_critical == "YES"
+                                    else "❌ [ERROR]"
+                                )
                                 print(f"{tag} Mismatch found in {current_yaml}")
-                                print(f"   Slot: {slot_name} | Target: {source_pht} | Missing PHV: {phv_mapped}")
+                                print(
+                                    f"   Slot: {slot_name} | Target: {source_pht} | Missing PHV: {phv_mapped}"
+                                )
                                 print(f"   Verify: {dbgap_url}\n")
 
     # =========================================================================
@@ -174,16 +189,17 @@ def validate_mapping_integrity():
         print("\n✅ STATUS: All PHV references verified. Mapping Logic is consistent.")
     else:
         # Sort report: Critical Join Key errors at the top
-        df_err = pd.DataFrame(mismatches).sort_values(by='CRITICAL_JOIN_KEY', ascending=False)
+        df_err = pd.DataFrame(mismatches).sort_values(
+            by='CRITICAL_JOIN_KEY', ascending=False
+        )
         df_err.to_csv(AUDIT_OUTPUT_FILE, index=False)
 
         crit_n = len(df_err[df_err['CRITICAL_JOIN_KEY'] == "YES"])
         print(f"\n❌ STATUS: Found {len(mismatches)} invalid variable references.")
-        print(f"   - {crit_n} errors identified as CRITICAL (affecting Join Keys).")
+        print(
+            f"   - {crit_n} errors identified as CRITICAL (affecting Join Keys)."
+        )
         print(f"\n📝 Full Audit Trail saved to: {AUDIT_OUTPUT_FILE}")
         print("   Resolve CRITICAL errors first to fix row expansion issues.")
     print("-" * 85 + "\n")
-
-if __name__ == "__main__":
-    validate_mapping_integrity()
 
