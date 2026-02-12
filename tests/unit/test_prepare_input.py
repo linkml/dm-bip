@@ -1,6 +1,8 @@
 """Tests for the prepare_input data cleaner."""
 
-from dm_bip.cleaners.prepare_input import clean_dbgap_content, get_required_phts
+import gzip
+
+from dm_bip.cleaners.prepare_input import clean_dbgap_content, get_required_phts, main
 
 
 class TestGetRequiredPhts:
@@ -174,3 +176,47 @@ class TestCleanDbgapContent:
         result = list(clean_dbgap_content(iter(lines)))
 
         assert result == ["123\tvalue\n"]
+
+
+def _make_gz_file(path, content):
+    """Create a gzipped text file."""
+    with gzip.open(path, "wt", encoding="utf-8") as f:
+        f.write(content)
+
+
+class TestMainConsentGroupFilter:
+    """Tests for consent group filtering in main."""
+
+    DBGAP_CONTENT = "## dbGaP_Subject_ID\tphv00001234\ndbGaP_Subject_ID\tcol1\n100\tval\n"
+
+    def test_filters_by_consent_group(self, tmp_path):
+        """Only processes files matching the specified consent group."""
+        source = tmp_path / "raw"
+        source.mkdir()
+        mapping = tmp_path / "mapping"
+        mapping.mkdir()
+        output = tmp_path / "output"
+
+        _make_gz_file(source / "phs000007.v31.pht000031.v1.p1.c1.HMB-IRB-MDS.txt.gz", self.DBGAP_CONTENT)
+        _make_gz_file(source / "phs000007.v31.pht000031.v1.p1.c2.HMB-IRB-NPU-MDS.txt.gz", self.DBGAP_CONTENT)
+
+        main(source=source, mapping=mapping, output=output, consent_group="c2")
+
+        output_files = list(output.glob("*.tsv"))
+        assert len(output_files) == 1
+
+    def test_processes_all_when_no_consent_group(self, tmp_path):
+        """Processes all files when no consent group is specified."""
+        source = tmp_path / "raw"
+        source.mkdir()
+        mapping = tmp_path / "mapping"
+        mapping.mkdir()
+        output = tmp_path / "output"
+
+        _make_gz_file(source / "phs000007.v31.pht000031.v1.p1.c1.HMB-IRB-MDS.txt.gz", self.DBGAP_CONTENT)
+        _make_gz_file(source / "phs000007.v31.pht000032.v1.p1.c2.HMB-IRB-NPU-MDS.txt.gz", self.DBGAP_CONTENT)
+
+        main(source=source, mapping=mapping, output=output, consent_group=None)
+
+        output_files = list(output.glob("*.tsv"))
+        assert len(output_files) == 2

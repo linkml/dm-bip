@@ -94,6 +94,9 @@ def main(
     output: Annotated[
         Optional[Path], typer.Option("--output", help="Explicit destination directory for cleaned .tsv files")
     ] = None,
+    consent_group: Annotated[
+        Optional[str], typer.Option("--consent-group", help="Consent group to filter by (e.g., c1, c2)")
+    ] = None,
     verbose: Annotated[bool, typer.Option("--verbose", help="Print detailed processing logs")] = False,
 ):
     """
@@ -118,9 +121,18 @@ def main(
     # Identify which phts we actually need to process
     required_phts = get_required_phts(mapping, verbose=verbose)
 
+    # Build consent group filter pattern (e.g., ".c2." from "c2")
+    consent_pattern = f".{consent_group}." if consent_group else None
+    if consent_pattern:
+        logger.info(f"--- Filtering for consent group: {consent_group} ---")
+
     processed_count = 0
     # Process all compressed text files in the source directory
     for gz_file in source_path.glob("*.txt.gz"):
+        # Filter by consent group if specified
+        if consent_pattern and consent_pattern not in gz_file.name:
+            continue
+
         # Identify the pht ID from the filename (e.g., CARDIA_pht001562.txt.gz)
         pht_match = re.search(r"(pht[0-9]+)", gz_file.name)
         if not pht_match:
