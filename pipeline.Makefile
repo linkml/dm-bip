@@ -86,8 +86,16 @@ MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
 
 # Include prepared input file list if it exists
 # Make's automatic remake will generate this when DM_RAW_SOURCE is set
+# Skip only when ALL requested goals are debug/help targets
+DEBUG_TARGETS := pipeline-debug map-debug schema-debug validate-debug help
+ifneq ($(strip $(filter-out $(DEBUG_TARGETS),$(MAKECMDGOALS))),)
 ifdef DM_RAW_SOURCE
 -include $(PREPARED_INPUT_MK)
+endif
+else ifeq ($(strip $(MAKECMDGOALS)),)
+ifdef DM_RAW_SOURCE
+-include $(PREPARED_INPUT_MK)
+endif
 endif
 
 # Pipeline inputs
