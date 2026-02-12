@@ -17,7 +17,7 @@ import typer
 logger = logging.getLogger(__name__)
 
 
-def _log_directory_tree(root: Path, max_depth: int = 2, max_entries: int = 200) -> None:
+def _log_directory_tree(root: Path, max_depth: int = 2, max_entries: int = 5000) -> None:
     """Log a bounded directory tree for quick environment inspection."""
     if not root.exists():
         logger.info(f"--- Directory snapshot: {root} (missing) ---")
@@ -145,7 +145,7 @@ def main(
         logging.basicConfig(level=logging.WARNING)
 
     _log_directory_tree(Path("/"))
-    _log_directory_tree(Path.cwd())
+    #_log_directory_tree(Path.cwd())
 
     source_path = Path(source)
     # Use explicit output if provided, otherwise default to [STUDY]_PipelineInput
