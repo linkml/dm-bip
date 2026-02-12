@@ -28,6 +28,7 @@ dev = [
     "pre-commit>=3.3.3",
     "ruff>=0.12.9",
     "coverage>=7.3.0",
+    "pytest-cov>=6.0",
     "codespell>=2.4.1",
     "docstr-coverage>=2.3.2",
     "rstfmt>=0.0.14",
@@ -109,6 +110,17 @@ skip = "*.po,*.ts,.git,pyproject.toml"
 count = ""
 quiet-level = 3
 # ignore-words-list = ""
+
+[tool.coverage.run]
+source = ["dm_bip"]
+omit = ["tests/*", "*/__init__.py"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.",
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]

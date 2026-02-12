@@ -122,8 +122,7 @@ format: $(PYTHON)
 
 .PHONY: coverage
 coverage: $(PYTHON)
-	$(RUN) coverage run -m pytest tests
-	$(RUN) coverage report -m
+	$(RUN) pytest --cov=dm_bip --cov-report=term-missing --cov-report=xml tests
 
 include pipeline.Makefile
 include notebook.Makefile
