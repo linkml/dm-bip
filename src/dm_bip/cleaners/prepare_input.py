@@ -7,6 +7,7 @@ and outputs standardized TSVs for LinkML validation.
 
 import gzip
 import logging
+import os
 import re
 from pathlib import Path
 from typing import Annotated, Optional
@@ -14,6 +15,41 @@ from typing import Annotated, Optional
 import typer
 
 logger = logging.getLogger(__name__)
+
+
+def _log_directory_tree(root: Path, max_depth: int = 2, max_entries: int = 200) -> None:
+    """Log a bounded directory tree for quick environment inspection."""
+    if not root.exists():
+        logger.info(f"--- Directory snapshot: {root} (missing) ---")
+        return
+
+    logger.info(f"--- Directory snapshot: {root} (depth={max_depth}, max_entries={max_entries}) ---")
+    entry_count = 0
+    root = root.resolve()
+
+    for dirpath, dirnames, filenames in os.walk(root):
+        rel_path = Path(dirpath).relative_to(root)
+        depth = 0 if str(rel_path) == "." else len(rel_path.parts)
+        if depth > max_depth:
+            dirnames[:] = []
+            continue
+
+        indent = "  " * depth
+        logger.info(f"{indent}{rel_path if depth else '.'}/")
+
+        for name in sorted(dirnames):
+            if entry_count >= max_entries:
+                logger.info(f"{indent}  ... (truncated)")
+                return
+            logger.info(f"{indent}  {name}/")
+            entry_count += 1
+
+        for name in sorted(filenames):
+            if entry_count >= max_entries:
+                logger.info(f"{indent}  ... (truncated)")
+                return
+            logger.info(f"{indent}  {name}")
+            entry_count += 1
 
 
 def get_required_phts(mapping_dir, verbose=False):
@@ -108,6 +144,9 @@ def main(
     else:
         logging.basicConfig(level=logging.WARNING)
 
+    _log_directory_tree(Path("/"))
+    _log_directory_tree(Path.cwd())
+
     source_path = Path(source)
     # Use explicit output if provided, otherwise default to [STUDY]_PipelineInput
     output_path = output if output else Path(f"{source_path.name}_PipelineInput")
@@ -145,6 +184,8 @@ def main(
             processed_count += 1
         except Exception as e:
             logger.error(f"CRITICAL ERROR processing {gz_file.name}: {e}")
+
+
 
     logger.info(f"\nSuccess! Processed {processed_count} files into: {output_path}")
 
