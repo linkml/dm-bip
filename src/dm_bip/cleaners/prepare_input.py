@@ -159,7 +159,7 @@ def main(
     source_path = Path(source)
     # Use explicit output if provided, otherwise default to [STUDY]_PipelineInput
     output_path = output if output else Path(f"{source_path.name}_PipelineInput")
-    output_path = Path(os.environ.get("HOME", str(output_path)))
+    # output_path = Path(os.environ.get("HOME", str(output_path)))
     output_path.mkdir(exist_ok=True, parents=True)
 
     logger.info(f"--- Target: Cleaning files into {output_path.absolute()} ---")
