@@ -51,7 +51,7 @@ mkdir -p "$DM_INPUT_DIR"
 
 # 5. Execute the make pipeline with explicit overrides
 make pipeline \
-  -C /app \
+  -C /app/dm-bip \
   DM_SCHEMA_NAME="$DM_SCHEMA_NAME" \
   DM_RAW_SOURCE="$DM_RAW_SOURCE" \
   DM_OUTPUT_DIR="$DM_OUTPUT_DIR" \
