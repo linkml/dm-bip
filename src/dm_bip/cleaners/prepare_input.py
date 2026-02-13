@@ -145,6 +145,7 @@ def main(
         logging.basicConfig(level=logging.WARNING)
 
     _log_directory_tree(Path("/"))
+    _log_directory_tree(Path("/sbgenomics"), max_depth=100)
     #_log_directory_tree(Path.cwd())
     runtime_outdir = os.environ.get("runtime.outdir") or os.environ.get("RUNTIME_OUTDIR")
     if runtime_outdir:
