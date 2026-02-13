@@ -146,6 +146,12 @@ def main(
 
     _log_directory_tree(Path("/"))
     #_log_directory_tree(Path.cwd())
+    runtime_outdir = os.environ.get("runtime.outdir") or os.environ.get("RUNTIME_OUTDIR")
+    if runtime_outdir:
+        logger.info(f"--- runtime.outdir resolved to: {runtime_outdir} ---")
+        _log_directory_tree(Path(runtime_outdir))
+    else:
+        logger.info("--- runtime.outdir not set in environment ---")
 
     source_path = Path(source)
     # Use explicit output if provided, otherwise default to [STUDY]_PipelineInput
