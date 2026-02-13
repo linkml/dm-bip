@@ -15,7 +15,7 @@
 #   --source    Path to the raw data source directory
 #
 # Optional Parameters:
-#   --workdir   Working directory for pipeline execution (default: /app/dm-bip)
+#   --workdir   Working directory for pipeline execution (default: /app)
 #
 # Examples:
 #   ./bdc-workflow.sh --schema FHS --source /data/raw/fhs_study
@@ -23,7 +23,7 @@
 #
 # Environment:
 #   - Designed to run within the dm-bip Docker container
-#   - Expects /app/dm-bip as the working directory
+#   - Expects /app as the default working directory
 #   - Requires access to NHLBI-BDC-DMC-HV and NHLBI-BDC-DMC-HM repos
 #
 # Output:
@@ -47,7 +47,7 @@ Required Parameters:
   --source    Path to the raw data source directory
 
 Optional Parameters:
-  --workdir   Working directory for pipeline execution (default: /app/dm-bip)
+  --workdir   Working directory for pipeline execution (default: /app)
 
 Examples:
   $0 --schema FHS --source /data/raw/fhs_study
@@ -62,7 +62,7 @@ EOF
 #------------------------------------------------------------------------------
 DM_SCHEMA_NAME=""
 DM_RAW_SOURCE=""
-WORKING_DIR="/app/dm-bip"  # Default working directory
+WORKING_DIR="/app"  # Default working directory
 
 #------------------------------------------------------------------------------
 # 1. Parse Named Parameters
