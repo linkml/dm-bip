@@ -152,6 +152,8 @@ def main(
         _log_directory_tree(Path(runtime_outdir))
     else:
         logger.info("--- runtime.outdir not set in environment ---")
+    for key, value in sorted(os.environ.items()):
+        logger.info(f"ENV {key}={value}")
 
     source_path = Path(source)
     # Use explicit output if provided, otherwise default to [STUDY]_PipelineInput
