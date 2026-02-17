@@ -538,6 +538,29 @@ def test_multi_spec_transform_empty_spec_files(linkml_test_setup):
     assert results == []
 
 
+def test_multi_spec_transform_skips_missing_data_files(linkml_test_setup, temp_dir):
+    """Test that missing data files are skipped with a warning, not an error."""
+    # Create a spec that references a nonexistent pht table
+    spec_file = Path(temp_dir) / "missing_data_spec.yaml"
+    spec_file.write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: nonexistent_table\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: subject_id\n"
+    )
+    results = list(
+        multi_spec_transform(
+            linkml_test_setup["data_loader"],
+            [spec_file],
+            linkml_test_setup["source_sv"],
+            linkml_test_setup["target_sv"],
+        )
+    )
+    assert results == []
+
+
 # --- process_entities Tests ---
 
 

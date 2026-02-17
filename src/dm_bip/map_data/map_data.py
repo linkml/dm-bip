@@ -87,6 +87,9 @@ def multi_spec_transform(
                 logger.debug("Processing derivation block")
                 for _, class_spec in derivation.items():
                     pht_id = class_spec["populated_from"]
+                    if pht_id not in data_loader:
+                        logger.warning("Skipping %s — no data file for %s", file.stem, pht_id)
+                        continue
                     rows = data_loader[pht_id]
 
                     transformer = ObjectTransformer(
