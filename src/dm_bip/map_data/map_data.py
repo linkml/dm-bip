@@ -103,7 +103,7 @@ def multi_spec_transform(
                         yield mapped
         except Exception:
             logger.exception("Error processing %s | Block: %s", file, block)
-            raise
+            continue
 
 
 def discover_entities(var_dir: Path) -> list[str]:
