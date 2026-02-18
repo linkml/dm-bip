@@ -29,33 +29,33 @@ import yaml
 
 # Mapping of cohort names (as they appear in CSV) to their GitHub transform directories
 COHORT_CONFIGS = {
-    "Atherosclerosis Risk in Communities (ARIC) Cohort":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/ARIC-ingest",
+    # "Atherosclerosis Risk in Communities (ARIC) Cohort":
+    #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/ARIC-ingest",
 
     "CARDIA Cohort":
         "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/CARDIA-ingest",
 
-    "Framingham Cohort":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/FHS-ingest",
+    # "Framingham Cohort":
+    #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/FHS-ingest",
 
-    ("Cardiovascular Health Study (CHS) Cohort: an NHLBI-funded observational study "
-     "of risk factors for cardiovascular disease in adults 65 years or older"):
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/CHS-ingest",
+    # ("Cardiovascular Health Study (CHS) Cohort: an NHLBI-funded observational study "
+    #  "of risk factors for cardiovascular disease in adults 65 years or older"):
+    #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/CHS-ingest",
 
-    "Hispanic Community Health Study /Study of Latinos (HCHS/SOL)":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/HCHS-ingest",
+    # "Hispanic Community Health Study /Study of Latinos (HCHS/SOL)":
+    #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/HCHS-ingest",
 
-    "Jackson Heart Study (JHS) Cohort":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/JHS-ingest",
+    # "Jackson Heart Study (JHS) Cohort":
+    #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/JHS-ingest",
 
-    "Multi-Ethnic Study of Atherosclerosis (MESA) Cohort":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/MESA-ingest",
+    # "Multi-Ethnic Study of Atherosclerosis (MESA) Cohort":
+    #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/MESA-ingest",
 
-    "Women's Health Initiative":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/WHI-ingest",
+    # "Women's Health Initiative":
+    #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/WHI-ingest",
 
-    "Genetic Epidemiology of COPD (COPDGene)":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/COPDGene-ingest"
+    # "Genetic Epidemiology of COPD (COPDGene)":
+    #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/COPDGene-ingest"
 }
 
 # The local spreadsheet authority
@@ -108,7 +108,17 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
     response = requests.get(api_url, timeout=30)
     if response.status_code != 200:
         print(f"❌ Failed to fetch GitHub contents: {response.status_code}")
-        return
+        # Return error summary instead of None
+        cohort_short = cohort_name.split()[0].replace('(', '').replace(')', '')
+        return {
+            'cohort': cohort_short,
+            'yaml_files': 'ERROR',
+            'parse_errors': 'N/A',
+            'structural_issues': 'N/A',
+            'critical_violations': 'N/A',
+            'non_critical_violations': 'N/A',
+            'total_violations': 'N/A'
+        }
 
     files = response.json()
     yaml_files = [f for f in files if f['name'].endswith('.yaml')]
