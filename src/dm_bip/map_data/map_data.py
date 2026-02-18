@@ -153,11 +153,15 @@ def process_entities(
     output_dir,
     output_prefix,
     output_postfix,
-    output_type,
+    output_type,  # This will be ignored in favor of the test loop
     chunk_size=1000,
 ) -> None:
-    """Process each entity and write to output files."""
+    """Process each entity and write to multiple output formats for testing."""
     start = time.perf_counter()
+
+    # HARD-CODE: The three formats you want to test
+    formats_to_test = ["yaml", "json", "tsv"]
+
     for entity in entities:
         spec_files = get_spec_files(var_dir, f"^    {entity}:")
         if not spec_files:
@@ -165,30 +169,37 @@ def process_entities(
             continue
 
         logger.info("Starting %s", entity)
-        output_path = f"{output_dir}/{'-'.join(x for x in [output_prefix, entity, output_postfix] if x)}.{output_type}"
 
-        iterable = multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview)
-        chunks = chunked(iterable, chunk_size)
-        key_name = entity.lower() + "s"
+        # Loop through each format for the current entity
+        for fmt in formats_to_test:
+            output_path = f"{output_dir}/{'-'.join(x for x in [output_prefix, entity, output_postfix] if x)}.{fmt}"
 
-        stream = make_stream(output_type, key_name=key_name)
+            logger.info("--> Writing %s format to %s", fmt, output_path)
 
-        with open(output_path, "w") as f:
-            for output in stream.process(chunks):
-                f.write(output)
+            # We re-initialize the generator here so each format gets a fresh stream
+            iterable = multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview)
+            chunks = chunked(iterable, chunk_size)
+            key_name = entity.lower() + "s"
 
-        if isinstance(stream, TSVStream) and stream.must_update_headers:
-            logger.info("Rewriting %s (headers changed)", entity)
-            tmp_path = output_path + ".tmp"
-            with open(output_path, "r") as src, open(tmp_path, "w") as dst:
-                chunks = chunked(src, chunk_size)
-                dst.writelines(TSVStream.rewrite_header_and_pad(chunks, stream.next_headers))
-            os.replace(tmp_path, output_path)
+            stream = make_stream(fmt, key_name=key_name)
 
-        logger.info("%s Complete", entity)
+            with open(output_path, "w") as f:
+                for output in stream.process(chunks):
+                    f.write(output)
+
+            # Keep the header update logic inside the loop so it applies to the TSV file
+            if isinstance(stream, TSVStream) and stream.must_update_headers:
+                logger.info("Rewriting %s (headers changed)", entity)
+                tmp_path = output_path + ".tmp"
+                with open(output_path, "r") as src, open(tmp_path, "w") as dst:
+                    chunks = chunked(src, chunk_size)
+                    dst.writelines(TSVStream.rewrite_header_and_pad(chunks, stream.next_headers))
+                os.replace(tmp_path, output_path)
+
+        logger.info("%s Complete (all formats)", entity)
 
     end = time.perf_counter()
-    logger.info("Time: %.2f seconds", end - start)
+    logger.info("Total Execution Time: %.2f seconds", end - start)
 
 
 def main(
