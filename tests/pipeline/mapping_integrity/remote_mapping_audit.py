@@ -338,6 +338,21 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
     else:
         print("\n✅ SUCCESS: All remote mappings are authorized by the Master Manifest.")
 
+    # Return summary statistics for final table
+    cohort_short = cohort_name.split()[0].replace('(', '').replace(')', '')
+    critical_count = len([m for m in mismatches if m['CRITICAL'] == 'YES'])
+    non_critical_count = len(mismatches) - critical_count
+
+    return {
+        'cohort': cohort_short,
+        'yaml_files': len(file_stats),
+        'parse_errors': files_with_errors if file_stats else 0,
+        'structural_issues': total_structural_issues if file_stats else 0,
+        'critical_violations': critical_count,
+        'non_critical_violations': non_critical_count,
+        'total_violations': len(mismatches)
+    }
+
 
 def main():
     """Run remote audit for all configured cohorts."""
@@ -361,17 +376,30 @@ def main():
 
     manifest_df = pd.read_csv(MANIFEST_PATH)
 
-    # Process each cohort
+    # Process each cohort and collect summaries
+    cohort_summaries = []
     for idx, (cohort_name, github_url) in enumerate(COHORT_CONFIGS.items(), 1):
         print("\n" + "="*80)
         print(f"COHORT {idx}/{len(COHORT_CONFIGS)}")
         print("="*80)
 
         try:
-            run_remote_audit(cohort_name, github_url, manifest_df)
+            summary = run_remote_audit(cohort_name, github_url, manifest_df)
+            cohort_summaries.append(summary)
         except Exception as e:
             print(f"\n❌ ERROR processing {cohort_name}: {str(e)}")
             print("Continuing to next cohort...\n")
+            # Add error entry to summary
+            cohort_short = cohort_name.split()[0].replace('(', '').replace(')', '')
+            cohort_summaries.append({
+                'cohort': cohort_short,
+                'yaml_files': 'ERROR',
+                'parse_errors': 'N/A',
+                'structural_issues': 'N/A',
+                'critical_violations': 'N/A',
+                'non_critical_violations': 'N/A',
+                'total_violations': 'N/A'
+            })
 
         # Add spacing between cohorts
         print("\n")
@@ -380,7 +408,45 @@ def main():
     print("✅ MULTI-COHORT AUDIT COMPLETE")
     print("="*80)
     print(f"\n📁 Results saved in: {OUTPUT_DIR}/")
-    print(f"   {len(COHORT_CONFIGS)} cohort(s) processed\n")
+    print(f"   {len(COHORT_CONFIGS)} cohort(s) processed")
+
+    # Display final summary table
+    print("\n" + "="*80)
+    print("📊 FINAL SUMMARY - ALL COHORTS")
+    print("="*80)
+    print(f"\n{'Cohort':<15} {'YAMLs':<8} {'Parse':<8} {'Struct':<8} {'Critical':<10} "
+          f"{'Non-Crit':<10} {'Total':<8}")
+    print(f"{'':15} {'Files':<8} {'Errors':<8} {'Issues':<8} {'Violations':<10} "
+          f"{'Violations':<10} {'Violations':<8}")
+    print("-" * 80)
+
+    for summary in cohort_summaries:
+        status = "✅" if (summary['total_violations'] == 0 and 
+                        summary.get('parse_errors', 0) == 0) else "❌"
+        print(f"{status} {summary['cohort']:<13} {str(summary['yaml_files']):<8} "
+              f"{str(summary['parse_errors']):<8} {str(summary['structural_issues']):<8} "
+              f"{str(summary['critical_violations']):<10} "
+              f"{str(summary['non_critical_violations']):<10} "
+              f"{str(summary['total_violations']):<8}")
+
+    # Calculate totals (excluding ERROR entries)
+    total_files = sum(s['yaml_files'] for s in cohort_summaries 
+                      if isinstance(s['yaml_files'], int))
+    total_parse = sum(s['parse_errors'] for s in cohort_summaries 
+                      if isinstance(s['parse_errors'], int))
+    total_struct = sum(s['structural_issues'] for s in cohort_summaries 
+                       if isinstance(s['structural_issues'], int))
+    total_crit = sum(s['critical_violations'] for s in cohort_summaries 
+                     if isinstance(s['critical_violations'], int))
+    total_non_crit = sum(s['non_critical_violations'] for s in cohort_summaries 
+                         if isinstance(s['non_critical_violations'], int))
+    total_viol = sum(s['total_violations'] for s in cohort_summaries 
+                     if isinstance(s['total_violations'], int))
+
+    print("-" * 80)
+    print(f"{'TOTAL':<15} {total_files:<8} {total_parse:<8} {total_struct:<8} "
+          f"{total_crit:<10} {total_non_crit:<10} {total_viol:<8}")
+    print("\n")
 
 
 if __name__ == "__main__":
