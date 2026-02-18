@@ -30,39 +30,39 @@ import yaml
 # Mapping of cohort names (as they appear in CSV) to their GitHub transform directories
 COHORT_CONFIGS = {
     "Atherosclerosis Risk in Communities (ARIC) Cohort":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/ARIC",
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/ARIC-ingest",
 
     "CARDIA Cohort":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/CARDIA",
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/CARDIA-ingest",
 
     "Framingham Cohort":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/FHS",
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/FHS-ingest",
 
     ("Cardiovascular Health Study (CHS) Cohort: an NHLBI-funded observational study "
      "of risk factors for cardiovascular disease in adults 65 years or older"):
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/CHS",
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/CHS-ingest",
 
     "Hispanic Community Health Study /Study of Latinos (HCHS/SOL)":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/HCHS_SOL",
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/HCHS-ingest",
 
     "Jackson Heart Study (JHS) Cohort":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/JHS",
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/JHS-ingest",
 
     "Multi-Ethnic Study of Atherosclerosis (MESA) Cohort":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/MESA",
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/MESA-ingest",
 
     "Women's Health Initiative":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/WHI",
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/WHI-ingest",
 
     "Genetic Epidemiology of COPD (COPDGene)":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/COPDGene"
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/COPDGene-ingest"
 }
 
 # The local spreadsheet authority
 MANIFEST_PATH = "dbgap_variables_priority_cohorts_V2.csv"
 
 # Output directory for results
-OUTPUT_DIR = "audit_results"
+OUTPUT_DIR = r"c:\temp"
 
 # =============================================================================
 # 2. HELPER FUNCTIONS
@@ -116,6 +116,7 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
 
     mismatches = []
     yaml_errors = []
+    structural_issues = []
     file_stats = []
 
     # 3. Process Remote YAMLs
@@ -123,6 +124,7 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
         print(f"Processing: {yf['name']}...")
         file_violations = 0
         file_phts = set()
+        file_structural_issues = 0
         file_phvs_checked = 0
 
         raw_resp = requests.get(yf['download_url'], timeout=30)
@@ -140,7 +142,8 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
                 'file': yf['name'],
                 'phts_used': 'ERROR',
                 'phvs_checked': 'ERROR',
-                'violations': 'PARSE_ERROR'
+                'violations': 'PARSE_ERROR',
+                'structural_issues': 'N/A'
             })
             continue
 
@@ -151,6 +154,19 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
             derivations = item.get('class_derivations', {})
 
             for _class_name, details in derivations.items():
+                # Ensure details is a dictionary
+                if not isinstance(details, dict):
+                    issue_msg = f"class_derivations[{_class_name}] is {type(details).__name__}, expected dict"
+                    structural_issues.append({
+                        'file': yf['name'],
+                        'location': f'class_derivations.{_class_name}',
+                        'issue': f'Type: {type(details).__name__}',
+                        'value_preview': str(details)[:100]
+                    })
+                    file_structural_issues += 1
+                    print(f"   ⚠️  [STRUCTURE] {issue_msg}")
+                    continue
+
                 source_pht = clean_accession(details.get('populated_from'))
                 if not source_pht:
                     continue
@@ -160,7 +176,32 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
                 authorized_phvs = auth_df[auth_df['pht_clean'] == source_pht]['phv_clean'].tolist()
 
                 slots = details.get('slot_derivations', {})
+                if not isinstance(slots, dict):
+                    issue_msg = f"slot_derivations is {type(slots).__name__}, expected dict"
+                    structural_issues.append({
+                        'file': yf['name'],
+                        'location': f'class_derivations.{_class_name}.slot_derivations',
+                        'issue': f'Type: {type(slots).__name__}',
+                        'value_preview': str(slots)[:100]
+                    })
+                    file_structural_issues += 1
+                    print(f"   ⚠️  [STRUCTURE] {issue_msg}")
+                    continue
+
                 for slot_name, slot_details in slots.items():
+                    # Ensure slot_details is a dictionary
+                    if not isinstance(slot_details, dict):
+                        issue_msg = f"slot_derivations[{slot_name}] is {type(slot_details).__name__}, expected dict"
+                        structural_issues.append({
+                            'file': yf['name'],
+                            'location': f'class_derivations.{_class_name}.slot_derivations.{slot_name}',
+                            'issue': f'Type: {type(slot_details).__name__}',
+                            'value_preview': str(slot_details)[:100]
+                        })
+                        file_structural_issues += 1
+                        print(f"   ⚠️  [STRUCTURE] {issue_msg}")
+                        continue
+
                     phv_mapped = clean_accession(slot_details.get('populated_from'))
 
                     if phv_mapped.startswith('phv'):
@@ -187,7 +228,8 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
             'file': yf['name'],
             'phts_used': len(file_phts),
             'phvs_checked': file_phvs_checked,
-            'violations': file_violations
+            'violations': file_violations,
+            'structural_issues': file_structural_issues
         })
 
     # 4. Final Reporting
@@ -209,29 +251,39 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
         total_phvs_checked = sum(s['phvs_checked'] for s in file_stats if isinstance(s['phvs_checked'], int))
         files_with_violations = len([s for s in file_stats if isinstance(s['violations'], int) and s['violations'] > 0])
         files_with_errors = len([s for s in file_stats if s['violations'] == 'PARSE_ERROR'])
+        total_structural_issues = sum(
+            s['structural_issues'] for s in file_stats
+            if isinstance(s['structural_issues'], int)
+        )
 
         print("\n📂 YAML File Processing Summary:")
         print(f"   - Files processed: {len(file_stats)}")
         print(f"   - Files with parse errors: {files_with_errors}")
         print(f"   - Total PHVs checked across all files: {total_phvs_checked:,}")
         print(f"   - Files with violations: {files_with_violations}")
+        print(f"   - Total structural issues found: {total_structural_issues}")
 
         print("\n📋 Per-File Breakdown:")
-        print(f"   {'File':<35} {'PHTs':<6} {'PHVs':<8} {'Violations':<12}")
-        print(f"   {'-'*35} {'-'*6} {'-'*8} {'-'*12}")
+        print(f"   {'File':<35} {'PHTs':<6} {'PHVs':<8} {'Violations':<12} {'Struct Issues':<14}")
+        print(f"   {'-'*35} {'-'*6} {'-'*8} {'-'*12} {'-'*14}")
         for stat in file_stats:
             if stat['violations'] == 'PARSE_ERROR':
                 status = "⚠️ "
                 phts_display = "N/A"
                 phvs_display = "N/A"
                 viol_display = "PARSE_ERR"
+                struct_display = "N/A"
             else:
                 status = "❌" if stat['violations'] > 0 else "✅"
                 phts_display = str(stat['phts_used'])
                 phvs_display = str(stat['phvs_checked'])
                 viol_display = str(stat['violations'])
+                struct_display = str(stat['structural_issues'])
 
-            print(f"   {status} {stat['file']:<33} {phts_display:<6} {phvs_display:<8} {viol_display:<12}")
+            print(
+                f"   {status} {stat['file']:<33} {phts_display:<6} "
+                f"{phvs_display:<8} {viol_display:<12} {struct_display:<14}"
+            )
 
     if yaml_errors:
         print(f"\n⚠️  {len(yaml_errors)} YAML file(s) had parsing errors and were skipped:")
@@ -240,6 +292,28 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
             # Extract just the first line of error for summary
             error_line = err['error'].split('\n')[0] if '\n' in err['error'] else err['error']
             print(f"     Reason: {error_line}")
+
+    if structural_issues:
+        print(f"\n⚠️  {len(structural_issues)} structural issue(s) found in YAML files:")
+        # Group by file for better readability
+        files_with_issues = {}
+        for issue in structural_issues:
+            file_name = issue['file']
+            if file_name not in files_with_issues:
+                files_with_issues[file_name] = []
+            files_with_issues[file_name].append(issue)
+
+        for file_name, issues in files_with_issues.items():
+            print(f"   📄 {file_name} ({len(issues)} issue(s)):")
+            for issue in issues[:5]:  # Show first 5 issues per file
+                print(f"      • Location: {issue['location']}")
+                print(f"        {issue['issue']}")
+                if len(issue['value_preview']) < 100:
+                    print(f"        Value: {issue['value_preview']}")
+                else:
+                    print(f"        Value: {issue['value_preview']}...")
+            if len(issues) > 5:
+                print(f"      ... and {len(issues) - 5} more issue(s)")
 
     if mismatches:
         # Create output filename from cohort name
@@ -270,9 +344,8 @@ def main():
     # Ensure proper encoding for console output
     import sys
     if sys.stdout.encoding != 'utf-8':
-        import codecs
         sys.stdout.reconfigure(encoding='utf-8')
-    
+
     print("="*80)
     print("BDC REMOTE LOGIC AUDITOR - MULTI-COHORT RUN")
     print("="*80)
