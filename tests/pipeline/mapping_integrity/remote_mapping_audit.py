@@ -27,17 +27,42 @@ import yaml
 # 1. CONFIGURATION
 # =============================================================================
 
-# The GitHub URL provided by the user
-GITHUB_TREE_URL = "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/ARIC"
+# Mapping of cohort names (as they appear in CSV) to their GitHub transform directories
+COHORT_CONFIGS = {
+    "Atherosclerosis Risk in Communities (ARIC) Cohort":
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/ARIC",
+
+    "CARDIA Cohort":
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/CARDIA",
+
+    "Framingham Cohort":
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/FHS",
+
+    ("Cardiovascular Health Study (CHS) Cohort: an NHLBI-funded observational study "
+     "of risk factors for cardiovascular disease in adults 65 years or older"):
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/CHS",
+
+    "Hispanic Community Health Study /Study of Latinos (HCHS/SOL)":
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/HCHS_SOL",
+
+    "Jackson Heart Study (JHS) Cohort":
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/JHS",
+
+    "Multi-Ethnic Study of Atherosclerosis (MESA) Cohort":
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/MESA",
+
+    "Women's Health Initiative":
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/WHI",
+
+    "Genetic Epidemiology of COPD (COPDGene)":
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/COPDGene"
+}
 
 # The local spreadsheet authority
 MANIFEST_PATH = "dbgap_variables_priority_cohorts_V2.csv"
 
-# Study name filter to use within the Manifest
-STUDY_FILTER = "Atherosclerosis Risk in Communities (ARIC) Cohort"
-
-# Output results
-AUDIT_OUTPUT_FILE = "remote_mapping_audit_results.csv"
+# Output directory for results
+OUTPUT_DIR = "audit_results"
 
 # =============================================================================
 # 2. HELPER FUNCTIONS
@@ -66,25 +91,20 @@ def clean_accession(val):
 # 3. MAIN AUDIT LOGIC
 # =============================================================================
 
-def run_remote_audit():
-    """Run remote audit to validate GitHub YAMLs against local manifest."""
+def run_remote_audit(cohort_name, github_url, manifest_df):
+    """Run remote audit to validate GitHub YAMLs against local manifest for a single cohort."""
     print("--- 🩺 Initializing Remote Mapping Audit ---")
+    print(f"📍 Cohort: {cohort_name}\n")
 
-    # 1. Load the Local Manifest Authority
-    if not os.path.exists(MANIFEST_PATH):
-        print(f"❌ CRITICAL: Manifest file {MANIFEST_PATH} not found.")
-        return
-
-    manifest_df = pd.read_csv(MANIFEST_PATH)
     # Filter for the target study and clean accession columns
-    auth_df = manifest_df[manifest_df['Study'].str.contains(STUDY_FILTER, na=False, case=False, regex=False)].copy()
+    auth_df = manifest_df[manifest_df['Study'].str.contains(cohort_name, na=False, case=False, regex=False)].copy()
     auth_df['pht_clean'] = auth_df['Dataset accession'].apply(clean_accession)
     auth_df['phv_clean'] = auth_df['Variable accession'].apply(clean_accession)
 
-    print(f"✅ Loaded {len(auth_df):,} PHT-PHV mappings from manifest for {STUDY_FILTER}.")
+    print(f"✅ Loaded {len(auth_df):,} PHT-PHV mappings from manifest for {cohort_name}.")
 
     # 2. Fetch YAML list from GitHub
-    api_url = parse_github_url(GITHUB_TREE_URL)
+    api_url = parse_github_url(github_url)
     response = requests.get(api_url, timeout=30)
     if response.status_code != 200:
         print(f"❌ Failed to fetch GitHub contents: {response.status_code}")
@@ -104,7 +124,7 @@ def run_remote_audit():
         file_violations = 0
         file_phts = set()
         file_phvs_checked = 0
-        
+
         raw_resp = requests.get(yf['download_url'], timeout=30)
         try:
             config = yaml.safe_load(raw_resp.text)
@@ -156,12 +176,12 @@ def run_remote_audit():
                                 'PHT': source_pht,
                                 'Slot': slot_name,
                                 'Invalid_PHV': phv_mapped,
-                                'Study_Context': STUDY_FILTER
+                                'Study_Context': cohort_name
                             })
 
                             status = "🚨 [CRITICAL]" if is_critical == "YES" else "❌ [ERROR]"
                             print(f"   {status} {slot_name}: {phv_mapped} is not authorized for {source_pht}")
-        
+
         # Store statistics for this file
         file_stats.append({
             'file': yf['name'],
@@ -178,7 +198,7 @@ def run_remote_audit():
     # Manifest statistics
     total_phts = auth_df['pht_clean'].nunique()
     total_phvs = auth_df['phv_clean'].nunique()
-    print(f"\n📊 Manifest Reference Database ({STUDY_FILTER}):")
+    print(f"\n📊 Manifest Reference Database ({cohort_name}):")
     print(f"   - Unique PHTs (datasets): {total_phts:,}")
     print(f"   - Unique PHVs (variables): {total_phvs:,}")
     print(f"   - Total PHT-PHV mapping rows: {len(auth_df):,}")
@@ -189,14 +209,14 @@ def run_remote_audit():
         total_phvs_checked = sum(s['phvs_checked'] for s in file_stats if isinstance(s['phvs_checked'], int))
         files_with_violations = len([s for s in file_stats if isinstance(s['violations'], int) and s['violations'] > 0])
         files_with_errors = len([s for s in file_stats if s['violations'] == 'PARSE_ERROR'])
-        
-        print(f"\n📂 YAML File Processing Summary:")
+
+        print("\n📂 YAML File Processing Summary:")
         print(f"   - Files processed: {len(file_stats)}")
         print(f"   - Files with parse errors: {files_with_errors}")
         print(f"   - Total PHVs checked across all files: {total_phvs_checked:,}")
         print(f"   - Files with violations: {files_with_violations}")
-        
-        print(f"\n📋 Per-File Breakdown:")
+
+        print("\n📋 Per-File Breakdown:")
         print(f"   {'File':<35} {'PHTs':<6} {'PHVs':<8} {'Violations':<12}")
         print(f"   {'-'*35} {'-'*6} {'-'*8} {'-'*12}")
         for stat in file_stats:
@@ -210,7 +230,7 @@ def run_remote_audit():
                 phts_display = str(stat['phts_used'])
                 phvs_display = str(stat['phvs_checked'])
                 viol_display = str(stat['violations'])
-            
+
             print(f"   {status} {stat['file']:<33} {phts_display:<6} {phvs_display:<8} {viol_display:<12}")
 
     if yaml_errors:
@@ -222,23 +242,73 @@ def run_remote_audit():
             print(f"     Reason: {error_line}")
 
     if mismatches:
+        # Create output filename from cohort name
+        cohort_short = cohort_name.split()[0].replace('(', '').replace(')', '')
+        output_file = os.path.join(OUTPUT_DIR, f"audit_results_{cohort_short}.csv")
+
         df_out = pd.DataFrame(mismatches).sort_values(by='CRITICAL', ascending=False)
-        df_out.to_csv(AUDIT_OUTPUT_FILE, index=False)
+        df_out.to_csv(output_file, index=False)
         critical_count = len([m for m in mismatches if m['CRITICAL'] == 'YES'])
-        
+
         print(f"\n❌ {len(mismatches)} mapping violation(s) found:")
         print(f"   - {critical_count} CRITICAL violations (associated_participant field)")
         print(f"   - {len(mismatches) - critical_count} NON-CRITICAL violations (other fields)")
-        
-        print(f"\n🔍 Detailed Findings:")
+
+        print("\n🔍 Detailed Findings:")
         for i, m in enumerate(mismatches, 1):
             status = "🚨 CRITICAL" if m['CRITICAL'] == 'YES' else "❌ ERROR"
             print(f"   {i}. [{status}] {m['Remote_YAML']}")
             print(f"      PHT: {m['PHT']} | Slot: {m['Slot']} | Invalid PHV: {m['Invalid_PHV']}")
-        
-        print(f"\n📄 Full report saved to: {AUDIT_OUTPUT_FILE}")
+
+        print(f"\n📄 Full report saved to: {output_file}")
     else:
         print("\n✅ SUCCESS: All remote mappings are authorized by the Master Manifest.")
 
+
+def main():
+    """Run remote audit for all configured cohorts."""
+    # Ensure proper encoding for console output
+    import sys
+    if sys.stdout.encoding != 'utf-8':
+        import codecs
+        sys.stdout.reconfigure(encoding='utf-8')
+    
+    print("="*80)
+    print("BDC REMOTE LOGIC AUDITOR - MULTI-COHORT RUN")
+    print("="*80)
+    print(f"\n🔍 Processing {len(COHORT_CONFIGS)} cohorts...\n")
+
+    # Create output directory if it doesn't exist
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    # Load the manifest once
+    if not os.path.exists(MANIFEST_PATH):
+        print(f"❌ CRITICAL: Manifest file {MANIFEST_PATH} not found.")
+        return
+
+    manifest_df = pd.read_csv(MANIFEST_PATH)
+
+    # Process each cohort
+    for idx, (cohort_name, github_url) in enumerate(COHORT_CONFIGS.items(), 1):
+        print("\n" + "="*80)
+        print(f"COHORT {idx}/{len(COHORT_CONFIGS)}")
+        print("="*80)
+
+        try:
+            run_remote_audit(cohort_name, github_url, manifest_df)
+        except Exception as e:
+            print(f"\n❌ ERROR processing {cohort_name}: {str(e)}")
+            print("Continuing to next cohort...\n")
+
+        # Add spacing between cohorts
+        print("\n")
+
+    print("="*80)
+    print("✅ MULTI-COHORT AUDIT COMPLETE")
+    print("="*80)
+    print(f"\n📁 Results saved in: {OUTPUT_DIR}/")
+    print(f"   {len(COHORT_CONFIGS)} cohort(s) processed\n")
+
+
 if __name__ == "__main__":
-    run_remote_audit()
+    main()
