@@ -203,3 +203,5 @@ def validate_mapping_integrity():
         print("   Resolve CRITICAL errors first to fix row expansion issues.")
     print("-" * 85 + "\n")
 
+if __name__ == "__main__":
+    validate_mapping_integrity()
