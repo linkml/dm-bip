@@ -74,7 +74,7 @@ def multi_spec_transform(
     spec_files: list[Path],
     source_schemaview: SchemaView,
     target_schemaview: SchemaView,
-    strict: bool = False,
+    strict: bool = True,
 ) -> Generator[dict[str, Any], None, None]:
     """Apply multiple LinkML-Map specifications to data and yield transformed objects."""
     for file in spec_files:
@@ -163,7 +163,7 @@ def process_entities(
     output_postfix,
     output_type,
     chunk_size=1000,
-    strict=False,
+    strict=True,
 ) -> None:
     """Process each entity and write to output files."""
     start = time.perf_counter()
@@ -258,8 +258,8 @@ def main(
     ] = 1000,
     strict: Annotated[
         bool,
-        typer.Option(help="Fail on data/spec mismatches instead of skipping"),
-    ] = False,
+        typer.Option(help="Fail on data/spec mismatches instead of skipping. Use --no-strict to log and continue."),
+    ] = True,
 ):
     """Run LinkML-Map transformation from command line arguments."""
     source_schemaview = SchemaView(get_schema(source_schema))

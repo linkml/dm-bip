@@ -556,9 +556,33 @@ def test_multi_spec_transform_skips_missing_data_files(linkml_test_setup, temp_d
             [spec_file],
             linkml_test_setup["source_sv"],
             linkml_test_setup["target_sv"],
+            strict=False,
         )
     )
     assert results == []
+
+
+def test_multi_spec_transform_strict_raises_on_missing_data(linkml_test_setup, temp_dir):
+    """Test that strict mode raises FileNotFoundError for missing data files."""
+    spec_file = Path(temp_dir) / "missing_data_spec.yaml"
+    spec_file.write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: nonexistent_table\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: subject_id\n"
+    )
+    with pytest.raises(FileNotFoundError, match="nonexistent_table"):
+        list(
+            multi_spec_transform(
+                linkml_test_setup["data_loader"],
+                [spec_file],
+                linkml_test_setup["source_sv"],
+                linkml_test_setup["target_sv"],
+                strict=True,
+            )
+        )
 
 
 # --- process_entities Tests ---
