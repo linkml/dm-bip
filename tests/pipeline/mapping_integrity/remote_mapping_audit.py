@@ -111,18 +111,19 @@ def get_local_yaml_files(directory_path):
 def run_remote_audit(cohort_name, source_location, manifest_df):
     """
     Run audit to validate YAMLs against local manifest for a single cohort.
-    
+
     Args:
         cohort_name: Name of the cohort
         source_location: Either a GitHub URL or local directory path
         manifest_df: DataFrame containing the master manifest
-    
+
     Returns:
         dict: Summary statistics for the audit
+
     """
     print("--- 🩺 Initializing Mapping Audit ---")
     print(f"📍 Cohort: {cohort_name}")
-    
+
     # Detect source type
     is_local = is_local_path(source_location)
     source_type = "Local" if is_local else "Remote (GitHub)"
@@ -151,7 +152,7 @@ def run_remote_audit(cohort_name, source_location, manifest_df):
                 'non_critical_violations': 'N/A',
                 'total_violations': 'N/A'
             }
-        
+
         yaml_files = get_local_yaml_files(source_location)
         print(f"📁 Found {len(yaml_files)} YAML files locally. Starting Audit...\n")
     else:
@@ -197,7 +198,7 @@ def run_remote_audit(cohort_name, source_location, manifest_df):
             else:
                 raw_resp = requests.get(yf['download_url'], timeout=30)
                 yaml_content = raw_resp.text
-            
+
             # Parse YAML
             config = yaml.safe_load(yaml_content)
         except yaml.YAMLError as e:
@@ -491,7 +492,7 @@ def main():
     print("-" * 80)
 
     for summary in cohort_summaries:
-        status = "✅" if (summary['total_violations'] == 0 and 
+        status = "✅" if (summary['total_violations'] == 0 and
                         summary.get('parse_errors', 0) == 0) else "❌"
         print(f"{status} {summary['cohort']:<13} {str(summary['yaml_files']):<8} "
               f"{str(summary['parse_errors']):<8} {str(summary['structural_issues']):<8} "
@@ -500,17 +501,17 @@ def main():
               f"{str(summary['total_violations']):<8}")
 
     # Calculate totals (excluding ERROR entries)
-    total_files = sum(s['yaml_files'] for s in cohort_summaries 
+    total_files = sum(s['yaml_files'] for s in cohort_summaries
                       if isinstance(s['yaml_files'], int))
-    total_parse = sum(s['parse_errors'] for s in cohort_summaries 
+    total_parse = sum(s['parse_errors'] for s in cohort_summaries
                       if isinstance(s['parse_errors'], int))
-    total_struct = sum(s['structural_issues'] for s in cohort_summaries 
+    total_struct = sum(s['structural_issues'] for s in cohort_summaries
                        if isinstance(s['structural_issues'], int))
-    total_crit = sum(s['critical_violations'] for s in cohort_summaries 
+    total_crit = sum(s['critical_violations'] for s in cohort_summaries
                      if isinstance(s['critical_violations'], int))
-    total_non_crit = sum(s['non_critical_violations'] for s in cohort_summaries 
+    total_non_crit = sum(s['non_critical_violations'] for s in cohort_summaries
                          if isinstance(s['non_critical_violations'], int))
-    total_viol = sum(s['total_violations'] for s in cohort_summaries 
+    total_viol = sum(s['total_violations'] for s in cohort_summaries
                      if isinstance(s['total_violations'], int))
 
     print("-" * 80)
