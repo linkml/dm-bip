@@ -41,6 +41,7 @@ DM_MAPPING_PREFIX ?=
 DM_MAPPING_POSTFIX ?=
 DM_MAP_OUTPUT_TYPE ?= yaml
 DM_MAP_CHUNK_SIZE ?= 10000
+DM_MAP_STRICT ?= true
 
 # --- Raw Data Preparation Variables ---
 # The raw directory containing .txt.gz files
@@ -440,6 +441,7 @@ $(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL)
 		$(if $(DM_MAPPING_POSTFIX),--output-postfix "$(DM_MAPPING_POSTFIX)") \
 		--output-type $(DM_MAP_OUTPUT_TYPE) \
 		--chunk-size $(DM_MAP_CHUNK_SIZE) \
+		$(if $(filter false,$(DM_MAP_STRICT)),--no-strict) \
 		2>&1 | tee $(MAPPING_LOG)
 	@echo "✓ Data mapping complete. Output written to $(MAPPING_OUTPUT_DIR)"
 	@echo "Mapping log written to $(MAPPING_LOG)"
