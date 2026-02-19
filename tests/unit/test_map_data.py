@@ -635,11 +635,7 @@ def test_multi_spec_transform_unexpected_exception_propagates(linkml_test_setup,
     """Test that unexpected exceptions propagate regardless of strict setting."""
     spec_file = Path(temp_dir) / "bad_structure_spec.yaml"
     # Missing class_derivations key entirely — causes KeyError, not caught
-    spec_file.write_text(
-        "- wrong_key:\n"
-        "    Person:\n"
-        "      populated_from: demographics\n"
-    )
+    spec_file.write_text("- wrong_key:\n    Person:\n      populated_from: demographics\n")
     with pytest.raises(KeyError):
         list(
             multi_spec_transform(
