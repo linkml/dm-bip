@@ -1,21 +1,23 @@
 """
-BDC Remote Logic Auditor (v2.0.0).
+BDC Mapping Logic Auditor (v2.1.0).
 
 =============================================================================
 Project: NHLBI BioData Catalyst (BDC) Data Management Center (DMC)
-Phase:   Phase 0.5 - Remote Mapping Validation
+Phase:   Phase 0.5 - Mapping Validation (Remote & Local)
 
 PURPOSE:
-Validates HV transformation YAMLs hosted on GitHub against a local
-Master Manifest (CSV).
+Validates HV transformation YAMLs against a local Master Manifest (CSV).
+Supports both GitHub repositories and local file system directories.
 
 KEY FEATURES:
 1. GitHub Integration: Fetches specification files directly via URL.
-2. Manifest Authority: Uses the provided CSV as the "Source of Truth."
-3. Version Agnostic: Cleans versioning (e.g., .v1.p1) for reliable matching.
+2. Local File Support: Validates YAMLs from local directories.
+3. Manifest Authority: Uses the provided CSV as the "Source of Truth."
+4. Version Agnostic: Cleans versioning (e.g., .v1.p1) for reliable matching.
 =============================================================================
 """
 
+import glob
 import os
 import re
 
@@ -27,16 +29,23 @@ import yaml
 # 1. CONFIGURATION
 # =============================================================================
 
-# Mapping of cohort names (as they appear in CSV) to their GitHub transform directories
+# Mapping of cohort names (as they appear in CSV) to their source locations
+# Can be GitHub URLs OR local directory paths
 COHORT_CONFIGS = {
     # "Atherosclerosis Risk in Communities (ARIC) Cohort":
     #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/ARIC-ingest",
 
-    "CARDIA Cohort":
-        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/CARDIA-ingest",
+    # "CARDIA Cohort":
+    #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/CARDIA-ingest",
 
+    # Example: Remote GitHub URL
     # "Framingham Cohort":
-    #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/FHS-ingest",
+    #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/Mapping-FHS-new-version-updated/priority_variables_transform/FHS-ingest",
+
+    # Example: Local directory path
+    "Framingham Cohort":
+        r"C:\SourceCode\NHLBI-BDC-DMC-HV\priority_variables_transform\FHS-ingest",
+
 
     # ("Cardiovascular Health Study (CHS) Cohort: an NHLBI-funded observational study "
     #  "of risk factors for cardiovascular disease in adults 65 years or older"):
@@ -87,14 +96,38 @@ def clean_accession(val):
     match = re.search(r"(pht\d+|phv\d+)", str(val).lower())
     return match.group(1) if match else str(val).lower()
 
+def is_local_path(source):
+    """Check if source is a local directory path (vs GitHub URL)."""
+    return os.path.exists(source) or (os.path.isabs(source) and not source.startswith('http'))
+
+def get_local_yaml_files(directory_path):
+    """Get list of YAML files from local directory."""
+    yaml_files = glob.glob(os.path.join(directory_path, '*.yaml'))
+    return [{'name': os.path.basename(f), 'path': f} for f in yaml_files]
 # =============================================================================
 # 3. MAIN AUDIT LOGIC
 # =============================================================================
 
-def run_remote_audit(cohort_name, github_url, manifest_df):
-    """Run remote audit to validate GitHub YAMLs against local manifest for a single cohort."""
-    print("--- 🩺 Initializing Remote Mapping Audit ---")
-    print(f"📍 Cohort: {cohort_name}\n")
+def run_remote_audit(cohort_name, source_location, manifest_df):
+    """
+    Run audit to validate YAMLs against local manifest for a single cohort.
+    
+    Args:
+        cohort_name: Name of the cohort
+        source_location: Either a GitHub URL or local directory path
+        manifest_df: DataFrame containing the master manifest
+    
+    Returns:
+        dict: Summary statistics for the audit
+    """
+    print("--- 🩺 Initializing Mapping Audit ---")
+    print(f"📍 Cohort: {cohort_name}")
+    
+    # Detect source type
+    is_local = is_local_path(source_location)
+    source_type = "Local" if is_local else "Remote (GitHub)"
+    print(f"📂 Source: {source_type}")
+    print(f"📁 Location: {source_location}\n")
 
     # Filter for the target study and clean accession columns
     auth_df = manifest_df[manifest_df['Study'].str.contains(cohort_name, na=False, case=False, regex=False)].copy()
@@ -103,33 +136,52 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
 
     print(f"✅ Loaded {len(auth_df):,} PHT-PHV mappings from manifest for {cohort_name}.")
 
-    # 2. Fetch YAML list from GitHub
-    api_url = parse_github_url(github_url)
-    response = requests.get(api_url, timeout=30)
-    if response.status_code != 200:
-        print(f"❌ Failed to fetch GitHub contents: {response.status_code}")
-        # Return error summary instead of None
-        cohort_short = cohort_name.split()[0].replace('(', '').replace(')', '')
-        return {
-            'cohort': cohort_short,
-            'yaml_files': 'ERROR',
-            'parse_errors': 'N/A',
-            'structural_issues': 'N/A',
-            'critical_violations': 'N/A',
-            'non_critical_violations': 'N/A',
-            'total_violations': 'N/A'
-        }
+    # 2. Get YAML file list (from GitHub or local directory)
+    if is_local:
+        # Local directory
+        if not os.path.exists(source_location):
+            print(f"❌ Local directory not found: {source_location}")
+            cohort_short = cohort_name.split()[0].replace('(', '').replace(')', '')
+            return {
+                'cohort': cohort_short,
+                'yaml_files': 'ERROR',
+                'parse_errors': 'N/A',
+                'structural_issues': 'N/A',
+                'critical_violations': 'N/A',
+                'non_critical_violations': 'N/A',
+                'total_violations': 'N/A'
+            }
+        
+        yaml_files = get_local_yaml_files(source_location)
+        print(f"📁 Found {len(yaml_files)} YAML files locally. Starting Audit...\n")
+    else:
+        # Remote GitHub URL
+        api_url = parse_github_url(source_location)
+        response = requests.get(api_url, timeout=30)
+        if response.status_code != 200:
+            print(f"❌ Failed to fetch GitHub contents: {response.status_code}")
+            # Return error summary instead of None
+            cohort_short = cohort_name.split()[0].replace('(', '').replace(')', '')
+            return {
+                'cohort': cohort_short,
+                'yaml_files': 'ERROR',
+                'parse_errors': 'N/A',
+                'structural_issues': 'N/A',
+                'critical_violations': 'N/A',
+                'non_critical_violations': 'N/A',
+                'total_violations': 'N/A'
+            }
 
-    files = response.json()
-    yaml_files = [f for f in files if f['name'].endswith('.yaml')]
-    print(f"📡 Found {len(yaml_files)} YAML files on GitHub. Starting Audit...\n")
+        files = response.json()
+        yaml_files = [f for f in files if f['name'].endswith('.yaml')]
+        print(f"📡 Found {len(yaml_files)} YAML files on GitHub. Starting Audit...\n")
 
     mismatches = []
     yaml_errors = []
     structural_issues = []
     file_stats = []
 
-    # 3. Process Remote YAMLs
+    # 3. Process YAMLs (remote or local)
     for yf in yaml_files:
         print(f"Processing: {yf['name']}...")
         file_violations = 0
@@ -137,9 +189,17 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
         file_structural_issues = 0
         file_phvs_checked = 0
 
-        raw_resp = requests.get(yf['download_url'], timeout=30)
+        # Read YAML content (from local file or GitHub)
         try:
-            config = yaml.safe_load(raw_resp.text)
+            if is_local:
+                with open(yf['path'], 'r', encoding='utf-8') as f:
+                    yaml_content = f.read()
+            else:
+                raw_resp = requests.get(yf['download_url'], timeout=30)
+                yaml_content = raw_resp.text
+            
+            # Parse YAML
+            config = yaml.safe_load(yaml_content)
         except yaml.YAMLError as e:
             error_msg = str(e)
             yaml_errors.append({
@@ -365,14 +425,14 @@ def run_remote_audit(cohort_name, github_url, manifest_df):
 
 
 def main():
-    """Run remote audit for all configured cohorts."""
+    """Run audit for all configured cohorts (remote or local)."""
     # Ensure proper encoding for console output
     import sys
     if sys.stdout.encoding != 'utf-8':
         sys.stdout.reconfigure(encoding='utf-8')
 
     print("="*80)
-    print("BDC REMOTE LOGIC AUDITOR - MULTI-COHORT RUN")
+    print("BDC MAPPING LOGIC AUDITOR - MULTI-COHORT RUN")
     print("="*80)
     print(f"\n🔍 Processing {len(COHORT_CONFIGS)} cohorts...\n")
 
@@ -388,13 +448,13 @@ def main():
 
     # Process each cohort and collect summaries
     cohort_summaries = []
-    for idx, (cohort_name, github_url) in enumerate(COHORT_CONFIGS.items(), 1):
+    for idx, (cohort_name, source_location) in enumerate(COHORT_CONFIGS.items(), 1):
         print("\n" + "="*80)
         print(f"COHORT {idx}/{len(COHORT_CONFIGS)}")
         print("="*80)
 
         try:
-            summary = run_remote_audit(cohort_name, github_url, manifest_df)
+            summary = run_remote_audit(cohort_name, source_location, manifest_df)
             cohort_summaries.append(summary)
         except Exception as e:
             print(f"\n❌ ERROR processing {cohort_name}: {str(e)}")
