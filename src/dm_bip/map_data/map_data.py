@@ -79,20 +79,24 @@ def multi_spec_transform(
     """Apply multiple LinkML-Map specifications to data and yield transformed objects."""
     for file in spec_files:
         logger.info("Processing spec file: %s", file.stem)
-        block = None
-        try:
-            with open(file) as f:
-                specs = yaml.safe_load(f)
-            for block in specs:
-                derivation = block["class_derivations"]
-                logger.debug("Processing derivation block")
-                for _, class_spec in derivation.items():
-                    pht_id = class_spec["populated_from"]
-                    if pht_id not in data_loader:
-                        if strict:
-                            raise FileNotFoundError(f"No data file for {pht_id}")
-                        logger.warning("Skipping block in %s — no data file for %s", file.stem, pht_id)
-                        continue
+        with open(file) as f:
+            specs = yaml.safe_load(f)
+        for block in specs:
+            derivation = block["class_derivations"]
+            logger.debug("Processing derivation block")
+            for class_name, class_spec in derivation.items():
+                pht_id = class_spec["populated_from"]
+                if pht_id not in data_loader:
+                    if strict:
+                        raise FileNotFoundError(f"No data file for {pht_id}")
+                    logger.warning(
+                        "Skipping class derivation %s in %s — no data file for populated_from %s",
+                        class_name,
+                        file.stem,
+                        pht_id,
+                    )
+                    continue
+                try:
                     rows = data_loader[pht_id]
 
                     transformer = ObjectTransformer(
@@ -104,11 +108,11 @@ def multi_spec_transform(
                     for row in rows:
                         mapped = transformer.map_object(row, source_type=pht_id)
                         yield mapped
-        except (FileNotFoundError, ValueError):
-            if strict:
-                raise
-            logger.exception("Error processing %s | Block: %s", file, block)
-            continue
+                except (FileNotFoundError, ValueError):
+                    if strict:
+                        raise
+                    logger.exception("Error processing %s | Block: %s", file, block)
+                    continue
 
 
 def discover_entities(var_dir: Path) -> list[str]:
