@@ -74,19 +74,29 @@ def multi_spec_transform(
     spec_files: list[Path],
     source_schemaview: SchemaView,
     target_schemaview: SchemaView,
+    strict: bool = True,
 ) -> Generator[dict[str, Any], None, None]:
     """Apply multiple LinkML-Map specifications to data and yield transformed objects."""
     for file in spec_files:
         logger.info("Processing spec file: %s", file.stem)
-        block = None
-        try:
-            with open(file) as f:
-                specs = yaml.safe_load(f)
-            for block in specs:
-                derivation = block["class_derivations"]
-                logger.debug("Processing derivation block")
-                for _, class_spec in derivation.items():
-                    pht_id = class_spec["populated_from"]
+        with open(file) as f:
+            specs = yaml.safe_load(f)
+        for block in specs:
+            derivation = block["class_derivations"]
+            logger.debug("Processing derivation block")
+            for class_name, class_spec in derivation.items():
+                pht_id = class_spec["populated_from"]
+                if pht_id not in data_loader:
+                    if strict:
+                        raise FileNotFoundError(f"No data file for {pht_id}")
+                    logger.warning(
+                        "Skipping class derivation %s in %s — no data file for populated_from %s",
+                        class_name,
+                        file.stem,
+                        pht_id,
+                    )
+                    continue
+                try:
                     rows = data_loader[pht_id]
 
                     transformer = ObjectTransformer(
@@ -98,9 +108,11 @@ def multi_spec_transform(
                     for row in rows:
                         mapped = transformer.map_object(row, source_type=pht_id)
                         yield mapped
-        except Exception:
-            logger.exception("Error processing %s | Block: %s", file, block)
-            raise
+                except (FileNotFoundError, ValueError):
+                    if strict:
+                        raise
+                    logger.exception("Error processing %s | Block: %s", file, block)
+                    continue
 
 
 def discover_entities(var_dir: Path) -> list[str]:
@@ -155,6 +167,7 @@ def process_entities(
     output_postfix,
     output_type,
     chunk_size=1000,
+    strict=True,
 ) -> None:
     """Process each entity and write to output files."""
     start = time.perf_counter()
@@ -167,7 +180,7 @@ def process_entities(
         logger.info("Starting %s", entity)
         output_path = f"{output_dir}/{'-'.join(x for x in [output_prefix, entity, output_postfix] if x)}.{output_type}"
 
-        iterable = multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview)
+        iterable = multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview, strict=strict)
         chunks = chunked(iterable, chunk_size)
         key_name = entity.lower() + "s"
 
@@ -247,6 +260,10 @@ def main(
         int,
         typer.Option(),
     ] = 1000,
+    strict: Annotated[
+        bool,
+        typer.Option(help="Fail on data/spec mismatches instead of skipping. Use --no-strict to log and continue."),
+    ] = True,
 ):
     """Run LinkML-Map transformation from command line arguments."""
     source_schemaview = SchemaView(get_schema(source_schema))
@@ -272,6 +289,7 @@ def main(
         output_postfix=output_postfix,
         output_type=output_type,
         chunk_size=chunk_size,
+        strict=strict,
     )
 
 

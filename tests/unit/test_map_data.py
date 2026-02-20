@@ -538,6 +538,119 @@ def test_multi_spec_transform_empty_spec_files(linkml_test_setup):
     assert results == []
 
 
+def test_multi_spec_transform_skips_missing_data_files(linkml_test_setup, temp_dir, caplog):
+    """Test that missing data files are skipped with a warning, not an error."""
+    # Create a spec that references a nonexistent pht table
+    spec_file = Path(temp_dir) / "missing_data_spec.yaml"
+    spec_file.write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: nonexistent_table\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: subject_id\n"
+    )
+    with caplog.at_level("WARNING", logger="dm_bip.map_data.map_data"):
+        results = list(
+            multi_spec_transform(
+                linkml_test_setup["data_loader"],
+                [spec_file],
+                linkml_test_setup["source_sv"],
+                linkml_test_setup["target_sv"],
+                strict=False,
+            )
+        )
+    assert results == []
+    assert any("Skipping class derivation Person" in msg for msg in caplog.messages)
+    assert any("nonexistent_table" in msg for msg in caplog.messages)
+
+
+def test_multi_spec_transform_strict_raises_on_missing_data(linkml_test_setup, temp_dir):
+    """Test that strict mode raises FileNotFoundError for missing data files."""
+    spec_file = Path(temp_dir) / "missing_data_spec.yaml"
+    spec_file.write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: nonexistent_table\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: subject_id\n"
+    )
+    with pytest.raises(FileNotFoundError, match="nonexistent_table"):
+        list(
+            multi_spec_transform(
+                linkml_test_setup["data_loader"],
+                [spec_file],
+                linkml_test_setup["source_sv"],
+                linkml_test_setup["target_sv"],
+                strict=True,
+            )
+        )
+
+
+def test_multi_spec_transform_skips_value_error_non_strict(linkml_test_setup, temp_dir):
+    """Test that ValueError from bad slot references is caught in non-strict mode."""
+    spec_file = Path(temp_dir) / "bad_slot_spec.yaml"
+    spec_file.write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: demographics\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: nonexistent_column\n"
+    )
+    results = list(
+        multi_spec_transform(
+            linkml_test_setup["data_loader"],
+            [spec_file],
+            linkml_test_setup["source_sv"],
+            linkml_test_setup["target_sv"],
+            strict=False,
+        )
+    )
+    assert results == []
+
+
+def test_multi_spec_transform_strict_raises_on_value_error(linkml_test_setup, temp_dir):
+    """Test that ValueError from bad slot references propagates in strict mode."""
+    spec_file = Path(temp_dir) / "bad_slot_spec.yaml"
+    spec_file.write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: demographics\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: nonexistent_column\n"
+    )
+    with pytest.raises(ValueError):
+        list(
+            multi_spec_transform(
+                linkml_test_setup["data_loader"],
+                [spec_file],
+                linkml_test_setup["source_sv"],
+                linkml_test_setup["target_sv"],
+                strict=True,
+            )
+        )
+
+
+def test_multi_spec_transform_unexpected_exception_propagates(linkml_test_setup, temp_dir):
+    """Test that unexpected exceptions propagate regardless of strict setting."""
+    spec_file = Path(temp_dir) / "bad_structure_spec.yaml"
+    # Missing class_derivations key entirely — causes KeyError, not caught
+    spec_file.write_text("- wrong_key:\n    Person:\n      populated_from: demographics\n")
+    with pytest.raises(KeyError):
+        list(
+            multi_spec_transform(
+                linkml_test_setup["data_loader"],
+                [spec_file],
+                linkml_test_setup["source_sv"],
+                linkml_test_setup["target_sv"],
+                strict=False,
+            )
+        )
+
+
 # --- process_entities Tests ---
 
 
