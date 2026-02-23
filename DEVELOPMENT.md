@@ -46,7 +46,7 @@ gantt
     Improve Documentation (#50)                         :done, i50, 2025-11-15, 2026-01-31
     Add Markdown plugin for Sphinx (#41)                :i41, 2026-02-10, 2026-06-30
     Move Harmonica to external tool (#215)              :i215, 2026-02-15, 2026-06-12
-    Implement Code Coverage Monitoring (#217)           :i217, 2026-02-05, 2026-05-15
+    Implement Code Coverage Monitoring (#217)           :done, i217, 2026-02-05, 2026-05-15
     Improve Test Coverage (#218)                        :i218, 2026-03-15, 2026-06-10
     Fix linting errors in notebooks (#219)              :i219, 2026-04-01, 2026-06-15
     Silent Exception in updated_flatten_to_tsv (#226)   :done, i226, 2026-03-01, 2026-06-15
@@ -58,6 +58,7 @@ gantt
     section 2 
     Independent Re-ingestion of Dataset (#171)          :done, i171, 2025-09-25, 2025-12-19
     Ensure all Cohort groups are ingested (#221)        :active, i221, 2025-12-31, 2026-04-11
+    Test new longitudinal transformation specs (#252)  :i252, 2026-04-12, 2026-08-01
 
     section Quality Control 
     Tracking Issue #187                     :crit, t187,2025-10-10, 6w
@@ -86,6 +87,9 @@ gantt
     Tweak prefix and postfix in the Makefile (#230)     :done, i230, 2026-01-01, 2026-04-10
     Add CONFIG include support (#237)                   :done, i237, 2025-11-01, 2026-02-02
     LinkML-Map GUID generation (#235)                   :i235, 2026-02-03, 2026-05-01
+    Refactor pipeline Makefile sentinels (#247)         :done, i247, 2025-12-15, 2026-04-03
+    Add consent group filtering (#260)                  :done, i260, 2026-01-01, 2026-03-17
+    Support parallel consent group processing (#251)    :i251, 2026-03-15, 2026-06-27
 
     section Audit Logs
     Tracking Issue #189                     :crit, t189, 2025-10-10, 6w
@@ -102,7 +106,7 @@ gantt
 
     section 6 
     Incorporate Stata YAML authoring tool (#175)        :active, i175, 2025-11-01, 2026-03-01
-    Improve Data Cleanup and add to Makefile (#170)     :active, i170, 2025-12-10, 2026-03-20
+    Improve Data Cleanup and add to Makefile (#170)     :done, i170, 2025-12-10, 2026-03-20
     Add variable digest files to pipeline (#204)        :active, i204, 2025-12-01, 2026-03-01
     make a data dictionary template (#103)              :i103, 2026-03-01, 2026-06-01
     Create GitHub workflow to container registry (#201) :i201, 2026-03-01, 2026-06-15
@@ -116,7 +120,7 @@ gantt
     Post Pilot Toy Dataset Improvement (#117)           :active, i117, 2025-12-15, 2026-04-01
     Packages without wheels for Python 3.13 (#151)      :i151, 2026-04-01, 2026-07-15
     Implement or remove CLI (#216)                     :done, i216, 2025-11-01, 2026-01-19
-    Remove Hardcoded entity list (#220)                :i220, 2026-01-19, 2026-04-10
+    Remove Hardcoded entity list (#220)                :done, i220, 2026-01-19, 2026-04-10
 
     section AI Curation
     Tracking Issue #197                     :crit, t197, 2025-10-10, 6w
@@ -186,6 +190,10 @@ gantt
     click i235 href "https://github.com/linkml/dm-bip/issues/235"
     click i237 href "https://github.com/linkml/dm-bip/issues/237"
     click i243 href "https://github.com/linkml/dm-bip/issues/243"
+    click i247 href "https://github.com/linkml/dm-bip/issues/247"
+    click i251 href "https://github.com/linkml/dm-bip/issues/251"
+    click i252 href "https://github.com/linkml/dm-bip/issues/252"
+    click i260 href "https://github.com/linkml/dm-bip/issues/260"
 
     axisFormat %B
     tickInterval 1month
@@ -206,7 +214,7 @@ Procedures for controlling releases of tool-chains, repositories, and data sets.
 - [x] Improve Documentation (#50) - Corey
 - [ ] Add Markdown plugin for Sphinx (#41) - Patrick
 - [ ] Move Harmonica (OntoAnntate) to external tool (#215)
-- [ ] Implement Code Coverage Monitoring (#217)
+- [x] Implement Code Coverage Monitoring (#217)
 - [ ] Improve Test Coverage (#218)
 - [ ] Fix linting errors in notebooks (#219)
 - [x] Silent Exception in updated_flatten_to_tsv (#226)
@@ -216,6 +224,7 @@ Procedures for controlling releases of tool-chains, repositories, and data sets.
 Preparation, ingestion, and QC of the original pilot data set.
 - [x] Independent Re-ingestion of Dataset (#171) - Roman, Corey
 - [ ] Ensure all Cohort groups are ingested (#221)
+- [ ] Test new longitudinal transformation specs (#252)
 
 ## 3. Quality Control (Tracking: #187)
 Procedures and workflows for quality control.
@@ -240,6 +249,9 @@ Improving automation, testing, workflows, and integration.
 - [x] Tweak prefix and postfix in the Makefile (#230) - Corey
 - [x] Add CONFIG include support to pipeline Makefile (#237) - Corey
 - [ ] LinkML-Map needs to be able to make GUIDs (#235)
+- [x] Refactor pipeline Makefile sentinels (#247)
+- [x] Add consent group filtering (#260)
+- [ ] Support parallel consent group processing (#251)
 
 ## 5. Audit Logs (Tracking: #189)
 Logging, auditability, and human-readable data provenance.
@@ -253,7 +265,7 @@ Logging, auditability, and human-readable data provenance.
 ## 6. DMC Integration (Tracking: #191)
 Integrating the Harmonization Pipeline into DMC pre-ingestion.
 - [ ] Make a data dictionary template (#103) - Trish
-- [ ] Improve Data Cleanup and add to Makefile (#170) - Roman, Corey
+- [x] Improve Data Cleanup and add to Makefile (#170) - Roman, Corey
 - [ ] Incorporate Stata YAML authoring tool (#175)
 - [ ] Create GitHub workflow to container registry (#201) - Patrick
 - [ ] Add variable digest files to pipeline (#204)
@@ -265,7 +277,7 @@ Bringing the Harmonization Pipeline to BDC for user on-demand harmonization.
 - [x] Update README.md to current usage (#144) - Roman, Corey
 - [ ] Packages without wheels for Python 3.13 (#151) - Patrick
 - [x] Implement or remove CLI (#216)
-- [ ] Remove Hardcoded entity list from map_data.py (#220)
+- [x] Remove Hardcoded entity list from map_data.py (#220)
 - [ ] Seven Bridges integration planning
 - [ ] User harmonization workflow
 
