@@ -294,17 +294,6 @@ extract-conditions:
 	./src/dm_bip/cleaners/extract_conditions.sh $(input_file) $(COND_START_COL)
 
 
-.PHONY: annotate
-annotate:
-	@echo "** Annotate data file with ontology terms using config and input_file: $(input_file)"
-	@cmd="python harmonica/harmonize.py annotate \
-		--config config/config.yml \
-		--input_file $(input_file)"; \
-	if [ -n "$(output_dir)" ]; then cmd="$$cmd --output_dir $(output_dir)"; fi; \
-	if [ -n "$(refresh)" ]; then cmd="$$cmd --refresh"; fi; \
-	echo $$cmd; \
-	eval $$cmd
-
 
 # Schema Validator goals
 # ============

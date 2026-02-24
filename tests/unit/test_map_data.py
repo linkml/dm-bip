@@ -88,12 +88,6 @@ def spec_files_dir(temp_dir):
 # --- DataLoader Tests ---
 
 
-def test_dataloader_init_stores_base_path(data_loader_dir):
-    """Test that __init__ stores the base path correctly."""
-    loader = DataLoader(Path(data_loader_dir))
-    assert loader.base_path == Path(data_loader_dir)
-
-
 def test_dataloader_contains_returns_true_for_existing_file(data_loader_dir):
     """Test __contains__ returns True when file exists."""
     loader = DataLoader(Path(data_loader_dir))
@@ -680,61 +674,29 @@ def test_process_entities_creates_output_files(linkml_test_setup, temp_dir):
     assert first_record["id"] == "SUBJ001"
 
 
-def test_process_entities_no_prefix_no_postfix(linkml_test_setup, temp_dir):
-    """Test that process_entities works with empty prefix and postfix."""
-    entities = ["Person"]
+@pytest.mark.parametrize(
+    "prefix,postfix,expected_filename",
+    [
+        ("", "", "Person.jsonl"),
+        ("test", "", "test-Person.jsonl"),
+        ("", "v1", "Person-v1.jsonl"),
+    ],
+)
+def test_process_entities_output_filename(linkml_test_setup, temp_dir, prefix, postfix, expected_filename):
+    """Test that process_entities builds the correct output filename from prefix/postfix."""
     process_entities(
-        entities=entities,
+        entities=["Person"],
         data_loader=linkml_test_setup["data_loader"],
         var_dir=linkml_test_setup["spec_dir"],
         source_schemaview=linkml_test_setup["source_sv"],
         target_schemaview=linkml_test_setup["target_sv"],
         output_dir=temp_dir,
-        output_prefix="",
-        output_postfix="",
+        output_prefix=prefix,
+        output_postfix=postfix,
         output_type="jsonl",
         chunk_size=10,
     )
-    output_file = Path(temp_dir) / "Person.jsonl"
-    assert output_file.exists()
-
-
-def test_process_entities_prefix_only(linkml_test_setup, temp_dir):
-    """Test that process_entities works with only prefix set."""
-    entities = ["Person"]
-    process_entities(
-        entities=entities,
-        data_loader=linkml_test_setup["data_loader"],
-        var_dir=linkml_test_setup["spec_dir"],
-        source_schemaview=linkml_test_setup["source_sv"],
-        target_schemaview=linkml_test_setup["target_sv"],
-        output_dir=temp_dir,
-        output_prefix="test",
-        output_postfix="",
-        output_type="jsonl",
-        chunk_size=10,
-    )
-    output_file = Path(temp_dir) / "test-Person.jsonl"
-    assert output_file.exists()
-
-
-def test_process_entities_postfix_only(linkml_test_setup, temp_dir):
-    """Test that process_entities works with only postfix set."""
-    entities = ["Person"]
-    process_entities(
-        entities=entities,
-        data_loader=linkml_test_setup["data_loader"],
-        var_dir=linkml_test_setup["spec_dir"],
-        source_schemaview=linkml_test_setup["source_sv"],
-        target_schemaview=linkml_test_setup["target_sv"],
-        output_dir=temp_dir,
-        output_prefix="",
-        output_postfix="v1",
-        output_type="jsonl",
-        chunk_size=10,
-    )
-    output_file = Path(temp_dir) / "Person-v1.jsonl"
-    assert output_file.exists()
+    assert (Path(temp_dir) / expected_filename).exists()
 
 
 def test_process_entities_skips_missing_specs(linkml_test_setup, temp_dir):
