@@ -59,10 +59,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#file-transformations">File Transformations</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#file-transformations-for-annotating-conditions">File Transformations for Annotating Conditions</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#file-transformations">File Transformations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-linkml-formatted-data">Create LinkML formatted data</a></li>
 </ul>
 </li>
@@ -245,15 +242,6 @@
 <li><p>For <code class="docutils literal notranslate"><span class="pre">linkml-map</span></code> and the mapping transformation specification, for each class to be populated in the target model, all of the slots of that class need to exist in one preprocessed data input file.</p></li>
 <li><p>The preprocessed files can be created using your choice of tools, e.g. pandas, R functions, or a more formal ETL solution like dbt.</p></li>
 </ul>
-<section id="file-transformations-for-annotating-conditions">
-<h3>File Transformations for Annotating Conditions<a class="headerlink" href="#file-transformations-for-annotating-conditions" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p>The conditions data, e.g. weight, blood pressure, disease state, etc. can be annotated with ontology terms using the ontology annotation tool Harmonica. This tool is designed to find the most specific ontology annotation first and then widen its scope by method and ontology selection to find additional ontology terms for annotation. The results are intended to be reviewed by a curator. See the <span class="xref myst">README</span> in the harmonica directory for more details.</p></li>
-<li><p>The input file format for Harmonica should contain a unique identifier, such as participant identifier and one condition per row in the file. Each row will be annotated with whichever ontologies are specified in the Harmonica config file.</p></li>
-<li><p>This file format can be transformed from a raw data file containing the conditions data.</p></li>
-<li><p>Once the data annotation process is complete and the results are reviewed, the file can be pivoted and merged back into the “raw”/preprocessed data file of conditions data.</p></li>
-</ul>
-</section>
 </section>
 <section id="create-linkml-formatted-data">
 <h2>Create LinkML formatted data<a class="headerlink" href="#create-linkml-formatted-data" title="Link to this heading"></a></h2>

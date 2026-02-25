@@ -20,14 +20,6 @@ dm\_bip.cli module
    :show-inheritance:
    :undoc-members:
 
-dm\_bip.main module
--------------------
-
-.. automodule:: dm_bip.main
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
 Module contents
 ---------------
 
