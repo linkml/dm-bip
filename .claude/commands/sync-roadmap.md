@@ -13,7 +13,8 @@ Query GitHub for all relevant issues:
 gh issue list --repo linkml/dm-bip --state open --label "Tracking" --json number,title,state
 
 # Get all issues (open and closed) with tracking category labels
-gh issue list --repo linkml/dm-bip --state all --limit 200 --json number,title,state,labels,assignees | jq '[.[] | select(.labels | length > 0) | select(.labels[].name | test("Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|AI Integration|Audit Logs|Schema Explorer|Data Delivery"))]'
+# Excludes issues closed as NOT_PLANNED (duplicates, obsolete)
+gh issue list --repo linkml/dm-bip --state all --limit 200 --json number,title,state,stateReason,labels,assignees | jq '[.[] | select(.labels | length > 0) | select(.stateReason != "NOT_PLANNED") | select(.labels[].name | test("Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|AI Integration|Audit Logs|Schema Explorer|Data Delivery"))]'
 ```
 
 ### 2. Parse Current DEVELOPMENT.md
@@ -30,7 +31,7 @@ Read DEVELOPMENT.md and identify:
 Compare GitHub state to DEVELOPMENT.md and categorize:
 
 **New issues to add:**
-- Issues in GitHub with tracking labels not in GANTT/Outline
+- Issues in GitHub with tracking labels not in GANTT/Outline (already filtered: NOT_PLANNED issues excluded in Step 1)
 - Determine which section based on label:
   - "Release Control" → section 1
   - "Data Delivery" → section 2
