@@ -142,8 +142,5 @@ dmypy.json
 
 .DS_Store
 
-harmonica/tmp/
-config/config.yml
-
 # Claude Code local config
 CLAUDE.local.md
