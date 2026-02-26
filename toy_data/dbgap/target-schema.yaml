@@ -1,0 +1,46 @@
+name: ToyDbgapTargetSchema
+description: Minimal BDCHM-like target schema for dbGaP toy data testing
+id: https://w3id.org/ToyDbgapTargetSchema
+prefixes:
+  linkml: https://w3id.org/linkml/
+  target: https://w3id.org/ToyDbgapTargetSchema/
+imports:
+  - linkml:types
+default_prefix: target
+default_range: string
+
+classes:
+  Participant:
+    description: A study participant
+    attributes:
+      id:
+        identifier: true
+      member_of_research_study:
+
+  Demography:
+    description: Demographic information for a participant
+    attributes:
+      associated_participant:
+      associated_visit:
+      sex:
+      race:
+      ethnicity:
+      age_at_observation:
+        range: integer
+
+  MeasurementObservation:
+    description: A clinical or lab measurement observation
+    attributes:
+      associated_participant:
+      associated_visit:
+      observation_type:
+      method_type:
+      value_quantity:
+        range: Quantity
+        inlined: true
+
+  Quantity:
+    description: A value with unit
+    attributes:
+      value_decimal:
+      unit:

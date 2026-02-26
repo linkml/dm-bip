@@ -147,3 +147,6 @@ config/config.yml
 
 # Claude Code local config
 CLAUDE.local.md
+
+# Generated pipeline outputs in toy_data
+toy_data/dbgap/prepared/

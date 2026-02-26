@@ -1,0 +1,10 @@
+DM_RAW_SOURCE        := toy_data/dbgap/raw
+DM_SCHEMA_NAME       := ToyDbgap
+DM_OUTPUT_DIR        := $(or $(TOY_OUTPUT_DIR),output/ToyDbgap)
+DM_INPUT_DIR         := $(DM_OUTPUT_DIR)/prepared
+DM_TRANS_SPEC_DIR    := toy_data/dbgap/specs
+DM_MAPPING_SPEC      := $(DM_TRANS_SPEC_DIR)
+DM_MAP_TARGET_SCHEMA := toy_data/dbgap/target-schema.yaml
+DM_MAPPING_PREFIX    := TOY
+DM_MAPPING_POSTFIX   := -data
+DM_MAP_STRICT        := false

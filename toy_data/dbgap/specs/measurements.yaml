@@ -1,0 +1,126 @@
+# Body height — from pht000002, inches → cm via expr
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht000002
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000011
+        associated_visit:
+          value: TOY BASELINE
+          range: string
+        observation_type:
+          value: OBA:VT0001253
+          range: string
+        value_quantity:
+          object_derivations:
+          - class_derivations:
+              Quantity:
+                populated_from: pht000002
+                slot_derivations:
+                  value_decimal:
+                    expr: '{phv00000012} * 2.54'
+                  unit:
+                    value: cm
+                    range: string
+# Body weight — from pht000002, lbs → kg via expr
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht000002
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000011
+        associated_visit:
+          value: TOY BASELINE
+          range: string
+        observation_type:
+          value: OBA:VT0001254
+          range: string
+        value_quantity:
+          object_derivations:
+          - class_derivations:
+              Quantity:
+                populated_from: pht000002
+                slot_derivations:
+                  value_decimal:
+                    expr: '{phv00000013} * 0.453592'
+                  unit:
+                    value: kg
+                    range: string
+# Systolic blood pressure — from pht000002, direct copy
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht000002
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000011
+        associated_visit:
+          value: TOY BASELINE
+          range: string
+        observation_type:
+          value: OMOP:4152194
+          range: string
+        value_quantity:
+          object_derivations:
+          - class_derivations:
+              Quantity:
+                populated_from: pht000002
+                slot_derivations:
+                  value_decimal:
+                    populated_from: phv00000014
+                  unit:
+                    value: mm[Hg]
+                    range: string
+# HDL cholesterol — from pht000003, direct copy
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht000003
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000021
+        associated_visit:
+          value: TOY BASELINE
+          range: string
+        observation_type:
+          value: OMOP:4041720
+          range: string
+        method_type:
+          value: fasted for minimum 12 hrs
+          range: string
+        value_quantity:
+          object_derivations:
+          - class_derivations:
+              Quantity:
+                populated_from: pht000003
+                slot_derivations:
+                  value_decimal:
+                    populated_from: phv00000022
+                  unit:
+                    value: mg/dL
+                    range: string
+# LDL cholesterol — from pht000003, direct copy
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht000003
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000021
+        associated_visit:
+          value: TOY BASELINE
+          range: string
+        observation_type:
+          value: OMOP:4042059
+          range: string
+        method_type:
+          value: fasted for minimum 12 hrs
+          range: string
+        value_quantity:
+          object_derivations:
+          - class_derivations:
+              Quantity:
+                populated_from: pht000003
+                slot_derivations:
+                  value_decimal:
+                    populated_from: phv00000023
+                  unit:
+                    value: mg/dL
+                    range: string
