@@ -27,6 +27,7 @@ classes:
       ethnicity:
       age_at_observation:
         range: integer
+      smoking_status:
 
   MeasurementObservation:
     description: A clinical or lab measurement observation
@@ -43,4 +44,5 @@ classes:
     description: A value with unit
     attributes:
       value_decimal:
+      value_concept:
       unit:

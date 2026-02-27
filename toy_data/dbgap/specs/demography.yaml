@@ -26,3 +26,11 @@
             '0': OMOP:38003564
         age_at_observation:
           expr: '{phv00000005} * 365'
+        smoking_status:
+          populated_from: phv00000016
+          value_mappings:
+            '1': OMOP:36309784
+            '2': OMOP:36310471
+            'Former': OMOP:45884037
+            'Never': OMOP:45879404
+            'Unknown': OMOP:0

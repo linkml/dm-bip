@@ -124,3 +124,57 @@
                   unit:
                     value: mg/dL
                     range: string
+# Pain severity — from pht000002, pure text categorical
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht000002
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000011
+        associated_visit:
+          value: TOY BASELINE
+          range: string
+        observation_type:
+          value: OMOP:4085960
+          range: string
+        value_quantity:
+          object_derivations:
+          - class_derivations:
+              Quantity:
+                populated_from: pht000002
+                slot_derivations:
+                  value_concept:
+                    populated_from: phv00000017
+                    value_mappings:
+                      'None': OMOP:4087434
+                      'Mild': OMOP:4088032
+                      'Moderate': OMOP:4088033
+                      'Severe': OMOP:4088034
+# Urine albumin dipstick — from pht000003, mixed text+numeric
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht000003
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000021
+        associated_visit:
+          value: TOY BASELINE
+          range: string
+        observation_type:
+          value: OMOP:4017258
+          range: string
+        value_quantity:
+          object_derivations:
+          - class_derivations:
+              Quantity:
+                populated_from: pht000003
+                slot_derivations:
+                  value_concept:
+                    populated_from: phv00000025
+                    value_mappings:
+                      'NEGATIVE': '0'
+                      'TRACE': '50'
+                      '10': '100'
+                      '30': '300'
+                      '100': '1000'
+                      '300': '3000'
