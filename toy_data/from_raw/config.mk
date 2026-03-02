@@ -1,0 +1,10 @@
+DM_RAW_SOURCE        := toy_data/data/raw
+DM_SCHEMA_NAME       := ToyFromRaw
+DM_OUTPUT_DIR        := $(or $(TOY_OUTPUT_DIR),output/ToyFromRaw)
+DM_INPUT_DIR         := $(DM_OUTPUT_DIR)/prepared
+DM_TRANS_SPEC_DIR    := toy_data/from_raw/specs
+DM_MAPPING_SPEC      := $(DM_TRANS_SPEC_DIR)
+DM_MAP_TARGET_SCHEMA := toy_data/target-schema.yaml
+DM_MAPPING_PREFIX    := TOY
+DM_MAPPING_POSTFIX   := -data
+DM_MAP_STRICT        := false

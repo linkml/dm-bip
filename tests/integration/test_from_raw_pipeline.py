@@ -1,8 +1,8 @@
 """
-Integration tests for the dbGaP-style pipeline path.
+Integration tests for the from_raw pipeline path.
 
 Runs the full pipeline (prepare -> schema -> validate -> map) against synthetic
-dbGaP .txt.gz files in toy_data/dbgap/raw/, exercising the prepare step
+dbGaP .txt.gz files in toy_data/data/raw/, exercising the prepare step
 that strips comments, cleans phv headers, and filters unused tables.
 """
 
@@ -20,16 +20,16 @@ script_dir = Path(__file__).parent
 output_dir = script_dir.parent / "output"
 root_dir = script_dir.parent.parent
 
-SCHEMA_NAME = "ToyDbgap"
-CONFIG_FILE = "toy_data/dbgap/config.mk"
-EXPECTED_PREPARED_FILES = {"pht000001.tsv", "pht000002.tsv", "pht000003.tsv"}
-EXPECTED_ENTITIES = {"Demography", "MeasurementObservation", "Participant"}
+SCHEMA_NAME = "ToyFromRaw"
+CONFIG_FILE = "toy_data/from_raw/config.mk"
+EXPECTED_PREPARED_FILES = {"pht000001.tsv", "pht000002.tsv", "pht000003.tsv", "pht000005.tsv"}
+EXPECTED_ENTITIES = {"Condition", "Demography", "MeasurementObservation", "Observation", "Participant"}
 
 
 @pytest.fixture(scope="module")
-def dbgap_pipeline_output():
-    """Run the full dbGaP pipeline against toy data, returning the output directory."""
-    temp_dir = tempfile.TemporaryDirectory(dir=output_dir, prefix="dbgap-pipeline_")
+def from_raw_pipeline_output():
+    """Run the full from_raw pipeline against toy data, returning the output directory."""
+    temp_dir = tempfile.TemporaryDirectory(dir=output_dir, prefix="from-raw-pipeline_")
     toy_output_dir = Path(temp_dir.name)
     prepared_dir = toy_output_dir / "prepared"
     env = os.environ.copy()
@@ -48,29 +48,29 @@ def dbgap_pipeline_output():
         print("STDOUT:", proc.stdout[-2000:] if len(proc.stdout) > 2000 else proc.stdout)
         print("STDERR:", proc.stderr[-2000:] if len(proc.stderr) > 2000 else proc.stderr)
         temp_dir.cleanup()
-        raise RuntimeError(f"dbGaP pipeline failed (exit {proc.returncode}):\n{proc.stderr[-1000:]}")
+        raise RuntimeError(f"from_raw pipeline failed (exit {proc.returncode}):\n{proc.stderr[-1000:]}")
 
     yield {"output_dir": toy_output_dir, "prepared_dir": prepared_dir}
 
     temp_dir.cleanup()
 
 
-def test_prepare_filters_unused_tables(dbgap_pipeline_output):
+def test_prepare_filters_unused_tables(from_raw_pipeline_output):
     """pht000099 should NOT be prepared since no trans-spec references it."""
-    prepared = dbgap_pipeline_output["prepared_dir"]
+    prepared = from_raw_pipeline_output["prepared_dir"]
     assert not (prepared / "pht000099.tsv").exists(), "pht000099.tsv should have been filtered out"
 
 
-def test_prepare_creates_expected_files(dbgap_pipeline_output):
-    """Only pht000001, pht000002, pht000003 should be prepared."""
-    prepared = dbgap_pipeline_output["prepared_dir"]
+def test_prepare_creates_expected_files(from_raw_pipeline_output):
+    """Only pht000001, pht000002, pht000003, pht000005 should be prepared."""
+    prepared = from_raw_pipeline_output["prepared_dir"]
     actual_files = {f.name for f in prepared.iterdir() if f.suffix == ".tsv"}
     assert actual_files == EXPECTED_PREPARED_FILES
 
 
-def test_prepare_cleans_headers(dbgap_pipeline_output):
+def test_prepare_cleans_headers(from_raw_pipeline_output):
     """Prepared TSVs should have clean phv column names (no version suffixes)."""
-    prepared = dbgap_pipeline_output["prepared_dir"]
+    prepared = from_raw_pipeline_output["prepared_dir"]
     for tsv_file in prepared.glob("*.tsv"):
         with open(tsv_file) as f:
             header = f.readline().strip().split("\t")
@@ -80,9 +80,9 @@ def test_prepare_cleans_headers(dbgap_pipeline_output):
                 assert col == col.split(".")[0], f"Unclean phv header in {tsv_file.name}: {col}"
 
 
-def test_schema_creation(dbgap_pipeline_output):
+def test_schema_creation(from_raw_pipeline_output):
     """Auto-generated schema should have one class per prepared input file."""
-    output = dbgap_pipeline_output["output_dir"]
+    output = from_raw_pipeline_output["output_dir"]
     schema_path = output / f"{SCHEMA_NAME}.yaml"
 
     assert schema_path.exists(), f"Schema file not found: {schema_path}"
@@ -91,9 +91,9 @@ def test_schema_creation(dbgap_pipeline_output):
     assert len(schema_view.all_classes()) == len(EXPECTED_PREPARED_FILES)
 
 
-def test_validation(dbgap_pipeline_output):
+def test_validation(from_raw_pipeline_output):
     """Validation logs should exist for each prepared file."""
-    output = dbgap_pipeline_output["output_dir"]
+    output = from_raw_pipeline_output["output_dir"]
     validation_path = output / "validation-logs"
 
     assert (validation_path / f"{SCHEMA_NAME}-data-validate.log").exists()
@@ -109,9 +109,9 @@ def test_validation(dbgap_pipeline_output):
         assert has_success or has_error, f"No validation result for {file_log_dir.name}"
 
 
-def test_mapping_outputs(dbgap_pipeline_output):
+def test_mapping_outputs(from_raw_pipeline_output):
     """Mapped data files should exist for each discovered entity."""
-    output = dbgap_pipeline_output["output_dir"]
+    output = from_raw_pipeline_output["output_dir"]
     mapped_dir = output / "mapped-data"
 
     assert mapped_dir.exists(), "mapped-data directory not created"

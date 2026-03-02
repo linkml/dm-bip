@@ -11,4 +11,4 @@
         ethnicity:
           populated_from: ethnicity
         age:
-          populated_from: age_at_index
+          populated_from: age

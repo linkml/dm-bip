@@ -1,0 +1,24 @@
+# Condition status — binary diagnosis from pht000005
+- class_derivations:
+    Condition:
+      populated_from: pht000005
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000041
+        associated_visit:
+          value: TOY VISIT 1
+          range: string
+        condition_concept:
+          value: MONDO:0004979
+          range: string
+        condition_status:
+          populated_from: phv00000051
+          value_mappings:
+            '0': ABSENT
+            '1': PRESENT
+        condition_provenance:
+          value: CLINICAL_DIAGNOSIS
+          range: string
+        relationship_to_participant:
+          value: ONESELF
+          range: string
