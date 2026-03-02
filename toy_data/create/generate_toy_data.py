@@ -60,7 +60,7 @@ def _write_raw_table(filename, header_cols, human_cols, rows, *, extra_junk=True
     output_path = OUTPUT_RAW / filename
     lines = []
 
-    lines.append("# Study accance: phs000000.v1.p1\n")
+    lines.append("# Study accession: phs000000.v1.p1\n")
     lines.append("# Table accession: {}\n".format(filename.split(".")[2]))
     lines.append("# Consent group: All subjects\n")
     lines.append("# Citation: Synthetic TOY data for pipeline testing\n")
@@ -89,8 +89,8 @@ def _write_raw_table(filename, header_cols, human_cols, rows, *, extra_junk=True
 def _write_clean_tsv(filename, columns, rows):
     """Write a clean TSV file with human-readable headers and values."""
     output_path = OUTPUT_CLEAN / filename
-    with open(output_path, "w", newline="") as f:
-        writer = csv.writer(f, delimiter="\t")
+    with open(output_path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f, delimiter="\t", lineterminator="\n")
         writer.writerow(columns)
         writer.writerows(rows)
 

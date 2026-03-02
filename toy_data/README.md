@@ -7,7 +7,7 @@ Synthetic datasets for testing the dm-bip pipeline. One dataset with two present
 ```
 toy_data/
 ├── create/                  # Generator script and design docs
-│   └── generate_toy_data.py # Generates data/raw/ and data/pre_cleaned/ (3 files each)
+│   └── generate_toy_data.py # Generates 5 data/raw/ .txt.gz + 3 data/pre_cleaned/ .tsv
 ├── data/
 │   ├── raw/                 # dbGaP-style .txt.gz files (coded values, phv headers)
 │   └── pre_cleaned/         # Human-readable TSVs (decoded values, plain column names)
