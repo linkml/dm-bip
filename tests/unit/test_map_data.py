@@ -456,8 +456,8 @@ def test_rewrite_header_and_pad_custom_separator():
 
 def test_get_schema_loads_valid_schema():
     """Test that get_schema loads a LinkML schema from file."""
-    schema = get_schema(TOY_DATA / "schemas/source-schema.yaml")
-    assert schema.name == "ToySourceSchema"
+    schema = get_schema(TOY_DATA / "pre_cleaned/source-schema.yaml")
+    assert schema.name == "ToyPreCleanedSourceSchema"
     assert "demographics" in schema.classes
     assert "subject" in schema.classes
 
@@ -468,16 +468,16 @@ def test_get_schema_loads_valid_schema():
 @pytest.fixture
 def linkml_test_setup():
     """Set up LinkML schemas and data loader for transformation tests."""
-    source_schema = get_schema(TOY_DATA / "schemas/source-schema.yaml")
-    target_schema = get_schema(TOY_DATA / "schemas/target-schema.yaml")
+    source_schema = get_schema(TOY_DATA / "pre_cleaned/source-schema.yaml")
+    target_schema = get_schema(TOY_DATA / "target-schema.yaml")
     source_sv = SchemaView(source_schema)
     target_sv = SchemaView(target_schema)
-    data_loader = DataLoader(TOY_DATA / "raw_data")
+    data_loader = DataLoader(TOY_DATA / "data/pre_cleaned")
     return {
         "source_sv": source_sv,
         "target_sv": target_sv,
         "data_loader": data_loader,
-        "spec_dir": TOY_DATA / "specs",
+        "spec_dir": TOY_DATA / "pre_cleaned/specs",
     }
 
 
@@ -494,11 +494,11 @@ def test_multi_spec_transform_transforms_data(linkml_test_setup):
     )
     # demographics.tsv has 110 records
     assert len(results) == 110
-    # Check first record transformed correctly
-    assert results[0]["id"] == "SUBJ001"
+    # Check first record transformed correctly (TSV loader coerces numeric IDs to int)
+    assert str(results[0]["id"]) == "1001"
     assert results[0]["gender"] == "Male"
-    assert results[0]["race"] == "asian"
-    assert results[0]["age"] == 74
+    assert results[0]["race"] == "White"
+    assert results[0]["age"] == 40
 
 
 def test_multi_spec_transform_participant(linkml_test_setup):
@@ -514,7 +514,7 @@ def test_multi_spec_transform_participant(linkml_test_setup):
     )
     # subject.tsv has 110 records
     assert len(results) == 110
-    assert results[0]["id"] == "SUBJ001"
+    assert str(results[0]["id"]) == "1001"
     assert results[0]["consent"] == "open"
     assert results[0]["study"] == "STUDY001"
 
@@ -671,7 +671,7 @@ def test_process_entities_creates_output_files(linkml_test_setup, temp_dir):
         lines = f.readlines()
     assert len(lines) == 110
     first_record = json.loads(lines[0])
-    assert first_record["id"] == "SUBJ001"
+    assert str(first_record["id"]) == "1001"
 
 
 @pytest.mark.parametrize(
@@ -771,10 +771,10 @@ def test_main_creates_output_directory(temp_dir):
 
     # main() discovers entities from spec files and processes them
     main(
-        source_schema=TOY_DATA / "schemas/source-schema.yaml",
-        target_schema=TOY_DATA / "schemas/target-schema.yaml",
-        data_dir=TOY_DATA / "raw_data",
-        var_dir=TOY_DATA / "specs",
+        source_schema=TOY_DATA / "pre_cleaned/source-schema.yaml",
+        target_schema=TOY_DATA / "target-schema.yaml",
+        data_dir=TOY_DATA / "data/pre_cleaned",
+        var_dir=TOY_DATA / "pre_cleaned/specs",
         output_dir=output_dir,
         output_prefix="test",
         output_postfix="v1",

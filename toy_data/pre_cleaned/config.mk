@@ -1,0 +1,9 @@
+DM_SCHEMA_NAME       := ToyPreCleaned
+DM_OUTPUT_DIR        := $(or $(TOY_OUTPUT_DIR),output/ToyPreCleaned)
+DM_INPUT_DIR         := toy_data/data/pre_cleaned
+DM_TRANS_SPEC_DIR    := toy_data/pre_cleaned/specs
+DM_MAPPING_SPEC      := $(DM_TRANS_SPEC_DIR)
+DM_MAP_TARGET_SCHEMA := toy_data/target-schema.yaml
+DM_MAPPING_PREFIX    := TOY
+DM_MAPPING_POSTFIX   := -data
+DM_MAP_STRICT        := false

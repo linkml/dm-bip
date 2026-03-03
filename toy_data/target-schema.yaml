@@ -1,0 +1,86 @@
+name: ToyTargetSchema
+description: Shared target schema for toy data transformation (both from_raw and pre_cleaned)
+id: https://w3id.org/ToyTargetSchema
+prefixes:
+  linkml: https://w3id.org/linkml/
+  target: https://w3id.org/ToyTargetSchema/
+imports:
+  - linkml:types
+default_prefix: target
+default_range: string
+
+classes:
+  Person:
+    description: A person in the study with demographic information
+    attributes:
+      id:
+        identifier: true
+      gender:
+      race:
+      ethnicity:
+      age:
+        range: integer
+
+  Participant:
+    description: A study participant with consent and study info
+    attributes:
+      id:
+        identifier: true
+      external_id:
+      has_asthma:
+      has_diabetes:
+      consent:
+      study:
+      member_of_research_study:
+
+  Demography:
+    description: Demographic information for a participant
+    attributes:
+      associated_participant:
+      associated_visit:
+      sex:
+      race:
+      ethnicity:
+      age_at_observation:
+        range: integer
+      smoking_status:
+
+  MeasurementObservation:
+    description: A clinical or lab measurement observation
+    attributes:
+      associated_participant:
+      associated_visit:
+      observation_type:
+      method_type:
+      age_at_observation:
+        range: integer
+      value_quantity:
+        range: Quantity
+        inlined: true
+
+  Observation:
+    description: A categorical or enumerated observation
+    attributes:
+      associated_participant:
+      associated_visit:
+      observation_type:
+      age_at_observation:
+        range: integer
+      value_enum:
+
+  Condition:
+    description: A diagnosis or condition
+    attributes:
+      associated_participant:
+      associated_visit:
+      condition_concept:
+      condition_status:
+      condition_provenance:
+      relationship_to_participant:
+
+  Quantity:
+    description: A value with unit
+    attributes:
+      value_decimal:
+      value_concept:
+      unit:
