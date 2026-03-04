@@ -39,12 +39,12 @@ COHORT_CONFIGS = {
     #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/CARDIA-ingest",
 
     # Example: Remote GitHub URL
-    # "Framingham Cohort":
-    #     "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/Mapping-FHS-new-version-updated/priority_variables_transform/FHS-ingest",
+    "Framingham Cohort":
+        "https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/tree/main/priority_variables_transform/FHS-ingest",
 
     # Example: Local directory path
-    "Framingham Cohort":
-        r"C:\SourceCode\NHLBI-BDC-DMC-HV\priority_variables_transform\FHS-ingest",
+    # "Framingham Cohort":
+    #     r"C:\SourceCode\NHLBI-BDC-DMC-HV\priority_variables_transform\FHS-ingest",
 
 
     # ("Cardiovascular Health Study (CHS) Cohort: an NHLBI-funded observational study "
