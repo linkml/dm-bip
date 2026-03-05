@@ -9,9 +9,8 @@ RUN := uv run
 #   3. Transform the data files with `linkml-map`
 #
 # PARALLEL EXECUTION:
-#   The validation step can run in parallel to speed up processing:
-#     make -j 4 pipeline              # Run entire pipeline with 4 parallel validation jobs
-#     make validate-data-parallel JOBS=8  # Run just validation with 8 parallel jobs
+#   make -j 4 pipeline    # Validates up to 4 files concurrently
+#   make -j 8 pipeline    # Validates up to 8 files concurrently
 #   The mapping step will automatically wait for all validations to complete.
 
 # Primary configurable parameters:
@@ -402,24 +401,17 @@ $(VALIDATION_SUCCESS_SENTINEL): $(VALIDATED_FILES_LIST) $(VALIDATE_SUCCESS_LOGS)
 			echo; \
 			echo "See $(DATA_VALIDATE_ERRORS_DIR) for error logs."; \
 			echo; \
-			exit 1; \
 		else \
 			echo "All files validated successfully."; \
 			echo; \
 		fi; \
-	} | tee $(DATA_VALIDATE_LOG)
-	@touch $@
+	} > $(DATA_VALIDATE_LOG)
+	@cat $(DATA_VALIDATE_LOG)
+	@NUM_FAILURES=$$(ls $(DATA_VALIDATE_ERRORS_DIR) 2>/dev/null | grep -F -f $< | wc -l); \
+	[ $$NUM_FAILURES -eq 0 ] && touch $@ || exit 1
 
 .PHONY: validate-data
 validate-data: $(VALIDATION_SUCCESS_SENTINEL)
-
-# Run validation in parallel with N jobs
-# Example: make validate-data-parallel JOBS=4
-JOBS ?= 4
-.PHONY: validate-data-parallel
-validate-data-parallel:
-	@echo "Running data validation with $(JOBS) parallel jobs..."
-	$(MAKE) -j $(JOBS) validate-data
 
 .PHONY: clean-validate
 validate-clean:
