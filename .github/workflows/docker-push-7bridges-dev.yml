@@ -2,7 +2,7 @@ name: Build & Push Docker image (Seven Bridges)
 
 on:
   push:
-    branches: ["docker-push-7bridges"]
+    branches: ["docker-dev"]
   workflow_dispatch:
 
 permissions:
@@ -28,7 +28,7 @@ jobs:
       - name: Log in to Seven Bridges registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ vars.SB_REGISTRY }}
+          registry: ${{ vars.SB_REGISTRY}}
           username: ${{ vars.SB_REGISTRY_USERNAME }}
           password: ${{ secrets.SB_REGISTRY_PASSWORD }}
 
@@ -39,11 +39,11 @@ jobs:
 
       - name: Tag image
         run: |
-          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ vars.SB_REGISTRY_PROJECT }}/$IMAGE_NAME
+          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ vars.SB_REGISTRY_PROJECT_DEV }}/$IMAGE_NAME
           docker tag $IMAGE_NAME $IMAGE_URI:latest
-
+  
       - name: Push image
         run: |
-          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ vars.SB_REGISTRY_PROJECT }}/$IMAGE_NAME
+          IMAGE_URI=${{ vars.SB_REGISTRY}}/${{ vars.SB_REGISTRY_USERNAME }}/${{ vars.SB_REGISTRY_PROJECT }}/$IMAGE_NAME
           docker push $IMAGE_URI:latest
          
