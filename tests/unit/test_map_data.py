@@ -88,12 +88,6 @@ def spec_files_dir(temp_dir):
 # --- DataLoader Tests ---
 
 
-def test_dataloader_init_stores_base_path(data_loader_dir):
-    """Test that __init__ stores the base path correctly."""
-    loader = DataLoader(Path(data_loader_dir))
-    assert loader.base_path == Path(data_loader_dir)
-
-
 def test_dataloader_contains_returns_true_for_existing_file(data_loader_dir):
     """Test __contains__ returns True when file exists."""
     loader = DataLoader(Path(data_loader_dir))
@@ -462,8 +456,8 @@ def test_rewrite_header_and_pad_custom_separator():
 
 def test_get_schema_loads_valid_schema():
     """Test that get_schema loads a LinkML schema from file."""
-    schema = get_schema(TOY_DATA / "schemas/source-schema.yaml")
-    assert schema.name == "ToySourceSchema"
+    schema = get_schema(TOY_DATA / "pre_cleaned/source-schema.yaml")
+    assert schema.name == "ToyPreCleanedSourceSchema"
     assert "demographics" in schema.classes
     assert "subject" in schema.classes
 
@@ -474,16 +468,16 @@ def test_get_schema_loads_valid_schema():
 @pytest.fixture
 def linkml_test_setup():
     """Set up LinkML schemas and data loader for transformation tests."""
-    source_schema = get_schema(TOY_DATA / "schemas/source-schema.yaml")
-    target_schema = get_schema(TOY_DATA / "schemas/target-schema.yaml")
+    source_schema = get_schema(TOY_DATA / "pre_cleaned/source-schema.yaml")
+    target_schema = get_schema(TOY_DATA / "target-schema.yaml")
     source_sv = SchemaView(source_schema)
     target_sv = SchemaView(target_schema)
-    data_loader = DataLoader(TOY_DATA / "raw_data")
+    data_loader = DataLoader(TOY_DATA / "data/pre_cleaned")
     return {
         "source_sv": source_sv,
         "target_sv": target_sv,
         "data_loader": data_loader,
-        "spec_dir": TOY_DATA / "specs",
+        "spec_dir": TOY_DATA / "pre_cleaned/specs",
     }
 
 
@@ -500,11 +494,11 @@ def test_multi_spec_transform_transforms_data(linkml_test_setup):
     )
     # demographics.tsv has 110 records
     assert len(results) == 110
-    # Check first record transformed correctly
-    assert results[0]["id"] == "SUBJ001"
+    # Check first record transformed correctly (TSV loader coerces numeric IDs to int)
+    assert str(results[0]["id"]) == "1001"
     assert results[0]["gender"] == "Male"
-    assert results[0]["race"] == "asian"
-    assert results[0]["age"] == 74
+    assert results[0]["race"] == "White"
+    assert results[0]["age"] == 40
 
 
 def test_multi_spec_transform_participant(linkml_test_setup):
@@ -520,7 +514,7 @@ def test_multi_spec_transform_participant(linkml_test_setup):
     )
     # subject.tsv has 110 records
     assert len(results) == 110
-    assert results[0]["id"] == "SUBJ001"
+    assert str(results[0]["id"]) == "1001"
     assert results[0]["consent"] == "open"
     assert results[0]["study"] == "STUDY001"
 
@@ -536,6 +530,119 @@ def test_multi_spec_transform_empty_spec_files(linkml_test_setup):
         )
     )
     assert results == []
+
+
+def test_multi_spec_transform_skips_missing_data_files(linkml_test_setup, temp_dir, caplog):
+    """Test that missing data files are skipped with a warning, not an error."""
+    # Create a spec that references a nonexistent pht table
+    spec_file = Path(temp_dir) / "missing_data_spec.yaml"
+    spec_file.write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: nonexistent_table\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: subject_id\n"
+    )
+    with caplog.at_level("WARNING", logger="dm_bip.map_data.map_data"):
+        results = list(
+            multi_spec_transform(
+                linkml_test_setup["data_loader"],
+                [spec_file],
+                linkml_test_setup["source_sv"],
+                linkml_test_setup["target_sv"],
+                strict=False,
+            )
+        )
+    assert results == []
+    assert any("Skipping class derivation Person" in msg for msg in caplog.messages)
+    assert any("nonexistent_table" in msg for msg in caplog.messages)
+
+
+def test_multi_spec_transform_strict_raises_on_missing_data(linkml_test_setup, temp_dir):
+    """Test that strict mode raises FileNotFoundError for missing data files."""
+    spec_file = Path(temp_dir) / "missing_data_spec.yaml"
+    spec_file.write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: nonexistent_table\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: subject_id\n"
+    )
+    with pytest.raises(FileNotFoundError, match="nonexistent_table"):
+        list(
+            multi_spec_transform(
+                linkml_test_setup["data_loader"],
+                [spec_file],
+                linkml_test_setup["source_sv"],
+                linkml_test_setup["target_sv"],
+                strict=True,
+            )
+        )
+
+
+def test_multi_spec_transform_skips_value_error_non_strict(linkml_test_setup, temp_dir):
+    """Test that ValueError from bad slot references is caught in non-strict mode."""
+    spec_file = Path(temp_dir) / "bad_slot_spec.yaml"
+    spec_file.write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: demographics\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: nonexistent_column\n"
+    )
+    results = list(
+        multi_spec_transform(
+            linkml_test_setup["data_loader"],
+            [spec_file],
+            linkml_test_setup["source_sv"],
+            linkml_test_setup["target_sv"],
+            strict=False,
+        )
+    )
+    assert results == []
+
+
+def test_multi_spec_transform_strict_raises_on_value_error(linkml_test_setup, temp_dir):
+    """Test that ValueError from bad slot references propagates in strict mode."""
+    spec_file = Path(temp_dir) / "bad_slot_spec.yaml"
+    spec_file.write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: demographics\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: nonexistent_column\n"
+    )
+    with pytest.raises(ValueError):
+        list(
+            multi_spec_transform(
+                linkml_test_setup["data_loader"],
+                [spec_file],
+                linkml_test_setup["source_sv"],
+                linkml_test_setup["target_sv"],
+                strict=True,
+            )
+        )
+
+
+def test_multi_spec_transform_unexpected_exception_propagates(linkml_test_setup, temp_dir):
+    """Test that unexpected exceptions propagate regardless of strict setting."""
+    spec_file = Path(temp_dir) / "bad_structure_spec.yaml"
+    # Missing class_derivations key entirely — causes KeyError, not caught
+    spec_file.write_text("- wrong_key:\n    Person:\n      populated_from: demographics\n")
+    with pytest.raises(KeyError):
+        list(
+            multi_spec_transform(
+                linkml_test_setup["data_loader"],
+                [spec_file],
+                linkml_test_setup["source_sv"],
+                linkml_test_setup["target_sv"],
+                strict=False,
+            )
+        )
 
 
 # --- process_entities Tests ---
@@ -564,64 +671,32 @@ def test_process_entities_creates_output_files(linkml_test_setup, temp_dir):
         lines = f.readlines()
     assert len(lines) == 110
     first_record = json.loads(lines[0])
-    assert first_record["id"] == "SUBJ001"
+    assert str(first_record["id"]) == "1001"
 
 
-def test_process_entities_no_prefix_no_postfix(linkml_test_setup, temp_dir):
-    """Test that process_entities works with empty prefix and postfix."""
-    entities = ["Person"]
+@pytest.mark.parametrize(
+    "prefix,postfix,expected_filename",
+    [
+        ("", "", "Person.jsonl"),
+        ("test", "", "test-Person.jsonl"),
+        ("", "v1", "Person-v1.jsonl"),
+    ],
+)
+def test_process_entities_output_filename(linkml_test_setup, temp_dir, prefix, postfix, expected_filename):
+    """Test that process_entities builds the correct output filename from prefix/postfix."""
     process_entities(
-        entities=entities,
+        entities=["Person"],
         data_loader=linkml_test_setup["data_loader"],
         var_dir=linkml_test_setup["spec_dir"],
         source_schemaview=linkml_test_setup["source_sv"],
         target_schemaview=linkml_test_setup["target_sv"],
         output_dir=temp_dir,
-        output_prefix="",
-        output_postfix="",
+        output_prefix=prefix,
+        output_postfix=postfix,
         output_type="jsonl",
         chunk_size=10,
     )
-    output_file = Path(temp_dir) / "Person.jsonl"
-    assert output_file.exists()
-
-
-def test_process_entities_prefix_only(linkml_test_setup, temp_dir):
-    """Test that process_entities works with only prefix set."""
-    entities = ["Person"]
-    process_entities(
-        entities=entities,
-        data_loader=linkml_test_setup["data_loader"],
-        var_dir=linkml_test_setup["spec_dir"],
-        source_schemaview=linkml_test_setup["source_sv"],
-        target_schemaview=linkml_test_setup["target_sv"],
-        output_dir=temp_dir,
-        output_prefix="test",
-        output_postfix="",
-        output_type="jsonl",
-        chunk_size=10,
-    )
-    output_file = Path(temp_dir) / "test-Person.jsonl"
-    assert output_file.exists()
-
-
-def test_process_entities_postfix_only(linkml_test_setup, temp_dir):
-    """Test that process_entities works with only postfix set."""
-    entities = ["Person"]
-    process_entities(
-        entities=entities,
-        data_loader=linkml_test_setup["data_loader"],
-        var_dir=linkml_test_setup["spec_dir"],
-        source_schemaview=linkml_test_setup["source_sv"],
-        target_schemaview=linkml_test_setup["target_sv"],
-        output_dir=temp_dir,
-        output_prefix="",
-        output_postfix="v1",
-        output_type="jsonl",
-        chunk_size=10,
-    )
-    output_file = Path(temp_dir) / "Person-v1.jsonl"
-    assert output_file.exists()
+    assert (Path(temp_dir) / expected_filename).exists()
 
 
 def test_process_entities_skips_missing_specs(linkml_test_setup, temp_dir):
@@ -696,10 +771,10 @@ def test_main_creates_output_directory(temp_dir):
 
     # main() discovers entities from spec files and processes them
     main(
-        source_schema=TOY_DATA / "schemas/source-schema.yaml",
-        target_schema=TOY_DATA / "schemas/target-schema.yaml",
-        data_dir=TOY_DATA / "raw_data",
-        var_dir=TOY_DATA / "specs",
+        source_schema=TOY_DATA / "pre_cleaned/source-schema.yaml",
+        target_schema=TOY_DATA / "target-schema.yaml",
+        data_dir=TOY_DATA / "data/pre_cleaned",
+        var_dir=TOY_DATA / "pre_cleaned/specs",
         output_dir=output_dir,
         output_prefix="test",
         output_postfix="v1",

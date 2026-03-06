@@ -1,0 +1,40 @@
+# Smoking status visit 1 — categorical observation with value_enum
+- class_derivations:
+    Observation:
+      populated_from: pht000005
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000041
+        associated_visit:
+          value: TOY VISIT 1
+          range: string
+        observation_type:
+          value: OMOP:4282779
+          range: string
+        age_at_observation:
+          expr: '{phv00000046} * 365'
+        value_enum:
+          populated_from: phv00000049
+          value_mappings:
+            '0': None
+            '1': OMOP:40766945
+# Smoking status visit 2 — categorical observation with value_enum
+- class_derivations:
+    Observation:
+      populated_from: pht000005
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000041
+        associated_visit:
+          value: TOY VISIT 2
+          range: string
+        observation_type:
+          value: OMOP:4282779
+          range: string
+        age_at_observation:
+          expr: '{phv00000047} * 365'
+        value_enum:
+          populated_from: phv00000050
+          value_mappings:
+            '0': None
+            '1': OMOP:40766945
