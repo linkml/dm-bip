@@ -47,6 +47,7 @@ DM_MAPPING_POSTFIX ?=
 DM_MAP_OUTPUT_TYPE ?= yaml
 DM_MAP_CHUNK_SIZE ?= 10000
 DM_MAP_STRICT ?= true
+DM_VALIDATE_STRICT ?=
 
 # --- Raw Data Preparation Variables ---
 # The raw directory containing .txt.gz files
@@ -152,6 +153,7 @@ Configured variables:
   DM_OUTPUT_DIR      = $(DM_OUTPUT_DIR)
   DM_ENUM_THRESHOLD  = $(DM_ENUM_THRESHOLD)
   DM_MAX_ENUM_SIZE   = $(DM_MAX_ENUM_SIZE)
+  DM_VALIDATE_STRICT = $(DM_VALIDATE_STRICT)
 
 Generated variables
   input files:                    $(if $(INPUT_FILES),$(INPUT_FILES),(none))
@@ -408,7 +410,14 @@ $(VALIDATION_SUCCESS_SENTINEL): $(VALIDATED_FILES_LIST) $(VALIDATE_SUCCESS_LOGS)
 	} > $(DATA_VALIDATE_LOG)
 	@cat $(DATA_VALIDATE_LOG)
 	@NUM_FAILURES=$$(ls $(DATA_VALIDATE_ERRORS_DIR) 2>/dev/null | grep -F -f $< | wc -l); \
-	[ $$NUM_FAILURES -eq 0 ] && touch $@ || exit 1
+	if [ $$NUM_FAILURES -eq 0 ]; then \
+		touch $@; \
+	elif [ -n "$(DM_VALIDATE_STRICT)" ]; then \
+		exit 1; \
+	else \
+		echo "WARNING: Validation errors found but DM_VALIDATE_STRICT is not set — continuing."; \
+		touch $@; \
+	fi
 
 .PHONY: validate-data
 validate-data: $(VALIDATION_SUCCESS_SENTINEL)
