@@ -115,6 +115,34 @@ def multi_spec_transform(
                     continue
 
 
+def discover_entities(var_dir: Path) -> list[str]:
+    """
+    Discover entity names from top-level class_derivations in spec files.
+
+    Scans all YAML files in var_dir and collects the unique class names
+    from top-level class_derivations blocks. Nested class_derivations
+    (inside object_derivations) are ignored since those represent
+    sub-components like Quantity, not standalone entities.
+
+    Returns a sorted list of entity names.
+    """
+    entities: set[str] = set()
+    yaml_files = sorted([*var_dir.rglob("*.yaml"), *var_dir.rglob("*.yml")])
+    for yaml_file in yaml_files:
+        try:
+            with open(yaml_file) as f:
+                specs = yaml.safe_load(f)
+        except (OSError, yaml.YAMLError) as e:
+            logger.warning("Skipping spec file %s due to read/parse error: %s", yaml_file, e)
+            continue
+        if not isinstance(specs, list):
+            continue
+        for block in specs:
+            if isinstance(block, dict) and "class_derivations" in block:
+                entities.update(block["class_derivations"].keys())
+    return sorted(entities)
+
+
 def get_schema(schema_path: Path) -> SchemaDefinition:
     """Load and return a LinkML schema from the given path."""
     sv = SchemaView(schema_path)
@@ -137,16 +165,12 @@ def process_entities(
     output_dir,
     output_prefix,
     output_postfix,
-    output_type,  # This will be ignored in favor of the test loop
+    output_type,
     chunk_size=1000,
     strict=True,
 ) -> None:
-    """Process each entity and write to multiple output formats for testing."""
+    """Process each entity and write to output files."""
     start = time.perf_counter()
-
-    # HARD-CODE: The three formats you want to test
-    formats_to_test = ["yaml", "json", "tsv"]
-
     for entity in entities:
         spec_files = get_spec_files(var_dir, f"^    {entity}:")
         if not spec_files:
@@ -154,37 +178,30 @@ def process_entities(
             continue
 
         logger.info("Starting %s", entity)
+        output_path = f"{output_dir}/{'-'.join(x for x in [output_prefix, entity, output_postfix] if x)}.{output_type}"
 
         iterable = multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview, strict=strict)
         chunks = chunked(iterable, chunk_size)
         key_name = entity.lower() + "s"
 
-            logger.info("--> Writing %s format to %s", fmt, output_path)
+        stream = make_stream(output_type, key_name=key_name)
 
-            # We re-initialize the generator here so each format gets a fresh stream
-            iterable = multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview)
-            chunks = chunked(iterable, chunk_size)
-            key_name = entity.lower() + "s"
+        with open(output_path, "w") as f:
+            for output in stream.process(chunks):
+                f.write(output)
 
-            stream = make_stream(fmt, key_name=key_name)
+        if isinstance(stream, TSVStream) and stream.must_update_headers:
+            logger.info("Rewriting %s (headers changed)", entity)
+            tmp_path = output_path + ".tmp"
+            with open(output_path, "r") as src, open(tmp_path, "w") as dst:
+                chunks = chunked(src, chunk_size)
+                dst.writelines(TSVStream.rewrite_header_and_pad(chunks, stream.next_headers))
+            os.replace(tmp_path, output_path)
 
-            with open(output_path, "w") as f:
-                for output in stream.process(chunks):
-                    f.write(output)
-
-            # Keep the header update logic inside the loop so it applies to the TSV file
-            if isinstance(stream, TSVStream) and stream.must_update_headers:
-                logger.info("Rewriting %s (headers changed)", entity)
-                tmp_path = output_path + ".tmp"
-                with open(output_path, "r") as src, open(tmp_path, "w") as dst:
-                    chunks = chunked(src, chunk_size)
-                    dst.writelines(TSVStream.rewrite_header_and_pad(chunks, stream.next_headers))
-                os.replace(tmp_path, output_path)
-
-        logger.info("%s Complete (all formats)", entity)
+        logger.info("%s Complete", entity)
 
     end = time.perf_counter()
-    logger.info("Total Execution Time: %.2f seconds", end - start)
+    logger.info("Time: %.2f seconds", end - start)
 
 
 def main(
@@ -254,18 +271,10 @@ def main(
 
     data_loader = DataLoader(data_dir)
 
-    entities = [
-        "Condition",
-        "Demography",
-        "DrugExposure",
-        "MeasurementObservation",
-        "Observation",
-        "Participant",
-        "Person",
-        "Procedure",
-        "ResearchStudy",
-        "SdohObservation",
-    ]
+    entities = discover_entities(var_dir)
+    logger.info("Discovered entities: %s", entities)
+    if not entities:
+        logger.warning("No entities discovered in %s - pipeline will produce no outputs", var_dir)
 
     os.makedirs(output_dir, exist_ok=True)
 
