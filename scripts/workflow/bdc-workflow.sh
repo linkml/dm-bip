@@ -54,7 +54,7 @@ Examples:
   $0 --schema FHS --source /data/raw/fhs_study --workdir /custom/path
 
 EOF
-  exit 1
+  exit "${1:-1}"
 }
 
 #------------------------------------------------------------------------------
@@ -75,19 +75,22 @@ fi
 while [[ $# -gt 0 ]]; do
   case $1 in
     --schema)
+      [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --schema requires a value"; exit 1; }
       DM_SCHEMA_NAME="$2"
       shift 2
       ;;
     --source)
+      [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --source requires a value"; exit 1; }
       DM_RAW_SOURCE="$2"
       shift 2
       ;;
     --workdir)
+      [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --workdir requires a value"; exit 1; }
       WORKING_DIR="$2"
       shift 2
       ;;
     -h|--help)
-      usage
+      usage 0
       ;;
     *)
       echo "Error: Unknown parameter '$1'"

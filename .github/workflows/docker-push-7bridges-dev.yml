@@ -16,6 +16,9 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    env:
+      IMAGE_URI: ${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ vars.SB_REGISTRY_PROJECT_DEV }}/dm-bip-env
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,19 +32,12 @@ jobs:
       - name: Log in to Seven Bridges registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ vars.SB_REGISTRY}}
+          registry: ${{ vars.SB_REGISTRY }}
           username: ${{ vars.SB_REGISTRY_USERNAME }}
           password: ${{ secrets.SB_REGISTRY_PASSWORD }}
 
-      - name: Build Docker image
-        run: docker build -t $IMAGE_NAME .
-
-      - name: Tag image
+      - name: Build, tag, and push image
         run: |
-          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ vars.SB_REGISTRY_PROJECT_DEV }}/$IMAGE_NAME
+          docker build -t $IMAGE_NAME .
           docker tag $IMAGE_NAME $IMAGE_URI:latest
-
-      - name: Push image
-        run: |
-          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ vars.SB_REGISTRY_PROJECT_DEV }}/$IMAGE_NAME
           docker push $IMAGE_URI:latest
