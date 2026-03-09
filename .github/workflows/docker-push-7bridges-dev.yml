@@ -3,6 +3,7 @@ name: Build & Push Docker image (Seven Bridges)
 on:
   push:
     branches: ["docker-dev"]
+    tags: ["bdc-v*"]
   workflow_dispatch:
 
 permissions:
@@ -33,9 +34,7 @@ jobs:
           password: ${{ secrets.SB_REGISTRY_PASSWORD }}
 
       - name: Build Docker image
-        run: |
-          docker build -t dm-bip-env .
-          docker build -t $IMAGE_NAME .
+        run: docker build -t $IMAGE_NAME .
 
       - name: Tag image
         run: |
@@ -44,6 +43,5 @@ jobs:
 
       - name: Push image
         run: |
-          IMAGE_URI=${{ vars.SB_REGISTRY}}/${{ vars.SB_REGISTRY_USERNAME }}/${{ vars.SB_REGISTRY_PROJECT_DEV }}/$IMAGE_NAME
+          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ vars.SB_REGISTRY_PROJECT_DEV }}/$IMAGE_NAME
           docker push $IMAGE_URI:latest
-         
