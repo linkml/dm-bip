@@ -5,8 +5,13 @@ RUN := uv run
 # The pipeline consists of these steps:
 #   0. Prepare raw dbGaP files (New cleaning step)
 #   1. Create the schema with schema-automator
-#   2. Validate the data files with `linkml validate`
-#   3. Transform the data files with `linkml-map` (TODO)
+#   2. Validate the data files with `linkml validate` (supports parallel execution)
+#   3. Transform the data files with `linkml-map`
+#
+# PARALLEL EXECUTION:
+#   make -j 4 pipeline    # Validates up to 4 files concurrently
+#   make -j 8 pipeline    # Validates up to 8 files concurrently
+#   The mapping step will automatically wait for all validations to complete.
 
 # Primary configurable parameters:
 #
@@ -41,6 +46,8 @@ DM_MAPPING_PREFIX ?=
 DM_MAPPING_POSTFIX ?=
 DM_MAP_OUTPUT_TYPE ?= yaml
 DM_MAP_CHUNK_SIZE ?= 10000
+DM_MAP_STRICT ?= true
+DM_VALIDATE_STRICT ?=
 
 # --- Raw Data Preparation Variables ---
 # The raw directory containing .txt.gz files
@@ -146,6 +153,7 @@ Configured variables:
   DM_OUTPUT_DIR      = $(DM_OUTPUT_DIR)
   DM_ENUM_THRESHOLD  = $(DM_ENUM_THRESHOLD)
   DM_MAX_ENUM_SIZE   = $(DM_MAX_ENUM_SIZE)
+  DM_VALIDATE_STRICT = $(DM_VALIDATE_STRICT)
 
 Generated variables
   input files:                    $(if $(INPUT_FILES),$(INPUT_FILES),(none))
@@ -293,17 +301,6 @@ extract-conditions:
 	./src/dm_bip/cleaners/extract_conditions.sh $(input_file) $(COND_START_COL)
 
 
-.PHONY: annotate
-annotate:
-	@echo "** Annotate data file with ontology terms using config and input_file: $(input_file)"
-	@cmd="python harmonica/harmonize.py annotate \
-		--config config/config.yml \
-		--input_file $(input_file)"; \
-	if [ -n "$(output_dir)" ]; then cmd="$$cmd --output_dir $(output_dir)"; fi; \
-	if [ -n "$(refresh)" ]; then cmd="$$cmd --refresh"; fi; \
-	echo $$cmd; \
-	eval $$cmd
-
 
 # Schema Validator goals
 # ============
@@ -355,10 +352,13 @@ class_name_from_input = $(shell echo $(notdir $(basename $(1))) | tr '-' '_' | t
 #
 # If validation *has* run, then the only files that will be validated are ones that do not have the
 # $$SUCCESS_SYMLINK symlink created. Before validation is run again, the failure symlinks are removed.
+#
+# NOTE: This rule is safe for parallel execution. Each file creates its own log directory and symlinks.
+# The shared summary log is created by the sentinel target after all validations complete.
 $(DATA_VALIDATE_FILES_DIR)/%/success.log: $(call input_file_from_validation_log,%) $(SCHEMA_FILE)
 	@:$(call check_input_files)
 	@mkdir -p $(DATA_VALIDATE_FILES_DIR) $(DATA_VALIDATE_ERRORS_DIR)
-	@echo "Validating $< as class '$(call class_name_from_input,$<)'..." | tee -a $(DATA_VALIDATE_LOG)
+	@echo "Validating $< as class '$(call class_name_from_input,$<)'..."
 	@LOG_DIR=$(DATA_VALIDATE_FILES_DIR)/$*; \
 	FAILURE_DIR_SYMLINK=$(DATA_VALIDATE_ERRORS_DIR)/$*; \
 	LOG_FILENAME=$*.$(NOW).log; \
@@ -371,10 +371,10 @@ $(DATA_VALIDATE_FILES_DIR)/%/success.log: $(call input_file_from_validation_log,
 		--target-class $(call class_name_from_input,$<) \
 		$< > $$LOG_DIR/$$LOG_FILENAME 2>&1; \
 	then \
-		echo "  ✓ $< passed." | tee -a $(DATA_VALIDATE_LOG); \
+		echo "  ✓ $< passed."; \
 		ln -s $$LOG_FILENAME $$SUCCESS_SYMLINK; \
 	else \
-		echo "  ✗ $< failed. See $$FAILURE_DIR_SYMLINK/latest-error.log" | tee -a $(DATA_VALIDATE_LOG); \
+		echo "  ✗ $< failed. See $$FAILURE_DIR_SYMLINK/latest-error.log"; \
 		ln -s $$LOG_FILENAME $$FAILURE_SYMLINK; \
 		ln -s ../data-validation/$* $$FAILURE_DIR_SYMLINK; \
 	fi
@@ -384,22 +384,38 @@ $(VALIDATED_FILES_LIST):
 	mkdir -p $(@D)
 	echo $(INPUT_FILE_KEYS) | tr ' ' '\n' > $@
 
+# Sentinel target that waits for all validation tasks to complete
+# This creates the summary log after all parallel validations finish
 $(VALIDATION_SUCCESS_SENTINEL): $(VALIDATED_FILES_LIST) $(VALIDATE_SUCCESS_LOGS)
-	@echo
-	@echo "Data validation summary written to $(DATA_VALIDATE_LOG)"
-	@echo
-	@echo Validation complete.
-	@echo Number of input files: $$(cat $< | wc -l)
-	@NUM_FAILURES=$$(ls $(DATA_VALIDATE_ERRORS_DIR) | grep -F -f $< | wc -l); \
-	if [ $$NUM_FAILURES -gt 0 ]; then \
-		echo Number of files with validation errors: $$NUM_FAILURES; \
+	@mkdir -p $(VALIDATE_OUTPUT_DIR)
+	@{ \
 		echo; \
-		echo "Failing files:"; \
-		ls -1 $(DATA_VALIDATE_ERRORS_DIR) | grep -F -f $< | sed -e 's/^/    /'; \
+		echo "=== Data Validation Summary ==="; \
 		echo; \
-		echo "See $(DATA_VALIDATE_ERRORS_DIR) for error logs."; \
-		echo; \
+		echo "Validation complete."; \
+		echo "Number of input files: $$(cat $< | wc -l)"; \
+		NUM_FAILURES=$$(ls $(DATA_VALIDATE_ERRORS_DIR) 2>/dev/null | grep -F -f $< | wc -l); \
+		if [ $$NUM_FAILURES -gt 0 ]; then \
+			echo "Number of files with validation errors: $$NUM_FAILURES"; \
+			echo; \
+			echo "Failing files:"; \
+			ls -1 $(DATA_VALIDATE_ERRORS_DIR) | grep -F -f $< | sed -e 's/^/    /'; \
+			echo; \
+			echo "See $(DATA_VALIDATE_ERRORS_DIR) for error logs."; \
+			echo; \
+		else \
+			echo "All files validated successfully."; \
+			echo; \
+		fi; \
+	} > $(DATA_VALIDATE_LOG)
+	@cat $(DATA_VALIDATE_LOG)
+	@NUM_FAILURES=$$(ls $(DATA_VALIDATE_ERRORS_DIR) 2>/dev/null | grep -F -f $< | wc -l); \
+	if [ $$NUM_FAILURES -eq 0 ]; then \
+		touch $@; \
+	elif [ -n "$(DM_VALIDATE_STRICT)" ]; then \
+		exit 1; \
 	else \
+		echo "WARNING: Validation errors found but DM_VALIDATE_STRICT is not set — continuing."; \
 		touch $@; \
 	fi
 
@@ -440,6 +456,7 @@ $(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL)
 		$(if $(DM_MAPPING_POSTFIX),--output-postfix "$(DM_MAPPING_POSTFIX)") \
 		--output-type $(DM_MAP_OUTPUT_TYPE) \
 		--chunk-size $(DM_MAP_CHUNK_SIZE) \
+		$(if $(filter false,$(DM_MAP_STRICT)),--no-strict) \
 		2>&1 | tee $(MAPPING_LOG)
 	@echo "✓ Data mapping complete. Output written to $(MAPPING_OUTPUT_DIR)"
 	@echo "Mapping log written to $(MAPPING_LOG)"

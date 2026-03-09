@@ -13,10 +13,34 @@ Query GitHub for all relevant issues:
 gh issue list --repo linkml/dm-bip --state open --label "Tracking" --json number,title,state
 
 # Get all issues (open and closed) with tracking category labels
-gh issue list --repo linkml/dm-bip --state all --limit 200 --json number,title,state,labels,assignees | jq '[.[] | select(.labels | length > 0) | select(.labels[].name | test("Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|AI Integration|Audit Logs|Schema Explorer|Data Delivery"))]'
+# Excludes issues closed as NOT_PLANNED (duplicates, obsolete)
+gh issue list --repo linkml/dm-bip --state all --limit 200 --json number,title,state,stateReason,labels,assignees | jq '[.[] | select(.labels | length > 0) | select(.stateReason != "NOT_PLANNED") | select(.labels[].name | test("Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|AI Integration|Audit Logs|Schema Explorer|Data Delivery"))]'
 ```
 
-### 2. Parse Current DEVELOPMENT.md
+### 2. Triage Unlabeled Issues
+
+Check for open issues with no labels that would be invisible to the sync:
+
+```bash
+gh issue list --repo linkml/dm-bip --state open --limit 300 \
+  --json number,title,labels \
+  --jq '[.[] | select(.labels | length == 0)] | sort_by(.number) | .[] | "#\(.number)  \(.title)"'
+```
+
+For each unlabeled issue:
+1. Read the issue body (`gh issue view NUMBER`)
+2. Suggest a tracking label based on content:
+   - Stream/format/schema/mapping work → Pipeline Improvement
+   - BDC deployment, Docker, Seven Bridges, S3 → BDC Application
+   - DMC coordination, NHLBI-BDC-DMC-HV → DMC Integration
+   - Test coverage, linting, CI → Quality Control
+   - Versioning, releases, packaging → Release Control
+   - Data delivery, output QC → Data Delivery
+   - Not ready for current roadmap → Future
+3. Present suggestions to the user for approval before applying labels
+4. Apply approved labels, then re-run the step 1 query so they're included in the sync
+
+### 3. Parse Current DEVELOPMENT.md
 
 Read DEVELOPMENT.md and identify:
 - All issues currently in the GANTT chart (by issue number in parentheses)
@@ -25,12 +49,12 @@ Read DEVELOPMENT.md and identify:
 - All issues in the Project Outline
 - Their completion status ([x] or [ ])
 
-### 3. Identify Changes Needed
+### 4. Identify Changes Needed
 
 Compare GitHub state to DEVELOPMENT.md and categorize:
 
 **New issues to add:**
-- Issues in GitHub with tracking labels not in GANTT/Outline
+- Issues in GitHub with tracking labels not in GANTT/Outline (already filtered: NOT_PLANNED issues excluded in Step 1)
 - Determine which section based on label:
   - "Release Control" → section 1
   - "Data Delivery" → section 2
@@ -50,7 +74,7 @@ Compare GitHub state to DEVELOPMENT.md and categorize:
 - Issues without IDs in GANTT (need `i###` added)
 - Issues without click directives
 
-### 4. Date Handling Rules
+### 5. Date Handling Rules
 
 **Allowed automatic adjustments:**
 - Move start date EARLIER (sooner) - allowed
@@ -65,7 +89,7 @@ Compare GitHub state to DEVELOPMENT.md and categorize:
 - Use 8 week duration as default
 - Start date should begin after the last existing issue in that section ends
 
-### 5. Apply Changes
+### 6. Apply Changes
 
 **CRITICAL: Never modify section header lines!**
 - Section headers have significant trailing spaces (e.g., `section 1 `)
@@ -90,7 +114,7 @@ Compare GitHub state to DEVELOPMENT.md and categorize:
   - gnawhnehpets → Stephen
   - madanucd → Madan
 
-### 6. Report Changes
+### 7. Report Changes
 
 After applying changes, summarize:
 - Issues added (with sections)

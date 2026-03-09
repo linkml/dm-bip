@@ -1,7 +1,0 @@
-observation_type	associated_participant	value_quantity__value_decimal	value_quantity__unit
-OBA:VT0001253	COPDGene_R99999	181.0	cm
-OBA:VT0001259	COPDGene_R99999	81.5	kg
-OBA:2045455	COPDGene_R99999	24.88	kg/m2
-OBA:VT0001253	COPDGene_R99998	181.0	cm
-OBA:VT0001259	COPDGene_R99998	81.5	kg
-OBA:2045455	COPDGene_R99998	24.88	kg/m2
