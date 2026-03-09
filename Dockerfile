@@ -17,13 +17,14 @@ ENV PATH="/root/.local/bin:$PATH"
 
 WORKDIR /app
 
-# Copy dependency files first for layer caching
+# Copy dependency files and source package for layer caching
 COPY pyproject.toml uv.lock README.md ./
+COPY src/ src/
 
 # Install dependencies using uv
 RUN uv sync --frozen
 
-# Copy the rest of the source
+# Copy the rest (scripts, tests, configs, etc.)
 COPY . ./
 
 # Clone external repos (shallow, single layer)
