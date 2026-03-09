@@ -23,4 +23,4 @@ jobs:
         run: docker build -t dm-bip-env .
 
       - name: Run smoke test
-        run: docker run --rm dm-bip-env uv run pytest -x -q --tb=short
+        run: docker run --rm dm-bip-env uv run pytest tests/ -x -q --tb=short
