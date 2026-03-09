@@ -169,9 +169,8 @@ def process_entities(
     chunk_size=1000,
     strict=True,
 ) -> None:
-    """Process each entity and write transformed output."""
+    """Process each entity and write to output files."""
     start = time.perf_counter()
-
     for entity in entities:
         spec_files = get_spec_files(var_dir, f"^    {entity}:")
         if not spec_files:
