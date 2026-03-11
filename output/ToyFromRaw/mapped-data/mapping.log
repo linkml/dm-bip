@@ -1,18 +1,18 @@
-2026-03-11 11:33:49,606 - __main__ - INFO - Discovered entities: ['Condition', 'Demography', 'MeasurementObservation', 'Observation', 'Participant']
-2026-03-11 11:33:49,616 - __main__ - INFO - Starting Condition
-2026-03-11 11:33:49,617 - __main__ - INFO - Processing spec file: conditions
-2026-03-11 11:33:49,726 - __main__ - INFO - Condition Complete
-2026-03-11 11:33:49,732 - __main__ - INFO - Starting Demography
-2026-03-11 11:33:49,733 - __main__ - INFO - Processing spec file: demography
-2026-03-11 11:33:49,784 - __main__ - INFO - Demography Complete
-2026-03-11 11:33:49,789 - __main__ - INFO - Starting MeasurementObservation
-2026-03-11 11:33:49,789 - __main__ - INFO - Processing spec file: longitudinal
-2026-03-11 11:33:49,970 - __main__ - INFO - Processing spec file: measurements
-2026-03-11 11:33:50,324 - __main__ - INFO - MeasurementObservation Complete
-2026-03-11 11:33:50,331 - __main__ - INFO - Starting Observation
-2026-03-11 11:33:50,331 - __main__ - INFO - Processing spec file: observations
-2026-03-11 11:33:50,415 - __main__ - INFO - Observation Complete
-2026-03-11 11:33:50,420 - __main__ - INFO - Starting Participant
-2026-03-11 11:33:50,421 - __main__ - INFO - Processing spec file: participant
-2026-03-11 11:33:50,477 - __main__ - INFO - Participant Complete
-2026-03-11 11:33:50,477 - __main__ - INFO - Time: 0.87 seconds
+2026-03-11 13:37:19,291 - __main__ - INFO - Discovered entities: ['Condition', 'Demography', 'MeasurementObservation', 'Observation', 'Participant']
+2026-03-11 13:37:19,300 - __main__ - INFO - Starting Condition
+2026-03-11 13:37:19,301 - __main__ - INFO - Processing spec file: conditions
+2026-03-11 13:37:19,408 - __main__ - INFO - Condition Complete
+2026-03-11 13:37:19,414 - __main__ - INFO - Starting Demography
+2026-03-11 13:37:19,415 - __main__ - INFO - Processing spec file: demography
+2026-03-11 13:37:19,467 - __main__ - INFO - Demography Complete
+2026-03-11 13:37:19,475 - __main__ - INFO - Starting MeasurementObservation
+2026-03-11 13:37:19,476 - __main__ - INFO - Processing spec file: longitudinal
+2026-03-11 13:37:19,657 - __main__ - INFO - Processing spec file: measurements
+2026-03-11 13:37:20,006 - __main__ - INFO - MeasurementObservation Complete
+2026-03-11 13:37:20,013 - __main__ - INFO - Starting Observation
+2026-03-11 13:37:20,013 - __main__ - INFO - Processing spec file: observations
+2026-03-11 13:37:20,095 - __main__ - INFO - Observation Complete
+2026-03-11 13:37:20,102 - __main__ - INFO - Starting Participant
+2026-03-11 13:37:20,102 - __main__ - INFO - Processing spec file: participant
+2026-03-11 13:37:20,156 - __main__ - INFO - Participant Complete
+2026-03-11 13:37:20,156 - __main__ - INFO - Time: 0.86 seconds

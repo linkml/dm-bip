@@ -3,9 +3,10 @@
 
 Validation complete.
 Number of input files:        4
-Number of files with validation errors:        1
+Number of files with validation errors:        2
 
 Failing files:
+    pht000001.tsv
     pht000003.tsv
 
 See output/ToyFromRaw/validation-logs/data-validation-errors for error logs.
