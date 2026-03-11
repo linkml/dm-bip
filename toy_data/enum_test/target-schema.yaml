@@ -1,0 +1,30 @@
+name: EnumTestTarget
+description: Target schema with enums for testing enum derivations
+id: https://w3id.org/EnumTestTarget
+prefixes:
+  linkml: https://w3id.org/linkml/
+  target: https://w3id.org/EnumTestTarget/
+imports:
+  - linkml:types
+default_prefix: target
+default_range: string
+
+enums:
+  target_sex_enum:
+    permissible_values:
+      OMOP:8507:
+        description: Male
+      OMOP:8532:
+        description: Female
+
+classes:
+  Person:
+    attributes:
+      id:
+        identifier: true
+      gender:
+        range: target_sex_enum
+      race:
+      ethnicity:
+      age:
+        range: integer

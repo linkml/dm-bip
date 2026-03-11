@@ -1,0 +1,28 @@
+- class_derivations:
+    Person:
+      populated_from: demographics
+      slot_derivations:
+        id:
+          populated_from: subject_id
+        gender:
+          populated_from: sex
+        race:
+          populated_from: race
+        ethnicity:
+          populated_from: ethnicity
+        age:
+          populated_from: age
+  enum_derivations:
+    target_sex_enum:
+      populated_from: sex_enum
+      permissible_value_derivations:
+        OMOP:8507:
+          populated_from: Male
+        OMOP:8532:
+          populated_from: Female
+    ethnicity_enum:
+      populated_from: ethnicity_enum
+      mirror_source: true
+    smoking_status_enum:
+      populated_from: smoking_status_enum
+      mirror_source: true
