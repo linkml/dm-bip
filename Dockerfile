@@ -34,4 +34,7 @@ COPY Dockerfile /Dockerfile.archived
 RUN git clone --depth 1 --branch v1.1.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
     git clone --depth 1 https://github.com/amc-corey-cox/bdc-harmonized-variables.git
 
+ARG BDC_PULL_LATEST=false
+ENV BDC_PULL_LATEST=${BDC_PULL_LATEST}
+
 CMD ["uv", "run", "dm-bip", "run"]

@@ -36,8 +36,17 @@ jobs:
           username: ${{ vars.SB_REGISTRY_USERNAME }}
           password: ${{ secrets.SB_REGISTRY_PASSWORD }}
 
+      - name: Set build args for dev vs release
+        id: build-config
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/docker-dev" ]]; then
+            echo "pull_latest=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "pull_latest=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build, tag, and push image
         run: |
-          docker build -t $IMAGE_NAME .
+          docker build --build-arg BDC_PULL_LATEST=${{ steps.build-config.outputs.pull_latest }} -t $IMAGE_NAME .
           docker tag $IMAGE_NAME $IMAGE_URI:latest
           docker push $IMAGE_URI:latest
