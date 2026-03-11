@@ -1,5 +1,0 @@
-2026-03-11 13:37:07,115 - __main__ - INFO - Discovered entities: ['Person']
-2026-03-11 13:37:07,121 - __main__ - INFO - Starting Person
-2026-03-11 13:37:07,121 - __main__ - INFO - Processing spec file: person-spec
-2026-03-11 13:37:07,230 - __main__ - INFO - Person Complete
-2026-03-11 13:37:07,230 - __main__ - INFO - Time: 0.12 seconds

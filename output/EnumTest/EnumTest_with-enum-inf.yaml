@@ -36,8 +36,6 @@ enums:
   smoking_status_enum:
     from_schema: https://w3id.org/EnumTest
     permissible_values:
-      Former:
-        description: Former
       Never:
         description: Never
       '2':
@@ -46,6 +44,8 @@ enums:
         description: Unknown
       '1':
         description: '1'
+      Former:
+        description: Former
   asthma_enum:
     from_schema: https://w3id.org/EnumTest
     permissible_values:

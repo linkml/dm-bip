@@ -7,88 +7,6 @@ prefixes:
   linkml: https://w3id.org/linkml/
   EnumTest: https://w3id.org/EnumTest
 default_prefix: EnumTest
-enums:
-  pain_severity_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      Moderate:
-        description: Moderate
-      Mild:
-        description: Mild
-      Severe:
-        description: Severe
-      None:
-        description: None
-  sex_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      Female:
-        description: Female
-      Male:
-        description: Male
-  ethnicity_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      Hispanic or Latino:
-        description: Hispanic or Latino
-      Not Hispanic or Latino:
-        description: Not Hispanic or Latino
-  smoking_status_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      Former:
-        description: Former
-      Never:
-        description: Never
-      '2':
-        description: '2'
-      Unknown:
-        description: Unknown
-      '1':
-        description: '1'
-  asthma_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      'Yes':
-        description: 'Yes'
-      'No':
-        description: 'No'
-  stroke_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      'Yes':
-        description: 'Yes'
-      'No':
-        description: 'No'
-  heart_disease_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      'Yes':
-        description: 'Yes'
-      'No':
-        description: 'No'
-  diabetes_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      'Yes':
-        description: 'Yes'
-      'No':
-        description: 'No'
-  consent_codes_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      open:
-        description: open
-  study.id_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      STUDY001:
-        description: STUDY001
-  project.id_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      PROJ001:
-        description: PROJ001
 slots:
   subject_id:
     examples:
@@ -120,12 +38,12 @@ slots:
     examples:
     - value: Severe
     from_schema: https://w3id.org/EnumTest
-    range: pain_severity_enum
+    range: string
   sex:
     examples:
     - value: Male
     from_schema: https://w3id.org/EnumTest
-    range: sex_enum
+    range: string
   race:
     examples:
     - value: Asian
@@ -135,7 +53,7 @@ slots:
     examples:
     - value: Not Hispanic or Latino
     from_schema: https://w3id.org/EnumTest
-    range: ethnicity_enum
+    range: string
   age:
     examples:
     - value: '45'
@@ -145,7 +63,7 @@ slots:
     examples:
     - value: Unknown
     from_schema: https://w3id.org/EnumTest
-    range: smoking_status_enum
+    range: string
   cohort:
     examples:
     - value: '1'
@@ -301,37 +219,37 @@ slots:
     examples:
     - value: 'No'
     from_schema: https://w3id.org/EnumTest
-    range: asthma_enum
+    range: string
   stroke:
     examples:
     - value: 'No'
     from_schema: https://w3id.org/EnumTest
-    range: stroke_enum
+    range: string
   heart_disease:
     examples:
     - value: 'No'
     from_schema: https://w3id.org/EnumTest
-    range: heart_disease_enum
+    range: string
   diabetes:
     examples:
     - value: 'No'
     from_schema: https://w3id.org/EnumTest
-    range: diabetes_enum
+    range: string
   consent_codes:
     examples:
     - value: open
     from_schema: https://w3id.org/EnumTest
-    range: consent_codes_enum
+    range: string
   study.id:
     examples:
     - value: STUDY001
     from_schema: https://w3id.org/EnumTest
-    range: study.id_enum
+    range: string
   project.id:
     examples:
     - value: PROJ001
     from_schema: https://w3id.org/EnumTest
-    range: project.id_enum
+    range: string
   participant.id:
     examples:
     - value: NA18620

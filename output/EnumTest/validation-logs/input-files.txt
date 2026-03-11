@@ -1,5 +1,0 @@
-demographics.tsv
-longitudinal.tsv
-clinical.tsv
-study.tsv
-subject.tsv

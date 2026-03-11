@@ -15,17 +15,17 @@ enums:
         description: Moderate
       Mild:
         description: Mild
-      Severe:
-        description: Severe
       None:
         description: None
+      Severe:
+        description: Severe
   sex_enum:
     from_schema: https://w3id.org/EnumTest
     permissible_values:
-      Female:
-        description: Female
       Male:
         description: Male
+      Female:
+        description: Female
   ethnicity_enum:
     from_schema: https://w3id.org/EnumTest
     permissible_values:
@@ -33,47 +33,34 @@ enums:
         description: Hispanic or Latino
       Not Hispanic or Latino:
         description: Not Hispanic or Latino
-  smoking_status_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      Former:
-        description: Former
-      Never:
-        description: Never
-      '2':
-        description: '2'
-      Unknown:
-        description: Unknown
-      '1':
-        description: '1'
   asthma_enum:
     from_schema: https://w3id.org/EnumTest
     permissible_values:
-      'Yes':
-        description: 'Yes'
       'No':
         description: 'No'
+      'Yes':
+        description: 'Yes'
   stroke_enum:
     from_schema: https://w3id.org/EnumTest
     permissible_values:
-      'Yes':
-        description: 'Yes'
       'No':
         description: 'No'
+      'Yes':
+        description: 'Yes'
   heart_disease_enum:
     from_schema: https://w3id.org/EnumTest
     permissible_values:
-      'Yes':
-        description: 'Yes'
       'No':
         description: 'No'
+      'Yes':
+        description: 'Yes'
   diabetes_enum:
     from_schema: https://w3id.org/EnumTest
     permissible_values:
-      'Yes':
-        description: 'Yes'
       'No':
         description: 'No'
+      'Yes':
+        description: 'Yes'
   consent_codes_enum:
     from_schema: https://w3id.org/EnumTest
     permissible_values:
@@ -145,7 +132,9 @@ slots:
     examples:
     - value: Unknown
     from_schema: https://w3id.org/EnumTest
-    range: smoking_status_enum
+    any_of:
+    - range: integer
+    - range: string
   cohort:
     examples:
     - value: '1'
