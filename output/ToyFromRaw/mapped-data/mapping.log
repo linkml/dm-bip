@@ -1,0 +1,18 @@
+2026-03-10 09:24:59,111 - __main__ - INFO - Discovered entities: ['Condition', 'Demography', 'MeasurementObservation', 'Observation', 'Participant']
+2026-03-10 09:24:59,129 - __main__ - INFO - Starting Condition
+2026-03-10 09:24:59,130 - __main__ - INFO - Processing spec file: conditions
+2026-03-10 09:24:59,270 - __main__ - INFO - Condition Complete
+2026-03-10 09:24:59,283 - __main__ - INFO - Starting Demography
+2026-03-10 09:24:59,283 - __main__ - INFO - Processing spec file: demography
+2026-03-10 09:24:59,336 - __main__ - INFO - Demography Complete
+2026-03-10 09:24:59,345 - __main__ - INFO - Starting MeasurementObservation
+2026-03-10 09:24:59,346 - __main__ - INFO - Processing spec file: longitudinal
+2026-03-10 09:24:59,535 - __main__ - INFO - Processing spec file: measurements
+2026-03-10 09:24:59,892 - __main__ - INFO - MeasurementObservation Complete
+2026-03-10 09:24:59,900 - __main__ - INFO - Starting Observation
+2026-03-10 09:24:59,900 - __main__ - INFO - Processing spec file: observations
+2026-03-10 09:24:59,985 - __main__ - INFO - Observation Complete
+2026-03-10 09:24:59,994 - __main__ - INFO - Starting Participant
+2026-03-10 09:24:59,995 - __main__ - INFO - Processing spec file: participant
+2026-03-10 09:25:00,052 - __main__ - INFO - Participant Complete
+2026-03-10 09:25:00,052 - __main__ - INFO - Time: 0.94 seconds
