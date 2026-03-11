@@ -8,15 +8,27 @@
 
 ## Our understanding of the task
 
-LinkML-Map supports a top-level `enum_derivations` section in transformation specs
-(alongside `class_derivations`). This provides a formal way to map source enum values
-to target enum values. Currently **no specs in dm-bip use `enum_derivations`** — all
-categorical value mapping is done via inline `value_mappings` inside `slot_derivations`.
+There are two parts to "enum derivations":
 
-The issue asks us to:
-1. **Verify** that `enum_derivations` work through the dm-bip pipeline end-to-end
-2. **Provide a model** (example specs) that curators can follow when writing enum
-   derivations for real data
+1. **Schema-automator infers enums from data.** When it scans a column like
+   `pain_severity` with values `None`, `Mild`, `Moderate`, `Severe`, it can create an
+   enum type with those as permissible values in the source schema. The pipeline
+   currently disables this inference.
+
+2. **LinkML-Map `enum_derivations`** are a feature in transformation specs that map
+   source schema enums to target schema enums — a top-level `enum_derivations:` section
+   alongside `class_derivations:`. Currently **no specs in dm-bip use
+   `enum_derivations`**; all categorical value mapping uses inline `value_mappings`
+   inside `slot_derivations`.
+
+Per conversation with Corey (2026-03-11): the first step is exploratory — **test
+whether LinkML-Map can actually handle enum derivations at all**. Corey suspects it
+may not work. If it doesn't, the work shifts to wherever the gap is (could be
+linkml-map, schema-automator, dm-bip, or the trans-specs). Eventually, `enum_derivations`
+would replace the inline `value_mappings` approach, but that's future work.
+
+(Note: Anne's interpretation — validating/reporting unmapped values in existing
+`value_mappings` — is a different issue.)
 
 ## What exists today
 
@@ -120,79 +132,80 @@ Key features:
 - **`mirror_source: false`** (the default) — Source values without an explicit mapping
   are dropped. Only mapped values appear in the output.
 
-## Proposed plan
+## Proposed plan: build a minimal test case
 
-### 1. Add enums to the target schema?
+### Why pre_cleaned, not from_raw
 
-`target-schema.yaml` currently has no enums — fields like `sex`, `race`, `ethnicity`
-are just strings (via `default_range: string`). Enum derivations map source enums to
-*target* enums, so we may need to add enum definitions to the target schema first
-(e.g., a `target_sex_enum` with permissible values `OMOP:8507`, `OMOP:8532`).
+The [pre_cleaned data](toy_data/data/pre_cleaned/) has human-readable categorical
+values (`Male`, `Female`, `White`, `None`/`Mild`/`Moderate`/`Severe`). Schema-automator
+can infer enums from these.
 
-**Question for team:** Do enum derivations require the target schema to have formal
-enum definitions? Or can they produce mapped values into string-typed fields?
+The [from_raw prepared data](output/ToyFromRaw/prepared/) keeps coded values (`1`, `2`,
+`3`) that schema-automator sees as integers, not enums. The decode tables
+(`1` → `Male`) live in [`generate_toy_data.py`](toy_data/create/generate_toy_data.py),
+not in the raw data itself. So enum derivations aren't useful for the from_raw path —
+those coded values will continue to need inline `value_mappings`.
 
-### 2. Create example enum derivation specs for the toy data
+### Steps
 
-Add `enum_derivations` sections to the toy data transformation specs
-(see existing specs: [`demography.yaml`](toy_data/from_raw/specs/demography.yaml),
-[`observations.yaml`](toy_data/from_raw/specs/observations.yaml),
-[`conditions.yaml`](toy_data/from_raw/specs/conditions.yaml),
-[`measurements.yaml`](toy_data/from_raw/specs/measurements.yaml),
+#### 1. Re-generate the source schema with enum inference enabled
+
+Re-run schema-automator on the pre_cleaned TSVs with `--enum-threshold 0.1
+--max-enum-size 50` so the source schema has enum definitions (like `sex_enum`
+with `Male`/`Female`).
+
+#### 2. Add enums to the target schema
+
+[`target-schema.yaml`](toy_data/target-schema.yaml) currently has no enums — fields
+default to string. We probably need to add target enum definitions (e.g.,
+`target_sex_enum` with `OMOP:8507`/`OMOP:8532`) so enum derivations have something to
+map *to*.
+
+**Question for team:** Do enum derivations require formal enums in the target schema,
+or can they produce mapped values into string-typed fields?
+
+#### 3. Write a transformation spec with `enum_derivations`
+
+Add `enum_derivations` alongside `class_derivations` in a pre_cleaned spec. Start with
+the simplest case — `sex` mapping `Male`/`Female` to OMOP codes.
+
+See existing specs:
 [`person-spec.yaml`](toy_data/pre_cleaned/specs/person-spec.yaml),
-[`participant-spec.yaml`](toy_data/pre_cleaned/specs/participant-spec.yaml)).
+[`participant-spec.yaml`](toy_data/pre_cleaned/specs/participant-spec.yaml).
 
-The "source enum" column in the table below refers to enums in
-[`ToySchema.yaml`](toy_data/schema-automator-data/ToySchema.yaml), which was
-auto-generated by schema-automator from the pre_cleaned TSVs. However, the pipeline
-disables enum inference by default, so these enums wouldn't exist in a normal pipeline
-run — see open question #2 below.
+Good candidates for enum derivations:
 
-Good candidates:
-
-| Source field | Source enum | Target field | Target values |
+| Source field | Source enum (inferred) | Target field | Target values |
 |---|---|---|---|
-| sex (demographics) | sex_enum (Male/Female) | Demography.sex | OMOP:8507 / OMOP:8532 |
-| race (demographics) | race_enum | Demography.race | OMOP codes |
-| ethnicity (demographics) | ethnicity_enum | Demography.ethnicity | OMOP codes |
-| current_smoker_baseline | current_smoker_baseline_enum (Yes/No) | Demography.smoking_status | OMOP codes |
-| asthma (subject) | asthma_enum (Yes/No) | Condition.condition_status | PRESENT/ABSENT |
-| pain_severity ([clinical.tsv](toy_data/data/pre_cleaned/clinical.tsv)) | (not yet an enum) | Observation/Quantity.value_concept | OMOP codes |
+| sex ([demographics.tsv](toy_data/data/pre_cleaned/demographics.tsv)) | sex_enum (Male/Female) | Person.gender | OMOP:8507 / OMOP:8532 |
+| race (demographics.tsv) | race_enum | Person.race | OMOP codes |
+| ethnicity (demographics.tsv) | ethnicity_enum | Person.ethnicity | OMOP codes |
+| pain_severity ([clinical.tsv](toy_data/data/pre_cleaned/clinical.tsv)) | pain_severity_enum (None/Mild/Moderate/Severe) | (needs target mapping) | OMOP codes |
 
-### 3. Verify end-to-end pipeline execution
+#### 4. Run the mapping and see what happens
 
-Run `make pipeline` with specs that include `enum_derivations` and confirm:
-- linkml-map processes them correctly
-- Output data has the expected transformed enum values
-- No errors from the `map_data` step
+Run `make pipeline CONFIG=toy_data/pre_cleaned/config.mk` (with enum inference enabled)
+and see if LinkML-Map handles the `enum_derivations`. This is the core test — Corey
+suspects it may fail.
 
-### 4. Document the pattern for curators
+#### 5. If it fails, diagnose and fix
 
-Provide a clear example spec that curators can copy and adapt, showing:
-- How to write `enum_derivations` alongside `class_derivations`
-- One-to-one mappings (`populated_from`)
-- Many-to-one mappings (`sources`)
-- When to use `mirror_source`
+The fix could be in linkml-map, schema-automator, dm-bip's
+[`map_data`](src/dm_bip/map_data/) module, or the trans-specs. Per Corey: "I end up
+working wherever the gap is."
 
 ## Open questions
 
-1. **Target schema enums:** Should we add enum definitions to the target schema, or
-   are enum derivations meant to work with string-typed target fields?
+1. **Target schema enums:** Do enum derivations require formal enum definitions in the
+   target schema, or can they map into string-typed fields?
 
-2. **Source schema generation:** The pipeline disables enum inference by default. Do
-   enum derivations require the source schema to have formal enums, or can they work
-   with string-typed source fields too? If they require source enums, should we change
-   the pipeline defaults?
+2. **Source schema enums:** Does the source schema need formal enums for
+   `enum_derivations` to work, or can they work with string-typed source fields?
 
-3. **Coexistence with value_mappings:** Can `enum_derivations` and inline
-   `value_mappings` coexist in the same spec? Should we migrate existing
-   `value_mappings` to `enum_derivations`, or are they complementary (enums for
-   categorical data, value_mappings for coded numeric lookups like `'1': OMOP:8507`)?
+3. **Coexistence:** Can `enum_derivations` and inline `value_mappings` coexist in the
+   same spec? (The from_raw path will still need `value_mappings` for coded numeric
+   values like `'1'` → `OMOP:8507`.)
 
-4. **Scope:** Is this just about the toy data, or should we also create examples for
-   the `from_raw` pipeline path (where source values are coded numbers like `'1'`,
-   `'2'` rather than human-readable strings)?
-
-5. **Pipeline changes needed?** Does [`src/dm_bip/map_data/`](src/dm_bip/map_data/) need any changes to pass
-   `enum_derivations` through to linkml-map, or does it already handle them
-   transparently?
+4. **Pipeline changes:** Does [`src/dm_bip/map_data/`](src/dm_bip/map_data/) need
+   changes to pass `enum_derivations` through to linkml-map, or does it already handle
+   them transparently?
