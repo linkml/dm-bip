@@ -2,7 +2,7 @@ name: Build & Push Docker image (Seven Bridges)
 
 on:
   push:
-    branches: ["docker-dev"]
+    branches: ["docker-dev", "docker-push-7bridges"]
     tags: ["bdc-v*"]
   workflow_dispatch:
 
