@@ -1,0 +1,551 @@
+persons:
+- age: 40
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1001
+  race: White
+- age: 62
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1002
+  race: White
+- age: 38
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1003
+  race: White
+- age: 70
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1004
+  race: American Indian or Alaska Native
+- age: 62
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1005
+  race: Black or African American
+- age: 46
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1006
+  race: Black or African American
+- age: 31
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1007
+  race: Black or African American
+- age: 79
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1008
+  race: White
+- age: 59
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1009
+  race: White
+- age: 78
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1010
+  race: White
+- age: 70
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1011
+  race: American Indian or Alaska Native
+- age: 30
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1012
+  race: Black or African American
+- age: 54
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1013
+  race: Native Hawaiian or Other Pacific Islander
+- age: 38
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1014
+  race: Asian
+- age: 59
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1015
+  race: American Indian or Alaska Native
+- age: 42
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1016
+  race: Native Hawaiian or Other Pacific Islander
+- age: 39
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1017
+  race: Asian
+- age: 29
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1018
+  race: Native Hawaiian or Other Pacific Islander
+- age: 50
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1019
+  race: Black or African American
+- age: 40
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1020
+  race: Asian
+- age: 62
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1021
+  race: American Indian or Alaska Native
+- age: 57
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1022
+  race: Black or African American
+- age: 34
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1023
+  race: White
+- age: 49
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1024
+  race: American Indian or Alaska Native
+- age: 60
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1025
+  race: American Indian or Alaska Native
+- age: 74
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1026
+  race: American Indian or Alaska Native
+- age: 35
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1027
+  race: Asian
+- age: 57
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1028
+  race: Asian
+- age: 34
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1029
+  race: American Indian or Alaska Native
+- age: 63
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1030
+  race: American Indian or Alaska Native
+- age: 48
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1031
+  race: White
+- age: 61
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1032
+  race: White
+- age: 73
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1033
+  race: Native Hawaiian or Other Pacific Islander
+- age: 60
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1034
+  race: Black or African American
+- age: 38
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1035
+  race: American Indian or Alaska Native
+- age: 67
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1036
+  race: Asian
+- age: 32
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1037
+  race: American Indian or Alaska Native
+- age: 26
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1038
+  race: White
+- age: 25
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1039
+  race: American Indian or Alaska Native
+- age: 27
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1040
+  race: Black or African American
+- age: 42
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1041
+  race: American Indian or Alaska Native
+- age: 71
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1042
+  race: American Indian or Alaska Native
+- age: 76
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1043
+  race: Black or African American
+- age: 67
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1044
+  race: White
+- age: 54
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1045
+  race: Native Hawaiian or Other Pacific Islander
+- age: 71
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1046
+  race: White
+- age: 37
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1047
+  race: Black or African American
+- age: 36
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1048
+  race: Black or African American
+- age: 53
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1049
+  race: Black or African American
+- age: 30
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1050
+  race: White
+- age: 55
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1051
+  race: Native Hawaiian or Other Pacific Islander
+- age: 49
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1052
+  race: White
+- age: 43
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1053
+  race: Asian
+- age: 43
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1054
+  race: Black or African American
+- age: 72
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1055
+  race: American Indian or Alaska Native
+- age: 57
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1056
+  race: White
+- age: 79
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1057
+  race: White
+- age: 68
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1058
+  race: American Indian or Alaska Native
+- age: 62
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1059
+  race: White
+- age: 51
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1060
+  race: American Indian or Alaska Native
+- age: 67
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1061
+  race: Asian
+- age: 33
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1062
+  race: Asian
+- age: 25
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1063
+  race: Asian
+- age: 57
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1064
+  race: White
+- age: 40
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1065
+  race: Asian
+- age: 78
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1066
+  race: Black or African American
+- age: 67
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1067
+  race: American Indian or Alaska Native
+- age: 41
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1068
+  race: White
+- age: 42
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1069
+  race: American Indian or Alaska Native
+- age: 68
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1070
+  race: Asian
+- age: 30
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1071
+  race: Asian
+- age: 46
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1072
+  race: White
+- age: 60
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1073
+  race: Black or African American
+- age: 69
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1074
+  race: White
+- age: 52
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1075
+  race: Asian
+- age: 75
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1076
+  race: Asian
+- age: 67
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1077
+  race: Black or African American
+- age: 64
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1078
+  race: American Indian or Alaska Native
+- age: 51
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1079
+  race: Black or African American
+- age: 76
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1080
+  race: Asian
+- age: 49
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1081
+  race: Black or African American
+- age: 77
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1082
+  race: Black or African American
+- age: 39
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1083
+  race: Asian
+- age: 42
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1084
+  race: Native Hawaiian or Other Pacific Islander
+- age: 68
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1085
+  race: Asian
+- age: 41
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1086
+  race: White
+- age: 63
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1087
+  race: White
+- age: 63
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1088
+  race: Asian
+- age: 41
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1089
+  race: Native Hawaiian or Other Pacific Islander
+- age: 48
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1090
+  race: White
+- age: 67
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1091
+  race: Asian
+- age: 67
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1092
+  race: American Indian or Alaska Native
+- age: 60
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1093
+  race: Native Hawaiian or Other Pacific Islander
+- age: 68
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1094
+  race: Native Hawaiian or Other Pacific Islander
+- age: 44
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1095
+  race: Native Hawaiian or Other Pacific Islander
+- age: 54
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1096
+  race: Native Hawaiian or Other Pacific Islander
+- age: 75
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1097
+  race: Black or African American
+- age: 30
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1098
+  race: Asian
+- age: 34
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1099
+  race: Black or African American
+- age: 64
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1100
+  race: Black or African American
+- age: 70
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1101
+  race: Native Hawaiian or Other Pacific Islander
+- age: 34
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1102
+  race: Native Hawaiian or Other Pacific Islander
+- age: 36
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8507
+  id: 1103
+  race: Native Hawaiian or Other Pacific Islander
+- age: 79
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1104
+  race: White
+- age: 67
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1105
+  race: Black or African American
+- age: 78
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1106
+  race: Native Hawaiian or Other Pacific Islander
+- age: 53
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8532
+  id: 1107
+  race: Black or African American
+- age: 65
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1108
+  race: Asian
+- age: 70
+  ethnicity: Hispanic or Latino
+  gender: OMOP:8532
+  id: 1109
+  race: Native Hawaiian or Other Pacific Islander
+- age: 45
+  ethnicity: Not Hispanic or Latino
+  gender: OMOP:8507
+  id: 1110
+  race: Asian

@@ -1,0 +1,94 @@
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/0] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/0] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/2] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/2] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/6] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/6] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/8] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/8] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/10] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/10] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/11] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/11] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/14] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/14] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/16] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/16] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/17] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/17] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/22] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/22] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/24] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/24] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/27] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/27] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/31] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/31] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/33] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/33] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/36] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/36] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/38] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/38] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/44] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/44] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/49] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/49] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/50] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/50] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/51] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/51] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/53] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/53] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/56] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/56] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/57] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/57] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/67] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/67] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/71] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/71] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/73] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/73] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/74] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/74] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/75] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/75] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/76] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/76] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/77] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/77] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/78] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/78] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/79] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/79] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/80] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/80] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/82] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/82] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/83] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/83] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/85] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/85] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/88] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/88] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/90] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/90] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/92] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/92] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/93] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/93] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/96] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/96] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/97] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/97] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/98] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/98] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/99] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/99] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/101] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/101] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/103] 1 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/103] 1 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/107] 2 is not of type 'string' in /smoking_status
+[ERROR] [toy_data/data/pre_cleaned/demographics.tsv/107] 2 is not one of ['2', 'Former', '1', 'Unknown', 'Never'] in /smoking_status
