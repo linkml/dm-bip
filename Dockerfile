@@ -24,10 +24,6 @@ COPY src/ src/
 # Install dependencies using uv
 RUN uv sync --frozen
 
-# Clone the repos
-RUN git clone --branch v1.1.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git
-RUN git clone --branch v1.0.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git
-
 # Copy the rest (scripts, tests, configs, etc.)
 COPY . ./
 
