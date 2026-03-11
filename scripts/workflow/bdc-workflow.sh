@@ -49,10 +49,12 @@ if [[ "${BDC_PULL_LATEST:-false}" == "true" ]]; then
   for repo in /app/bdc-harmonized-variables /app/NHLBI-BDC-DMC-HM; do
     if [[ -d "$repo/.git" ]]; then
       echo "  Updating $(basename "$repo")..."
-      git -C "$repo" pull --ff-only
+      if ! git -C "$repo" pull --ff-only 2>&1; then
+        echo "  WARNING: Failed to pull $(basename "$repo"), continuing with build-time version"
+      fi
     fi
   done
-  echo "✓ Repos updated"
+  echo "✓ Repo update check complete"
 fi
 
 #------------------------------------------------------------------------------
