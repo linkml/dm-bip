@@ -26,7 +26,7 @@ Hand-maintained files (not generated here):
 Column types exercised:
   - Pure numeric (most fields)
   - Pure text categorical (PAIN_SEVERITY: None/Mild/Moderate/Severe)
-  - Pure text categorical (SMOKING: Current/Former/Never/Unknown)
+  - Mixed text+numeric (SMOKING: integer codes 1/2 and text Former/Never/Unknown)
   - Dipstick-style mixed (URINE_ALBUMIN: NEGATIVE/TRACE/10/30/100/300)
   - Longitudinal multi-visit (same measurement across visits)
   - Cohort indicator for case() routing
@@ -107,7 +107,7 @@ def _generate_demographics():
         race = random.choice([1, 2, 3, 4, 5])
         ethnicity = random.choice([1, 0])
         age = random.randint(25, 80)
-        smoking = random.choice(["Current", "Former", "Never", "Unknown"])
+        smoking = random.choice([1, 2, "Former", "Never", "Unknown"])
 
         raw_rows.append((subject_id, [subject_id, sex, race, ethnicity, age, smoking]))
         clean_rows.append([

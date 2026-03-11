@@ -1,111 +1,111 @@
 subject_id	sex	race	ethnicity	age	smoking_status
-1001	Male	White	Not Hispanic or Latino	40	Former
-1002	Male	White	Hispanic or Latino	62	Unknown
-1003	Male	White	Hispanic or Latino	38	Former
+1001	Male	White	Not Hispanic or Latino	40	2
+1002	Male	White	Hispanic or Latino	62	Never
+1003	Male	White	Hispanic or Latino	38	2
 1004	Male	American Indian or Alaska Native	Hispanic or Latino	70	Unknown
-1005	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	76	Current
-1006	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	42	Former
-1007	Male	Asian	Hispanic or Latino	30	Unknown
-1008	Male	Asian	Not Hispanic or Latino	63	Never
-1009	Male	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	49	Current
-1010	Female	American Indian or Alaska Native	Not Hispanic or Latino	61	Former
-1011	Male	White	Hispanic or Latino	74	Never
-1012	Male	Black or African American	Hispanic or Latino	49	Never
-1013	Female	Asian	Hispanic or Latino	48	Never
-1014	Male	Asian	Hispanic or Latino	63	Former
-1015	Male	Black or African American	Not Hispanic or Latino	49	Never
-1016	Male	Asian	Hispanic or Latino	39	Current
-1017	Female	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	29	Former
-1018	Female	Black or African American	Not Hispanic or Latino	50	Unknown
-1019	Male	Asian	Hispanic or Latino	40	Never
-1020	Female	American Indian or Alaska Native	Not Hispanic or Latino	48	Former
-1021	Male	American Indian or Alaska Native	Not Hispanic or Latino	30	Current
-1022	Male	Black or African American	Hispanic or Latino	75	Unknown
-1023	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	63	Unknown
-1024	Female	American Indian or Alaska Native	Hispanic or Latino	68	Current
-1025	Female	Asian	Hispanic or Latino	43	Unknown
-1026	Male	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	71	Never
-1027	Male	American Indian or Alaska Native	Hispanic or Latino	80	Never
-1028	Male	Black or African American	Not Hispanic or Latino	73	Former
-1029	Male	American Indian or Alaska Native	Not Hispanic or Latino	56	Current
-1030	Male	Asian	Not Hispanic or Latino	40	Current
-1031	Male	American Indian or Alaska Native	Hispanic or Latino	30	Unknown
-1032	Male	American Indian or Alaska Native	Hispanic or Latino	33	Unknown
-1033	Male	Asian	Not Hispanic or Latino	38	Former
-1034	Female	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	53	Unknown
-1035	Male	Black or African American	Hispanic or Latino	29	Never
-1036	Male	American Indian or Alaska Native	Hispanic or Latino	62	Former
-1037	Male	White	Hispanic or Latino	39	Current
-1038	Male	Asian	Hispanic or Latino	57	Former
-1039	Female	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	59	Former
-1040	Female	Black or African American	Not Hispanic or Latino	76	Unknown
-1041	Male	White	Hispanic or Latino	67	Unknown
-1042	Female	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	54	Current
-1043	Male	White	Not Hispanic or Latino	71	Never
-1044	Male	Black or African American	Hispanic or Latino	37	Unknown
-1045	Male	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	42	Unknown
-1046	Male	White	Not Hispanic or Latino	76	Current
-1047	Male	American Indian or Alaska Native	Hispanic or Latino	30	Former
-1048	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	55	Former
-1049	Female	White	Hispanic or Latino	49	Current
-1050	Female	Asian	Not Hispanic or Latino	43	Unknown
-1051	Female	Black or African American	Hispanic or Latino	43	Former
-1052	Male	American Indian or Alaska Native	Hispanic or Latino	72	Never
-1053	Male	White	Not Hispanic or Latino	57	Former
-1054	Male	American Indian or Alaska Native	Hispanic or Latino	79	Former
-1055	Male	American Indian or Alaska Native	Hispanic or Latino	68	Former
-1056	Female	White	Hispanic or Latino	62	Current
-1057	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	41	Former
-1058	Female	Black or African American	Not Hispanic or Latino	50	Former
-1059	Female	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	73	Current
-1060	Male	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	29	Former
-1061	Female	Black or African American	Not Hispanic or Latino	29	Former
-1062	Female	Asian	Hispanic or Latino	53	Never
-1063	Male	American Indian or Alaska Native	Not Hispanic or Latino	67	Current
-1064	Male	Asian	Hispanic or Latino	31	Former
-1065	Female	Asian	Hispanic or Latino	70	Never
-1066	Male	Asian	Not Hispanic or Latino	41	Current
-1067	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	27	Current
-1068	Female	Black or African American	Not Hispanic or Latino	35	Unknown
-1069	Female	American Indian or Alaska Native	Hispanic or Latino	32	Current
-1070	Male	American Indian or Alaska Native	Hispanic or Latino	78	Never
-1071	Male	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	27	Never
-1072	Female	White	Not Hispanic or Latino	38	Former
-1073	Male	Asian	Not Hispanic or Latino	64	Former
-1074	Male	Black or African American	Hispanic or Latino	51	Current
-1075	Male	Asian	Not Hispanic or Latino	76	Former
-1076	Female	Black or African American	Hispanic or Latino	49	Current
-1077	Female	Black or African American	Hispanic or Latino	77	Unknown
-1078	Female	Asian	Hispanic or Latino	39	Current
-1079	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	42	Current
-1080	Female	Asian	Not Hispanic or Latino	68	Never
-1081	Male	White	Not Hispanic or Latino	36	Never
-1082	Male	White	Not Hispanic or Latino	47	Never
-1083	Female	American Indian or Alaska Native	Hispanic or Latino	49	Former
-1084	Female	White	Not Hispanic or Latino	25	Former
-1085	Female	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	67	Never
-1086	Female	White	Not Hispanic or Latino	57	Never
-1087	Female	Asian	Not Hispanic or Latino	69	Never
-1088	Male	Black or African American	Not Hispanic or Latino	67	Unknown
-1089	Male	American Indian or Alaska Native	Not Hispanic or Latino	50	Current
-1090	Female	Asian	Hispanic or Latino	52	Never
-1091	Female	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	68	Former
-1092	Female	Black or African American	Hispanic or Latino	43	Never
-1093	Male	Black or African American	Not Hispanic or Latino	39	Former
-1094	Male	White	Hispanic or Latino	40	Unknown
-1095	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	65	Former
-1096	Female	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	40	Former
-1097	Male	White	Not Hispanic or Latino	39	Former
-1098	Female	White	Hispanic or Latino	79	Current
-1099	Female	Black or African American	Not Hispanic or Latino	67	Never
-1100	Female	American Indian or Alaska Native	Not Hispanic or Latino	78	Unknown
-1101	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	41	Former
-1102	Female	American Indian or Alaska Native	Not Hispanic or Latino	65	Former
-1103	Female	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	70	Never
-1104	Male	Asian	Not Hispanic or Latino	45	Current
-1105	Male	Black or African American	Hispanic or Latino	49	Former
-1106	Male	White	Not Hispanic or Latino	51	Never
-1107	Female	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	38	Unknown
-1108	Female	American Indian or Alaska Native	Hispanic or Latino	79	Unknown
-1109	Female	White	Not Hispanic or Latino	44	Unknown
-1110	Female	American Indian or Alaska Native	Hispanic or Latino	56	Former
+1005	Female	Black or African American	Not Hispanic or Latino	62	Former
+1006	Male	Black or African American	Not Hispanic or Latino	46	Former
+1007	Male	Black or African American	Not Hispanic or Latino	31	1
+1008	Female	White	Not Hispanic or Latino	79	Former
+1009	Female	White	Not Hispanic or Latino	59	1
+1010	Female	White	Not Hispanic or Latino	78	Unknown
+1011	Female	American Indian or Alaska Native	Hispanic or Latino	70	1
+1012	Male	Black or African American	Not Hispanic or Latino	30	2
+1013	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	54	Former
+1014	Male	Asian	Not Hispanic or Latino	38	Former
+1015	Male	American Indian or Alaska Native	Hispanic or Latino	59	2
+1016	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	42	Unknown
+1017	Male	Asian	Hispanic or Latino	39	1
+1018	Female	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	29	2
+1019	Female	Black or African American	Not Hispanic or Latino	50	Never
+1020	Male	Asian	Hispanic or Latino	40	Unknown
+1021	Female	American Indian or Alaska Native	Not Hispanic or Latino	62	Never
+1022	Female	Black or African American	Hispanic or Latino	57	Never
+1023	Male	White	Hispanic or Latino	34	2
+1024	Female	American Indian or Alaska Native	Hispanic or Latino	49	Never
+1025	Female	American Indian or Alaska Native	Not Hispanic or Latino	60	1
+1026	Male	American Indian or Alaska Native	Not Hispanic or Latino	74	Former
+1027	Male	Asian	Not Hispanic or Latino	35	Never
+1028	Male	Asian	Hispanic or Latino	57	1
+1029	Female	American Indian or Alaska Native	Hispanic or Latino	34	Former
+1030	Male	American Indian or Alaska Native	Hispanic or Latino	63	Former
+1031	Female	White	Hispanic or Latino	48	Former
+1032	Male	White	Hispanic or Latino	61	1
+1033	Male	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	73	Unknown
+1034	Male	Black or African American	Not Hispanic or Latino	60	2
+1035	Female	American Indian or Alaska Native	Not Hispanic or Latino	38	Unknown
+1036	Male	Asian	Not Hispanic or Latino	67	Former
+1037	Female	American Indian or Alaska Native	Not Hispanic or Latino	32	2
+1038	Male	White	Not Hispanic or Latino	26	Unknown
+1039	Male	American Indian or Alaska Native	Hispanic or Latino	25	1
+1040	Male	Black or African American	Hispanic or Latino	27	Former
+1041	Male	American Indian or Alaska Native	Hispanic or Latino	42	Never
+1042	Male	American Indian or Alaska Native	Hispanic or Latino	71	Unknown
+1043	Female	Black or African American	Not Hispanic or Latino	76	Never
+1044	Male	White	Hispanic or Latino	67	Never
+1045	Female	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	54	1
+1046	Male	White	Not Hispanic or Latino	71	Former
+1047	Male	Black or African American	Hispanic or Latino	37	Unknown
+1048	Female	Black or African American	Not Hispanic or Latino	36	Former
+1049	Female	Black or African American	Hispanic or Latino	53	Unknown
+1050	Male	White	Hispanic or Latino	30	2
+1051	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	55	2
+1052	Female	White	Hispanic or Latino	49	1
+1053	Female	Asian	Not Hispanic or Latino	43	Never
+1054	Female	Black or African American	Hispanic or Latino	43	2
+1055	Male	American Indian or Alaska Native	Hispanic or Latino	72	Former
+1056	Male	White	Not Hispanic or Latino	57	Unknown
+1057	Male	White	Hispanic or Latino	79	2
+1058	Male	American Indian or Alaska Native	Hispanic or Latino	68	2
+1059	Female	White	Hispanic or Latino	62	Unknown
+1060	Male	American Indian or Alaska Native	Hispanic or Latino	51	Unknown
+1061	Female	Asian	Hispanic or Latino	67	Former
+1062	Male	Asian	Not Hispanic or Latino	33	Former
+1063	Female	Asian	Hispanic or Latino	25	Never
+1064	Male	White	Hispanic or Latino	57	Former
+1065	Male	Asian	Hispanic or Latino	40	Former
+1066	Female	Black or African American	Not Hispanic or Latino	78	Unknown
+1067	Female	American Indian or Alaska Native	Hispanic or Latino	67	Unknown
+1068	Female	White	Hispanic or Latino	41	1
+1069	Male	American Indian or Alaska Native	Hispanic or Latino	42	Former
+1070	Male	Asian	Hispanic or Latino	68	Former
+1071	Female	Asian	Hispanic or Latino	30	Never
+1072	Female	White	Hispanic or Latino	46	2
+1073	Female	Black or African American	Not Hispanic or Latino	60	Never
+1074	Male	White	Hispanic or Latino	69	2
+1075	Male	Asian	Hispanic or Latino	52	2
+1076	Male	Asian	Not Hispanic or Latino	75	1
+1077	Female	Black or African American	Hispanic or Latino	67	1
+1078	Female	American Indian or Alaska Native	Not Hispanic or Latino	64	2
+1079	Male	Black or African American	Hispanic or Latino	51	1
+1080	Male	Asian	Not Hispanic or Latino	76	2
+1081	Female	Black or African American	Hispanic or Latino	49	1
+1082	Female	Black or African American	Hispanic or Latino	77	Never
+1083	Female	Asian	Hispanic or Latino	39	1
+1084	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	42	1
+1085	Female	Asian	Not Hispanic or Latino	68	Unknown
+1086	Female	White	Hispanic or Latino	41	2
+1087	Female	White	Hispanic or Latino	63	Never
+1088	Female	Asian	Not Hispanic or Latino	63	Unknown
+1089	Male	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	41	1
+1090	Female	White	Hispanic or Latino	48	Never
+1091	Male	Asian	Not Hispanic or Latino	67	1
+1092	Female	American Indian or Alaska Native	Not Hispanic or Latino	67	Never
+1093	Female	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	60	2
+1094	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	68	2
+1095	Female	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	44	Former
+1096	Male	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	54	Never
+1097	Female	Black or African American	Not Hispanic or Latino	75	2
+1098	Male	Asian	Not Hispanic or Latino	30	2
+1099	Female	Black or African American	Hispanic or Latino	34	1
+1100	Male	Black or African American	Not Hispanic or Latino	64	1
+1101	Female	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	70	Never
+1102	Female	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	34	1
+1103	Male	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	36	Unknown
+1104	Female	White	Hispanic or Latino	79	1
+1105	Female	Black or African American	Not Hispanic or Latino	67	Unknown
+1106	Female	Native Hawaiian or Other Pacific Islander	Not Hispanic or Latino	78	Unknown
+1107	Female	Black or African American	Not Hispanic or Latino	53	Former
+1108	Male	Asian	Not Hispanic or Latino	65	2
+1109	Female	Native Hawaiian or Other Pacific Islander	Hispanic or Latino	70	Former
+1110	Male	Asian	Not Hispanic or Latino	45	Unknown

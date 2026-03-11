@@ -184,13 +184,13 @@ persons:
      mirror_source: true
    ```
 
-4. **Validation with enums has a type-coercion issue.** `linkml validate` flagged
-   `demographics.tsv` because `smoking_status` had numeric-looking values (`1`, `2`)
-   that the validator parsed as integers, not matching the string enum values `'1'`, `'2'`.
-   **Fixed** by changing the toy data to use all-text smoking values
-   (`Current`/`Former`/`Never`/`Unknown`). All 5 files now pass validation. Real data
-   with numeric-looking enum values will hit the same issue — see
-   [docs/pipeline-steps.md](docs/pipeline-steps.md#validation-error-smoking_status-resolved).
+4. **Validation with enums has a mixed-type issue.** `linkml validate` flagged
+   `demographics.tsv` because `smoking_status` has mixed int/string values (`1`, `2`,
+   `Former`, `Never`, `Unknown`). Schema-automator infers string enum values `'1'`, `'2'`,
+   but the validator parses bare numerics as integers, which don't match. This is
+   **intentional test data** — real dbGaP data has this pattern. Corey is landing a
+   schema-automator fix for mixed types; unclear if `linkml validate` will handle it yet.
+   The pipeline continues because `DM_MAP_STRICT` is set to `false`.
 
 ### Why pre_cleaned, not from_raw
 
