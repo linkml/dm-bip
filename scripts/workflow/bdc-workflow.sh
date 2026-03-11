@@ -45,16 +45,21 @@ exec 2> >(tee -a "${HOME}/stderr_internal_copy.log" >&2)
 # Pull latest cloned repos if BDC_PULL_LATEST is set (for dev/testing)
 #------------------------------------------------------------------------------
 if [[ "${BDC_PULL_LATEST:-false}" == "true" ]]; then
-  echo "BDC_PULL_LATEST=true — pulling latest from cloned repos..."
-  for repo in /app/bdc-harmonized-variables /app/NHLBI-BDC-DMC-HM; do
-    if [[ -d "$repo/.git" ]]; then
-      echo "  Updating $(basename "$repo")..."
-      if ! git -C "$repo" pull --ff-only 2>&1; then
-        echo "  WARNING: Failed to pull $(basename "$repo"), continuing with build-time version"
+  echo "BDC_PULL_LATEST=true — checking network connectivity..."
+  if timeout 10 curl -sf --max-time 5 https://github.com > /dev/null 2>&1; then
+    echo "  Network available — pulling latest from cloned repos..."
+    for repo in /app/bdc-harmonized-variables /app/NHLBI-BDC-DMC-HM; do
+      if [[ -d "$repo/.git" ]]; then
+        echo "  Updating $(basename "$repo")..."
+        if ! timeout 30 git -C "$repo" pull --ff-only 2>&1; then
+          echo "  WARNING: Failed to pull $(basename "$repo"), continuing with build-time version"
+        fi
       fi
-    fi
-  done
-  echo "✓ Repo update check complete"
+    done
+    echo "✓ Repos updated"
+  else
+    echo "  WARNING: No network access (github.com unreachable), using build-time versions"
+  fi
 fi
 
 #------------------------------------------------------------------------------
