@@ -814,7 +814,7 @@ requires-dist = [
     { name = "importlib-metadata", specifier = ">=8.2.0" },
     { name = "linkml-map", specifier = "==0.4.0rc2" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
-    { name = "schema-automator", specifier = "==0.5.4rc1" },
+    { name = "schema-automator", specifier = "==0.5.4rc2" },
     { name = "schemasheets", specifier = "==0.4.0" },
     { name = "typer", specifier = ">=0.20.0" },
     { name = "typing-extensions", specifier = ">=4.0,<5" },
@@ -3722,7 +3722,7 @@ wheels = [
 
 [[package]]
 name = "schema-automator"
-version = "0.5.4rc1"
+version = "0.5.4rc2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -3734,6 +3734,7 @@ dependencies = [
     { name = "jsonasobj2" },
     { name = "linkml" },
     { name = "linkml-runtime" },
+    { name = "lxml" },
     { name = "numpy" },
     { name = "oaklib" },
     { name = "pandas" },
@@ -3749,9 +3750,9 @@ dependencies = [
     { name = "strsimpy" },
     { name = "tomlkit" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/7f/44/4c69b91a4654c7f8475cc74eb648fcff3b782b5205c96f453dc568c42957/schema_automator-0.5.4rc1.tar.gz", hash = "sha256:6474f0ba52634f7f93c29622e7b0fd4659b43a3702ba826fa14d84cac16892a3", size = 84326, upload-time = "2025-06-26T00:00:36.47Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/92/be/561e04e6b973d695d602774c03c8270f0b62c4c4de52704a7ca1e3e7501c/schema_automator-0.5.4rc2.tar.gz", hash = "sha256:3ab2674722c3d8ed31bd80b0a62476d210769789ed4fbc7841da90ff3f8753c4", size = 90201, upload-time = "2026-03-11T16:28:50.348Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/81/28c03dbc479198f42d14eb29a0fb297ee863b9bf2148a13da01d507ba0a6/schema_automator-0.5.4rc1-py3-none-any.whl", hash = "sha256:16fcf7b2bf62483b05d96050745d33284f8c5d09f4073b323360b6186ed9d168", size = 105381, upload-time = "2025-06-26T00:00:35.158Z" },
+    { url = "https://files.pythonhosted.org/packages/99/c2/c872eeb73dbaf000db677b4045134ee6a2d7568586daa6b2c99567623b23/schema_automator-0.5.4rc2-py3-none-any.whl", hash = "sha256:8a7d109319e658df7d2e74f33a5666751f70c236ae0620838a28eb8a067cdd81", size = 112094, upload-time = "2026-03-11T16:28:48.995Z" },
 ]
 
 [[package]]

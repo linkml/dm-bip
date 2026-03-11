@@ -163,7 +163,14 @@ DM_OUTPUT_DIR="${PROCESSED_DIR}/${OUTPUT_NAME}"
 DM_INPUT_DIR="${PROCESSED_DIR}/${RAW_DIR_NAME}_CleanedSource"
 
 # Define paths to external dependencies (within container)
-DM_TRANS_SPEC_DIR="/app/NHLBI-BDC-DMC-HV/priority_variables_transform/${DM_SCHEMA_NAME}-ingest"
+# Find the latest version directory for this study's trans-specs
+TRANS_SPEC_BASE="/app/bdc-harmonized-variables/trans_specs/${DM_SCHEMA_NAME}"
+DM_TRANS_SPEC_DIR=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -1)
+if [[ -z "$DM_TRANS_SPEC_DIR" ]]; then
+  echo "ERROR: No trans-spec version directory found under $TRANS_SPEC_BASE"
+  exit 1
+fi
+echo "  Trans-spec version:   $(basename "$DM_TRANS_SPEC_DIR")"
 DM_MAP_TARGET_SCHEMA="/app/NHLBI-BDC-DMC-HM/src/bdchm/schema/bdchm.yaml"
 
 echo ""
