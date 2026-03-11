@@ -184,10 +184,13 @@ persons:
      mirror_source: true
    ```
 
-4. **Validation with enums has issues.** `linkml validate` flagged `demographics.tsv`
-   as failing against the enum-enabled source schema — consistent with Corey's note that
-   "Schema Automator and linkml validate aren't all that smart about enums, yet." The
-   pipeline continued because `DM_MAP_STRICT` was set to `false`.
+4. **Validation with enums has a type-coercion issue.** `linkml validate` flagged
+   `demographics.tsv` because `smoking_status` had numeric-looking values (`1`, `2`)
+   that the validator parsed as integers, not matching the string enum values `'1'`, `'2'`.
+   **Fixed** by changing the toy data to use all-text smoking values
+   (`Current`/`Former`/`Never`/`Unknown`). All 5 files now pass validation. Real data
+   with numeric-looking enum values will hit the same issue — see
+   [docs/pipeline-steps.md](docs/pipeline-steps.md#validation-error-smoking_status-resolved).
 
 ### Why pre_cleaned, not from_raw
 

@@ -26,42 +26,42 @@ slots:
     range: integer
   phv00000043:
     examples:
-    - value: '58.3'
+    - value: '73.1'
     from_schema: https://w3id.org/ToyFromRaw
     range: float
   phv00000044:
     examples:
-    - value: '58.4'
+    - value: '72.7'
     from_schema: https://w3id.org/ToyFromRaw
     range: float
   phv00000045:
     examples:
-    - value: '58.1'
+    - value: '73.2'
     from_schema: https://w3id.org/ToyFromRaw
     range: float
   phv00000046:
     examples:
-    - value: '51'
+    - value: '28'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000047:
     examples:
-    - value: '53'
+    - value: '30'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000048:
     examples:
-    - value: '56'
+    - value: '33'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000049:
     examples:
-    - value: '1'
+    - value: '0'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000050:
     examples:
-    - value: '0'
+    - value: '1'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000051:
@@ -76,22 +76,22 @@ slots:
     range: integer
   phv00000022:
     examples:
-    - value: '41'
+    - value: '71'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000023:
     examples:
-    - value: '147'
+    - value: '180'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000024:
     examples:
-    - value: '217'
+    - value: '276'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000025:
     examples:
-    - value: '300'
+    - value: '100'
     from_schema: https://w3id.org/ToyFromRaw
     range: string
   phv00000011:
@@ -101,27 +101,27 @@ slots:
     range: integer
   phv00000012:
     examples:
-    - value: '75.3'
+    - value: '69.7'
     from_schema: https://w3id.org/ToyFromRaw
     range: float
   phv00000013:
     examples:
-    - value: '133.9'
+    - value: '129.8'
     from_schema: https://w3id.org/ToyFromRaw
     range: float
   phv00000014:
     examples:
-    - value: '128'
+    - value: '105'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000015:
     examples:
-    - value: '103'
+    - value: '62'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000017:
     examples:
-    - value: Severe
+    - value: Moderate
     from_schema: https://w3id.org/ToyFromRaw
     range: string
   phv00000001:
@@ -131,27 +131,27 @@ slots:
     range: integer
   phv00000002:
     examples:
-    - value: '1'
+    - value: '2'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000003:
     examples:
-    - value: '3'
+    - value: '5'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000004:
     examples:
-    - value: '0'
+    - value: '1'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000005:
     examples:
-    - value: '45'
+    - value: '56'
     from_schema: https://w3id.org/ToyFromRaw
     range: integer
   phv00000016:
     examples:
-    - value: Unknown
+    - value: Former
     from_schema: https://w3id.org/ToyFromRaw
     range: string
 classes:
