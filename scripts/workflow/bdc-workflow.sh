@@ -27,6 +27,7 @@
 #   - Designed to run within the dm-bip Docker container
 #   - Expects /app as the default working directory
 #   - Requires access to NHLBI-BDC-DMC-HV and NHLBI-BDC-DMC-HM repos
+#   - Set BDC_PULL_LATEST=true to git-pull cloned repos at startup (for dev/testing)
 #
 # Output:
 #   - Cleaned source data in ${HOME}/<source>_CleanedSource/
@@ -39,6 +40,20 @@ set -euo pipefail
 
 # Capture stderr to a log file while still passing it through to the original stderr
 exec 2> >(tee -a "${HOME}/stderr_internal_copy.log" >&2)
+
+#------------------------------------------------------------------------------
+# Pull latest cloned repos if BDC_PULL_LATEST is set (for dev/testing)
+#------------------------------------------------------------------------------
+if [[ "${BDC_PULL_LATEST:-false}" == "true" ]]; then
+  echo "BDC_PULL_LATEST=true — pulling latest from cloned repos..."
+  for repo in /app/bdc-harmonized-variables /app/NHLBI-BDC-DMC-HM; do
+    if [[ -d "$repo/.git" ]]; then
+      echo "  Updating $(basename "$repo")..."
+      git -C "$repo" pull --ff-only
+    fi
+  done
+  echo "✓ Repos updated"
+fi
 
 #------------------------------------------------------------------------------
 # Function: Display usage information
