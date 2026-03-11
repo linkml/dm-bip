@@ -1,0 +1,26 @@
+name: Docker Smoke Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: docker build -t dm-bip-env .
+
+      - name: Run smoke test
+        run: docker run --rm dm-bip-env uv run pytest tests/ -x -q --tb=short

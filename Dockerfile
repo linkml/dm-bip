@@ -10,17 +10,16 @@ RUN apt-get update && \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-
-#Address Copilot suggestion to install the official uv Docker image and pin the tag so for stability
+# Install uv from official Docker image, pinned for stability
 COPY --from=ghcr.io/astral-sh/uv:0.9.22 /uv /uvx /usr/local/bin/
 
 ENV PATH="/root/.local/bin:$PATH"
 
 WORKDIR /app
 
-# Copy dependency files first for caching
-# COPY pyproject.toml uv.lock README.md ./ 
-COPY . ./
+# Copy dependency files and source package for layer caching
+COPY pyproject.toml uv.lock README.md ./
+COPY src/ src/
 
 # Install dependencies using uv
 RUN uv sync --frozen
@@ -29,7 +28,11 @@ RUN uv sync --frozen
 RUN git clone --branch v1.1.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git
 RUN git clone --branch v1.0.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git
 
-# Default command
-# This no longer works CMD ["uv", "run", "dm-bip", "run"]
-CMD ["uv", "run", "dm-bip", "test"]
+# Copy the rest (scripts, tests, configs, etc.)
+COPY . ./
 
+# Clone external repos (shallow, single layer)
+RUN git clone --depth 1 --branch v1.1.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
+    git clone --depth 1 --branch v1.0.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git
+
+CMD ["uv", "run", "dm-bip", "run"]
