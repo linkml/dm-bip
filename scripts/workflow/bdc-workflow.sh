@@ -37,6 +37,9 @@
 # -e: exit on error, -u: exit on undefined variable, -o pipefail: catch pipe errors
 set -euo pipefail
 
+# Capture stderr to a log file while still passing it through to the original stderr
+exec 2> >(tee -a "${HOME}/stderr_internal_copy.log" >&2)
+
 #------------------------------------------------------------------------------
 # Function: Display usage information
 #------------------------------------------------------------------------------
@@ -228,8 +231,8 @@ echo "Output Location: $PROCESSED_DIR"
 echo "================================================================"
 
 #------------------------------------------------------------------------------
-# 7. Copy Log Files to Processed Directory
+# 7. Copy Log Files and Build Artifacts to Processed Directory
 #    NOTE: Must remain last — any echoes after this won't appear in the log
 #------------------------------------------------------------------------------
-sync  # Flush pending filesystem writes so log files are complete before copying
+cp /Dockerfile.archived "$PROCESSED_DIR/"
 find "${HOME}" -maxdepth 1 -name "*.log" -exec cp {} "$PROCESSED_DIR/" \;
