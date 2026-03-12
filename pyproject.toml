@@ -11,7 +11,7 @@ dependencies = [
     "pandas>=2.2.3,<3",
     "schema-automator==0.5.4rc2",
     "schemasheets==0.4.0",
-    "linkml-map==0.4.0-rc2",
+    "linkml-map==0.4.0rc2",
     "typing-extensions>=4.0,<5",
     "flatten-dict>=0.4.2,<0.5",
     "typer>=0.20.0",
