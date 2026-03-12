@@ -8,7 +8,7 @@
 #   Harmonized Model) format.
 #
 # Usage:
-#   ./bdc-workflow.sh --schema <SCHEMA_NAME> --source <RAW_DATA_PATH> [--workdir <PATH>]
+#   ./bdc-workflow.sh --schema <SCHEMA_NAME> --source <RAW_DATA_PATH> [--workdir <PATH>] [--jobs <N>]
 #
 # Required Parameters:
 #   --schema    Name of the schema configuration (e.g., "FHS", "COPDGene")
@@ -16,10 +16,12 @@
 #
 # Optional Parameters:
 #   --workdir   Working directory for pipeline execution (default: /app)
+#   --jobs      Number of parallel make jobs (default: 8)
 #
 # Examples:
 #   ./bdc-workflow.sh --schema FHS --source /data/raw/fhs_study
 #   ./bdc-workflow.sh --schema FHS --source /data/raw/fhs_study --workdir /custom/path
+#   ./bdc-workflow.sh --schema FHS --source /data/raw/fhs_study --jobs 4
 #
 # Environment:
 #   - Designed to run within the dm-bip Docker container
@@ -35,6 +37,9 @@
 # -e: exit on error, -u: exit on undefined variable, -o pipefail: catch pipe errors
 set -euo pipefail
 
+# Capture stderr to a log file while still passing it through to the original stderr
+exec 2> >(tee -a "${HOME}/stderr_internal_copy.log" >&2)
+
 #------------------------------------------------------------------------------
 # Function: Display usage information
 #------------------------------------------------------------------------------
@@ -48,10 +53,12 @@ Required Parameters:
 
 Optional Parameters:
   --workdir   Working directory for pipeline execution (default: /app)
+  --jobs      Number of parallel make jobs (default: 8)
 
 Examples:
   $0 --schema FHS --source /data/raw/fhs_study
   $0 --schema FHS --source /data/raw/fhs_study --workdir /custom/path
+  $0 --schema FHS --source /data/raw/fhs_study --jobs 4
 
 EOF
   exit "${1:-1}"
@@ -63,6 +70,7 @@ EOF
 DM_SCHEMA_NAME=""
 DM_RAW_SOURCE=""
 WORKING_DIR="/app"  # Default working directory
+MAKE_JOBS=8         # Default parallel jobs
 
 #------------------------------------------------------------------------------
 # 1. Parse Named Parameters
@@ -87,6 +95,15 @@ while [[ $# -gt 0 ]]; do
     --workdir)
       [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --workdir requires a value"; exit 1; }
       WORKING_DIR="$2"
+      shift 2
+      ;;
+    --jobs)
+      [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --jobs requires a positive integer value"; exit 1; }
+      if ! [[ "$2" =~ ^[1-9][0-9]*$ ]]; then
+        echo "Error: --jobs value must be a positive integer (got '$2')"
+        exit 1
+      fi
+      MAKE_JOBS="$2"
       shift 2
       ;;
     -h|--help)
@@ -130,15 +147,20 @@ echo "================================================================"
 echo "Schema:       $DM_SCHEMA_NAME"
 echo "Raw Source:   $DM_RAW_SOURCE"
 echo "Working Dir:  $WORKING_DIR"
+echo "Parallel Jobs: $MAKE_JOBS"
 echo "================================================================"
 
 # Extract the base name from the raw source path
 RAW_DIR_NAME=$(basename "$DM_RAW_SOURCE")
 OUTPUT_NAME="${RAW_DIR_NAME}_BDCHM"
 
-# Define output directories in user's home directory
-DM_OUTPUT_DIR="${HOME}/${OUTPUT_NAME}"
-DM_INPUT_DIR="${HOME}/${RAW_DIR_NAME}_CleanedSource"
+# Define the top-level processed output directory (created before the pipeline runs)
+PROCESSED_DATETIME=$(date +"%Y%m%d_%H%M%S")
+PROCESSED_DIR="${HOME}/DMC_${RAW_DIR_NAME}_${DM_SCHEMA_NAME}_Processed_${PROCESSED_DATETIME}"
+
+# Define output directories inside the processed directory
+DM_OUTPUT_DIR="${PROCESSED_DIR}/${OUTPUT_NAME}"
+DM_INPUT_DIR="${PROCESSED_DIR}/${RAW_DIR_NAME}_CleanedSource"
 
 # Define paths to external dependencies (within container)
 DM_TRANS_SPEC_DIR="/app/NHLBI-BDC-DMC-HV/priority_variables_transform/${DM_SCHEMA_NAME}-ingest"
@@ -146,6 +168,7 @@ DM_MAP_TARGET_SCHEMA="/app/NHLBI-BDC-DMC-HM/src/bdchm/schema/bdchm.yaml"
 
 echo ""
 echo "Configuration:"
+echo "  Processed Directory:  $PROCESSED_DIR"
 echo "  Input Directory:      $DM_INPUT_DIR"
 echo "  Output Directory:     $DM_OUTPUT_DIR"
 echo "  Transform Spec Dir:   $DM_TRANS_SPEC_DIR"
@@ -168,6 +191,7 @@ fi
 #------------------------------------------------------------------------------
 echo ""
 echo "Creating workspace directories..."
+mkdir -p "$PROCESSED_DIR"
 mkdir -p "$DM_OUTPUT_DIR"
 mkdir -p "$DM_INPUT_DIR"
 echo "✓ Workspace directories created"
@@ -187,7 +211,8 @@ fi
 
 # Run make pipeline with all necessary parameters
 # -C flag changes to the specified working directory before executing make
-make pipeline \
+# -j allows up to $MAKE_JOBS parallel validation processes
+make -j "$MAKE_JOBS" pipeline \
   -C "$WORKING_DIR" \
   DM_SCHEMA_NAME="$DM_SCHEMA_NAME" \
   DM_RAW_SOURCE="$DM_RAW_SOURCE" \
@@ -203,5 +228,12 @@ echo ""
 echo "================================================================"
 echo "✓ Pipeline completed successfully!"
 echo "================================================================"
-echo "Output Location: $DM_OUTPUT_DIR"
+echo "Output Location: $PROCESSED_DIR"
 echo "================================================================"
+
+#------------------------------------------------------------------------------
+# 7. Copy Log Files and Build Artifacts to Processed Directory
+#    NOTE: Must remain last — any echoes after this won't appear in the log
+#------------------------------------------------------------------------------
+cp /Dockerfile.archived "$PROCESSED_DIR/"
+find "${HOME}" -maxdepth 1 -name "*.log" -exec cp {} "$PROCESSED_DIR/" \;

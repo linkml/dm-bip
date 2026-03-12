@@ -27,6 +27,9 @@ RUN uv sync --frozen
 # Copy the rest (scripts, tests, configs, etc.)
 COPY . ./
 
+# Archive the Dockerfile used to build this image at a known root-level path
+COPY Dockerfile /Dockerfile.archived
+
 # Clone external repos (shallow, single layer)
 RUN git clone --depth 1 --branch v1.1.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
     git clone --depth 1 --branch v1.0.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git
