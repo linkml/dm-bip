@@ -231,4 +231,5 @@ echo "================================================================"
 # 7. Copy Log Files to Processed Directory
 #    NOTE: Must remain last — any echoes after this won't appear in the log
 #------------------------------------------------------------------------------
+sync  # Flush pending filesystem writes so log files are complete before copying
 find "${HOME}" -maxdepth 1 -name "*.log" -exec cp {} "$PROCESSED_DIR/" \;
