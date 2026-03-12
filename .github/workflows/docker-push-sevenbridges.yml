@@ -34,7 +34,6 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t dm-bip-env .
           docker build -t $IMAGE_NAME .
 
       - name: Tag image

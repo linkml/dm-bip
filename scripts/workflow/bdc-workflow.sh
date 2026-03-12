@@ -98,12 +98,13 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --jobs)
-      if [[ -n "${2:-}" && "$2" != --* ]]; then
-        MAKE_JOBS="$2"
-        shift 2
-      else
-        shift 1
+      [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --jobs requires a positive integer value"; exit 1; }
+      if ! [[ "$2" =~ ^[1-9][0-9]*$ ]]; then
+        echo "Error: --jobs value must be a positive integer (got '$2')"
+        exit 1
       fi
+      MAKE_JOBS="$2"
+      shift 2
       ;;
     -h|--help)
       usage 0
