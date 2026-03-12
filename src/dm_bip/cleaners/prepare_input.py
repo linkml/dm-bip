@@ -34,6 +34,7 @@ ensuring the downstream pipeline halts on data preparation errors.
 import gzip
 import logging
 import re
+import sys
 from pathlib import Path
 from typing import Annotated, Optional
 
@@ -128,11 +129,12 @@ def main(
     This function coordinates the reading of input files, standardization
     of dbGaP headers, and output generation.
     """
-    # Set logging level based on verbose
+    # Set logging level based on verbose; route to stdout so log lines appear in the same stream
+    # as Make/shell output rather than stderr
     if verbose:
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     else:
-        logging.basicConfig(level=logging.WARNING)
+        logging.basicConfig(level=logging.WARNING, stream=sys.stdout)
 
     source_path = Path(source)
     # Use explicit output if provided, otherwise default to [STUDY]_PipelineInput
