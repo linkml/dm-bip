@@ -8,7 +8,7 @@
 #   Harmonized Model) format.
 #
 # Usage:
-#   ./bdc-workflow.sh --schema <SCHEMA_NAME> --source <RAW_DATA_PATH> [--workdir <PATH>]
+#   ./bdc-workflow.sh --schema <SCHEMA_NAME> --source <RAW_DATA_PATH> [--workdir <PATH>] [--jobs <N>]
 #
 # Required Parameters:
 #   --schema    Name of the schema configuration (e.g., "FHS", "COPDGene")
@@ -16,10 +16,12 @@
 #
 # Optional Parameters:
 #   --workdir   Working directory for pipeline execution (default: /app)
+#   --jobs      Number of parallel make jobs (default: 8)
 #
 # Examples:
 #   ./bdc-workflow.sh --schema FHS --source /data/raw/fhs_study
 #   ./bdc-workflow.sh --schema FHS --source /data/raw/fhs_study --workdir /custom/path
+#   ./bdc-workflow.sh --schema FHS --source /data/raw/fhs_study --jobs 4
 #
 # Environment:
 #   - Designed to run within the dm-bip Docker container
@@ -48,10 +50,12 @@ Required Parameters:
 
 Optional Parameters:
   --workdir   Working directory for pipeline execution (default: /app)
+  --jobs      Number of parallel make jobs (default: 8)
 
 Examples:
   $0 --schema FHS --source /data/raw/fhs_study
   $0 --schema FHS --source /data/raw/fhs_study --workdir /custom/path
+  $0 --schema FHS --source /data/raw/fhs_study --jobs 4
 
 EOF
   exit "${1:-1}"
@@ -63,6 +67,7 @@ EOF
 DM_SCHEMA_NAME=""
 DM_RAW_SOURCE=""
 WORKING_DIR="/app"  # Default working directory
+MAKE_JOBS=8         # Default parallel jobs
 
 #------------------------------------------------------------------------------
 # 1. Parse Named Parameters
@@ -88,6 +93,14 @@ while [[ $# -gt 0 ]]; do
       [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --workdir requires a value"; exit 1; }
       WORKING_DIR="$2"
       shift 2
+      ;;
+    --jobs)
+      if [[ -n "${2:-}" && "$2" != --* ]]; then
+        MAKE_JOBS="$2"
+        shift 2
+      else
+        shift 1
+      fi
       ;;
     -h|--help)
       usage 0
@@ -130,6 +143,7 @@ echo "================================================================"
 echo "Schema:       $DM_SCHEMA_NAME"
 echo "Raw Source:   $DM_RAW_SOURCE"
 echo "Working Dir:  $WORKING_DIR"
+echo "Parallel Jobs: $MAKE_JOBS"
 echo "================================================================"
 
 # Extract the base name from the raw source path
@@ -193,8 +207,8 @@ fi
 
 # Run make pipeline with all necessary parameters
 # -C flag changes to the specified working directory before executing make
-# -j 8 allows up to 8 parallel validation processes
-make -j 8 pipeline \
+# -j allows up to $MAKE_JOBS parallel validation processes
+make -j "$MAKE_JOBS" pipeline \
   -C "$WORKING_DIR" \
   DM_SCHEMA_NAME="$DM_SCHEMA_NAME" \
   DM_RAW_SOURCE="$DM_RAW_SOURCE" \
