@@ -26,7 +26,7 @@
 # Environment:
 #   - Designed to run within the dm-bip Docker container
 #   - Expects /app as the default working directory
-#   - Requires access to NHLBI-BDC-DMC-HV and NHLBI-BDC-DMC-HM repos
+#   - Requires access to bdc-harmonized-variables and NHLBI-BDC-DMC-HM repos (cloned at /app/)
 #   - Set BDC_PULL_LATEST=true to git-pull cloned repos at startup (for dev/testing)
 #
 # Output:
@@ -187,11 +187,12 @@ DM_INPUT_DIR="${PROCESSED_DIR}/${RAW_DIR_NAME}_CleanedSource"
 # Define paths to external dependencies (within container)
 # Find the latest version directory for this study's trans-specs
 TRANS_SPEC_BASE="/app/bdc-harmonized-variables/trans_specs/${DM_SCHEMA_NAME}"
-DM_TRANS_SPEC_DIR=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort | tail -1)
-if [[ -z "$DM_TRANS_SPEC_DIR" ]]; then
+latest_version_dir=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V | tail -1)
+if [[ -z "${latest_version_dir:-}" ]]; then
   echo "ERROR: No trans-spec version directory found under $TRANS_SPEC_BASE"
   exit 1
 fi
+DM_TRANS_SPEC_DIR="${TRANS_SPEC_BASE}/${latest_version_dir}"
 echo "  Trans-spec version:   $(basename "$DM_TRANS_SPEC_DIR")"
 DM_MAP_TARGET_SCHEMA="/app/NHLBI-BDC-DMC-HM/src/bdchm/schema/bdchm.yaml"
 
