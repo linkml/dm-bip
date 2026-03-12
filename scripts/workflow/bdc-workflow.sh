@@ -136,9 +136,13 @@ echo "================================================================"
 RAW_DIR_NAME=$(basename "$DM_RAW_SOURCE")
 OUTPUT_NAME="${RAW_DIR_NAME}_BDCHM"
 
-# Define output directories in user's home directory
-DM_OUTPUT_DIR="${HOME}/${OUTPUT_NAME}"
-DM_INPUT_DIR="${HOME}/${RAW_DIR_NAME}_CleanedSource"
+# Define the top-level processed output directory (created before the pipeline runs)
+PROCESSED_DATETIME=$(date +"%Y%m%d_%H%M%S")
+PROCESSED_DIR="${HOME}/DMC_${RAW_DIR_NAME}_${DM_SCHEMA_NAME}_Processed_${PROCESSED_DATETIME}"
+
+# Define output directories inside the processed directory
+DM_OUTPUT_DIR="${PROCESSED_DIR}/${OUTPUT_NAME}"
+DM_INPUT_DIR="${PROCESSED_DIR}/${RAW_DIR_NAME}_CleanedSource"
 
 # Define paths to external dependencies (within container)
 DM_TRANS_SPEC_DIR="/app/NHLBI-BDC-DMC-HV/priority_variables_transform/${DM_SCHEMA_NAME}-ingest"
@@ -146,6 +150,7 @@ DM_MAP_TARGET_SCHEMA="/app/NHLBI-BDC-DMC-HM/src/bdchm/schema/bdchm.yaml"
 
 echo ""
 echo "Configuration:"
+echo "  Processed Directory:  $PROCESSED_DIR"
 echo "  Input Directory:      $DM_INPUT_DIR"
 echo "  Output Directory:     $DM_OUTPUT_DIR"
 echo "  Transform Spec Dir:   $DM_TRANS_SPEC_DIR"
@@ -168,6 +173,7 @@ fi
 #------------------------------------------------------------------------------
 echo ""
 echo "Creating workspace directories..."
+mkdir -p "$PROCESSED_DIR"
 mkdir -p "$DM_OUTPUT_DIR"
 mkdir -p "$DM_INPUT_DIR"
 echo "✓ Workspace directories created"
@@ -203,5 +209,11 @@ echo ""
 echo "================================================================"
 echo "✓ Pipeline completed successfully!"
 echo "================================================================"
-echo "Output Location: $DM_OUTPUT_DIR"
+echo "Output Location: $PROCESSED_DIR"
 echo "================================================================"
+
+#------------------------------------------------------------------------------
+# 7. Copy Log Files to Processed Directory
+#    NOTE: Must remain last — any echoes after this won't appear in the log
+#------------------------------------------------------------------------------
+find "${HOME}" -maxdepth 1 -name "*.log" -exec cp {} "$PROCESSED_DIR/" \;
