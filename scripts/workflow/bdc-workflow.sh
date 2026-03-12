@@ -193,7 +193,8 @@ fi
 
 # Run make pipeline with all necessary parameters
 # -C flag changes to the specified working directory before executing make
-make pipeline \
+# -j 8 allows up to 8 parallel validation processes
+make -j 8 pipeline \
   -C "$WORKING_DIR" \
   DM_SCHEMA_NAME="$DM_SCHEMA_NAME" \
   DM_RAW_SOURCE="$DM_RAW_SOURCE" \
