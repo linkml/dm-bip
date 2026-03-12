@@ -16,9 +16,6 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
-    env:
-      IMAGE_URI: ${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ vars.SB_REGISTRY_PROJECT_DEV }}/dm-bip-env
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,17 +33,20 @@ jobs:
           username: ${{ vars.SB_REGISTRY_USERNAME }}
           password: ${{ secrets.SB_REGISTRY_PASSWORD }}
 
-      - name: Set build args for dev vs release
+      - name: Configure build for branch
         id: build-config
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/docker-dev" ]]; then
             echo "pull_latest=true" >> "$GITHUB_OUTPUT"
+            echo "registry_project=${{ vars.SB_REGISTRY_PROJECT_DEV }}" >> "$GITHUB_OUTPUT"
           else
             echo "pull_latest=false" >> "$GITHUB_OUTPUT"
+            echo "registry_project=${{ vars.SB_REGISTRY_PROJECT }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build, tag, and push image
         run: |
+          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
           docker build --build-arg BDC_PULL_LATEST=${{ steps.build-config.outputs.pull_latest }} -t $IMAGE_NAME .
           docker tag $IMAGE_NAME $IMAGE_URI:latest
           docker push $IMAGE_URI:latest
