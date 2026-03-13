@@ -11,6 +11,7 @@ from typing import Annotated, Any, Generator
 import typer
 import yaml
 from linkml.validator.loaders import TsvLoader
+from linkml_map.functions.unit_conversion import UndefinedUnitError
 from linkml_map.transformer.object_transformer import ObjectTransformer
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
@@ -108,7 +109,7 @@ def multi_spec_transform(
                     for row in rows:
                         mapped = transformer.map_object(row, source_type=pht_id)
                         yield mapped
-                except (FileNotFoundError, RuntimeError, ValueError):
+                except (FileNotFoundError, RuntimeError, UndefinedUnitError, ValueError):
                     if strict:
                         raise
                     logger.exception("Error processing %s | Block: %s", file, block)
