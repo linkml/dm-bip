@@ -86,7 +86,12 @@ def multi_spec_transform(
             derivation = block["class_derivations"]
             logger.debug("Processing derivation block")
             for class_name, class_spec in derivation.items():
-                pht_id = class_spec["populated_from"]
+                pht_id = class_spec.get("populated_from")
+                if not pht_id:
+                    if strict:
+                        raise KeyError(f"Missing populated_from in class derivation {class_name} ({file.stem})")
+                    logger.error("Missing populated_from in class derivation %s (%s) — skipping", class_name, file.stem)
+                    continue
                 if pht_id not in data_loader:
                     if strict:
                         raise FileNotFoundError(f"No data file for {pht_id}")
