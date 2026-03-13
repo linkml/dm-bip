@@ -242,6 +242,10 @@ fi
 # Run make pipeline with all necessary parameters
 # -C flag changes to the specified working directory before executing make
 # -j allows up to $MAKE_JOBS parallel validation processes
+# BDC_PULL_LATEST=true means dev mode: pull latest specs from default branches
+# and run mapping in non-strict mode so all errors are logged in one pass.
+# In prod (BDC_PULL_LATEST=false/unset), strict mode is the default — mapping
+# fails on the first error. (TODO: rename BDC_PULL_LATEST to BDC_DEV_MODE)
 DM_MAP_STRICT_ARG=""
 if [ "${BDC_PULL_LATEST:-false}" = "true" ]; then
   DM_MAP_STRICT_ARG="DM_MAP_STRICT=false"
