@@ -8,17 +8,6 @@ prefixes:
   EnumTest: https://w3id.org/EnumTest
 default_prefix: EnumTest
 enums:
-  pain_severity_enum:
-    from_schema: https://w3id.org/EnumTest
-    permissible_values:
-      Moderate:
-        description: Moderate
-      Mild:
-        description: Mild
-      Severe:
-        description: Severe
-      None:
-        description: None
   sex_enum:
     from_schema: https://w3id.org/EnumTest
     permissible_values:
@@ -36,16 +25,27 @@ enums:
   smoking_status_enum:
     from_schema: https://w3id.org/EnumTest
     permissible_values:
-      Former:
-        description: Former
       Never:
         description: Never
-      '2':
-        description: '2'
-      Unknown:
-        description: Unknown
       '1':
         description: '1'
+      Unknown:
+        description: Unknown
+      '2':
+        description: '2'
+      Former:
+        description: Former
+  pain_severity_enum:
+    from_schema: https://w3id.org/EnumTest
+    permissible_values:
+      Severe:
+        description: Severe
+      Mild:
+        description: Mild
+      Moderate:
+        description: Moderate
+      None:
+        description: None
   asthma_enum:
     from_schema: https://w3id.org/EnumTest
     permissible_values:
@@ -96,31 +96,6 @@ slots:
     from_schema: https://w3id.org/EnumTest
     identifier: true
     range: integer
-  height_in:
-    examples:
-    - value: '75.3'
-    from_schema: https://w3id.org/EnumTest
-    range: float
-  weight_lb:
-    examples:
-    - value: '133.9'
-    from_schema: https://w3id.org/EnumTest
-    range: float
-  systolic_bp:
-    examples:
-    - value: '128'
-    from_schema: https://w3id.org/EnumTest
-    range: integer
-  diastolic_bp:
-    examples:
-    - value: '103'
-    from_schema: https://w3id.org/EnumTest
-    range: integer
-  pain_severity:
-    examples:
-    - value: Severe
-    from_schema: https://w3id.org/EnumTest
-    range: pain_severity_enum
   sex:
     examples:
     - value: Male
@@ -196,6 +171,31 @@ slots:
     - value: '0'
     from_schema: https://w3id.org/EnumTest
     range: integer
+  height_in:
+    examples:
+    - value: '75.3'
+    from_schema: https://w3id.org/EnumTest
+    range: float
+  weight_lb:
+    examples:
+    - value: '133.9'
+    from_schema: https://w3id.org/EnumTest
+    range: float
+  systolic_bp:
+    examples:
+    - value: '128'
+    from_schema: https://w3id.org/EnumTest
+    range: integer
+  diastolic_bp:
+    examples:
+    - value: '103'
+    from_schema: https://w3id.org/EnumTest
+    range: integer
+  pain_severity:
+    examples:
+    - value: Severe
+    from_schema: https://w3id.org/EnumTest
+    range: pain_severity_enum
   type:
     examples:
     - value: Study
@@ -338,15 +338,6 @@ slots:
     from_schema: https://w3id.org/EnumTest
     range: string
 classes:
-  clinical:
-    from_schema: https://w3id.org/EnumTest
-    slots:
-    - subject_id
-    - height_in
-    - weight_lb
-    - systolic_bp
-    - diastolic_bp
-    - pain_severity
   demographics:
     from_schema: https://w3id.org/EnumTest
     slots:
@@ -370,6 +361,15 @@ classes:
     - smoking_v1
     - smoking_v2
     - condition_status
+  clinical:
+    from_schema: https://w3id.org/EnumTest
+    slots:
+    - subject_id
+    - height_in
+    - weight_lb
+    - systolic_bp
+    - diastolic_bp
+    - pain_severity
   study:
     from_schema: https://w3id.org/EnumTest
     slots:
