@@ -11,6 +11,7 @@ from typing import Annotated, Any, Generator
 import typer
 import yaml
 from linkml.validator.loaders import TsvLoader
+from linkml_map.functions.unit_conversion import UndefinedUnitError
 from linkml_map.transformer.object_transformer import ObjectTransformer
 from linkml_runtime import SchemaView
 from linkml_runtime.linkml_model import SchemaDefinition
@@ -85,7 +86,12 @@ def multi_spec_transform(
             derivation = block["class_derivations"]
             logger.debug("Processing derivation block")
             for class_name, class_spec in derivation.items():
-                pht_id = class_spec["populated_from"]
+                pht_id = class_spec.get("populated_from")
+                if not pht_id:
+                    if strict:
+                        raise KeyError(f"Missing populated_from in class derivation {class_name} ({file.stem})")
+                    logger.error("Missing populated_from in class derivation %s (%s) — skipping", class_name, file.stem)
+                    continue
                 if pht_id not in data_loader:
                     if strict:
                         raise FileNotFoundError(f"No data file for {pht_id}")
@@ -108,10 +114,15 @@ def multi_spec_transform(
                     for row in rows:
                         mapped = transformer.map_object(row, source_type=pht_id)
                         yield mapped
-                except (FileNotFoundError, RuntimeError, ValueError):
+                except (FileNotFoundError, RuntimeError, UndefinedUnitError, ValueError):
                     if strict:
                         raise
                     logger.exception("Error processing %s | Block: %s", file, block)
+                    continue
+                except Exception:
+                    if strict:
+                        raise
+                    logger.exception("Unexpected error processing %s | Block: %s", file, block)
                     continue
 
 
