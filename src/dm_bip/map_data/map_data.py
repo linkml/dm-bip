@@ -114,6 +114,11 @@ def multi_spec_transform(
                         raise
                     logger.exception("Error processing %s | Block: %s", file, block)
                     continue
+                except Exception:
+                    if strict:
+                        raise
+                    logger.exception("Unexpected error processing %s | Block: %s", file, block)
+                    continue
 
 
 def discover_entities(var_dir: Path) -> list[str]:
