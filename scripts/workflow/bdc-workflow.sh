@@ -242,6 +242,11 @@ fi
 # Run make pipeline with all necessary parameters
 # -C flag changes to the specified working directory before executing make
 # -j allows up to $MAKE_JOBS parallel validation processes
+DM_MAP_STRICT_ARG=""
+if [ "${BDC_PULL_LATEST:-false}" = "true" ]; then
+  DM_MAP_STRICT_ARG="DM_MAP_STRICT=false"
+fi
+
 make -j "$MAKE_JOBS" pipeline \
   -C "$WORKING_DIR" \
   DM_SCHEMA_NAME="$DM_SCHEMA_NAME" \
@@ -249,7 +254,8 @@ make -j "$MAKE_JOBS" pipeline \
   DM_OUTPUT_DIR="$DM_OUTPUT_DIR" \
   DM_INPUT_DIR="$DM_INPUT_DIR" \
   DM_TRANS_SPEC_DIR="$DM_TRANS_SPEC_DIR" \
-  DM_MAP_TARGET_SCHEMA="$DM_MAP_TARGET_SCHEMA"
+  DM_MAP_TARGET_SCHEMA="$DM_MAP_TARGET_SCHEMA" \
+  $DM_MAP_STRICT_ARG
 
 #------------------------------------------------------------------------------
 # 6. Pipeline Completion

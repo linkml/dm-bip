@@ -108,7 +108,7 @@ def multi_spec_transform(
                     for row in rows:
                         mapped = transformer.map_object(row, source_type=pht_id)
                         yield mapped
-                except (FileNotFoundError, ValueError):
+                except (FileNotFoundError, RuntimeError, ValueError):
                     if strict:
                         raise
                     logger.exception("Error processing %s | Block: %s", file, block)
