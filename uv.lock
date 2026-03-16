@@ -812,9 +812,9 @@ env = [
 requires-dist = [
     { name = "flatten-dict", specifier = ">=0.4.2,<0.5" },
     { name = "importlib-metadata", specifier = ">=8.2.0" },
-    { name = "linkml-map", specifier = "==0.4.0rc2" },
+    { name = "linkml-map", specifier = "==0.4.0" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
-    { name = "schema-automator", specifier = "==0.5.4rc2" },
+    { name = "schema-automator", specifier = "==0.5.4" },
     { name = "schemasheets", specifier = "==0.4.0" },
     { name = "typer", specifier = ">=0.20.0" },
     { name = "typing-extensions", specifier = ">=4.0,<5" },
@@ -1960,7 +1960,7 @@ wheels = [
 
 [[package]]
 name = "linkml-map"
-version = "0.4.0rc2"
+version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asteval" },
@@ -1980,9 +1980,9 @@ dependencies = [
     { name = "simpleeval" },
     { name = "ucumvert" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f3/ea/ea15b874cb1f30d0aeb87b480e94a1a3e61d663a9e5c117fd2194e6631da/linkml_map-0.4.0rc2.tar.gz", hash = "sha256:54d36e3881673314ca043b4795c3346820afcd5d69d2b548698aae9d78859438", size = 440353, upload-time = "2026-03-11T15:39:34.468Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a3/de/8f7fae3837de356665b0996d5134e732ea4f6524894f95a3cf3cc53a4d65/linkml_map-0.4.0.tar.gz", hash = "sha256:b79574b6c2b69728a26f87394602be781fc0a6104fa649a419131513f00f9244", size = 440201, upload-time = "2026-03-16T21:17:00.706Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fd/e4/8662fb8f1fb82a0182a8730140f7b3186b62c097629ef490a715f7e64be9/linkml_map-0.4.0rc2-py3-none-any.whl", hash = "sha256:115ed4167cec259c55dfd45d3164f9c9cb06e5ab5c43896b5191b2588e8c8ec5", size = 81123, upload-time = "2026-03-11T15:39:33.116Z" },
+    { url = "https://files.pythonhosted.org/packages/12/1c/e897fd80f1c6484c79b6317606c0b4b96da04a75dc4b2eab9b37d264f4c2/linkml_map-0.4.0-py3-none-any.whl", hash = "sha256:e95b9065f3119c788c8c10fc45249666e4000a42f97b28f19e93bc1d5c2be5f4", size = 81088, upload-time = "2026-03-16T21:16:58.965Z" },
 ]
 
 [[package]]
@@ -3722,7 +3722,7 @@ wheels = [
 
 [[package]]
 name = "schema-automator"
-version = "0.5.4rc2"
+version = "0.5.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -3750,9 +3750,9 @@ dependencies = [
     { name = "strsimpy" },
     { name = "tomlkit" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/92/be/561e04e6b973d695d602774c03c8270f0b62c4c4de52704a7ca1e3e7501c/schema_automator-0.5.4rc2.tar.gz", hash = "sha256:3ab2674722c3d8ed31bd80b0a62476d210769789ed4fbc7841da90ff3f8753c4", size = 90201, upload-time = "2026-03-11T16:28:50.348Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8a/e4/341fc651feac33a9b9011b010524bc8bb59ba232de3bce2cac7aa3e8b9c1/schema_automator-0.5.4.tar.gz", hash = "sha256:837700866a7660e5a215e78b1e48ddd35607ce98ad9c3387892ce6832a439478", size = 90183, upload-time = "2026-03-16T21:16:58.922Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/99/c2/c872eeb73dbaf000db677b4045134ee6a2d7568586daa6b2c99567623b23/schema_automator-0.5.4rc2-py3-none-any.whl", hash = "sha256:8a7d109319e658df7d2e74f33a5666751f70c236ae0620838a28eb8a067cdd81", size = 112094, upload-time = "2026-03-11T16:28:48.995Z" },
+    { url = "https://files.pythonhosted.org/packages/24/fe/42d5ed455e55686195bbb8c3613d23299d0ef6a5e7ef25db1d5fc020de2d/schema_automator-0.5.4-py3-none-any.whl", hash = "sha256:1dbe074e80c20872c646ec8cc828fdd582e549bddb54ce279941fed3c5a540e4", size = 112058, upload-time = "2026-03-16T21:16:57.767Z" },
 ]
 
 [[package]]
