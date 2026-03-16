@@ -1,0 +1,8 @@
+[project]
+name = "linkml-int-enum-repro"
+version = "0.0.1"
+requires-python = ">=3.11"
+dependencies = [
+    "linkml>=1.8",
+    "linkml-map>=0.3.0",
+]
