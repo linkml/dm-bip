@@ -1,4 +1,0 @@
-pht000005.tsv
-pht000003.tsv
-pht000002.tsv
-pht000001.tsv
