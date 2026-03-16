@@ -177,45 +177,45 @@ Enum derivations work correctly when source enum values are non-numeric text (e.
 [`src/dm_bip/map_data/map_data.py`](../src/dm_bip/map_data/map_data.py) is the glue between LinkML-Map and the pipeline. It is **not** the same as the `linkml-map map-data` CLI — it handles multiple spec files, TSV input, chunked output, and multiple output formats.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│ 1. Load schemas                                                 │
-│    source_schemaview = SchemaView(source_schema)                │
-│    target_schemaview = SchemaView(target_schema)                │
-├─────────────────────────────────────────────────────────────────┤
-│ 2. Discover entities                                            │
-│    Scan spec YAML files in var_dir for top-level                │
-│    class_derivations keys → entity names (e.g., "Person")       │
-├─────────────────────────────────────────────────────────────────┤
-│ For each entity:                                                │
-│ ┌─────────────────────────────────────────────────────────────┐ │
-│ │ 3. Find spec files                                          │ │
-│ │    grep -rl "^    <Entity>:" var_dir → matching YAML files  │ │
-│ ├─────────────────────────────────────────────────────────────┤ │
-│ │ For each spec file, for each block:                         │ │
-│ │ ┌─────────────────────────────────────────────────────────┐ │ │
-│ │ │ 4. Load TSV data                                        │ │ │
+┌──────────────────────────────────────────────────────────────────┐
+│ 1. Load schemas                                                  │
+│    source_schemaview = SchemaView(source_schema)                 │
+│    target_schemaview = SchemaView(target_schema)                 │
+├──────────────────────────────────────────────────────────────────┤
+│ 2. Discover entities                                             │
+│    Scan spec YAML files in var_dir for top-level                 │
+│    class_derivations keys → entity names (e.g., "Person")        │
+├──────────────────────────────────────────────────────────────────┤
+│ For each entity:                                                 │
+│ ┌──────────────────────────────────────────────────────────────┐ │
+│ │ 3. Find spec files                                           │ │
+│ │    grep -rl "^    <Entity>:" var_dir → matching YAML files   │ │
+│ ├──────────────────────────────────────────────────────────────┤ │
+│ │ For each spec file, for each block:                          │ │
+│ │ ┌──────────────────────────────────────────────────────────┐ │ │
+│ │ │ 4. Load TSV data                                         │ │ │
 │ │ │    DataLoader uses linkml's TsvLoader to read            │ │ │
 │ │ │    <populated_from>.tsv → iterator of row dicts          │ │ │
-│ │ │    ⚠ TsvLoader applies _parse_numeric to every cell     │ │ │
-│ │ ├─────────────────────────────────────────────────────────┤ │ │
-│ │ │ 5. Create transformer                                   │ │ │
+│ │ │    ⚠ TsvLoader applies _parse_numeric to every cell      │ │ │
+│ │ ├──────────────────────────────────────────────────────────┤ │ │
+│ │ │ 5. Create transformer                                    │ │ │
 │ │ │    ObjectTransformer(source_schemaview, target_schemaview│ │ │
 │ │ │    transformer.create_transformer_specification(block)   │ │ │
 │ │ │    (block includes class_derivations + enum_derivations) │ │ │
-│ │ ├─────────────────────────────────────────────────────────┤ │ │
-│ │ │ 6. Transform rows                                       │ │ │
+│ │ ├──────────────────────────────────────────────────────────┤ │ │
+│ │ │ 6. Transform rows                                        │ │ │
 │ │ │    For each row dict:                                    │ │ │
-│ │ │      mapped = transformer.map_object(row, source_type)  │ │ │
-│ │ │      → applies slot_derivations (rename, expr)          │ │ │
-│ │ │      → applies enum_derivations (PV matching via ==)    │ │ │
-│ │ │      yield mapped dict                                  │ │ │
-│ │ └─────────────────────────────────────────────────────────┘ │ │
-│ ├─────────────────────────────────────────────────────────────┤ │
-│ │ 7. Write output                                             │ │
-│ │    Chunk transformed dicts, write via stream                │ │
-│ │    (yaml, jsonl, json, or tsv format)                       │ │
-│ └─────────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
+│ │ │      mapped = transformer.map_object(row, source_type)   │ │ │
+│ │ │      → applies slot_derivations (rename, expr)           │ │ │
+│ │ │      → applies enum_derivations (PV matching via ==)     │ │ │
+│ │ │      yield mapped dict                                   │ │ │
+│ │ └──────────────────────────────────────────────────────────┘ │ │
+│ ├──────────────────────────────────────────────────────────────┤ │
+│ │ 7. Write output                                              │ │
+│ │    Chunk transformed dicts, write via stream                 │ │
+│ │    (yaml, jsonl, json, or tsv format)                        │ │
+│ └──────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 Key details:
