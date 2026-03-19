@@ -75,6 +75,7 @@ def multi_spec_transform(
     source_schemaview: SchemaView,
     target_schemaview: SchemaView,
     strict: bool = True,
+    errors: list | None = None,
 ) -> Generator[dict[str, Any], None, None]:
     """Apply multiple LinkML-Map specifications to data and yield transformed objects."""
     for file in spec_files:
@@ -95,6 +96,8 @@ def multi_spec_transform(
                         file.stem,
                         pht_id,
                     )
+                    if errors is not None:
+                        errors.append(f"Missing data file for {pht_id} in {file.stem}")
                     continue
                 try:
                     rows = data_loader[pht_id]
@@ -108,10 +111,12 @@ def multi_spec_transform(
                     for row in rows:
                         mapped = transformer.map_object(row, source_type=pht_id)
                         yield mapped
-                except (FileNotFoundError, RuntimeError, ValueError):
+                except (FileNotFoundError, RuntimeError, ValueError) as e:
                     if strict:
                         raise
                     logger.exception("Error processing %s | Block: %s", file, block)
+                    if errors is not None:
+                        errors.append(f"{type(e).__name__}: {e}")
                     continue
 
 
@@ -168,8 +173,9 @@ def process_entities(
     output_type,
     chunk_size=1000,
     strict=True,
-) -> None:
-    """Process each entity and write to output files."""
+) -> list[str]:
+    """Process each entity and write to output files. Returns list of errors encountered."""
+    errors: list[str] = []
     start = time.perf_counter()
     for entity in entities:
         spec_files = get_spec_files(var_dir, f"^    {entity}:")
@@ -180,7 +186,9 @@ def process_entities(
         logger.info("Starting %s", entity)
         output_path = f"{output_dir}/{'-'.join(x for x in [output_prefix, entity, output_postfix] if x)}.{output_type}"
 
-        iterable = multi_spec_transform(data_loader, spec_files, source_schemaview, target_schemaview, strict=strict)
+        iterable = multi_spec_transform(
+            data_loader, spec_files, source_schemaview, target_schemaview, strict=strict, errors=errors,
+        )
         chunks = chunked(iterable, chunk_size)
         key_name = entity.lower() + "s"
 
@@ -202,6 +210,7 @@ def process_entities(
 
     end = time.perf_counter()
     logger.info("Time: %.2f seconds", end - start)
+    return errors
 
 
 def main(
@@ -278,7 +287,7 @@ def main(
 
     os.makedirs(output_dir, exist_ok=True)
 
-    process_entities(
+    errors = process_entities(
         entities=entities,
         data_loader=data_loader,
         var_dir=var_dir,
@@ -291,6 +300,12 @@ def main(
         chunk_size=chunk_size,
         strict=strict,
     )
+
+    if errors:
+        logger.error("Mapping completed with %d error(s):", len(errors))
+        for err in errors:
+            logger.error("  %s", err)
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
