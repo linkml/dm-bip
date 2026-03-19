@@ -124,10 +124,12 @@ def multi_spec_transform(
                     if errors is not None:
                         errors.append(f"{file.stem}: {class_name} ({pht_id}) — {type(e).__name__}: {e}")
                     continue
-                except Exception:
+                except Exception as e:
                     if strict:
                         raise
                     logger.exception("Unexpected error processing %s | Block: %s", file, block)
+                    if errors is not None:
+                        errors.append(f"{file.stem}: {class_name} ({pht_id}) — {type(e).__name__}: {e}")
                     continue
 
 
@@ -321,7 +323,7 @@ def main(
         logger.error("Mapping completed with %d error(s):", len(errors))
         for err in errors:
             logger.error("  %s", err)
-        raise SystemExit(1)
+        raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":

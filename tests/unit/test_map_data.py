@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
+import click
 import pytest
 import yaml
 from linkml_runtime import SchemaView
@@ -839,7 +840,7 @@ def test_main_creates_output_directory(temp_dir):
 
 
 def test_main_exits_nonzero_on_non_strict_errors(temp_dir):
-    """Test that main raises SystemExit(1) when non-strict mapping encounters errors."""
+    """Test that main raises typer.Exit(1) when non-strict mapping encounters errors."""
     # Create a spec dir with a spec referencing a nonexistent data file
     spec_dir = Path(temp_dir) / "specs"
     spec_dir.mkdir()
@@ -853,7 +854,7 @@ def test_main_exits_nonzero_on_non_strict_errors(temp_dir):
     )
     output_dir = Path(temp_dir) / "output"
 
-    with pytest.raises(SystemExit) as exc_info:
+    with pytest.raises(click.exceptions.Exit) as exc_info:
         main(
             source_schema=TOY_DATA / "pre_cleaned/source-schema.yaml",
             target_schema=TOY_DATA / "target-schema.yaml",
@@ -865,4 +866,4 @@ def test_main_exits_nonzero_on_non_strict_errors(temp_dir):
             output_type="jsonl",
             strict=False,
         )
-    assert exc_info.value.code == 1
+    assert exc_info.value.exit_code == 1
