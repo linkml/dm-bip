@@ -75,7 +75,7 @@ def multi_spec_transform(
     source_schemaview: SchemaView,
     target_schemaview: SchemaView,
     strict: bool = True,
-    errors: list | None = None,
+    errors: list[str] | None = None,
 ) -> Generator[dict[str, Any], None, None]:
     """Apply multiple LinkML-Map specifications to data and yield transformed objects."""
     for file in spec_files:
@@ -97,7 +97,7 @@ def multi_spec_transform(
                         pht_id,
                     )
                     if errors is not None:
-                        errors.append(f"Missing data file for {pht_id} in {file.stem}")
+                        errors.append(f"{file.stem}: missing data file for {class_name} (populated_from={pht_id})")
                     continue
                 try:
                     rows = data_loader[pht_id]
@@ -116,7 +116,7 @@ def multi_spec_transform(
                         raise
                     logger.exception("Error processing %s | Block: %s", file, block)
                     if errors is not None:
-                        errors.append(f"{type(e).__name__}: {e}")
+                        errors.append(f"{file.stem}: {class_name} ({pht_id}) — {type(e).__name__}: {e}")
                     continue
 
 
@@ -187,7 +187,12 @@ def process_entities(
         output_path = f"{output_dir}/{'-'.join(x for x in [output_prefix, entity, output_postfix] if x)}.{output_type}"
 
         iterable = multi_spec_transform(
-            data_loader, spec_files, source_schemaview, target_schemaview, strict=strict, errors=errors,
+            data_loader,
+            spec_files,
+            source_schemaview,
+            target_schemaview,
+            strict=strict,
+            errors=errors,
         )
         chunks = chunked(iterable, chunk_size)
         key_name = entity.lower() + "s"
