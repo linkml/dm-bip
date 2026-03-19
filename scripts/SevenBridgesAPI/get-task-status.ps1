@@ -1,16 +1,37 @@
+<#
+.SYNOPSIS
+    Displays a live status dashboard for running Seven Bridges tasks.
+
+.DESCRIPTION
+    Queries the Seven Bridges Tasks API for all currently RUNNING tasks in the
+    configured project and renders a formatted table showing:
+      - Task name (truncated to 25 chars)
+      - Health status (Healthy, Zombie, or API Delay)
+      - Submission time (local timezone)
+      - Elapsed duration (computed in UTC for accuracy)
+      - Instance type
+
+    A task is flagged as "ZOMBIE" if it has no active jobs in its execution details,
+    which may indicate a stalled or orphaned task requiring manual intervention.
+
+.NOTES
+    Prerequisites:
+      - A valid Seven Bridges developer token in ~/.sevenbridges/token or env var SBG_AUTH_TOKEN.
+        See: https://sb-biodatacatalyst.readme.io/docs/get-your-authentication-token
+
+    Project: dm-bip (https://github.com/linkml/dm-bip)
+#>
+
 # --- CONFIGURATION ---
-$Token = (Get-Content "$PSScriptRoot\token.txt").Trim()
-$ProjectID = "rmathur2/dmc-task-4-controlled"
-$BaseUrl = "https://api.sb.biodatacatalyst.nhlbi.nih.gov/v2"
-$Headers = @{ "X-SBG-Auth-Token" = $Token; "Content-Type" = "application/json" }
+. "$PSScriptRoot\config.ps1"
 
-Write-Host "`n--- PROJECT TELEMETRY (UTC CORRECTED): $ProjectID ---" -ForegroundColor Cyan
+Write-Host "`n--- TASK STATUS: $ProjectID ---" -ForegroundColor Cyan
 
-# 1. Fetch Running Tasks
+# --- STEP 1: Fetch all tasks with RUNNING status (up to 100) ---
 $TasksUrl = "$BaseUrl/tasks?project=$ProjectID&status=RUNNING&limit=100"
 $RunningTasks = Invoke-RestMethod -Uri $TasksUrl -Method Get -Headers $Headers
 
-# CRITICAL FIX: Get current time and immediately convert to UTC for the math
+# Capture UTC now — all duration math uses UTC to avoid timezone drift
 $NowUTC = (Get-Date).ToUniversalTime()
 
 if ($null -eq $RunningTasks.items -or $RunningTasks.items.Count -eq 0) {
@@ -18,8 +39,9 @@ if ($null -eq $RunningTasks.items -or $RunningTasks.items.Count -eq 0) {
     return
 }
 
+# --- STEP 2: Build report by inspecting each task's metadata and execution details ---
 $Report = foreach ($t in $RunningTasks.items) {
-    # Deep Inspect to get the full metadata
+    # Fetch full task object (the list endpoint returns a summary only)
     $fullTask = Invoke-RestMethod -Uri "$BaseUrl/tasks/$($t.id)" -Method Get -Headers $Headers
     
     $submittedOnLocal = "N/A"
@@ -43,7 +65,8 @@ $Report = foreach ($t in $RunningTasks.items) {
         $durationStr = "{0:00}h {1:00}m" -f $totalHours, $mins
     }
 
-    # --- INFRASTRUCTURE STATUS ---
+    # --- INFRASTRUCTURE HEALTH CHECK ---
+    # Query execution_details to determine if the task has active compute jobs.
     $health = "Healthy"
     $instance = "Pending..."
     
@@ -67,5 +90,5 @@ $Report = foreach ($t in $RunningTasks.items) {
     }
 }
 
-# 3. Render
+# --- STEP 3: Render the report sorted by longest-running tasks first ---
 $Report | Sort-Object Duration -Descending | Format-Table -AutoSize

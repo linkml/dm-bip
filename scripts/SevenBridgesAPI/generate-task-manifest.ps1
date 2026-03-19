@@ -1,20 +1,31 @@
-# --- Configuration ---
+<#
+.SYNOPSIS
+    Generates a batch task manifest (CSV) from the Seven Bridges project folder structure.
+
+.DESCRIPTION
+    Crawls the Seven Bridges API starting from the PilotParentStudies folder, iterates
+    through each cohort and its consent groups, and produces a CSV file (batch_tasks.csv)
+    mapping each consent-group folder name to its parent cohort (schema).
+
+    The output CSV is consumed by submit-batch-tasks.ps1 to launch harmonization tasks.
+
+.OUTPUTS
+    batch_tasks.csv - Two-column CSV with headers: Filename, Schema
+
+.NOTES
+    Prerequisites:
+      - A valid Seven Bridges developer token in ~/.sevenbridges/token or env var SBG_AUTH_TOKEN.
+        See: https://sb-biodatacatalyst.readme.io/docs/get-your-authentication-token
+
+    Project: dm-bip (https://github.com/linkml/dm-bip)
+#>
+
 # --- CONFIGURATION ---
-# Pull the token from the external file and trim any hidden whitespace/newlines
-$TokenPath = "$PSScriptRoot\token.txt"
+. "$PSScriptRoot\config.ps1"
 
-if (Test-Path $TokenPath) {
-    $Token = (Get-Content $TokenPath).Trim()
-} else {
-    Write-Error "Token file not found at $TokenPath. Please create it and try again."
-    return
-}
-
-$BaseUrl = "https://api.sb.biodatacatalyst.nhlbi.nih.gov/v2"
-$ProjectID = "rmathur2/dmc-task-4-controlled"
-$Headers = @{ "X-SBG-Auth-Token" = $Token; "Content-Type" = "application/json" }
-
-# --- Helper Function: Get Folder Contents ---
+# --- HELPER FUNCTION ---
+# Retrieves folder-type children from the SBG files API.
+# Pass -Project to list root-level folders, or -ParentID to list children of a specific folder.
 function Get-SBGContents {
     param ([string]$ParentID, [string]$Project = $null)
     $url = if ($Project) { "$BaseUrl/files?project=$Project" } else { "$BaseUrl/files?parent=$ParentID" }
@@ -51,12 +62,15 @@ foreach ($cohort in $cohorts) {
     }
 }
 
-# --- Save Results without Quotes ---
+# --- OUTPUT ---
+# Write manifest as plain CSV (no quoting) so submit-batch-tasks.ps1 can consume it directly.
+$ManifestPath = Join-Path $PSScriptRoot "batch_tasks.csv"
+
 if ($rows.Count -gt 1) {
-    $rows | Set-Content -Path "batch_tasks.csv" -Encoding utf8
+    $rows | Set-Content -Path $ManifestPath -Encoding utf8
     
-    Write-Host "`nSUCCESS: Manifest generated with $($rows.Count - 1) rows (Quote-Free)." -ForegroundColor Green
-    Write-Host "File saved to: batch_tasks.csv" -ForegroundColor Cyan
+    Write-Host "`nSUCCESS: Manifest generated with $($rows.Count - 1) rows." -ForegroundColor Green
+    Write-Host "File saved to: $ManifestPath" -ForegroundColor Cyan
     
     # Preview
     $rows | Select-Object -First 50
