@@ -33,7 +33,7 @@ $TokenPath = Join-Path $HOME ".sevenbridges" "token"
 if ($env:SBG_AUTH_TOKEN) {
     $Token = $env:SBG_AUTH_TOKEN.Trim()
 } elseif (Test-Path $TokenPath) {
-    $Token = (Get-Content $TokenPath).Trim()
+    $Token = (Get-Content -Raw $TokenPath).Trim()
 } else {
     Write-Error @"
 Seven Bridges auth token not found.

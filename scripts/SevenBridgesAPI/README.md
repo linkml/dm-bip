@@ -48,6 +48,9 @@ The scripts look for your token in the following order:
 > **Security note:** The token file lives in your home directory, outside the
 > repository, so there is no risk of accidentally committing it. Never paste
 > your token directly into a script.
+>
+> **Note:** `batch_tasks.csv` is a generated file and is excluded via `.gitignore`.
+> Do not commit it to the repository.
 
 ## Usage
 

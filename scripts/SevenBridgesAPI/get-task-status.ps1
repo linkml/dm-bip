@@ -54,7 +54,7 @@ $Report = foreach ($t in $RunningTasks.items) {
         # MATH: UTC - UTC = Accurate Duration
         $timeSpan = $NowUTC - $createdUTC
         
-        # FORMAT: For your display, convert to local EDT time
+        # FORMAT: Convert to local time for display
         $submittedOnLocal = $createdUTC.ToLocalTime().ToString("MM/dd HH:mm")
         
         # Handle "Total Hours" for tasks running over 24 hours
@@ -81,14 +81,15 @@ $Report = foreach ($t in $RunningTasks.items) {
     } catch { $health = "API Delay" }
 
     [PSCustomObject]@{
-        TaskName  = $fullTask.name.PadRight(25).Substring(0,25)
-        Status    = $health
-        Submitted = $submittedOnLocal  # Shown in EDT for you
-        Duration  = $durationStr       # Calculated in UTC for accuracy
-        Instance  = $instance
-        TaskID    = $fullTask.id
+        TaskName      = $fullTask.name.PadRight(25).Substring(0,25)
+        Status        = $health
+        Submitted     = $submittedOnLocal
+        Duration      = $durationStr
+        DurationMins  = if ($fullTask.created_time) { [Math]::Floor(($NowUTC - [DateTime]$fullTask.created_time).TotalMinutes) } else { 0 }
+        Instance      = $instance
+        TaskID        = $fullTask.id
     }
 }
 
 # --- STEP 3: Render the report sorted by longest-running tasks first ---
-$Report | Sort-Object Duration -Descending | Format-Table -AutoSize
+$Report | Sort-Object DurationMins -Descending | Select-Object TaskName, Status, Submitted, Duration, Instance, TaskID | Format-Table -AutoSize

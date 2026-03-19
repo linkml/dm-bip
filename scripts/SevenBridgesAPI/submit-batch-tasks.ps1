@@ -35,14 +35,14 @@ Write-Host "Initializing Cohort Lookup Table..." -ForegroundColor Cyan
 
 # 1a. Find the PilotParentStudies folder ID first
 $rootFiles = Invoke-RestMethod -Uri "$BaseUrl/files?project=$ProjectID" -Method Get -Headers $Headers
-$pilotRoot = $rootFiles.items | Where-Object { $_.name -eq "PilotParentStudies" }
+$pilotRoot = $rootFiles.items | Where-Object { $_.name -eq "PilotParentStudies" -and $_.type -eq "folder" }
 
 if (-not $pilotRoot) { Write-Error "Could not find PilotParentStudies folder."; return }
 
 # 1b. Get all Cohort folders inside PilotParentStudies
 $cohortFolders = Invoke-RestMethod -Uri "$BaseUrl/files?parent=$($pilotRoot.id)" -Method Get -Headers $Headers
 $CohortLookup = @{}
-foreach ($c in $cohortFolders.items) {
+foreach ($c in $cohortFolders.items | Where-Object { $_.type -eq "folder" }) {
     $CohortLookup[$c.name] = $c.id
 }
 
@@ -75,9 +75,10 @@ foreach ($row in $BatchData) {
     }
 
     # Resolve Filename to Hex ID inside the CORRECT parent
-    $SearchUrl = "$BaseUrl/files?parent=$CurrentParentID&name=$Name"
+    $EncodedName = [uri]::EscapeDataString($Name)
+    $SearchUrl = "$BaseUrl/files?parent=$CurrentParentID&name=$EncodedName"
     $SearchResponse = Invoke-RestMethod -Uri $SearchUrl -Method Get -Headers $Headers
-    $Folder = $SearchResponse.items | Where-Object { $_.name -eq $Name }
+    $Folder = $SearchResponse.items | Where-Object { $_.type -eq "folder" -and $_.name -eq $Name }
 
     if (-not $Folder) {
         Write-Host " [ERROR: Folder not found inside $Schema]" -ForegroundColor Red
@@ -111,10 +112,12 @@ foreach ($row in $BatchData) {
     } catch {
         Write-Host " [FAILED: $($_.Exception.Message)]" -ForegroundColor Red
     }
-	
-    # Throttle: wait between submissions to avoid SBG API rate limits
-    Write-Host "Waiting 60 seconds before next submission..." -ForegroundColor Gray
-    Start-Sleep -Seconds 60
+
+    # Throttle: wait between submissions to avoid SBG API rate limits (skip after last task)
+    if ($row -ne $BatchData[-1]) {
+        Write-Host "Waiting 60 seconds before next submission..." -ForegroundColor Gray
+        Start-Sleep -Seconds 60
+    }
 }
 
 Write-Host "`nBatch process complete." -ForegroundColor Cyan

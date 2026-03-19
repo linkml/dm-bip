@@ -47,7 +47,7 @@ if (-not $pilotRoot) {
 
 # 2. Iterate through Cohorts
 $cohorts = Get-SBGContents -ParentID $pilotRoot.id
-$rows = @("Filename,Schema") # Start with the Header row
+$manifestRows = @()
 
 foreach ($cohort in $cohorts) {
     $currentSchema = $cohort.name
@@ -57,23 +57,24 @@ foreach ($cohort in $cohorts) {
     $consentGroups = Get-SBGContents -ParentID $cohort.id
 
     foreach ($group in $consentGroups) {
-        # Join the filename and schema with a comma, no quotes
-        $rows += "$($group.name),$currentSchema"
+        $manifestRows += [PSCustomObject]@{
+            Filename = $group.name
+            Schema   = $currentSchema
+        }
     }
 }
 
 # --- OUTPUT ---
-# Write manifest as plain CSV (no quoting) so submit-batch-tasks.ps1 can consume it directly.
 $ManifestPath = Join-Path $PSScriptRoot "batch_tasks.csv"
 
-if ($rows.Count -gt 1) {
-    $rows | Set-Content -Path $ManifestPath -Encoding utf8
+if ($manifestRows.Count -gt 0) {
+    $manifestRows | Export-Csv -Path $ManifestPath -NoTypeInformation -Encoding utf8
     
-    Write-Host "`nSUCCESS: Manifest generated with $($rows.Count - 1) rows." -ForegroundColor Green
+    Write-Host "`nSUCCESS: Manifest generated with $($manifestRows.Count) rows." -ForegroundColor Green
     Write-Host "File saved to: $ManifestPath" -ForegroundColor Cyan
     
     # Preview
-    $rows | Select-Object -First 50
+    $manifestRows | Select-Object -First 50 | Format-Table -AutoSize
 } else {
     Write-Host "No subfolders found." -ForegroundColor Red
 }
