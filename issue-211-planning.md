@@ -1,71 +1,41 @@
-# Issue #211: Enum Derivations — Planning
+# Plan: Generate enum_derivations from value_mappings
 
-## Issue text
+## Context
 
-> We need to verify that Enum derivations work properly and give the curation team
-> a transformation spec model to start adding enum derivations to the transform
-> specifications.
+Issue #211 requires moving from inline `value_mappings` to formal `enum_derivations` in transformation specs. Rather than hand-editing YAML, we need a script that reads the source schema (with inferred enums) and existing specs (with value_mappings), then generates:
 
-## Our understanding of the task
+1. A new target schema with enum definitions added
+2. New spec files with `enum_derivations` replacing `value_mappings`
 
-There are two parts to "enum derivations":
+Both original and new files live in `toy_data_w_enums/` so either pipeline path works.
 
-1. **Schema-automator infers enums from data.** When it scans a column like
-   `pain_severity` with values `None`, `Mild`, `Moderate`, `Severe`, it can create an
-   enum type with those as permissible values in the source schema. The pipeline
-   currently disables this inference.
+### Local fork changes (not yet released)
 
-2. **LinkML-Map `enum_derivations`** are a feature in transformation specs that map
-   source schema enums to target schema enums — a top-level `enum_derivations:` section
-   alongside `class_derivations:`. Currently **no specs in dm-bip use
-   `enum_derivations`**; all categorical value mapping uses inline `value_mappings`
-   inside `slot_derivations`.
+The int/string blocker (numeric TSV values parsed as int, breaking string enum matching) is fixed across three local forks:
 
-Per conversation with Corey (2026-03-11): the first step is exploratory — **test
-whether LinkML-Map can actually handle enum derivations at all**. Corey suspects it
-may not work. If it doesn't, the work shifts to wherever the gap is (could be
-linkml-map, schema-automator, dm-bip, or the trans-specs). Eventually, `enum_derivations`
-would replace the inline `value_mappings` approach, but that's future work.
+- **schema-automator** (`86afe6d`): `--infer-enum-from-integers` — treats low-cardinality integer columns as string-valued enums instead of `range: integer`.
+- **schema-automator** (`208b97a`): `--infer-mixed-types` — uses `any_of` for columns with mixed types. **Note:** When enabled, mixed-type columns (e.g., `smoking_status` with `1`, `2`, `Former`, `Never`) get `any_of` instead of an enum. The plan does **not** enable this flag, so `smoking_status` should fall through to string range and standard enum inference.
+- **linkml** (`6c2f10e4`, `7daf8db8` on branch `schema-aware-delimited-loader`): Schema-aware delimited file loader. Identifies numeric-ranged slots and only coerces those, preserving string/enum values as strings. This fixes both `linkml validate` and `linkml-map` for integer-coded enums.
+- **linkml-map** (`53ad099`): Forwards `schema_path`/`target_class` to linkml's delimited file loader so the schema-aware loading takes effect during mapping.
+- **linkml-map** (`36689d1`, by Corey): Coerces numeric strings in comparison operators for expression evaluation.
 
-(Note: Anne's interpretation — validating/reporting unmapped values in existing
-`value_mappings` — is a different issue.)
+### Key findings from earlier testing
 
-## What exists today
+1. **Enum derivations work end-to-end** through the dm-bip pipeline (tested in `toy_data/enum_test/`). No changes needed to `src/dm_bip/map_data/`.
+2. **Both source and target schemas need formal enum definitions.** The source schema must have the enum (e.g., `phv00000002_enum` with `range: phv00000002_enum` on the slot), and the target schema must have the target enum.
+3. **Every source enum requires a derivation.** If a source slot has an enum range, LinkML-Map expects a corresponding `enum_derivation`. Without one, it throws: `ValueError: Could not find what to derive from a source <enum_name>`. For enums you want to pass through unchanged, use `mirror_source: true`.
+4. **`enum_derivations` and `value_mappings` can coexist** in the same spec file (different blocks), which is needed for the edge case where a value_mapping has no corresponding source enum.
 
-### Inline value_mappings (current approach)
+### Enum reuse findings from real specs
 
-The [`from_raw` specs](toy_data/from_raw/specs/) embed categorical mappings directly in slot derivations:
+Analysis of 605 real spec files in `../NHLBI-BDC-DMC-HV/priority_variables_transform/*-ingest/` shows:
+- 2617 total `value_mappings` occurrences across 14 target slot names
+- Massive reuse: `condition_status` has 1794 occurrences but only 149 unique mappings
+- `sex` has 58 occurrences, only 6 unique mappings
+- Same target slot can have multiple distinct mappings (e.g., `condition_status`: `{0:ABSENT,1:PRESENT}` vs `{0:ABSENT,1:PRESENT,2:UNKNOWN}` vs `{0:ABSENT,1:HISTORICAL}`)
+- `value_enum` has 135 occurrences, 35 unique mappings — this is the most collision-prone
 
-```yaml
-# from_raw/specs/demography.yaml
-- class_derivations:
-    Demography:
-      populated_from: pht000001
-      slot_derivations:
-        sex:
-          populated_from: phv00000002
-          value_mappings:        # <-- ad hoc, not tied to schema enums
-            '1': OMOP:8507
-            '2': OMOP:8532
-```
-
-This works but the mappings are:
-- Not connected to enum definitions in either source or target schemas
-- Not reusable across specs (e.g., sex mapping repeated if multiple tables have sex)
-- Not invertible or introspectable as formal enum-to-enum transformations
-
-### Source enums (auto-generated)
-
-Schema-automator can infer enums from input data when `--enum-threshold` and
-`--max-enum-size` are set. The pipeline defaults disable inference
-(`--enum-threshold 1.0 --max-enum-size 0`). The enum test config enables it
-(`--enum-threshold 0.1 --max-enum-size 50`).
-
-### Target schema
-
-[`toy_data/target-schema.yaml`](toy_data/target-schema.yaml) defines target classes (`Person`, `Demography`,
-`Observation`, etc.). Now includes `target_sex_enum` with OMOP:8507/OMOP:8532 as
-permissible values, and `Person.gender` has `range: target_sex_enum`.
+**Implication:** The script must deduplicate enums by mapping content and reuse identical enums across specs.
 
 ## What `enum_derivations` look like in LinkML-Map
 
@@ -96,133 +66,129 @@ enum_derivations:
 ```
 
 Key features:
+- **`populated_from`** (on a permissible value) — One source value becomes one target value. Reversible.
+- **`sources`** — Multiple source values all map to the same target value. Not reversible.
+- **`mirror_source: true`** — Unmapped source values pass through unchanged.
+- **`mirror_source: false`** (default) — Unmapped source values are dropped.
 
-- **`populated_from`** (on a permissible value) — One source value becomes one target
-  value. `OMOP:8507: populated_from: Male` means source `Male` becomes `OMOP:8507` in
-  the output. Since the mapping is one-to-one, it's reversible: seeing `OMOP:8507` in
-  the output, you know it came from `Male`.
+## Script: `src/dm_bip/generate_enum_specs.py`
 
-- **`sources`** — Multiple source values all map to the same target value. For example,
-  `SMOKER: sources: [Current smoker, Former smoker]` collapses two source values into
-  one. This is *not* reversible — seeing `SMOKER` in the output, you can't tell which
-  source value produced it.
+CLI tool using Typer (consistent with project conventions).
 
-- **`mirror_source: true`** — Source values that aren't explicitly mapped pass through
-  unchanged. If the source has a value `Other` and there's no mapping for it, `Other`
-  appears in the output as-is.
+### Inputs
+- `--source-schema`: Source schema path (generated with enum inference)
+- `--spec-dir`: Existing spec directory (with value_mappings)
+- `--target-schema`: Existing target schema path
+- `--output-spec-dir`: Output spec directory
+- `--output-target-schema`: Output target schema path
 
-- **`mirror_source: false`** (the default) — Source values without an explicit mapping
-  are dropped. Only mapped values appear in the output.
+### Algorithm
 
-## Work completed
+#### Step 1: Parse source schema
+Build maps:
+- `slot_to_enum`: slot_name → enum_name (e.g., `phv00000002` → `phv00000002_enum`)
+- `enum_pvs`: enum_name → list of permissible values
 
-### 1. Enum derivations work end-to-end (text-valued enums)
+#### Step 2: Collect all value_mappings from specs
+Walk every spec block recursively (including inside `object_derivations`). For each `value_mappings`, record:
+- source slot (`populated_from`)
+- target slot name
+- target class name
+- the mapping `{source_val: target_val}`
+- nesting path for comments (e.g., `Demography.sex` or `MeasurementObservation.value_quantity→Quantity.value_concept`)
 
-We built a test case in [`toy_data/enum_test/`](toy_data/enum_test/) and ran it through
-the pipeline. **Enum derivations work** for text-valued source enums.
+#### Step 3: Deduplicate and name target enums
 
-Test setup:
-- **Source data:** Raw toy data through `prepare_input.py` → phv column names
-- **Source schema:** Auto-generated with `--enum-threshold 0.1 --max-enum-size 50 --infer-enum-from-integers`
-- **Target schema:** [`toy_data/target-schema.yaml`](toy_data/target-schema.yaml) with `target_sex_enum` (OMOP:8507/OMOP:8532) on `Person.gender`
-- **Spec:** [`toy_data/enum_test/specs/person-spec.yaml`](toy_data/enum_test/specs/person-spec.yaml)
-- **Config:** [`toy_data/enum_test/config.mk`](toy_data/enum_test/config.mk)
-- **Command:** `make pipeline CONFIG=toy_data/enum_test/config.mk`
+**Naming convention:**
+1. If the target schema already defines an enum on this slot → reuse that name
+2. Otherwise → `{target_slot}_enum`
+3. If multiple distinct mappings share the same target slot name → disambiguate with a suffix. Use the source slot name: e.g., `value_concept_phv00000017_enum`, `value_concept_phv00000025_enum`
 
-### 2. `--infer-enum-from-integers` added to schema-automator
+**Deduplication:** Group all value_mappings by their mapping content (the `{source: target}` dict). Identical mappings share a single target enum definition, even across different specs/blocks.
 
-By default, schema-automator treats integer columns as `range: integer` regardless of
-cardinality. We added `--infer-enum-from-integers` to the local schema-automator
-(commit `86afe6d`). This is required for the raw data path where columns like
-`phv00000002` (gender) have coded integer values `1`, `2`.
+#### Step 4: Generate target enums
+For each unique target enum:
+- Create enum definition with target values as permissible values
+- Add `range: {enum_name}` on the corresponding target schema slot/attribute
+- Include YAML comment noting source slot(s) where not redundant with context
 
-The flag is wired into `pipeline.Makefile` via `DM_INFER_ENUM_FROM_INTEGERS` and
-enabled in `toy_data/enum_test/config.mk`.
+#### Step 5: Generate enum_derivations
+For each spec block containing value_mappings:
+- Create `enum_derivations` section at top level (alongside `class_derivations`)
+- For each value_mapping → enum_derivation entry:
+  - `populated_from: {source_enum_name}`
+  - `permissible_value_derivations` converting each `{source_val: target_val}`
+  - YAML comment documenting: slot usage path, source permissible values
+- Remove `value_mappings` from the slot_derivation
 
-**Status:** Local change only, not yet released to PyPI.
+#### Step 6: Handle passthrough enums and unreferenced enums
 
-### 3. Pipeline wiring
+**Passthrough enums:** For source enums used in specs (slot appears in `populated_from`) but without `value_mappings`:
+- Generate `mirror_source: true` derivation
+- YAML comment listing permissible values: `# CURATOR: Source permissible values: '1', '2', '3'. Should these be mapped?`
+- Log to stdout
 
-- `pipeline.Makefile`: Added `DM_INFER_ENUM_FROM_INTEGERS` variable and conditional `--infer-enum-from-integers` flag
-- `toy_data/enum_test/config.mk`: Uses raw data path, enum inference enabled, integer enum inference enabled
-- `toy_data/enum_test/specs/person-spec.yaml`: Uses phv column names, `enum_derivations` with `target_sex_enum` mapping and `mirror_source: true` passthroughs
+**Unreferenced enums:** For source enums that exist in the source schema but whose slot doesn't appear in any spec at all:
+- Log to stdout: `NOTE: Source enum {name} (slot {slot}) not referenced in any spec`
+- No spec output needed, but curators should be aware these exist
 
-### Key findings
+#### Step 7: Handle edge cases
+- `value_mappings` on a slot with no source enum → leave `value_mappings` in place, log warning
+- Write new spec files and target schema; originals untouched
 
-1. **Enum derivations work end-to-end** through the dm-bip pipeline. LinkML-Map
-   processes them correctly. No changes needed to `src/dm_bip/map_data/`.
+### Inventory of value_mappings in toy_data_w_enums/specs/
 
-2. **Both source and target schemas need formal enum definitions.** The source schema
-   must have the enum (e.g., `phv00000002_enum` with `range: phv00000002_enum` on the slot),
-   and the target schema must have the target enum (e.g., `target_sex_enum`).
+| File | Target Class | Target Slot | Source Slot | Nested? |
+|------|-------------|-------------|-------------|---------|
+| demography.yaml | Demography | sex | phv00000002 | no |
+| demography.yaml | Demography | race | phv00000003 | no |
+| demography.yaml | Demography | ethnicity | phv00000004 | no |
+| demography.yaml | Demography | smoking_status | phv00000016 | no |
+| measurements.yaml | Quantity | value_concept | phv00000017 | yes (object_derivations) |
+| measurements.yaml | Quantity | value_concept | phv00000025 | yes (object_derivations) |
+| observations.yaml | Observation | value_enum | phv00000049 | no |
+| observations.yaml | Observation | value_enum | phv00000050 | no |
+| conditions.yaml | Condition | condition_status | phv00000051 | no |
 
-3. **Every source enum requires a derivation.** If a source slot has an enum range,
-   LinkML-Map expects a corresponding `enum_derivation`. Without one, it throws:
-   `ValueError: Could not find what to derive from a source <enum_name>`.
-   For enums you want to pass through unchanged, use `mirror_source: true`.
+The two `value_concept` entries have different mappings → will get disambiguated names.
+The two `value_enum` entries have identical mappings (`{0: None, 1: OMOP:40766945}`) → will share one enum.
 
-## Open blocker: int/string type mismatch
+### Comments strategy
 
-Both `linkml validate` **and** `linkml-map` parse bare numeric TSV values as integers.
-When schema-automator creates string enum permissible values `'1'`, `'2'`, the tools
-see integer `1`, `2` in the data — which don't match.
+Generated YAML files should include comments to help curators understand provenance and make decisions:
 
-**Impact on validation (step 2):**
-```
-[ERROR] 2 is not of type 'string' in /phv00000002
-[ERROR] 2 is not one of ['2', '1'] in /phv00000002
-```
+- **Target schema enum definitions:** Note which source slot(s) map to each target enum
+- **enum_derivations:** Note the slot usage path (e.g., `Demography.sex`) and list source permissible values
+- **Passthrough enums:** Prompt curators: `# CURATOR: Source permissible values: ... Should these be mapped?`
+- **Unreferenced enums:** Logged to stdout (no YAML output)
 
-**Impact on mapping (step 3):**
-The enum derivation `populated_from: '1'` doesn't match data value `1` (integer), so
-mapped output shows `gender: null` instead of the expected `OMOP:8507`.
+### Future: Human-readable variable names in comments
 
-**This means:** Enum derivations are verified working for text-valued enums (e.g.,
-`Male` → `OMOP:8507`), but **do not work for integer-coded enums** — which is the
-common case in raw dbGaP data.
+After the core script works, add an option to include human-readable dbGaP variable names (from raw file headers) in generated comments. This would be a non-default option (`--var-names-file`?) since the names can be duplicated, incorrect, or very long. Truncate at 60 characters. Requires preserving the names during prepare_input (step 0).
 
-### Question for Corey
+### Pipeline integration
 
-Where should the fix for the int/string mismatch live?
+Add a `generate-enum-specs` Make target in `pipeline.Makefile`:
+- Runs after `schema-create` (needs source schema with inferred enums)
+- Runs before `map-data`
+- Only runs when `DM_ENUM_DERIVATIONS` is set (opt-in)
 
-Options:
-1. **schema-automator**: Generate integer-typed PVs instead of string PVs?
-2. **linkml-validate / linkml-map**: Coerce values to string before enum matching?
-3. **dm-bip**: Pre-process data to ensure string typing? (seems wrong)
-4. **Something else?**
+Config for `toy_data_w_enums/config.mk`:
+- Enable enum inference: `DM_ENUM_THRESHOLD := 0.1`, `DM_MAX_ENUM_SIZE := 50`, `DM_INFER_ENUM_FROM_INTEGERS := true`
+- Enable enum derivation generation: `DM_ENUM_DERIVATIONS := true`
+- Generated files go to `$(DM_OUTPUT_DIR)/enum-specs/` and `$(DM_OUTPUT_DIR)/enum-target-schema.yaml`
+- `DM_MAPPING_SPEC` and `DM_MAP_TARGET_SCHEMA` point at generated files when enabled
 
-This is the primary blocker for using enum derivations with real dbGaP data.
+### Files to create/modify
 
-### Mixed-type columns (`smoking_status`)
+- **Create:** `src/dm_bip/generate_enum_specs.py`
+- **Modify:** `pipeline.Makefile` — add `generate-enum-specs` target
+- **Modify:** `toy_data_w_enums/config.mk` — add enum inference + derivation flags
 
-The toy data intentionally has `smoking_status` with mixed int/string values
-(`1`, `2`, `Former`, `Never`, `Unknown`) matching real dbGaP patterns.
-Schema-automator `--infer-mixed-types` (v0.5.4-rc2) uses `any_of` for these,
-which removes the enum entirely. This is a separate issue from the int/string blocker.
+### Verification
 
-## Remaining questions
-
-1. **Int/string blocker** — see above. Primary blocker for real data.
-
-2. **Coexistence with value_mappings:** Can `enum_derivations` and inline
-   `value_mappings` coexist in the same spec? The from_raw path may still need
-   `value_mappings` for some cases.
-
-3. **Enum inference defaults:** Should the pipeline enable enum inference by default
-   now that we know enum derivations work? Or should it remain opt-in?
-
-4. **Curator workflow:** What does the curation team need beyond the example spec? A
-   template? Documentation?
-
-5. **Test folder structure:** Should `toy_data/enum_test/` remain separate or be
-   consolidated? It currently shares `toy_data/data/raw/` and
-   `toy_data/target-schema.yaml` with the main pipeline.
-
-6. **DRY source enums:** Can schema-automator help generate the `enum_derivations`
-   boilerplate (e.g., auto-generate `mirror_source: true` stubs for all source enums)?
-
-## See also
-
-- [Pipeline steps reference](docs/pipeline-steps.md) — copy-pasteable commands for each step
-- [`toy_data/enum_test/`](toy_data/enum_test/) — working test case
-- [Issue #211](https://github.com/linkml/dm-bip/issues/211) on GitHub
+1. Baseline: `make pipeline CONFIG=toy_data_w_enums/config.mk` already works with value_mappings
+2. Enable enum flags in config, run `make schema-create CONFIG=toy_data_w_enums/config.mk` to get source schema with enums
+3. Run `generate_enum_specs.py` → produces `enum-specs/` and `enum-target-schema.yaml`
+4. Inspect generated files for correctness (comments, enum names, derivations)
+5. Run full pipeline with generated specs → compare mapped output to baseline
