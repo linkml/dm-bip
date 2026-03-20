@@ -1,0 +1,36 @@
+- class_derivations:
+    Demography:
+      populated_from: pht000001
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000001
+        associated_visit:
+          value: TOY BASELINE
+        sex:
+          populated_from: phv00000002
+          value_mappings:
+            '1': OMOP:8507
+            '2': OMOP:8532
+        race:
+          populated_from: phv00000003
+          value_mappings:
+            '1': OMOP:8527
+            '2': OMOP:8516
+            '3': OMOP:8515
+            '4': OMOP:8557
+            '5': OMOP:8657
+        ethnicity:
+          populated_from: phv00000004
+          value_mappings:
+            '1': OMOP:38003563
+            '0': OMOP:38003564
+        age_at_observation:
+          expr: '{phv00000005} * 365'
+        smoking_status:
+          populated_from: phv00000016
+          value_mappings:
+            '1': OMOP:36309784
+            '2': OMOP:36310471
+            'Former': OMOP:45884037
+            'Never': OMOP:45879404
+            'Unknown': OMOP:0

@@ -1,0 +1,103 @@
+# Body height visit 1 — from pht000005, inches → cm, in-table age
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht000005
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000041
+        associated_visit:
+          value: TOY VISIT 1
+          range: string
+        observation_type:
+          value: OBA:VT0001253
+          range: string
+        age_at_observation:
+          expr: '{phv00000046} * 365'
+        value_quantity:
+          object_derivations:
+          - class_derivations:
+              Quantity:
+                populated_from: pht000005
+                slot_derivations:
+                  value_decimal:
+                    expr: '{phv00000043} * 2.54'
+                  unit:
+                    value: cm
+                    range: string
+# Body height visit 2 — from pht000005, inches → cm, in-table age
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht000005
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000041
+        associated_visit:
+          value: TOY VISIT 2
+          range: string
+        observation_type:
+          value: OBA:VT0001253
+          range: string
+        age_at_observation:
+          expr: '{phv00000047} * 365'
+        value_quantity:
+          object_derivations:
+          - class_derivations:
+              Quantity:
+                populated_from: pht000005
+                slot_derivations:
+                  value_decimal:
+                    expr: '{phv00000044} * 2.54'
+                  unit:
+                    value: cm
+                    range: string
+# Body height visit 3 — from pht000005, inches → cm, in-table age
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht000005
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000041
+        associated_visit:
+          value: TOY VISIT 3
+          range: string
+        observation_type:
+          value: OBA:VT0001253
+          range: string
+        age_at_observation:
+          expr: '{phv00000048} * 365'
+        value_quantity:
+          object_derivations:
+          - class_derivations:
+              Quantity:
+                populated_from: pht000005
+                slot_derivations:
+                  value_decimal:
+                    expr: '{phv00000045} * 2.54'
+                  unit:
+                    value: cm
+                    range: string
+# Body height with case() visit routing — cohort-dependent visit label
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht000005
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000041
+        associated_visit:
+          expr: 'case(({phv00000042} == 1, ''TOY COHORT A VISIT 1''), ({phv00000042} == 2, ''TOY COHORT B VISIT 1''))'
+        observation_type:
+          value: OBA:VT0001253
+          range: string
+        age_at_observation:
+          expr: '{phv00000046} * 365'
+        value_quantity:
+          object_derivations:
+          - class_derivations:
+              Quantity:
+                populated_from: pht000005
+                slot_derivations:
+                  value_decimal:
+                    expr: '{phv00000043} * 2.54'
+                  unit:
+                    value: cm
+                    range: string
