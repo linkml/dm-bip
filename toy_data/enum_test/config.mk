@@ -1,10 +1,13 @@
+DM_RAW_SOURCE        := toy_data/data/raw
 DM_SCHEMA_NAME       := EnumTest
 DM_OUTPUT_DIR        := output/EnumTest
-DM_INPUT_DIR         := toy_data/data/pre_cleaned
+DM_INPUT_DIR         := $(DM_OUTPUT_DIR)/prepared
 DM_TRANS_SPEC_DIR    := toy_data/enum_test/specs
+DM_MAPPING_SPEC      := $(DM_TRANS_SPEC_DIR)
 DM_MAP_TARGET_SCHEMA := toy_data/target-schema.yaml
 DM_MAPPING_PREFIX    := TEST
 DM_MAPPING_POSTFIX   := -data
 DM_MAP_STRICT        := false
 DM_ENUM_THRESHOLD    := 0.1
 DM_MAX_ENUM_SIZE     := 50
+DM_INFER_ENUM_FROM_INTEGERS := true

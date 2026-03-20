@@ -9,9 +9,10 @@ license = "MIT"
 dependencies = [
     "importlib-metadata>=8.2.0",
     "pandas>=2.2.3,<3",
-    "schema-automator==0.5.4rc2",
+    "linkml",  # TODO: remove direct dep before pushing — only needed for editable dev override
+    "schema-automator",  # TODO: pin to release version before pushing (was ==0.5.4rc2)
     "schemasheets==0.4.0",
-    "linkml-map==0.3.9-rc1",
+    "linkml-map",  # TODO: pin to release version before pushing (was ==0.3.9-rc1)
     "typing-extensions>=4.0,<5",
     "flatten-dict>=0.4.2,<0.5",
     "typer>=0.20.0",
@@ -52,6 +53,12 @@ default-groups = [
     "dev",
     "env",
 ]
+
+# TODO: remove this section before pushing — local dev override only
+[tool.uv.sources]
+schema-automator = { path = "../schema-automator", editable = true }
+linkml = { path = "linkml/packages/linkml", editable = true }
+linkml-map = { path = "linkml-map", editable = true }
 
 [tool.poetry-dynamic-versioning]
 enable = true

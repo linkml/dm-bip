@@ -19,13 +19,13 @@ bash repro.sh
 
 **data.tsv** has five rows:
 
-| id | zipcode   | satisfaction | expected result |
-|----|-----------|-------------|-----------------|
-| 1  | 90210     | 4           | valid (zipcode is a string, `'4'` is a permissible value) |
-| 2  | 10001     | 2           | valid (same reasoning) |
-| 3  | 30301-123 | 5           | valid (`30301-123` is not numeric, `'5'` is a permissible value) |
-| 4  | 20001-123 | foo         | valid (`'foo'` is a permissible value) |
-| 5  | 30001     | bar         | **invalid** (`'bar'` is not a permissible value) |
+ | id | zipcode   | satisfaction | expected result                                                  |
+ |----|-----------|--------------|------------------------------------------------------------------|
+ | 1  | 90210     | 4            | valid (zipcode is a string, `'4'` is a permissible value)        |
+ | 2  | 10001     | 2            | valid (same reasoning)                                           |
+ | 3  | 30301-123 | 5            | valid (`30301-123` is not numeric, `'5'` is a permissible value) |
+ | 4  | 20001-123 | foo          | valid (`'foo'` is a permissible value)                           |
+ | 5  | 30001     | bar          | **invalid** (`'bar'` is not a permissible value)                 |
 
 ## Actual output
 

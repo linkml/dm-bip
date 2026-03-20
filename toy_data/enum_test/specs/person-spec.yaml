@@ -1,28 +1,31 @@
 - class_derivations:
     Person:
-      populated_from: demographics
+      populated_from: pht000001
       slot_derivations:
         id:
-          populated_from: subject_id
+          populated_from: phv00000001
         gender:
-          populated_from: sex
+          populated_from: phv00000002
         race:
-          populated_from: race
+          populated_from: phv00000003
         ethnicity:
-          populated_from: ethnicity
+          populated_from: phv00000004
         age:
-          populated_from: age
+          populated_from: phv00000005
   enum_derivations:
     target_sex_enum:
-      populated_from: sex_enum
+      populated_from: phv00000002_enum
       permissible_value_derivations:
         OMOP:8507:
-          populated_from: Male
+          populated_from: '1'
         OMOP:8532:
-          populated_from: Female
-    ethnicity_enum:
-      populated_from: ethnicity_enum
+          populated_from: '2'
+    phv00000003_enum:
+      populated_from: phv00000003_enum
       mirror_source: true
-    smoking_status_enum:
-      populated_from: smoking_status_enum
+    phv00000004_enum:
+      populated_from: phv00000004_enum
+      mirror_source: true
+    phv00000016_enum:
+      populated_from: phv00000016_enum
       mirror_source: true
