@@ -8,61 +8,9 @@ Existing specs (e.g., [NHLBI-BDC-DMC-HV/.../afib.yaml](https://github.com/RTIInt
 
 I have also made a new [toy_data_w_enums](./toy_data_w_enums) directory containing only the files needed to run the unchanged pipeline on raw data and to run it with inferred enums and specs using `enum_derivations` (also on the raw data).
 
-## Original and enum-focused pipelines
+## Pipeline overview
 
-[Pipeline Steps](./docs/pipeline-steps.md) documents the steps for both cases. 
-
->sg notes to claude:
-> 
-> pipline-steps needs a fair amount of fixing -- commands should point to toy_data_w_enums, add the new script, fix obsolete BLOCKER notes, etc.
-> 
-> i'm not sure if there should be a more narrative account here with links to the relevant rows of the orig and enum-focused tables or a new table here or merge that file into this... hmmm. the pipeline doc should be permanent. issue 211 will be resolved, but some of the context will continue to be of interest. but here's some stuff i would like to see here in documenting the pipeline:
-> - description, maybe examples, and links to config.mk files before the steps
-> - ideally have orig and enum columns in same table for comparison
-> - top line might be make cmd for whole pipeline
-> - better formatted commands, like (will need to use `<br/>` tags in markdown table)
-
-```shell
-  uv run python src/dm_bip/cleaners/prepare_input.py \
-     --source toy_data/data/raw \
-     --mapping toy_data/from_raw/specs \
-     --output output/ToyFromRaw/prepared \
-     --verbose`
- OR
-   make prepare-input CONFIG=toy_data/from_raw/config.mk
-```
-
-> crap. that's not going to work in markdown, is it? could we do columns with fancy css like:
-    <div>
-      <div>
-        <div>step 1</div>
-        <div>orig cmd</div>
-        <div>enum cmd</div>
-      </div>
-      <div>
-        <div>step 2</div>
-        <div>orig cmd</div>
-        <div>enum cmd</div>
-      </div>
-    </div>
->
-> or nested lists like
-> - step 1. description.
->   - orig cmd
->   - enum cmd
->   - ...
-> 
-> For MANUAL steps, orig will have `Curator edits toy_data/target-schema.yaml`, enum will have new script cmd.
->
-> Specific local fork changes can go as notes in appropriate steps. But then in some out-of-the-way place have a little section on what we had to do to get them working and what we'll do when they're released. One thing I learned, though, it might take a long time for releases to happen, but when we want the pipeline to run on real data, we will be able to do the same setup in a dev area of the protected data enclave (Seven Bridges).
-
-### Local fork changes (not yet released)
-
-The int/string blocker (numeric TSV values parsed as int, breaking string enum matching) is fixed across three local forks:
-
-- **schema-automator** (`86afe6d`): `--infer-enum-from-integers` — treats low-cardinality integer columns as string-valued enums instead of `range: integer`.
-- **linkml** (`6c2f10e4`, `7daf8db8` on branch `schema-aware-delimited-loader`): Schema-aware delimited file loader. Identifies numeric-ranged slots and only coerces those, preserving string/enum values as strings. This fixes both `linkml validate` and `linkml-map` for integer-coded enums.
-- **linkml-map** (`53ad099`): Forwards `schema_path`/`target_class` to linkml's delimited file loader so the schema-aware loading takes effect during mapping.
+See [Pipeline Steps](./docs/pipeline-steps.md) for full commands comparing the original (value_mappings) and enum-focused pipelines side by side, including local fork change notes at each relevant step.
 
 ### Enum reuse findings from real specs
 
@@ -77,14 +25,16 @@ Analysis of 605 real spec files in `../NHLBI-BDC-DMC-HV/priority_variables_trans
 
 ## What `enum_derivations` look like in LinkML-Map
 
+Illustrative example with readable names:
+
 ```yaml
 enum_derivations:
-  target_sex_enum:                      # target enum name
-    populated_from: sex_enum            # source enum name
+  target_sex_enum:
+    populated_from: sex_enum
     mirror_source: false                # unmapped source values are dropped
     permissible_value_derivations:
       OMOP:8507:
-        populated_from: Male
+        populated_from: Male            # one source value → one target value
       OMOP:8532:
         populated_from: Female
 
@@ -99,13 +49,29 @@ enum_derivations:
       OMOP:8515:
         populated_from: asian
       OMOP:8557:
-        sources:                         # many-to-one: multiple source values → one target
+        sources:                         # many source values → one target value
+          - hispanic or latino
           - hispanic
 
-  # Passthrough: source values copied as-is to target; no permissible_value_derivations needed
-  phv00000042_enum:
-    populated_from: phv00000042_enum
-    mirror_source: true
+  # Passthrough: source values copied as-is; no permissible_value_derivations needed
+  cohort_enum:
+    populated_from: cohort_enum
+    mirror_source: true                 # all source values appear unchanged in target
+```
+
+Example from actual toy data (what the script should generate from `demography.yaml`'s sex value_mapping):
+
+```yaml
+enum_derivations:
+  # Demography.sex — source permissible values: '1', '2'
+  sex_enum:
+    populated_from: phv00000002_enum
+    mirror_source: false
+    permissible_value_derivations:
+      OMOP:8507:
+        populated_from: '1'
+      OMOP:8532:
+        populated_from: '2'
 ```
 
 ## Script: `src/dm_bip/generate_enum_specs.py`
