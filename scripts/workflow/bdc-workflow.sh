@@ -186,13 +186,16 @@ DM_INPUT_DIR="${PROCESSED_DIR}/${RAW_DIR_NAME}_CleanedSource"
 
 # Define paths to external dependencies (within container)
 # Find the latest version directory for this study's trans-specs
-TRANS_SPEC_BASE="/app/bdc-harmonized-variables/trans_specs/${DM_SCHEMA_NAME}"
-latest_version_dir=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V | tail -1)
-if [[ -z "${latest_version_dir:-}" ]]; then
-  echo "ERROR: No trans-spec version directory found under $TRANS_SPEC_BASE"
-  exit 1
-fi
-DM_TRANS_SPEC_DIR="${TRANS_SPEC_BASE}/${latest_version_dir}"
+# TRANS_SPEC_BASE="/app/bdc-harmonized-variables/trans_specs/${DM_SCHEMA_NAME}"
+# latest_version_dir=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V | tail -1)
+# if [[ -z "${latest_version_dir:-}" ]]; then
+#   echo "ERROR: No trans-spec version directory found under $TRANS_SPEC_BASE"
+#   exit 1
+# fi
+# DM_TRANS_SPEC_DIR="${TRANS_SPEC_BASE}/${latest_version_dir}"
+
+DM_TRANS_SPEC_DIR="/app/NHLBI-BDC-DMC-HV/priority_variables_transform/${DM_SCHEMA_NAME}-ingest"
+
 echo "  Trans-spec version:   $(basename "$DM_TRANS_SPEC_DIR")"
 DM_MAP_TARGET_SCHEMA="/app/NHLBI-BDC-DMC-HM/src/bdchm/schema/bdchm.yaml"
 
@@ -259,6 +262,7 @@ make -j "$MAKE_JOBS" pipeline \
   DM_INPUT_DIR="$DM_INPUT_DIR" \
   DM_TRANS_SPEC_DIR="$DM_TRANS_SPEC_DIR" \
   DM_MAP_TARGET_SCHEMA="$DM_MAP_TARGET_SCHEMA" \
+  DM_MAP_OUTPUT_TYPE=tsv \
   $DM_MAP_STRICT_ARG
 
 #------------------------------------------------------------------------------
