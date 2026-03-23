@@ -14,6 +14,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+import yaml
 from linkml_runtime import SchemaView
 
 script_dir = Path(__file__).parent
@@ -117,5 +118,18 @@ def test_mapping_outputs(from_raw_pipeline_output):
     assert mapped_dir.exists(), "mapped-data directory not created"
 
     for entity in EXPECTED_ENTITIES:
-        matches = list(mapped_dir.glob(f"*{entity}*"))
+        matches = list(mapped_dir.glob(f"*{entity}*.yaml"))
         assert matches, f"No mapped output file found for entity {entity}"
+
+
+def test_mapping_demography_values(from_raw_pipeline_output):
+    """Demography output should contain sex code value mappings."""
+    mapped_dir = from_raw_pipeline_output["output_dir"] / "mapped-data"
+    demography_files = list(mapped_dir.glob("*Demography*.yaml"))
+    assert demography_files, "No Demography output file"
+
+    records = [r for r in yaml.safe_load_all(demography_files[0].read_text()) if r]
+    assert len(records) > 0, "Demography output is empty"
+
+    sex_values = {r.get("sex") for r in records if r.get("sex")}
+    assert sex_values & {"OMOP:8507", "OMOP:8532"}, f"Expected OMOP sex codes, got {sex_values}"

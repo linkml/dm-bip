@@ -433,40 +433,80 @@ validate-debug:
 
 # Mapping (Transformation) Goals
 # ==============================
+#
+# Two-phase design for -j parallelism:
+#   1. Compositor: merge per-variable specs into per-entity TransformationSpecifications
+#   2. Recursive $(MAKE): discover composed specs, map each entity in parallel
+#
+# DM_MAP_OUTPUT_TYPE is a space-separated list of formats. The first value is the
+# primary format (-f), and any additional values produce extra outputs (-O).
+# Example: DM_MAP_OUTPUT_TYPE := tsv jsonl   →   -f tsv -O ...Entity.jsonl
 
 MAP_TARGET_SCHEMA_FILE := $(DM_MAP_TARGET_SCHEMA)
+COMPOSED_SPEC_DIR      := $(MAPPING_OUTPUT_DIR)/composed-specs
 
-MAP_TRANS_SPEC_FILES := $(shell find $(DM_TRANS_SPEC_DIR) -maxdepth 1 -type f -name '*.yaml' 2>/dev/null)
+MAP_TRANS_SPEC_FILES := $(shell find $(DM_TRANS_SPEC_DIR) -type f \( -name '*.yaml' -o -name '*.yml' \) 2>/dev/null)
 
 check_map_input_files = $(call check_target_schema)$(call check_trans_spec_files)
+
+# Output format helpers
+_MAP_PRIMARY_FMT     := $(firstword $(DM_MAP_OUTPUT_TYPE))
+_MAP_ADDITIONAL_FMTS := $(wordlist 2,$(words $(DM_MAP_OUTPUT_TYPE)),$(DM_MAP_OUTPUT_TYPE))
+
+# Build output basename: {prefix}-{entity}-{postfix} (omitting empty parts)
+_map_base = $(if $(DM_MAPPING_PREFIX),$(DM_MAPPING_PREFIX)-)$1$(if $(DM_MAPPING_POSTFIX),-$(DM_MAPPING_POSTFIX))
+
+# Build -O flags for additional output formats
+_map_additional_outputs = $(foreach fmt,$(_MAP_ADDITIONAL_FMTS),-O $(MAPPING_OUTPUT_DIR)/$(call _map_base,$1).$(fmt))
+
+# Discover composed specs (populated on recursive make after compositor runs)
+_COMPOSED_SPECS   := $(wildcard $(COMPOSED_SPEC_DIR)/*.yaml)
+_ENTITIES         := $(basename $(notdir $(_COMPOSED_SPECS)))
+_ENTITY_SENTINELS := $(foreach e,$(_ENTITIES),$(MAPPING_OUTPUT_DIR)/.$(e)_complete)
 
 .PHONY: map-data
 map-data: $(MAPPING_SUCCESS_SENTINEL)
 
-$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL)
+# Phase 1: Compose per-variable specs into per-entity TransformationSpecifications
+$(COMPOSED_SPEC_DIR)/.composed: $(MAP_TRANS_SPEC_FILES)
 	@$(call check_map_input_files)
+	@mkdir -p $(@D)
+	$(RUN) python -m dm_bip.map_data.compose_specs $(DM_TRANS_SPEC_DIR) $(COMPOSED_SPEC_DIR)
+	@touch $@
+
+# Phase 2: Run compositor, then recursive make to map each entity
+$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(COMPOSED_SPEC_DIR)/.composed
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
-	set -o pipefail && $(RUN) python ./src/dm_bip/map_data/map_data.py \
-		--source-schema $(SCHEMA_FILE) \
-		--target-schema $(DM_MAP_TARGET_SCHEMA) \
-		--data-dir $(DM_INPUT_DIR) \
-		--var-dir $(DM_TRANS_SPEC_DIR) \
-		--output-dir $(MAPPING_OUTPUT_DIR) \
-		$(if $(DM_MAPPING_PREFIX),--output-prefix $(DM_MAPPING_PREFIX)) \
-		$(if $(DM_MAPPING_POSTFIX),--output-postfix "$(DM_MAPPING_POSTFIX)") \
-		--output-type $(DM_MAP_OUTPUT_TYPE) \
-		--chunk-size $(DM_MAP_CHUNK_SIZE) \
-		$(if $(filter false,$(DM_MAP_STRICT)),--no-strict) \
-		2>&1 | tee $(MAPPING_LOG)
+	$(MAKE) _map-all-entities CONFIG=$(CONFIG)
 	@echo "✓ Data mapping complete. Output written to $(MAPPING_OUTPUT_DIR)"
 	@echo "Mapping log written to $(MAPPING_LOG)"
+	@touch $@
+
+# Internal target invoked by recursive make — discovers and maps all entities
+.PHONY: _map-all-entities
+_map-all-entities: $(_ENTITY_SENTINELS)
+
+# Per-entity pattern rule — parallelizable with -j
+$(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE)
+	set -o pipefail && $(RUN) linkml-map map-data \
+		-T $< \
+		-s $(SCHEMA_FILE) \
+		--target-schema $(MAP_TARGET_SCHEMA_FILE) \
+		-o $(MAPPING_OUTPUT_DIR)/$(call _map_base,$*).$(_MAP_PRIMARY_FMT) \
+		-f $(_MAP_PRIMARY_FMT) \
+		$(call _map_additional_outputs,$*) \
+		--chunk-size $(DM_MAP_CHUNK_SIZE) \
+		$(DM_INPUT_DIR)/ \
+		2>&1 | tee -a $(MAPPING_LOG)
 	@touch $@
 
 .PHONY: map-debug
 map-debug:
 	@echo "DM_TRANS_SPEC_DIR: $(DM_TRANS_SPEC_DIR)"
 	@echo "DM_MAP_TARGET_SCHEMA: $(DM_MAP_TARGET_SCHEMA)"
+	@echo "DM_MAP_OUTPUT_TYPE: $(DM_MAP_OUTPUT_TYPE)"
+	@echo "COMPOSED_SPEC_DIR: $(COMPOSED_SPEC_DIR)"
 	@echo "MAPPING_OUTPUT_DIR: $(MAPPING_OUTPUT_DIR)"
 	@echo "MAPPING_LOG: $(MAPPING_LOG)"
 
