@@ -41,8 +41,9 @@ RUN if [ "$BDC_PULL_LATEST" = "true" ]; then \
     else \
       git clone --depth 1 --branch v1.2.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
       #git clone --depth 1 --branch 2026.03-2 https://github.com/amc-corey-cox/bdc-harmonized-variables.git; \
-      git clone --depth 1 --branch test/fhs-integration-2026-03-21 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git; \
+      #git clone --depth 1 --branch test/fhs-integration-2026-03-21 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git; \
       #git clone --depth 1 --branch test/whi-integration-486-490-492 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git; \
+      git clone --depth 1 --branch fix/hchs-chr-batch1 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git; \
     fi
 
 CMD ["uv", "run", "dm-bip", "run"]
