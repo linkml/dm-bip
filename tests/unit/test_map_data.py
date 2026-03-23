@@ -6,8 +6,8 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-import click
 import pytest
+import typer
 import yaml
 from linkml_runtime import SchemaView
 
@@ -854,7 +854,7 @@ def test_main_exits_nonzero_on_non_strict_errors(temp_dir):
     )
     output_dir = Path(temp_dir) / "output"
 
-    with pytest.raises(click.exceptions.Exit) as exc_info:
+    with pytest.raises(typer.Exit) as exc_info:
         main(
             source_schema=TOY_DATA / "pre_cleaned/source-schema.yaml",
             target_schema=TOY_DATA / "target-schema.yaml",
