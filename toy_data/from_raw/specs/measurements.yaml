@@ -46,30 +46,6 @@
                   unit:
                     value: kg
                     range: string
-# Systolic blood pressure — from pht000002, direct copy
-- class_derivations:
-    MeasurementObservation:
-      populated_from: pht000002
-      slot_derivations:
-        associated_participant:
-          populated_from: phv00000011
-        associated_visit:
-          value: TOY BASELINE
-          range: string
-        observation_type:
-          value: OMOP:4152194
-          range: string
-        value_quantity:
-          object_derivations:
-          - class_derivations:
-              Quantity:
-                populated_from: pht000002
-                slot_derivations:
-                  value_decimal:
-                    populated_from: phv00000014
-                  unit:
-                    value: mm[Hg]
-                    range: string
 # HDL cholesterol — from pht000003, direct copy
 - class_derivations:
     MeasurementObservation:
