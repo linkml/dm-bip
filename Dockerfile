@@ -31,10 +31,12 @@ COPY . ./
 # Archive the Dockerfile used to build this image at a known root-level path
 COPY Dockerfile /Dockerfile.archived
 
+
 # Clone external repos (shallow, single layer)
 # When BDC_PULL_LATEST=true (dev builds), clone default branches so git pull works at runtime.
 # When false (release builds), pin to specific tags for reproducibility.
 RUN git clone --depth 1 --branch v1.2.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
     git clone --depth 1 --branch fix/hchs-chr-batch1 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git
+
 
 CMD ["uv", "run", "dm-bip", "run"]
