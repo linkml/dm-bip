@@ -21,7 +21,6 @@ WORKDIR /app
 COPY pyproject.toml uv.lock README.md ./
 COPY src/ src/
 
-
 # Install dependencies using uv
 RUN uv sync --frozen
 
