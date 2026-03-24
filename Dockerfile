@@ -17,6 +17,7 @@ ENV PATH="/root/.local/bin:$PATH"
 
 WORKDIR /app
 
+
 # Copy dependency files and source package for layer caching
 COPY pyproject.toml uv.lock README.md ./
 COPY src/ src/
@@ -47,4 +48,6 @@ RUN if [ "$BDC_PULL_LATEST" = "true" ]; then \
       #git clone --depth 1 --branch fix/copdgene-chr-2026-03-23 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git; \
     fi
 
+    #test
+    
 CMD ["uv", "run", "dm-bip", "run"]
