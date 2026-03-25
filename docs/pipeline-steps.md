@@ -27,14 +27,15 @@ See [`pipeline.Makefile` L59–73](../pipeline.Makefile) for all enum inference 
 
 ## Steps overview
 
-| Step | Name | Description | value_mappings pipeline | enum_derivations pipeline |
-|------|------|-------------|------------------------|--------------------------|
-| 1 | [`prepare-input`](#1-prepare-input) | Strip dbGaP headers, filter tables, output clean TSVs | [Same](#1-prepare-input) | [Same](#1-prepare-input) |
-| 2 | [`schema-create`](#2-schema-create) | Infer source schema from TSV data | [No enums inferred](#2-schema-create) | [Enums inferred from low-cardinality columns](#2-schema-create) |
-| 2a | [`schema-lint`](#2a-schema-lint) | Lint the generated source schema | [Same](#2a-schema-lint) | [Same](#2a-schema-lint) |
-| 3 | [`generate-enum-specs`](#3-generate-enum-specs) | Generate specs with `enum_derivations` and target schema with enum definitions | *N/A — curator hand-writes specs and target schema* | [Auto-generated from source schema + existing specs](#3-generate-enum-specs) |
-| 4 | [`validate-data`](#4-validate-data) | Validate each TSV against the source schema | [Same](#4-validate-data) | [Same](#4-validate-data). Requires [local fork: linkml](#local-fork-changes) for integer-coded enums |
-| 5 | [`map-data`](#5-map-data) | Transform data using LinkML-Map | [Uses `value_mappings` in specs](#5-map-data) | [Uses `enum_derivations` in generated specs](#5-map-data). Requires [local fork: linkml-map](#local-fork-changes) |
+| Step | value_mappings pipeline | enum_derivations pipeline |
+|------|------------------------|--------------------------|
+| 0\. **Config**<br/>Pass `CONFIG=` on make command lines | [`config-orig-valmaps.mk`](../toy_data_w_enums/config-orig-valmaps.mk) | [`config-enums.mk`](../toy_data_w_enums/config-enums.mk) |
+| 1\. [`prepare-input`](#1-prepare-input)<br/>Strip dbGaP headers, filter tables, output clean TSVs | Same | Same |
+| 2\. [`schema-create`](#2-schema-create)<br/>Infer source schema from TSV data | No enums inferred | Enums inferred from low-cardinality columns. [Local fork: schema-automator](#local-fork-changes) |
+| 2a. [`schema-lint`](#2a-schema-lint)<br/>Lint the generated source schema | Same | Same |
+| 3\. [`generate-enum-specs`](#3-generate-enum-specs)<br/>Generate specs with `enum_derivations` and target schema with enum definitions | *N/A* — curator hand-writes specs and target schema | Auto-generated from source schema + existing specs |
+| 4\. [`validate-data`](#4-validate-data)<br/>Validate each TSV against the source schema | Same | Same. [Local fork: linkml](#local-fork-changes) for integer-coded enums |
+| 5\. [`map-data`](#5-map-data)<br/>Transform data using LinkML-Map | Uses `value_mappings` in hand-written specs | Uses `enum_derivations` in generated specs. [Local fork: linkml-map](#local-fork-changes) |
 
 ---
 
@@ -42,7 +43,7 @@ See [`pipeline.Makefile` L59–73](../pipeline.Makefile) for all enum inference 
 
 ### 1. `prepare-input`
 
-Unzips raw `.txt.gz` dbGaP archives, strips metadata comment headers, filters to tables referenced in specs (by `pht` ID), and outputs clean TSVs with `phv` column names. Only runs when `DM_RAW_SOURCE` is set.
+Unzips raw `.txt.gz` dbGaP archives, strips metadata comment headers, filters to tables referenced in specs (by `pht` ID), and outputs clean TSVs with `phv` column names. Only runs when `DM_RAW_SOURCE` is set. Raw files not referenced in any spec are intentionally skipped (e.g., `pht000099` in the toy data has no spec and produces no output).
 
 **Make:**
 ```bash
