@@ -3,16 +3,16 @@
 All pipeline steps are orchestrated by [`pipeline.Makefile`](../pipeline.Makefile). Run the full pipeline with:
 
 ```bash
-make pipeline CONFIG=toy_data_w_enums/config.mk
+make pipeline CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```
 
 ## Config files
 
 Both pipelines use the same raw data in [`toy_data_w_enums/data/raw/`](../toy_data_w_enums/data/raw/) — gzipped dbGaP-format TSV files.
 
-**Original pipeline** ([`toy_data_w_enums/config.mk`](../toy_data_w_enums/config.mk)): Uses hand-written specs with inline `value_mappings` for categorical slot transformations. Enum inference is disabled (pipeline.Makefile defaults: `DM_ENUM_THRESHOLD=1.0`, `DM_MAX_ENUM_SIZE=0`).
+**Original pipeline** ([`config-orig-valmaps.mk`](../toy_data_w_enums/config-orig-valmaps.mk)): Uses hand-written specs with inline `value_mappings` for categorical slot transformations. Enum inference is disabled (pipeline.Makefile defaults: `DM_ENUM_THRESHOLD=1.0`, `DM_MAX_ENUM_SIZE=0`).
 
-**Enum-focused pipeline**: Same config file with additional flags to enable [enum inference](#2-schema-create) and [enum derivation generation](#3-generate-enum-specs):
+**Enum-focused pipeline** ([`config-enums.mk`](../toy_data_w_enums/config-enums.mk)): Enables [enum inference](#2-schema-create) and [enum derivation generation](#3-generate-enum-specs):
 
 ```makefile
 DM_ENUM_THRESHOLD           := 0.1
@@ -46,7 +46,7 @@ Unzips raw `.txt.gz` dbGaP archives, strips metadata comment headers, filters to
 
 **Make:**
 ```bash
-make prepare-input CONFIG=toy_data_w_enums/config.mk
+make prepare-input CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```
 
 **CLI:**
@@ -80,7 +80,7 @@ Runs [`schemauto generalize-tsvs`](https://linkml.io/schema-automator/) on the p
 
 **Make:**
 ```bash
-make schema-create CONFIG=toy_data_w_enums/config.mk
+make schema-create CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```
 
 **CLI:**
@@ -114,7 +114,7 @@ Lints the generated source schema with `linkml-lint`.
 
 **Make:**
 ```bash
-make schema-lint CONFIG=toy_data_w_enums/config.mk
+make schema-lint CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```
 
 **CLI:**
@@ -138,7 +138,7 @@ The original specs and target schema are not modified.
 
 **Make:**
 ```bash
-make generate-enum-specs CONFIG=toy_data_w_enums/config.mk
+make generate-enum-specs CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```
 
 **CLI:**
@@ -146,9 +146,9 @@ make generate-enum-specs CONFIG=toy_data_w_enums/config.mk
 uv run python src/dm_bip/generate_enum_specs.py \
   --source-schema output/ToyEnums/ToyEnums.yaml \
   --spec-dir toy_data_w_enums/specs \
-  --target-schema toy_data_w_enums/target-schema.yaml \
+  --target-schema toy_data_w_enums/target-schema-orig-valmaps.yaml \
   --output-spec-dir output/ToyEnums/enum-specs \
-  --output-target-schema output/ToyEnums/enum-target-schema.yaml
+  --output-target-schema output/ToyEnums/enum-target-schema-orig-valmaps.yaml
 ```
 
 | Parameter | Config variable | Description |
@@ -171,9 +171,9 @@ Validates each prepared TSV file against the source schema using `linkml validat
 
 **Make:**
 ```bash
-make validate-data CONFIG=toy_data_w_enums/config.mk
+make validate-data CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 # or in parallel:
-make -j 4 validate-data CONFIG=toy_data_w_enums/config.mk
+make -j 4 validate-data CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```
 
 **CLI** (per file):
@@ -202,14 +202,14 @@ Transforms data from source schema to target schema using [LinkML-Map](https://l
 
 **Make:**
 ```bash
-make map-data CONFIG=toy_data_w_enums/config.mk
+make map-data CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```
 
 **CLI:**
 ```bash
 uv run python src/dm_bip/map_data/map_data.py \
   --source-schema output/ToyEnums/ToyEnums.yaml \
-  --target-schema toy_data_w_enums/target-schema.yaml \
+  --target-schema toy_data_w_enums/target-schema-orig-valmaps.yaml \
   --data-dir output/ToyEnums/prepared \
   --var-dir toy_data_w_enums/specs \
   --output-dir output/ToyEnums/mapped-data \
@@ -246,7 +246,7 @@ Both source and target schemas are loaded via LinkML's [`SchemaView`](https://li
 
 ```python
 source_schemaview = SchemaView(source_schema)  # e.g., output/ToyEnums/ToyEnums.yaml
-target_schemaview = SchemaView(target_schema)  # e.g., toy_data_w_enums/target-schema.yaml
+target_schemaview = SchemaView(target_schema)  # e.g., toy_data_w_enums/target-schema-orig-valmaps.yaml
 ```
 
 **2. Discover entities.**
