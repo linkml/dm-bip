@@ -84,10 +84,9 @@ PREPARED_INPUT_MK := $(DM_OUTPUT_DIR)/_prepared_inputs.mk
 # ============
 SCHEMA_LINT_LOG             := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-schema-lint.log
 SCHEMA_VALIDATE_LOG         := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-schema-validate.log
-DATA_VALIDATE_LOG           := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-data-validate.log
 DATA_VALIDATE_FILES_DIR     := $(VALIDATE_OUTPUT_DIR)/data-validation
 DATA_VALIDATE_ERRORS_DIR    := $(VALIDATE_OUTPUT_DIR)/data-validation-errors
-MAPPING_LOG                 := $(MAPPING_OUTPUT_DIR)/mapping.log
+MAPPING_LOG_DIR             := $(MAPPING_OUTPUT_DIR)/logs
 
 VALIDATION_SUCCESS_SENTINEL := $(VALIDATE_OUTPUT_DIR)/_data_validation_complete
 MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
@@ -163,10 +162,9 @@ Generated variables
 Generated logs:
   schema lint log:                $(SCHEMA_LINT_LOG)
   schema validation log:          $(SCHEMA_VALIDATE_LOG)
-  data validation log:            $(DATA_VALIDATE_LOG)
   data validation logs by file:   $(DATA_VALIDATE_FILES_DIR)
   data validation errors by file: $(DATA_VALIDATE_ERRORS_DIR)
-  mapping log:                    $(MAPPING_LOG)
+  mapping logs:                   $(MAPPING_LOG_DIR)
 
 endef
 
@@ -389,27 +387,24 @@ $(VALIDATED_FILES_LIST):
 # This creates the summary log after all parallel validations finish
 $(VALIDATION_SUCCESS_SENTINEL): $(VALIDATED_FILES_LIST) $(VALIDATE_SUCCESS_LOGS)
 	@mkdir -p $(VALIDATE_OUTPUT_DIR)
-	@{ \
+	@echo
+	@echo "=== Data Validation Summary ==="
+	@echo
+	@echo "Validation complete."
+	@echo "Number of input files: $$(cat $< | wc -l)"
+	@NUM_FAILURES=$$(ls $(DATA_VALIDATE_ERRORS_DIR) 2>/dev/null | grep -F -f $< | wc -l); \
+	if [ $$NUM_FAILURES -gt 0 ]; then \
+		echo "Number of files with validation errors: $$NUM_FAILURES"; \
 		echo; \
-		echo "=== Data Validation Summary ==="; \
+		echo "Failing files:"; \
+		ls -1 $(DATA_VALIDATE_ERRORS_DIR) | grep -F -f $< | sed -e 's/^/    /'; \
 		echo; \
-		echo "Validation complete."; \
-		echo "Number of input files: $$(cat $< | wc -l)"; \
-		NUM_FAILURES=$$(ls $(DATA_VALIDATE_ERRORS_DIR) 2>/dev/null | grep -F -f $< | wc -l); \
-		if [ $$NUM_FAILURES -gt 0 ]; then \
-			echo "Number of files with validation errors: $$NUM_FAILURES"; \
-			echo; \
-			echo "Failing files:"; \
-			ls -1 $(DATA_VALIDATE_ERRORS_DIR) | grep -F -f $< | sed -e 's/^/    /'; \
-			echo; \
-			echo "See $(DATA_VALIDATE_ERRORS_DIR) for error logs."; \
-			echo; \
-		else \
-			echo "All files validated successfully."; \
-			echo; \
-		fi; \
-	} > $(DATA_VALIDATE_LOG)
-	@cat $(DATA_VALIDATE_LOG)
+		echo "See $(DATA_VALIDATE_ERRORS_DIR) for error logs."; \
+		echo; \
+	else \
+		echo "All files validated successfully."; \
+		echo; \
+	fi
 	@NUM_FAILURES=$$(ls $(DATA_VALIDATE_ERRORS_DIR) 2>/dev/null | grep -F -f $< | wc -l); \
 	if [ $$NUM_FAILURES -eq 0 ]; then \
 		touch $@; \
@@ -480,7 +475,7 @@ $(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(COM
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
 	$(MAKE) _map-all-entities CONFIG=$(CONFIG)
 	@echo "✓ Data mapping complete. Output written to $(MAPPING_OUTPUT_DIR)"
-	@echo "Mapping log written to $(MAPPING_LOG)"
+	@echo "Mapping logs written to $(MAPPING_LOG_DIR)"
 	@touch $@
 
 # Internal target invoked by recursive make — discovers and maps all entities
@@ -489,6 +484,7 @@ _map-all-entities: $(_ENTITY_SENTINELS)
 
 # Per-entity pattern rule — parallelizable with -j
 $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE)
+	@mkdir -p $(MAPPING_LOG_DIR)
 	set -o pipefail && $(RUN) linkml-map map-data \
 		-T $< \
 		-s $(SCHEMA_FILE) \
@@ -498,7 +494,7 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE)
 		$(call _map_additional_outputs,$*) \
 		--chunk-size $(DM_MAP_CHUNK_SIZE) \
 		$(DM_INPUT_DIR)/ \
-		2>&1 | tee -a $(MAPPING_LOG)
+		2>&1 | tee $(MAPPING_LOG_DIR)/$*.log
 	@touch $@
 
 .PHONY: map-debug
@@ -508,7 +504,7 @@ map-debug:
 	@echo "DM_MAP_OUTPUT_TYPE: $(DM_MAP_OUTPUT_TYPE)"
 	@echo "COMPOSED_SPEC_DIR: $(COMPOSED_SPEC_DIR)"
 	@echo "MAPPING_OUTPUT_DIR: $(MAPPING_OUTPUT_DIR)"
-	@echo "MAPPING_LOG: $(MAPPING_LOG)"
+	@echo "MAPPING_LOG_DIR: $(MAPPING_LOG_DIR)"
 
 .PHONY: map-clean
 map-clean:

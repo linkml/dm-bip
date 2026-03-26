@@ -97,8 +97,6 @@ def test_validation(from_raw_pipeline_output):
     output = from_raw_pipeline_output["output_dir"]
     validation_path = output / "validation-logs"
 
-    assert (validation_path / f"{SCHEMA_NAME}-data-validate.log").exists()
-
     validated_dirs = list((validation_path / "data-validation").iterdir())
     assert len(validated_dirs) == len(EXPECTED_PREPARED_FILES)
 
