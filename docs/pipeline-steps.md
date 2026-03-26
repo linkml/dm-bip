@@ -312,12 +312,46 @@ For TSV output, if new columns appear mid-stream (a row has keys not in the init
 
 ## Local fork changes
 
-These changes fix the int/string type mismatch where numeric TSV values were parsed as integers, breaking string enum matching. They are installed as editable local forks via [`pyproject.toml`](../pyproject.toml) `[tool.uv.sources]`.
+The enum pipeline requires unreleased fixes to three LinkML packages that resolve an int/string type mismatch where numeric TSV values were parsed as integers, breaking string enum matching. They are installed as editable local forks via [`pyproject.toml`](../pyproject.toml) `[tool.uv.sources]`.
 
-| Package | Commit | Branch | Change | Used in step |
-|---------|--------|--------|--------|-------------|
-| schema-automator | `86afe6d` | main | `--infer-enum-from-integers` flag | [2. schema-create](#2-schema-create) |
-| linkml | `6c2f10e4`, `7daf8db8` | `schema-aware-delimited-loader` | Schema-aware TSV loader preserves string/enum values | [4. validate-data](#4-validate-data) |
-| linkml-map | `53ad099` | main | Forwards schema_path/target_class to linkml's loader | [5. map-data](#5-map-data) |
+| Package | Fork | Branch | Change | Used in step |
+|---------|------|--------|--------|-------------|
+| schema-automator | [Sigfried/schema-automator](https://github.com/Sigfried/schema-automator) | `infer-enum-from-integers` | `--infer-enum-from-integers` flag | [2. schema-create](#2-schema-create) |
+| linkml | [Sigfried/linkml](https://github.com/Sigfried/linkml) | `schema-aware-delimited-loader` | Schema-aware TSV loader preserves string/enum values | [4. validate-data](#4-validate-data) |
+| linkml-map | [Sigfried/linkml-map](https://github.com/Sigfried/linkml-map) | `main` | Forwards schema_path/target_class to linkml's loader | [5. map-data](#5-map-data) |
 
-**When upstream releases incorporate these changes:** Remove the `[tool.uv.sources]` overrides in [`pyproject.toml`](../pyproject.toml) and pin to the release versions. The same editable-install setup can be reproduced in the Seven Bridges protected data enclave for running on real data before upstream releases happen.
+### Setup
+
+Clone the forks as sibling directories of dm-bip and install:
+
+```bash
+# From the dm-bip directory:
+bash scripts/setup-enum-forks.sh
+uv sync
+```
+
+Or manually:
+```bash
+cd ..  # parent of dm-bip
+git clone -b infer-enum-from-integers https://github.com/Sigfried/schema-automator.git
+git clone -b schema-aware-delimited-loader https://github.com/Sigfried/linkml.git
+git clone https://github.com/Sigfried/linkml-map.git
+cd dm-bip
+uv sync
+```
+
+The [`pyproject.toml`](../pyproject.toml) `[tool.uv.sources]` section expects the forks at `../schema-automator`, `../linkml`, and `../linkml-map`.
+
+The original pipeline (`config-orig-valmaps.mk`) also works with these forks installed — the fixes are backward-compatible.
+
+### Cleanup (when upstream releases are available)
+
+When the upstream packages release versions that include these fixes:
+
+1. Remove the `[tool.uv.sources]` section from [`pyproject.toml`](../pyproject.toml)
+2. Pin release versions in `[project.dependencies]` (e.g., `schema-automator>=X.Y.Z`)
+3. Run `uv sync` to switch from local forks to released packages
+4. Optionally delete the sibling fork directories
+5. Merge to main
+
+The same editable-install setup can be reproduced in the Seven Bridges protected data enclave for running on real data before upstream releases happen.

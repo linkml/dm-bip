@@ -54,11 +54,15 @@ default-groups = [
     "env",
 ]
 
-# TODO: remove this section before pushing — local dev override only
+# Local fork overrides for enum pipeline (issue #211).
+# These point to sibling directories containing forked repos with unreleased fixes.
+# Run scripts/setup-enum-forks.sh to clone them.
+# When upstream releases incorporate these changes, remove this section and
+# pin release versions in [project.dependencies] above.
 [tool.uv.sources]
 schema-automator = { path = "../schema-automator", editable = true }
-linkml = { path = "linkml/packages/linkml", editable = true }
-linkml-map = { path = "linkml-map", editable = true }
+linkml = { path = "../linkml/packages/linkml", editable = true }
+linkml-map = { path = "../linkml-map", editable = true }
 
 [tool.poetry-dynamic-versioning]
 enable = true
