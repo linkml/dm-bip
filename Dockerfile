@@ -36,14 +36,9 @@ COPY Dockerfile /Dockerfile.archived
 # When BDC_PULL_LATEST=true (dev builds), clone default branches so git pull works at runtime.
 # When false (release builds), pin to specific tags for reproducibility.
 RUN git clone --depth 1 --branch v1.2.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
-    git clone --depth 1 --branch fix/copdgene-chr-2026-03-23 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git;
+    git clone --depth 1 --branch fix/fhs-chr-blockers https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git; \
 
-    
-#git clone --depth 1 --branch fix/hchs-chr-batch1 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git \
-#git clone --depth 1 --branch v1.2.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git
-#git clone --depth 1 --branch 2026.03-2 https://github.com/amc-corey-cox/bdc-harmonized-variables.git; \
-#git clone --depth 1 --branch test/fhs-integration-2026-03-21 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git; \
-#git clone --depth 1 --branch test/whi-integration-486-490-492 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git; \
+
 #git clone --depth 1 --branch fix/hchs-chr-batch1 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git; \
 #git clone --depth 1 --branch fix/copdgene-chr-2026-03-23 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git; \
     
