@@ -32,6 +32,7 @@ COPY . ./
 COPY Dockerfile /Dockerfile.archived
 
 
+
 # Clone external repos (shallow, single layer)
 # When BDC_PULL_LATEST=true (dev builds), clone default branches so git pull works at runtime.
 # When false (release builds), pin to specific tags for reproducibility.
