@@ -1,18 +1,18 @@
 # Pipeline Steps — Developer Reference
 
-All pipeline steps are orchestrated by [`pipeline.Makefile`](../pipeline.Makefile). Run the full pipeline with:
+All pipeline steps are orchestrated by [`pipeline.Makefile`](../pipeline.Makefile). Both pipelines use the same raw data in [`toy_data_w_enums/data/raw/`](../toy_data_w_enums/data/raw/) — gzipped dbGaP-format TSV files.
 
+**Original pipeline** — uses hand-written specs with inline `value_mappings` for categorical slot transformations:
 ```bash
 make pipeline CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```
 
-## Config files
+**Enum-focused pipeline** — enables [enum inference](#2-schema-create) and [auto-generates specs](#3-generate-enum-specs) with `enum_derivations`:
+```bash
+make pipeline CONFIG=toy_data_w_enums/config-enums.mk
+```
 
-Both pipelines use the same raw data in [`toy_data_w_enums/data/raw/`](../toy_data_w_enums/data/raw/) — gzipped dbGaP-format TSV files.
-
-**Original pipeline** ([`config-orig-valmaps.mk`](../toy_data_w_enums/config-orig-valmaps.mk)): Uses hand-written specs with inline `value_mappings` for categorical slot transformations. Enum inference is disabled (pipeline.Makefile defaults: `DM_ENUM_THRESHOLD=1.0`, `DM_MAX_ENUM_SIZE=0`).
-
-**Enum-focused pipeline** ([`config-enums.mk`](../toy_data_w_enums/config-enums.mk)): Enables [enum inference](#2-schema-create) and [enum derivation generation](#3-generate-enum-specs):
+The enum config ([`config-enums.mk`](../toy_data_w_enums/config-enums.mk)) adds these flags to the original ([`config-orig-valmaps.mk`](../toy_data_w_enums/config-orig-valmaps.mk)):
 
 ```makefile
 DM_ENUM_THRESHOLD           := 0.1
@@ -29,7 +29,6 @@ See [`pipeline.Makefile` L59–73](../pipeline.Makefile) for all enum inference 
 
 | Step                                                                                              | value_mappings pipeline                                                                                                                                        | enum_derivations pipeline                                                                                       |
 |---------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
-| 0\. **Config**<br/>Pass `CONFIG=` on [`make`](#0-make) command lines                              | [`config-orig-valmaps.mk`](../toy_data_w_enums/config-orig-valmaps.mk)                                                                                         | [`config-enums.mk`](../toy_data_w_enums/config-enums.mk)                                                        |
 | 1\. [`prepare-input`](#1-prepare-input)<br/>Strip dbGaP headers, filter tables, output clean TSVs | Same                                                                                                                                                           | Same                                                                                                            |
 | 2\. [`schema-create`](#2-schema-create)<br/>Infer source schema from TSV data                     | No enums inferred. Output: `$(DM_OUTPUT_DIR)/ToyEnums.yaml`                                                                                                   | Enums inferred from low-cardinality columns. [Local fork: schema-automator](#local-fork-changes)                |
 | 2a. [`schema-lint`](#2a-schema-lint)<br/>Lint the generated source schema                         | Same                                                                                                                                                           | Same                                                                                                            |
@@ -40,16 +39,6 @@ See [`pipeline.Makefile` L59–73](../pipeline.Makefile) for all enum inference 
 ---
 
 ## Step details
-
-### 0. `make`
-To run the entire pipeline with value_mappings:
-```bash
-make CONFIG=toy_data_w_enums/config-orig-valmaps.mk
-```
-Or, with enum inference, enum-transformed specs, and `enum_derivations`
-```bash
-make CONFIG=toy_data_w_enums/config-enums.mk
-```
 
 ### 1. `prepare-input`
 
