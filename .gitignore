@@ -147,10 +147,4 @@ dmypy.json
 CLAUDE.local.md
 
 # Generated pipeline outputs
-# COMMENTING OUT WHILE DEVELOPING. RESTORE output/ TO .gitignore BEFORE MERGING TO main
-# output/
-
-# Cloned repos for local development (remove before merging to main)
-linkml/
-linkml-map/
-schema-automator
+output/

@@ -72,26 +72,12 @@ DM_MAX_ENUM_SIZE ?= 0
 #   Default is empty (disabled). Set to any non-empty value to enable.
 DM_INFER_ENUM_FROM_INTEGERS ?=
 
-# Enum derivation generation
-# ============
-# DM_ENUM_DERIVATIONS: generate enum_derivations specs from value_mappings.
-#   Default is empty (disabled). Set to any non-empty value to enable.
-#   When enabled, generate-enum-specs runs after schema-create and before map-data,
-#   producing new specs and target schema in $(DM_OUTPUT_DIR)/enum-specs/ and
-#   $(DM_OUTPUT_DIR)/enum-target-schema.yaml. The mapping step uses these generated files.
-DM_ENUM_DERIVATIONS ?=
-
 # Derived output files
 # ============
 SCHEMA_FILE                 := $(DM_OUTPUT_DIR)/$(DM_SCHEMA_NAME).yaml
 VALIDATE_OUTPUT_DIR         := $(DM_OUTPUT_DIR)/validation-logs
 VALIDATED_FILES_LIST        := $(VALIDATE_OUTPUT_DIR)/input-files.txt
 MAPPING_OUTPUT_DIR          := $(DM_OUTPUT_DIR)/mapped-data
-
-# Enum derivation generation output files
-ENUM_SPEC_DIR               := $(DM_OUTPUT_DIR)/enum-specs
-ENUM_TARGET_SCHEMA          := $(DM_OUTPUT_DIR)/enum-target-schema.yaml
-ENUM_SPEC_SENTINEL          := $(ENUM_SPEC_DIR)/_enum_specs_complete
 
 # Generated include file for prepared input files
 PREPARED_INPUT_MK := $(DM_OUTPUT_DIR)/_prepared_inputs.mk
@@ -448,45 +434,10 @@ validate-clean:
 validate-debug:
 	@:$(info $(DEBUG))
 
-# Enum Derivation Generation Goals (opt-in via DM_ENUM_DERIVATIONS)
-# ==================================================================
-ifdef DM_ENUM_DERIVATIONS
-
-$(ENUM_SPEC_SENTINEL): $(SCHEMA_FILE)
-	@echo "--- Generating enum derivation specs ---"
-	@mkdir -p $(ENUM_SPEC_DIR)
-	$(RUN) python src/dm_bip/generate_enum_specs.py \
-		--source-schema $(SCHEMA_FILE) \
-		--spec-dir $(DM_TRANS_SPEC_DIR) \
-		--target-schema $(DM_MAP_TARGET_SCHEMA) \
-		--output-spec-dir $(ENUM_SPEC_DIR) \
-		--output-target-schema $(ENUM_TARGET_SCHEMA)
-	@touch $@
-
-.PHONY: generate-enum-specs
-generate-enum-specs: $(ENUM_SPEC_SENTINEL)
-
-.PHONY: enum-specs-clean
-enum-specs-clean:
-	rm -rf $(ENUM_SPEC_DIR) $(ENUM_TARGET_SCHEMA)
-
-# Override spec dir and target schema for mapping step
-MAP_TARGET_SCHEMA_EFFECTIVE := $(ENUM_TARGET_SCHEMA)
-MAP_TRANS_SPEC_DIR_EFFECTIVE := $(ENUM_SPEC_DIR)
-MAP_EXTRA_DEPS := $(ENUM_SPEC_SENTINEL)
-
-else
-
-MAP_TARGET_SCHEMA_EFFECTIVE := $(DM_MAP_TARGET_SCHEMA)
-MAP_TRANS_SPEC_DIR_EFFECTIVE := $(DM_TRANS_SPEC_DIR)
-MAP_EXTRA_DEPS :=
-
-endif
-
 # Mapping (Transformation) Goals
 # ==============================
 
-MAP_TARGET_SCHEMA_FILE := $(MAP_TARGET_SCHEMA_EFFECTIVE)
+MAP_TARGET_SCHEMA_FILE := $(DM_MAP_TARGET_SCHEMA)
 
 MAP_TRANS_SPEC_FILES := $(shell find $(DM_TRANS_SPEC_DIR) -maxdepth 1 -type f -name '*.yaml' 2>/dev/null)
 
@@ -495,15 +446,15 @@ check_map_input_files = $(call check_target_schema)$(call check_trans_spec_files
 .PHONY: map-data
 map-data: $(MAPPING_SUCCESS_SENTINEL)
 
-$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(MAP_EXTRA_DEPS)
+$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL)
 	@$(call check_map_input_files)
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
 	$(RUN) python ./src/dm_bip/map_data/map_data.py \
 		--source-schema $(SCHEMA_FILE) \
-		--target-schema $(MAP_TARGET_SCHEMA_EFFECTIVE) \
+		--target-schema $(DM_MAP_TARGET_SCHEMA) \
 		--data-dir $(DM_INPUT_DIR) \
-		--var-dir $(MAP_TRANS_SPEC_DIR_EFFECTIVE) \
+		--var-dir $(DM_TRANS_SPEC_DIR) \
 		--output-dir $(MAPPING_OUTPUT_DIR) \
 		$(if $(DM_MAPPING_PREFIX),--output-prefix $(DM_MAPPING_PREFIX)) \
 		$(if $(DM_MAPPING_POSTFIX),--output-postfix "$(DM_MAPPING_POSTFIX)") \

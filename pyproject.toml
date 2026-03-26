@@ -3,16 +3,16 @@ name = "dm-bip"
 version = "0.0.0"
 description = "dm-bip"
 authors = [{ name = "Corey Cox", email = "corey@tislab.org" }]
-requires-python = ">=3.11,<=3.13"
+requires-python = ">=3.11,<3.13"
 readme = "README.md"
 license = "MIT"
 dependencies = [
     "importlib-metadata>=8.2.0",
     "pandas>=2.2.3,<3",
-    "linkml",  # TODO: remove direct dep before pushing — only needed for editable dev override
-    "schema-automator",  # TODO: pin to release version before pushing (was ==0.5.4rc2)
+    "linkml",
+    "schema-automator",
     "schemasheets==0.4.0",
-    "linkml-map",  # TODO: pin to release version before pushing (was ==0.3.9-rc1)
+    "linkml-map",
     "typing-extensions>=4.0,<5",
     "flatten-dict>=0.4.2,<0.5",
     "typer>=0.20.0",
@@ -53,16 +53,15 @@ default-groups = [
     "dev",
     "env",
 ]
+# The linkml fork uses uv-dynamic-versioning with fallback-version = "0.0.0",
+# which fails to satisfy schema-automator's linkml>=1.9.1 constraint when
+# built from a git URL. Override to accept any version.
+override-dependencies = ["linkml>=0"]
 
-# Local fork overrides for enum pipeline (issue #211).
-# These point to sibling directories containing forked repos with unreleased fixes.
-# Run scripts/setup-enum-forks.sh to clone them.
-# When upstream releases incorporate these changes, remove this section and
-# pin release versions in [project.dependencies] above.
 [tool.uv.sources]
-schema-automator = { path = "../schema-automator", editable = true }
-linkml = { path = "../linkml/packages/linkml", editable = true }
-linkml-map = { path = "../linkml-map", editable = true }
+schema-automator = { git = "https://github.com/Sigfried/schema-automator.git", rev = "86afe6d" }
+linkml = { git = "https://github.com/Sigfried/linkml.git", rev = "06ed4720", subdirectory = "packages/linkml" }
+linkml-map = { git = "https://github.com/Sigfried/linkml-map.git", rev = "53ad099" }
 
 [tool.poetry-dynamic-versioning]
 enable = true

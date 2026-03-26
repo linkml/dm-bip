@@ -1,0 +1,129 @@
+name: ToyTargetSchema
+description: Shared target schema for toy data transformation (both from_raw and pre_cleaned)
+id: https://w3id.org/ToyTargetSchema
+prefixes:
+  linkml: https://w3id.org/linkml/
+  target: https://w3id.org/ToyTargetSchema/
+imports:
+- linkml:types
+default_prefix: target
+default_range: string
+classes:
+  Person:
+    description: A person in the study with demographic information
+    attributes:
+      id:
+        identifier: true
+      gender: null
+      race: null
+      ethnicity: null
+      age:
+        range: integer
+  Participant:
+    description: A study participant with consent and study info
+    attributes:
+      id:
+        identifier: true
+      external_id: null
+      has_asthma: null
+      has_diabetes: null
+      consent: null
+      study: null
+      member_of_research_study: null
+  Demography:
+    description: Demographic information for a participant
+    attributes:
+      associated_participant: null
+      associated_visit: null
+      sex:
+        range: sex_enum
+      race:
+        range: race_enum
+      ethnicity:
+        range: ethnicity_enum
+      age_at_observation:
+        range: integer
+      smoking_status:
+        range: smoking_status_enum
+  MeasurementObservation:
+    description: A clinical or lab measurement observation
+    attributes:
+      associated_participant: null
+      associated_visit: null
+      observation_type: null
+      method_type: null
+      age_at_observation:
+        range: integer
+      value_quantity:
+        range: Quantity
+        inlined: true
+  Observation:
+    description: A categorical or enumerated observation
+    attributes:
+      associated_participant: null
+      associated_visit: null
+      observation_type: null
+      age_at_observation:
+        range: integer
+      value_enum:
+        range: value_enum_enum
+  Condition:
+    description: A diagnosis or condition
+    attributes:
+      associated_participant: null
+      associated_visit: null
+      condition_concept: null
+      condition_status:
+        range: condition_status_enum
+      condition_provenance: null
+      relationship_to_participant: null
+  Quantity:
+    description: A value with unit
+    attributes:
+      value_decimal: null
+      value_concept: null
+      unit: null
+enums:
+  condition_status_enum:
+    permissible_values:
+      ABSENT: {}
+      PRESENT: {}
+  ethnicity_enum:
+    permissible_values:
+      OMOP:38003563: {}
+      OMOP:38003564: {}
+  race_enum:
+    permissible_values:
+      OMOP:8527: {}
+      OMOP:8516: {}
+      OMOP:8515: {}
+      OMOP:8557: {}
+      OMOP:8657: {}
+  sex_enum:
+    permissible_values:
+      OMOP:8507: {}
+      OMOP:8532: {}
+  smoking_status_enum:
+    permissible_values:
+      OMOP:36309784: {}
+      OMOP:36310471: {}
+      OMOP:45884037: {}
+      OMOP:45879404: {}
+      OMOP:0: {}
+  value_concept_phv00000017_enum:
+    permissible_values:
+      OMOP:4087434: {}
+      OMOP:4088032: {}
+      OMOP:4088033: {}
+      OMOP:4088034: {}
+  value_concept_phv00000025_enum:
+    permissible_values:
+      '0': {}
+      '50': {}
+      '100': {}
+      '300': {}
+      '1000': {}
+      '3000': {}
+  value_enum_enum:
+    permissible_values:
+      OMOP:40766945: {}

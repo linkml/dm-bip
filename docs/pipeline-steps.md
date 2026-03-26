@@ -7,7 +7,7 @@ All pipeline steps are orchestrated by [`pipeline.Makefile`](../pipeline.Makefil
 make pipeline CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```
 
-**Enum-focused pipeline** — enables [enum inference](#2-schema-create) and [auto-generates specs](#3-generate-enum-specs) with `enum_derivations`:
+**Enum-focused pipeline** — enables [enum inference](#2-schema-create) and uses committed specs with `enum_derivations`:
 ```bash
 make pipeline CONFIG=toy_data_w_enums/config-enums.mk
 ```
@@ -18,7 +18,12 @@ The enum config ([`config-enums.mk`](../toy_data_w_enums/config-enums.mk)) adds 
 DM_ENUM_THRESHOLD           := 0.1
 DM_MAX_ENUM_SIZE            := 50
 DM_INFER_ENUM_FROM_INTEGERS := true     # local fork: schema-automator 86afe6d
-DM_ENUM_DERIVATIONS         := true
+```
+
+And points at committed enum specs and target schema:
+```makefile
+DM_TRANS_SPEC_DIR    := toy_data_w_enums/specs/with_enum_derivations
+DM_MAP_TARGET_SCHEMA := toy_data_w_enums/target-schema-enums.yaml
 ```
 
 See [`pipeline.Makefile` L59–73](../pipeline.Makefile) for all enum inference variables and their defaults.
@@ -32,9 +37,9 @@ See [`pipeline.Makefile` L59–73](../pipeline.Makefile) for all enum inference 
 | 1\. [`prepare-input`](#1-prepare-input)<br/>Strip dbGaP headers, filter tables, output clean TSVs | Same                                                                                                                                                           | Same                                                                                                            |
 | 2\. [`schema-create`](#2-schema-create)<br/>Infer source schema from TSV data                     | No enums inferred. Output: `$(DM_OUTPUT_DIR)/ToyEnums.yaml`                                                                                                   | Enums inferred from low-cardinality columns. [Local fork: schema-automator](#local-fork-changes)                |
 | 2a. [`schema-lint`](#2a-schema-lint)<br/>Lint the generated source schema                         | Same                                                                                                                                                           | Same                                                                                                            |
-| 3\. Create target schema and transform specs                                                      | Curator hand-writes [target schema](../toy_data_w_enums/target-schema-orig-valmaps.yaml) and [transform specs](../toy_data_w_enums/specs) with `value_mappings` | [`generate-enum-specs`](#3-generate-enum-specs) reads curator-made [target schema](../toy_data_w_enums/target-schema-orig-valmaps.yaml) + [specs](../toy_data_w_enums/specs) and auto-generates new [target schema with enums](#3-generate-enum-specs) and [specs with `enum_derivations`](#3-generate-enum-specs) |
+| 3\. Target schema and transform specs                                                             | Curator hand-writes [target schema](../toy_data_w_enums/target-schema-orig-valmaps.yaml) and [transform specs](../toy_data_w_enums/specs/with_value_mappings) with `value_mappings` | Committed [target schema](../toy_data_w_enums/target-schema-enums.yaml) and [transform specs](../toy_data_w_enums/specs/with_enum_derivations) with `enum_derivations` |
 | 4\. [`validate-data`](#4-validate-data)<br/>Validate each TSV against the source schema           | Same                                                                                                                                                           | Same. [Local fork: linkml](#local-fork-changes) for integer-coded enums                                         |
-| 5\. [`map-data`](#5-map-data)<br/>Transform data using LinkML-Map                                 | Uses `value_mappings` in hand-written specs                                                                                                                    | Uses `enum_derivations` in generated specs. [Local fork: linkml-map](#local-fork-changes)                       |
+| 5\. [`map-data`](#5-map-data)<br/>Transform data using LinkML-Map                                 | Uses `value_mappings` in hand-written specs                                                                                                                    | Uses `enum_derivations` in committed specs. [Local fork: linkml-map](#local-fork-changes)                       |
 
 ---
 
@@ -53,7 +58,7 @@ make prepare-input CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```bash
 uv run python src/dm_bip/cleaners/prepare_input.py \
   --source toy_data_w_enums/data/raw \
-  --mapping toy_data_w_enums/specs \
+  --mapping toy_data_w_enums/specs/with_value_mappings \
   --output output/ToyEnums/prepared \
   --verbose
 ```
@@ -104,7 +109,7 @@ uv run schemauto generalize-tsvs \
 
 **Enum inference (enum-focused pipeline):** With `DM_ENUM_THRESHOLD=0.1`, `DM_MAX_ENUM_SIZE=50`, and `DM_INFER_ENUM_FROM_INTEGERS=true`, schema-automator creates enum definitions for low-cardinality columns. For example, `phv00000002` (with values `1`, `2`) gets `range: phv00000002_enum` and an enum `phv00000002_enum` with permissible values `'1'`, `'2'`.
 
-**Local fork note:** `--infer-enum-from-integers` requires our local schema-automator change (`86afe6d`). Without it, integer columns get `range: integer` regardless of cardinality.
+**Local fork note:** `--infer-enum-from-integers` requires our schema-automator fork (`86afe6d`). Without it, integer columns get `range: integer` regardless of cardinality.
 
 ---
 
@@ -126,42 +131,17 @@ Log written to `output/ToyEnums/validation-logs/ToyEnums-schema-lint.log`.
 
 ---
 
-### 3. `generate-enum-specs`
+### 3. Target schema and transform specs
 
-*(Enum-focused pipeline only — runs when `DM_ENUM_DERIVATIONS` is set.)*
+Both pipelines use hand-written target schemas and transform specs committed to the repository. No generation step is required.
 
-Reads the source schema (with inferred enums from [step 2](#2-schema-create)) and existing specs (with `value_mappings`), then generates:
-- New spec files with `enum_derivations` replacing `value_mappings`
-- A new target schema with enum definitions added
+**value_mappings pipeline:**
+- Target schema: [`toy_data_w_enums/target-schema-orig-valmaps.yaml`](../toy_data_w_enums/target-schema-orig-valmaps.yaml)
+- Transform specs: [`toy_data_w_enums/specs/with_value_mappings/`](../toy_data_w_enums/specs/with_value_mappings/)
 
-The original specs and target schema are not modified.
-
-**Make:**
-```bash
-make generate-enum-specs CONFIG=toy_data_w_enums/config-orig-valmaps.mk
-```
-
-**CLI** ([`generate_enum_specs.py`](../src/dm_bip/generate_enum_specs.py)):
-```bash
-uv run python src/dm_bip/generate_enum_specs.py \
-  --source-schema output/ToyEnums/ToyEnums.yaml \
-  --spec-dir toy_data_w_enums/specs \
-  --target-schema toy_data_w_enums/target-schema-orig-valmaps.yaml \
-  --output-spec-dir output/ToyEnums/enum-specs \
-  --output-target-schema output/ToyEnums/enum-target-schema-orig-valmaps.yaml
-```
-
-| Parameter | Config variable | Description |
-|-----------|----------------|-------------|
-| `--source-schema` | derived from `DM_OUTPUT_DIR`/`DM_SCHEMA_NAME` | Source schema with inferred enums |
-| `--spec-dir` | `DM_TRANS_SPEC_DIR` | Existing spec directory (with `value_mappings`) |
-| `--target-schema` | `DM_MAP_TARGET_SCHEMA` | Existing target schema (without enum definitions) |
-| `--output-spec-dir` | derived: `$(DM_OUTPUT_DIR)/enum-specs/` | Output directory for generated specs |
-| `--output-target-schema` | derived: `$(DM_OUTPUT_DIR)/enum-target-schema.yaml` | Output target schema with enums |
-
-**Output:** When `DM_ENUM_DERIVATIONS` is set, the Makefile points `DM_TRANS_SPEC_DIR` and `DM_MAP_TARGET_SCHEMA` at the generated files for [step 5](#5-map-data).
-
-**Algorithm:** See [generate_enum_specs.py algorithm](../issue-211-planning.md#algorithm) in the issue-211 planning doc.
+**enum_derivations pipeline:**
+- Target schema: [`toy_data_w_enums/target-schema-enums.yaml`](../toy_data_w_enums/target-schema-enums.yaml) — includes enum definitions for target permissible values
+- Transform specs: [`toy_data_w_enums/specs/with_enum_derivations/`](../toy_data_w_enums/specs/with_enum_derivations/) — uses `enum_derivations` to map source enum permissible values to target enum permissible values
 
 ---
 
@@ -192,7 +172,7 @@ uv run linkml validate \
 
 **Output:** Per-file logs in `output/ToyEnums/validation-logs/data-validation/`. Error symlinks in `output/ToyEnums/validation-logs/data-validation-errors/`. Summary in `output/ToyEnums/validation-logs/ToyEnums-data-validate.log`.
 
-**Local fork note:** With enum-enabled schemas, validation requires our linkml change (`6c2f10e4`, `7daf8db8` on branch `schema-aware-delimited-loader`) — the schema-aware TSV loader that identifies numeric-ranged slots and only coerces those to int/float, preserving string and enum values as strings.
+**Local fork note:** With enum-enabled schemas, validation requires our linkml fork (`06ed4720`) — the schema-aware TSV loader that identifies numeric-ranged slots and only coerces those to int/float, preserving string and enum values as strings.
 
 ---
 
@@ -211,7 +191,7 @@ uv run python src/dm_bip/map_data/map_data.py \
   --source-schema output/ToyEnums/ToyEnums.yaml \
   --target-schema toy_data_w_enums/target-schema-orig-valmaps.yaml \
   --data-dir output/ToyEnums/prepared \
-  --var-dir toy_data_w_enums/specs \
+  --var-dir toy_data_w_enums/specs/with_value_mappings \
   --output-dir output/ToyEnums/mapped-data \
   --output-prefix TOY \
   --output-postfix "-data" \
@@ -223,9 +203,9 @@ uv run python src/dm_bip/map_data/map_data.py \
 | Parameter | Config variable | Default | Description |
 |-----------|----------------|---------|-------------|
 | `--source-schema` | derived from `DM_OUTPUT_DIR`/`DM_SCHEMA_NAME` | | Source schema from [step 2](#2-schema-create) |
-| `--target-schema` | `DM_MAP_TARGET_SCHEMA` | | Target schema. In enum pipeline, points to generated schema from [step 3](#3-generate-enum-specs) |
+| `--target-schema` | `DM_MAP_TARGET_SCHEMA` | | Target schema |
 | `--data-dir` | `DM_INPUT_DIR` | | Directory of prepared TSVs from [step 1](#1-prepare-input) |
-| `--var-dir` | `DM_TRANS_SPEC_DIR` | | Directory of transformation spec YAML files. In enum pipeline, points to generated specs from [step 3](#3-generate-enum-specs) |
+| `--var-dir` | `DM_TRANS_SPEC_DIR` | | Directory of transformation spec YAML files |
 | `--output-dir` | `MAPPING_OUTPUT_DIR` | `$(DM_OUTPUT_DIR)/mapped-data` | Output directory |
 | `--output-prefix` | `DM_MAPPING_PREFIX` | *(empty)* | Prefix for output filenames |
 | `--output-postfix` | `DM_MAPPING_POSTFIX` | *(empty)* | Postfix for output filenames |
@@ -235,7 +215,7 @@ uv run python src/dm_bip/map_data/map_data.py \
 
 **Output:** One file per target entity, e.g., `output/ToyEnums/mapped-data/TOY-Demography-data.yaml`. Log at `output/ToyEnums/mapped-data/mapping.log`.
 
-**Local fork note:** Schema-aware data loading during mapping requires our linkml-map change (`53ad099`) which forwards `schema_path`/`target_class` to linkml's delimited file loader.
+**Local fork note:** Schema-aware data loading during mapping requires our linkml-map fork (`53ad099`) which forwards `schema_path`/`target_class` to linkml's delimited file loader.
 
 #### How `map_data.py` works
 
@@ -250,15 +230,15 @@ target_schemaview = SchemaView(target_schema)  # e.g., toy_data_w_enums/target-s
 ```
 
 **2. Discover entities.**
-Scans all YAML files in `--var-dir` (the spec directory, e.g., [`toy_data_w_enums/specs/`](../toy_data_w_enums/specs/)) to collect unique target class names from top-level `class_derivations` keys. Nested `class_derivations` inside `object_derivations` are ignored — those represent sub-components (like `Quantity` inside `MeasurementObservation`), not standalone output entities.
+Scans all YAML files in `--var-dir` (the spec directory, e.g., [`toy_data_w_enums/specs/with_value_mappings/`](../toy_data_w_enums/specs/with_value_mappings/)) to collect unique target class names from top-level `class_derivations` keys. Nested `class_derivations` inside `object_derivations` are ignored — those represent sub-components (like `Quantity` inside `MeasurementObservation`), not standalone output entities.
 
 For the toy data specs, this discovers: `Condition`, `Demography`, `MeasurementObservation`, `Observation`, `Participant`.
 
 **3. For each entity, find matching spec files.**
-Uses `grep` to find spec files in `--var-dir` containing `^    {Entity}:` (the indented class name under `class_derivations`). For example, `Demography` matches [`demography.yaml`](../toy_data_w_enums/specs/demography.yaml).
+Uses `grep` to find spec files in `--var-dir` containing `^    {Entity}:` (the indented class name under `class_derivations`). For example, `Demography` matches [`demography.yaml`](../toy_data_w_enums/specs/with_value_mappings/demography.yaml).
 
 **4. For each spec file, process each block.**
-A spec file is a YAML list of **blocks**. Each block has a `class_derivations` key (and optionally `enum_derivations`). A single file can have multiple blocks — for example, [`observations.yaml`](../toy_data_w_enums/specs/observations.yaml) has two blocks, one for visit 1 and one for visit 2:
+A spec file is a YAML list of **blocks**. Each block has a `class_derivations` key (and optionally `enum_derivations`). A single file can have multiple blocks — for example, [`observations.yaml`](../toy_data_w_enums/specs/with_value_mappings/observations.yaml) has two blocks, one for visit 1 and one for visit 2:
 
 ```yaml
 # Block 1: Smoking status visit 1
@@ -312,35 +292,22 @@ For TSV output, if new columns appear mid-stream (a row has keys not in the init
 
 ## Local fork changes
 
-The enum pipeline requires unreleased fixes to three LinkML packages that resolve an int/string type mismatch where numeric TSV values were parsed as integers, breaking string enum matching. They are installed as editable local forks via [`pyproject.toml`](../pyproject.toml) `[tool.uv.sources]`.
+The enum pipeline requires unreleased fixes to three LinkML packages that resolve an int/string type mismatch where numeric TSV values were parsed as integers, breaking string enum matching. They are installed via git URL sources in [`pyproject.toml`](../pyproject.toml) `[tool.uv.sources]`:
+
+```toml
+[tool.uv.sources]
+schema-automator = { git = "https://github.com/Sigfried/schema-automator.git", rev = "86afe6d" }
+linkml = { git = "https://github.com/Sigfried/linkml.git", rev = "06ed4720" }
+linkml-map = { git = "https://github.com/Sigfried/linkml-map.git", rev = "53ad099" }
+```
+
+Install with `uv sync` — no manual fork setup required.
 
 | Package | Fork | Branch | Change | Used in step |
 |---------|------|--------|--------|-------------|
 | schema-automator | [Sigfried/schema-automator](https://github.com/Sigfried/schema-automator) | `infer-enum-from-integers` | `--infer-enum-from-integers` flag | [2. schema-create](#2-schema-create) |
 | linkml | [Sigfried/linkml](https://github.com/Sigfried/linkml) | `schema-aware-delimited-loader` | Schema-aware TSV loader preserves string/enum values | [4. validate-data](#4-validate-data) |
 | linkml-map | [Sigfried/linkml-map](https://github.com/Sigfried/linkml-map) | `main` | Forwards schema_path/target_class to linkml's loader | [5. map-data](#5-map-data) |
-
-### Setup
-
-Clone the forks as sibling directories of dm-bip and install:
-
-```bash
-# From the dm-bip directory:
-bash scripts/setup-enum-forks.sh
-uv sync
-```
-
-Or manually:
-```bash
-cd ..  # parent of dm-bip
-git clone -b infer-enum-from-integers https://github.com/Sigfried/schema-automator.git
-git clone -b schema-aware-delimited-loader https://github.com/Sigfried/linkml.git
-git clone https://github.com/Sigfried/linkml-map.git
-cd dm-bip
-uv sync
-```
-
-The [`pyproject.toml`](../pyproject.toml) `[tool.uv.sources]` section expects the forks at `../schema-automator`, `../linkml`, and `../linkml-map`.
 
 The original pipeline (`config-orig-valmaps.mk`) also works with these forks installed — the fixes are backward-compatible.
 
@@ -350,8 +317,4 @@ When the upstream packages release versions that include these fixes:
 
 1. Remove the `[tool.uv.sources]` section from [`pyproject.toml`](../pyproject.toml)
 2. Pin release versions in `[project.dependencies]` (e.g., `schema-automator>=X.Y.Z`)
-3. Run `uv sync` to switch from local forks to released packages
-4. Optionally delete the sibling fork directories
-5. Merge to main
-
-The same editable-install setup can be reproduced in the Seven Bridges protected data enclave for running on real data before upstream releases happen.
+3. Run `uv sync` to switch from fork commits to released packages

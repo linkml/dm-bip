@@ -78,18 +78,14 @@ For users of the pipeline, see the [pipeline user documentation](./docs/pipeline
 
 ## Enum pipeline (issue [#211](https://github.com/linkml/dm-bip/issues/211))
 
-The enum pipeline extends the original pipeline with formal `enum_derivations` that replace inline `value_mappings` for categorical data transformations. A new script ([`generate_enum_specs.py`](./src/dm_bip/generate_enum_specs.py)) auto-generates transformation specs with `enum_derivations` and a target schema with enum definitions from existing specs and inferred source enums.
+The enum pipeline extends the original pipeline with formal `enum_derivations` for categorical data transformations. Transform specs with `enum_derivations` and a target schema with enum definitions are committed at `toy_data_w_enums/specs/with_enum_derivations/` and `toy_data_w_enums/target-schema-enums.yaml`.
 
 ```bash
-# Setup (requires local forks of schema-automator, linkml, linkml-map)
-bash scripts/setup-enum-forks.sh
 uv sync
-
-# Run the enum pipeline
 make pipeline CONFIG=toy_data_w_enums/config-enums.mk
 ```
 
-See [Pipeline Steps](./docs/pipeline-steps.md) for the full developer reference, including a comparison of both pipelines and local fork setup/cleanup instructions.
+See [Pipeline Steps](./docs/pipeline-steps.md) for the full developer reference, including a comparison of both pipelines and local fork details.
 
 #### Verify Development setup
 Once we have everything set up, we should run `tox` and  to make sure that the setup is correct and functioning.

@@ -1,0 +1,29 @@
+- class_derivations:
+    Condition:
+      populated_from: pht000005
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000041
+        associated_visit:
+          value: TOY VISIT 1
+          range: string
+        condition_concept:
+          value: MONDO:0004979
+          range: string
+        condition_status:
+          populated_from: phv00000051
+        condition_provenance:
+          value: CLINICAL_DIAGNOSIS
+          range: string
+        relationship_to_participant:
+          value: ONESELF
+          range: string
+  enum_derivations:
+    condition_status_enum:
+      populated_from: phv00000051_enum
+      mirror_source: false
+      permissible_value_derivations:
+        ABSENT:
+          populated_from: '0'
+        PRESENT:
+          populated_from: '1'
