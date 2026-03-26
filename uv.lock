@@ -809,7 +809,7 @@ env = [
 [package.metadata]
 requires-dist = [
     { name = "importlib-metadata", specifier = ">=8.2.0" },
-    { name = "linkml-map", git = "https://github.com/linkml/linkml-map.git?rev=main" },
+    { name = "linkml-map", git = "https://github.com/linkml/linkml-map.git?rev=cross-table-populated-from" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
     { name = "schema-automator", specifier = "==0.5.4" },
     { name = "schemasheets", specifier = "==0.4.0" },
@@ -1956,8 +1956,8 @@ wheels = [
 
 [[package]]
 name = "linkml-map"
-version = "0.4.0.post2.dev0+9dd5294"
-source = { git = "https://github.com/linkml/linkml-map.git?rev=main#9dd52945a3a5113729bda44781be29a13706fb9c" }
+version = "0.4.0.post6.dev0+43a5d0b"
+source = { git = "https://github.com/linkml/linkml-map.git?rev=cross-table-populated-from#43a5d0b5581b2182945092cc7356b69208e1b9af" }
 dependencies = [
     { name = "asteval" },
     { name = "click" },

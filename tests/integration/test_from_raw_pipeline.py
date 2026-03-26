@@ -133,3 +133,21 @@ def test_mapping_demography_values(from_raw_pipeline_output):
 
     sex_values = {r.get("sex") for r in records if r.get("sex")}
     assert sex_values & {"OMOP:8507", "OMOP:8532"}, f"Expected OMOP sex codes, got {sex_values}"
+
+
+def test_mapping_cross_table_age(from_raw_pipeline_output):
+    """MeasurementObservation should have age_at_observation from cross-table join."""
+    mapped_dir = from_raw_pipeline_output["output_dir"] / "mapped-data"
+    mo_files = list(mapped_dir.glob("*MeasurementObservation*.yaml"))
+    assert mo_files, "No MeasurementObservation output file"
+
+    records = [r for r in yaml.safe_load_all(mo_files[0].read_text()) if r]
+
+    # Body height records (OBA:VT0001253) should have age_at_observation from cross-table join
+    height_records = [r for r in records if r.get("observation_type") == "OBA:VT0001253"]
+    assert height_records, "No body height records found"
+
+    ages = [r.get("age_at_observation") for r in height_records if r.get("age_at_observation")]
+    assert ages, "No age_at_observation values in height records"
+    # First participant: age 40 * 365 = 14600
+    assert 14600 in ages, f"Expected 14600 (40*365) in ages, got {ages[:5]}"
