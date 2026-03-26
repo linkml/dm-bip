@@ -27,19 +27,29 @@ See [`pipeline.Makefile` L59–73](../pipeline.Makefile) for all enum inference 
 
 ## Steps overview
 
-| Step | value_mappings pipeline | enum_derivations pipeline |
-|------|------------------------|--------------------------|
-| 0\. **Config**<br/>Pass `CONFIG=` on make command lines | [`config-orig-valmaps.mk`](../toy_data_w_enums/config-orig-valmaps.mk) | [`config-enums.mk`](../toy_data_w_enums/config-enums.mk) |
-| 1\. [`prepare-input`](#1-prepare-input)<br/>Strip dbGaP headers, filter tables, output clean TSVs | Same | Same |
-| 2\. [`schema-create`](#2-schema-create)<br/>Infer source schema from TSV data | No enums inferred | Enums inferred from low-cardinality columns. [Local fork: schema-automator](#local-fork-changes) |
-| 2a. [`schema-lint`](#2a-schema-lint)<br/>Lint the generated source schema | Same | Same |
-| 3\. [`generate-enum-specs`](#3-generate-enum-specs)<br/>Generate specs with `enum_derivations` and target schema with enum definitions | *N/A* — curator hand-writes specs and target schema | Auto-generated from source schema + existing specs |
-| 4\. [`validate-data`](#4-validate-data)<br/>Validate each TSV against the source schema | Same | Same. [Local fork: linkml](#local-fork-changes) for integer-coded enums |
-| 5\. [`map-data`](#5-map-data)<br/>Transform data using LinkML-Map | Uses `value_mappings` in hand-written specs | Uses `enum_derivations` in generated specs. [Local fork: linkml-map](#local-fork-changes) |
+| Step                                                                                              | value_mappings pipeline                                                                                                                                        | enum_derivations pipeline                                                                                       |
+|---------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| 0\. **Config**<br/>Pass `CONFIG=` on [`make`](#0-make) command lines                              | [`config-orig-valmaps.mk`](../toy_data_w_enums/config-orig-valmaps.mk)                                                                                         | [`config-enums.mk`](../toy_data_w_enums/config-enums.mk)                                                        |
+| 1\. [`prepare-input`](#1-prepare-input)<br/>Strip dbGaP headers, filter tables, output clean TSVs | Same                                                                                                                                                           | Same                                                                                                            |
+| 2\. [`schema-create`](#2-schema-create)<br/>Infer source schema from TSV data                     | No enums inferred. Output: `$(DM_OUTPUT_DIR)/ToyEnums.yaml`                                                                                                   | Enums inferred from low-cardinality columns. [Local fork: schema-automator](#local-fork-changes)                |
+| 2a. [`schema-lint`](#2a-schema-lint)<br/>Lint the generated source schema                         | Same                                                                                                                                                           | Same                                                                                                            |
+| 3\. Create target schema and transform specs                                                      | Curator hand-writes [target schema](../toy_data_w_enums/target-schema-orig-valmaps.yaml) and [transform specs](../toy_data_w_enums/specs) with `value_mappings` | [`generate-enum-specs`](#3-generate-enum-specs) reads curator-made [target schema](../toy_data_w_enums/target-schema-orig-valmaps.yaml) + [specs](../toy_data_w_enums/specs) and auto-generates new [target schema with enums](#3-generate-enum-specs) and [specs with `enum_derivations`](#3-generate-enum-specs) |
+| 4\. [`validate-data`](#4-validate-data)<br/>Validate each TSV against the source schema           | Same                                                                                                                                                           | Same. [Local fork: linkml](#local-fork-changes) for integer-coded enums                                         |
+| 5\. [`map-data`](#5-map-data)<br/>Transform data using LinkML-Map                                 | Uses `value_mappings` in hand-written specs                                                                                                                    | Uses `enum_derivations` in generated specs. [Local fork: linkml-map](#local-fork-changes)                       |
 
 ---
 
 ## Step details
+
+### 0. `make`
+To run the entire pipeline with value_mappings:
+```bash
+make CONFIG=toy_data_w_enums/config-orig-valmaps.mk
+```
+Or, with enum inference, enum-transformed specs, and `enum_derivations`
+```bash
+make CONFIG=toy_data_w_enums/config-enums.mk
+```
 
 ### 1. `prepare-input`
 
@@ -50,7 +60,7 @@ Unzips raw `.txt.gz` dbGaP archives, strips metadata comment headers, filters to
 make prepare-input CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```
 
-**CLI:**
+**CLI** ([`prepare_input.py`](../src/dm_bip/cleaners/prepare_input.py)):
 ```bash
 uv run python src/dm_bip/cleaners/prepare_input.py \
   --source toy_data_w_enums/data/raw \
@@ -65,7 +75,7 @@ uv run python src/dm_bip/cleaners/prepare_input.py \
 | `--mapping` | `DM_MAPPING_SPEC` | Spec directory — scanned for `pht` IDs to determine which tables to extract |
 | `--output` | `DM_INPUT_DIR` | Output directory for clean TSV files (one per table, e.g., `pht000001.tsv`) |
 
-**How it works** ([`prepare_input.py`](../src/dm_bip/cleaners/prepare_input.py)):
+**How it works:**
 1. Scans spec YAML files as raw text for `pht` IDs to build a filter set
 2. For each `.txt.gz` file whose filename contains a matching `pht` ID:
    - Reads the gzipped content line by line
@@ -142,7 +152,7 @@ The original specs and target schema are not modified.
 make generate-enum-specs CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```
 
-**CLI:**
+**CLI** ([`generate_enum_specs.py`](../src/dm_bip/generate_enum_specs.py)):
 ```bash
 uv run python src/dm_bip/generate_enum_specs.py \
   --source-schema output/ToyEnums/ToyEnums.yaml \
@@ -206,7 +216,7 @@ Transforms data from source schema to target schema using [LinkML-Map](https://l
 make map-data CONFIG=toy_data_w_enums/config-orig-valmaps.mk
 ```
 
-**CLI:**
+**CLI** ([`map_data.py`](../src/dm_bip/map_data/map_data.py)):
 ```bash
 uv run python src/dm_bip/map_data/map_data.py \
   --source-schema output/ToyEnums/ToyEnums.yaml \
