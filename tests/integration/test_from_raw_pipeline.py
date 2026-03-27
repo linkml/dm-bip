@@ -188,7 +188,10 @@ def _run_map_step(from_raw_pipeline_output, *, strict, tmp_path_factory):
 
     proc = subprocess.run(
         [
-            "make", "-f", "pipeline.Makefile", "map-data",
+            "make",
+            "-f",
+            "pipeline.Makefile",
+            "map-data",
             f"DM_INPUT_DIR={prepared_dir}",
             f"DM_TRANS_SPEC_DIR={spec_dir}",
             "DM_MAP_TARGET_SCHEMA=toy_data/target-schema.yaml",
@@ -213,9 +216,7 @@ def test_mapping_strict_mode_fails_on_bad_spec(from_raw_pipeline_output, tmp_pat
 
 def test_mapping_continue_on_error(from_raw_pipeline_output, tmp_path_factory):
     """In non-strict mode, the pipeline completes and surfaces errors from all entities."""
-    proc, map_output = _run_map_step(
-        from_raw_pipeline_output, strict=False, tmp_path_factory=tmp_path_factory
-    )
+    proc, map_output = _run_map_step(from_raw_pipeline_output, strict=False, tmp_path_factory=tmp_path_factory)
     combined = proc.stdout + proc.stderr
     assert proc.returncode == 0, f"Pipeline should complete in non-strict mode.\n{combined[-500:]}"
 
