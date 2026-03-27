@@ -1,5 +1,7 @@
 # Pipeline Steps — Developer Reference
 
+> **Note:** This file is a developer reference for the enum pipeline work (issue #211). It documents both pipeline variants so contributors can understand the differences and run either one.
+
 All pipeline steps are orchestrated by [`pipeline.Makefile`](../pipeline.Makefile). Both pipelines use the same raw data in [`toy_data_w_enums/data/raw/`](../toy_data_w_enums/data/raw/) — gzipped dbGaP-format TSV files.
 
 **Original pipeline** — uses hand-written specs with inline `value_mappings` for categorical slot transformations:

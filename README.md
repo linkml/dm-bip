@@ -78,7 +78,7 @@ For users of the pipeline, see the [pipeline user documentation](./docs/pipeline
 
 ## Enum pipeline (issue [#211](https://github.com/linkml/dm-bip/issues/211))
 
-The enum pipeline extends the original pipeline with formal `enum_derivations` for categorical data transformations. Transform specs with `enum_derivations` and a target schema with enum definitions are committed at `toy_data_w_enums/specs/with_enum_derivations/` and `toy_data_w_enums/target-schema-enums.yaml`.
+The enum pipeline extends the original pipeline with formal `enum_derivations` for categorical data transformations. This complements (rather than replaces) `value_mappings`, which remain appropriate for some transformations. Transform specs with `enum_derivations` and a target schema with enum definitions are committed at `toy_data_w_enums/specs/with_enum_derivations/` and `toy_data_w_enums/target-schema-enums.yaml`.
 
 ```bash
 uv sync
