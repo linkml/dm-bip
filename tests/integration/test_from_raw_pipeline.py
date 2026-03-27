@@ -9,6 +9,7 @@ that strips comments, cleans phv headers, and filters unused tables.
 # ruff: noqa: S603 S607
 
 import os
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -23,6 +24,7 @@ root_dir = script_dir.parent.parent
 
 SCHEMA_NAME = "ToyFromRaw"
 CONFIG_FILE = "toy_data/from_raw/config.mk"
+ERROR_SPEC_DIR = root_dir / "toy_data" / "from_raw" / "error-spec"
 EXPECTED_PREPARED_FILES = {"pht000001.tsv", "pht000002.tsv", "pht000003.tsv", "pht000005.tsv"}
 EXPECTED_ENTITIES = {
     "Condition",
@@ -156,3 +158,87 @@ def test_mapping_cross_table_age(from_raw_pipeline_output):
     assert ages, "No age_at_observation values in height records"
     # First participant: age 40 * 365 = 14600
     assert 14600 in ages, f"Expected 14600 (40*365) in ages, got {ages[:5]}"
+
+
+# --- Error handling tests ---
+# These reuse the prepared data and schema from the main pipeline run,
+# then run only the map step with a deliberately broken spec.
+
+
+@pytest.fixture(scope="module")
+def error_spec_composed(from_raw_pipeline_output):
+    """Compose specs that include a deliberately broken expression alongside good ones."""
+    temp_dir = tempfile.TemporaryDirectory(dir=output_dir, prefix="error-spec_")
+    spec_dir = Path(temp_dir.name) / "specs"
+    composed_dir = Path(temp_dir.name) / "composed"
+    spec_dir.mkdir()
+
+    # Symlink good specs and bad specs into one directory
+    for src in (root_dir / "toy_data" / "from_raw" / "specs").glob("*.yaml"):
+        (spec_dir / src.name).symlink_to(src.resolve())
+    for src in ERROR_SPEC_DIR.glob("*.yaml"):
+        (spec_dir / src.name).symlink_to(src.resolve())
+
+    # Compose into per-entity specs
+    subprocess.run(
+        ["uv", "run", "python", "-m", "dm_bip.map_data.compose_specs", str(spec_dir), str(composed_dir)],
+        cwd=str(root_dir),
+        check=True,
+        capture_output=True,
+    )
+
+    yield {
+        "composed_dir": composed_dir,
+        "schema_file": from_raw_pipeline_output["output_dir"] / f"{SCHEMA_NAME}.yaml",
+        "prepared_dir": from_raw_pipeline_output["prepared_dir"],
+        "output_dir": Path(temp_dir.name),
+    }
+
+    temp_dir.cleanup()
+
+
+def _run_linkml_map(error_spec_composed, *, entity, continue_on_error):
+    """Run linkml-map map-data for a single entity's composed spec."""
+    out_file = error_spec_composed["output_dir"] / f"{entity}.yaml"
+    cmd = [
+        "uv", "run", "linkml-map", "map-data",
+        "-T", str(error_spec_composed["composed_dir"] / f"{entity}.yaml"),
+        "-s", str(error_spec_composed["schema_file"]),
+        "--target-schema", str(root_dir / "toy_data" / "target-schema.yaml"),
+        "-o", str(out_file),
+        "-f", "yaml",
+        str(error_spec_composed["prepared_dir"]) + "/",
+    ]
+    if continue_on_error:
+        cmd.insert(-1, "--continue-on-error")
+    return subprocess.run(cmd, cwd=str(root_dir), capture_output=True, text=True)
+
+
+def test_mapping_strict_mode_fails_on_bad_spec(error_spec_composed):
+    """In strict mode, a bad expression should crash immediately."""
+    proc = _run_linkml_map(error_spec_composed, entity="Demography", continue_on_error=False)
+    assert proc.returncode != 0, "Should fail on bad expression in strict mode"
+    assert "division by zero" in proc.stderr, "Error should mention the expression failure"
+
+
+def test_continue_on_error_reports_all_errors(error_spec_composed):
+    """With --continue-on-error, all errors are reported for bulk fixing."""
+    # Run Demography (has division by zero errors)
+    demography = _run_linkml_map(error_spec_composed, entity="Demography", continue_on_error=True)
+    assert demography.returncode == 1, "Should exit 1 when errors occurred"
+    assert "transformation error(s)" in demography.stderr, "Should report error count"
+    assert "division by zero" in demography.stderr, "Should identify the expression failure"
+
+    # Run Participant (has unsafe expression errors)
+    participant = _run_linkml_map(error_spec_composed, entity="Participant", continue_on_error=True)
+    assert participant.returncode == 1, "Should exit 1 when errors occurred"
+    assert "transformation error(s)" in participant.stderr, "Should report error count"
+    assert "not in safe subset" in participant.stderr, "Should identify the unsafe expression"
+
+
+def test_continue_on_error_reports_multiple_rows(error_spec_composed):
+    """Error report should include row numbers so all failures can be located."""
+    proc = _run_linkml_map(error_spec_composed, entity="Demography", continue_on_error=True)
+    # Should report errors for multiple rows, not just the first
+    assert "row=0" in proc.stderr, "Should report first failing row"
+    assert "row=1" in proc.stderr, "Should report subsequent failing rows"
