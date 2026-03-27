@@ -493,6 +493,7 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE)
 		-f $(_MAP_PRIMARY_FMT) \
 		$(call _map_additional_outputs,$*) \
 		--chunk-size $(DM_MAP_CHUNK_SIZE) \
+		$(if $(filter false,$(DM_MAP_STRICT)),--continue-on-error) \
 		$(DM_INPUT_DIR)/ \
 		2>&1 | tee $(MAPPING_LOG_DIR)/$*.log
 	@touch $@
