@@ -24,7 +24,14 @@ root_dir = script_dir.parent.parent
 SCHEMA_NAME = "ToyFromRaw"
 CONFIG_FILE = "toy_data/from_raw/config.mk"
 EXPECTED_PREPARED_FILES = {"pht000001.tsv", "pht000002.tsv", "pht000003.tsv", "pht000005.tsv"}
-EXPECTED_ENTITIES = {"Condition", "Demography", "MeasurementObservation", "Observation", "Participant"}
+EXPECTED_ENTITIES = {
+    "Condition",
+    "Demography",
+    "MeasurementObservation",
+    "MeasurementObservationSet",
+    "Observation",
+    "Participant",
+}
 
 
 @pytest.fixture(scope="module")
