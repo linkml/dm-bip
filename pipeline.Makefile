@@ -87,7 +87,6 @@ SCHEMA_VALIDATE_LOG         := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-schema-v
 DATA_VALIDATE_FILES_DIR     := $(VALIDATE_OUTPUT_DIR)/data-validation
 DATA_VALIDATE_ERRORS_DIR    := $(VALIDATE_OUTPUT_DIR)/data-validation-errors
 MAPPING_LOG_DIR             := $(MAPPING_OUTPUT_DIR)/logs
-MAPPING_ERRORS_DIR          := $(MAPPING_OUTPUT_DIR)/errors
 
 VALIDATION_SUCCESS_SENTINEL := $(VALIDATE_OUTPUT_DIR)/_data_validation_complete
 MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
@@ -166,7 +165,6 @@ Generated logs:
   data validation logs by file:   $(DATA_VALIDATE_FILES_DIR)
   data validation errors by file: $(DATA_VALIDATE_ERRORS_DIR)
   mapping logs:                   $(MAPPING_LOG_DIR)
-  mapping errors:                 $(MAPPING_ERRORS_DIR)
 
 endef
 
@@ -478,13 +476,13 @@ $(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(COM
 	$(MAKE) _map-all-entities CONFIG=$(CONFIG)
 	@echo "✓ Data mapping complete. Output written to $(MAPPING_OUTPUT_DIR)"
 	@echo "Mapping logs written to $(MAPPING_LOG_DIR)"
-	@NUM_ERRORS=$$(ls $(MAPPING_ERRORS_DIR) 2>/dev/null | wc -l); \
-	if [ $$NUM_ERRORS -gt 0 ]; then \
+	@FAILED=$$(grep -l "transformation error" $(MAPPING_LOG_DIR)/*.log 2>/dev/null); \
+	if [ -n "$$FAILED" ]; then \
 		echo; \
 		echo "=== Mapping Error Summary ==="; \
-		echo "$$NUM_ERRORS entity/entities had mapping errors:"; \
-		ls -1 $(MAPPING_ERRORS_DIR) | sed -e 's/\.log$$//' -e 's/^/    /'; \
-		echo "See $(MAPPING_ERRORS_DIR) for details."; \
+		echo "Entities with mapping errors:"; \
+		echo "$$FAILED" | xargs -n1 basename | sed -e 's/\.log$$//' -e 's/^/    /'; \
+		echo "See $(MAPPING_LOG_DIR) for details."; \
 		echo; \
 	fi
 	@touch $@
@@ -497,10 +495,10 @@ _map-all-entities: $(_ENTITY_SENTINELS)
 #
 # In strict mode (default): pipefail propagates linkml-map errors immediately.
 # In non-strict mode: --continue-on-error lets linkml-map produce partial output
-# and exit 1 on errors. We capture the exit code, record failures as error
-# markers, and always touch the sentinel so other entities can proceed.
+# and exit 1 on errors. We capture the exit code and always touch the sentinel
+# so other entities can proceed. The summary step greps logs for failures.
 $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE)
-	@mkdir -p $(MAPPING_LOG_DIR) $(MAPPING_ERRORS_DIR)
+	@mkdir -p $(MAPPING_LOG_DIR)
 	set -o pipefail && $(RUN) linkml-map map-data \
 		-T $< \
 		-s $(SCHEMA_FILE) \
@@ -513,10 +511,7 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE)
 		$(DM_INPUT_DIR)/ \
 		2>&1 | tee $(MAPPING_LOG_DIR)/$*.log; \
 	rc=$$?; \
-	if [ $$rc -ne 0 ] && [ "$(DM_MAP_STRICT)" = "false" ]; then \
-		cp $(MAPPING_LOG_DIR)/$*.log $(MAPPING_ERRORS_DIR)/$*.log; \
-		echo "  ⚠ $* mapping had errors (see $(MAPPING_ERRORS_DIR)/$*.log)"; \
-	elif [ $$rc -ne 0 ]; then \
+	if [ $$rc -ne 0 ] && [ "$(DM_MAP_STRICT)" != "false" ]; then \
 		exit $$rc; \
 	fi
 	@touch $@
@@ -529,7 +524,6 @@ map-debug:
 	@echo "COMPOSED_SPEC_DIR: $(COMPOSED_SPEC_DIR)"
 	@echo "MAPPING_OUTPUT_DIR: $(MAPPING_OUTPUT_DIR)"
 	@echo "MAPPING_LOG_DIR: $(MAPPING_LOG_DIR)"
-	@echo "MAPPING_ERRORS_DIR: $(MAPPING_ERRORS_DIR)"
 	@echo "DM_MAP_STRICT: $(DM_MAP_STRICT)"
 
 .PHONY: map-clean

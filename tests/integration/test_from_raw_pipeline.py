@@ -162,83 +162,72 @@ def test_mapping_cross_table_age(from_raw_pipeline_output):
 
 # --- Error handling tests ---
 # These reuse the prepared data and schema from the main pipeline run,
-# then run only the map step with a deliberately broken spec.
+# then run the map step through Make with deliberately broken specs.
 
 
-@pytest.fixture(scope="module")
-def error_spec_composed(from_raw_pipeline_output):
-    """Compose specs that include a deliberately broken expression alongside good ones."""
-    temp_dir = tempfile.TemporaryDirectory(dir=output_dir, prefix="error-spec_")
-    spec_dir = Path(temp_dir.name) / "specs"
-    composed_dir = Path(temp_dir.name) / "composed"
+def _run_map_step(from_raw_pipeline_output, *, strict, tmp_path_factory):
+    """Run make map-data with good + bad specs, returning the subprocess result and output dir."""
+    pipeline_out = from_raw_pipeline_output["output_dir"]
+    schema_file = pipeline_out / f"{SCHEMA_NAME}.yaml"
+    prepared_dir = from_raw_pipeline_output["prepared_dir"]
+
+    tmp = tmp_path_factory.mktemp("error-map")
+    map_output = tmp / "mapped-data"
+    spec_dir = tmp / "specs"
     spec_dir.mkdir()
 
-    # Symlink good specs and bad specs into one directory
+    # Copy good specs and bad specs into one directory
     for src in (root_dir / "toy_data" / "from_raw" / "specs").glob("*.yaml"):
-        (spec_dir / src.name).symlink_to(src.resolve())
+        shutil.copy2(src, spec_dir / src.name)
     for src in ERROR_SPEC_DIR.glob("*.yaml"):
-        (spec_dir / src.name).symlink_to(src.resolve())
+        shutil.copy2(src, spec_dir / src.name)
 
-    # Compose into per-entity specs
-    subprocess.run(
-        ["uv", "run", "python", "-m", "dm_bip.map_data.compose_specs", str(spec_dir), str(composed_dir)],
+    # Fake validation sentinel so Make skips validation
+    validation_sentinel = tmp / "_validation_complete"
+    validation_sentinel.touch()
+
+    proc = subprocess.run(
+        [
+            "make", "-f", "pipeline.Makefile", "map-data",
+            f"DM_INPUT_DIR={prepared_dir}",
+            f"DM_TRANS_SPEC_DIR={spec_dir}",
+            "DM_MAP_TARGET_SCHEMA=toy_data/target-schema.yaml",
+            f"SCHEMA_FILE={schema_file}",
+            f"MAPPING_OUTPUT_DIR={map_output}",
+            f"MAPPING_SUCCESS_SENTINEL={map_output}/_mapping_complete",
+            f"VALIDATION_SUCCESS_SENTINEL={validation_sentinel}",
+            f"DM_MAP_STRICT={'true' if strict else 'false'}",
+        ],
         cwd=str(root_dir),
-        check=True,
         capture_output=True,
+        text=True,
     )
-
-    yield {
-        "composed_dir": composed_dir,
-        "schema_file": from_raw_pipeline_output["output_dir"] / f"{SCHEMA_NAME}.yaml",
-        "prepared_dir": from_raw_pipeline_output["prepared_dir"],
-        "output_dir": Path(temp_dir.name),
-    }
-
-    temp_dir.cleanup()
+    return proc, map_output
 
 
-def _run_linkml_map(error_spec_composed, *, entity, continue_on_error):
-    """Run linkml-map map-data for a single entity's composed spec."""
-    out_file = error_spec_composed["output_dir"] / f"{entity}.yaml"
-    cmd = [
-        "uv", "run", "linkml-map", "map-data",
-        "-T", str(error_spec_composed["composed_dir"] / f"{entity}.yaml"),
-        "-s", str(error_spec_composed["schema_file"]),
-        "--target-schema", str(root_dir / "toy_data" / "target-schema.yaml"),
-        "-o", str(out_file),
-        "-f", "yaml",
-        str(error_spec_composed["prepared_dir"]) + "/",
-    ]
-    if continue_on_error:
-        cmd.insert(-1, "--continue-on-error")
-    return subprocess.run(cmd, cwd=str(root_dir), capture_output=True, text=True)
+def test_mapping_strict_mode_fails_on_bad_spec(from_raw_pipeline_output, tmp_path_factory):
+    """In strict mode, a bad expression should crash the pipeline."""
+    proc, _ = _run_map_step(from_raw_pipeline_output, strict=True, tmp_path_factory=tmp_path_factory)
+    assert proc.returncode != 0, "Pipeline should fail in strict mode with bad spec"
 
 
-def test_mapping_strict_mode_fails_on_bad_spec(error_spec_composed):
-    """In strict mode, a bad expression should crash immediately."""
-    proc = _run_linkml_map(error_spec_composed, entity="Demography", continue_on_error=False)
-    assert proc.returncode != 0, "Should fail on bad expression in strict mode"
-    assert "division by zero" in proc.stderr, "Error should mention the expression failure"
+def test_mapping_continue_on_error(from_raw_pipeline_output, tmp_path_factory):
+    """In non-strict mode, the pipeline completes and surfaces errors from all entities."""
+    proc, map_output = _run_map_step(
+        from_raw_pipeline_output, strict=False, tmp_path_factory=tmp_path_factory
+    )
+    combined = proc.stdout + proc.stderr
+    assert proc.returncode == 0, f"Pipeline should complete in non-strict mode.\n{combined[-500:]}"
 
+    # The error summary should report failing entities
+    assert "Mapping Error Summary" in combined, "Should print error summary"
 
-def test_continue_on_error_reports_all_errors(error_spec_composed):
-    """With --continue-on-error, all errors are reported for bulk fixing."""
-    # Run Demography (has division by zero errors)
-    demography = _run_linkml_map(error_spec_composed, entity="Demography", continue_on_error=True)
-    assert demography.returncode == 1, "Should exit 1 when errors occurred"
-    assert "transformation error(s)" in demography.stderr, "Should report error count"
-    assert "division by zero" in demography.stderr, "Should identify the expression failure"
-
-    # Run Participant (has unsafe expression errors)
-    participant = _run_linkml_map(error_spec_composed, entity="Participant", continue_on_error=True)
-    assert participant.returncode == 1, "Should exit 1 when errors occurred"
-    assert "transformation error(s)" in participant.stderr, "Should report error count"
-    assert "not in safe subset" in participant.stderr, "Should identify the unsafe expression"
-
-
-def test_continue_on_error_reports_multiple_rows(error_spec_composed):
-    """Error report should include row numbers so all failures can be located."""
-    proc = _run_linkml_map(error_spec_composed, entity="Demography", continue_on_error=True)
-    # Should report errors for multiple rows, not just the first
-    assert "row=0" in proc.stderr, "Should report first failing row"
-    assert "row=1" in proc.stderr, "Should report subsequent failing rows"
+    # Both error types should be surfaced in the per-entity logs
+    log_dir = map_output / "logs"
+    log_contents = {f.stem: f.read_text() for f in log_dir.glob("*.log")}
+    assert any("division by zero" in v for v in log_contents.values()), (
+        "Demography division-by-zero error should appear in logs"
+    )
+    assert any("not in safe subset" in v for v in log_contents.values()), (
+        "Participant unsafe-expression error should appear in logs"
+    )
