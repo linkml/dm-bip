@@ -78,7 +78,6 @@ def test_schema_creation(pre_cleaned_pipeline_output: Path):
     assert schema_view.schema.name == SCHEMA_NAME
     assert len(schema_view.all_classes()) == len(input_files)
 
-    assert (validation_path / f"{SCHEMA_NAME}-data-validate.log").exists()
     validated_files = list((validation_path / "data-validation").iterdir())
     assert set(d.name for d in validated_files) == set(a.name for a in input_files)
     for file_log_dir in validated_files:

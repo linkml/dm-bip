@@ -771,13 +771,11 @@ name = "dm-bip"
 version = "0.0.0"
 source = { editable = "." }
 dependencies = [
-    { name = "flatten-dict" },
     { name = "importlib-metadata" },
     { name = "linkml-map" },
     { name = "pandas" },
     { name = "schema-automator" },
     { name = "schemasheets" },
-    { name = "typer" },
     { name = "typing-extensions" },
 ]
 
@@ -810,13 +808,11 @@ env = [
 
 [package.metadata]
 requires-dist = [
-    { name = "flatten-dict", specifier = ">=0.4.2,<0.5" },
     { name = "importlib-metadata", specifier = ">=8.2.0" },
-    { name = "linkml-map", specifier = "==0.4.0" },
+    { name = "linkml-map", git = "https://github.com/linkml/linkml-map.git?rev=main" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
     { name = "schema-automator", specifier = "==0.5.4" },
     { name = "schemasheets", specifier = "==0.4.0" },
-    { name = "typer", specifier = ">=0.20.0" },
     { name = "typing-extensions", specifier = ">=4.0,<5" },
 ]
 
@@ -1960,8 +1956,8 @@ wheels = [
 
 [[package]]
 name = "linkml-map"
-version = "0.4.0"
-source = { registry = "https://pypi.org/simple" }
+version = "0.4.0.post7.dev0+b840a70"
+source = { git = "https://github.com/linkml/linkml-map.git?rev=main#b840a70103f8f0511c70738566c8c62e9ca0b0ff" }
 dependencies = [
     { name = "asteval" },
     { name = "click" },
@@ -1979,10 +1975,6 @@ dependencies = [
     { name = "pyyaml" },
     { name = "simpleeval" },
     { name = "ucumvert" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/a3/de/8f7fae3837de356665b0996d5134e732ea4f6524894f95a3cf3cc53a4d65/linkml_map-0.4.0.tar.gz", hash = "sha256:b79574b6c2b69728a26f87394602be781fc0a6104fa649a419131513f00f9244", size = 440201, upload-time = "2026-03-16T21:17:00.706Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/12/1c/e897fd80f1c6484c79b6317606c0b4b96da04a75dc4b2eab9b37d264f4c2/linkml_map-0.4.0-py3-none-any.whl", hash = "sha256:e95b9065f3119c788c8c10fc45249666e4000a42f97b28f19e93bc1d5c2be5f4", size = 81088, upload-time = "2026-03-16T21:16:58.965Z" },
 ]
 
 [[package]]

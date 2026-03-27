@@ -1,0 +1,9 @@
+# Bad Demography: division by zero in age calculation
+- class_derivations:
+    Demography:
+      populated_from: pht000001
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000001
+        age_at_observation:
+          expr: '{phv00000005} / 0'
