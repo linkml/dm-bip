@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 RUN := uv run
 
 # DM-BIP PIPELINE
@@ -450,7 +451,7 @@ $(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL)
 	@$(call check_map_input_files)
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
-	$(RUN) python ./src/dm_bip/map_data/map_data.py \
+	set -o pipefail && $(RUN) python ./src/dm_bip/map_data/map_data.py \
 		--source-schema $(SCHEMA_FILE) \
 		--target-schema $(DM_MAP_TARGET_SCHEMA) \
 		--data-dir $(DM_INPUT_DIR) \

@@ -1,13 +1,40 @@
 """
-Generalized utility to standardize dbGaP raw archives.
+Prepare raw dbGaP archives for the BDC data harmonization pipeline.
 
-Removes metadata headers, filters tables based on mapping specs,
-and outputs standardized TSVs for LinkML validation.
+Standardizes compressed dbGaP phenotype table archives (.txt.gz)
+into clean TSV files suitable for schema validation and LinkML-Map transformation.
+
+Processing steps for each file:
+  1. Decompress the gzipped archive
+  2. Strip dbGaP metadata comment lines (lines starting with '#')
+  3. Reconstruct the header row from the '##' accession line, preserving
+     column order and cleaning phv version suffixes
+  4. Skip the redundant human-readable column names row
+  5. Filter out empty rows and "Intentionally Blank" placeholders
+  6. Write the cleaned output as a standard TSV
+
+File selection is driven by the mapping specification directory — only phenotype
+tables (pht IDs) referenced in the YAML transformation specs are processed.
+If no mapping directory is found, all tables are processed.
+
+Parameters
+----------
+    --source    Directory containing raw .txt.gz dbGaP archive files
+    --mapping   Directory containing YAML transformation spec files (used to
+                determine which pht tables to process)
+    --output    Destination directory for cleaned .tsv files (default:
+                <source>_PipelineInput alongside the source directory)
+    --verbose   Enable detailed per-file processing log output
+
+The process exits with a non-zero status if any file fails to clean,
+ensuring the downstream pipeline halts on data preparation errors.
+
 """
 
 import gzip
 import logging
 import re
+import sys
 from pathlib import Path
 from typing import Annotated, Optional
 
@@ -102,11 +129,12 @@ def main(
     This function coordinates the reading of input files, standardization
     of dbGaP headers, and output generation.
     """
-    # Set logging level based on verbose
+    # Set logging level based on verbose; route to stdout so log lines appear in the same stream
+    # as Make/shell output rather than stderr
     if verbose:
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     else:
-        logging.basicConfig(level=logging.WARNING)
+        logging.basicConfig(level=logging.WARNING, stream=sys.stdout)
 
     source_path = Path(source)
     # Use explicit output if provided, otherwise default to [STUDY]_PipelineInput
@@ -119,6 +147,7 @@ def main(
     required_phts = get_required_phts(mapping, verbose=verbose)
 
     processed_count = 0
+    failed_files = []
     # Process all compressed text files in the source directory
     for gz_file in source_path.glob("*.txt.gz"):
         # Identify the pht ID from the filename (e.g., CARDIA_pht001562.txt.gz)
@@ -145,8 +174,14 @@ def main(
             processed_count += 1
         except Exception as e:
             logger.error(f"CRITICAL ERROR processing {gz_file.name}: {e}")
+            failed_files.append(gz_file.name)
 
-    logger.info(f"\nSuccess! Processed {processed_count} files into: {output_path}")
+    logger.info(f"\nProcessed {processed_count} files into: {output_path}")
+
+    if failed_files:
+        msg = f"Failed to process {len(failed_files)} file(s): {', '.join(failed_files)}"
+        logger.error(msg)
+        raise SystemExit(msg)
 
 
 if __name__ == "__main__":

@@ -4,8 +4,10 @@ import json
 import os
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
+import typer
 import yaml
 from linkml_runtime import SchemaView
 
@@ -628,6 +630,60 @@ def test_multi_spec_transform_strict_raises_on_value_error(linkml_test_setup, te
         )
 
 
+def test_multi_spec_transform_skips_runtime_error_non_strict(linkml_test_setup, temp_dir):
+    """Test that RuntimeError from bad expressions is caught in non-strict mode."""
+    spec_file = Path(temp_dir) / "bad_expr_spec.yaml"
+    spec_file.write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: demographics\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: subject_id\n"
+    )
+    with patch(
+        "dm_bip.map_data.map_data.ObjectTransformer.map_object",
+        side_effect=RuntimeError("Expression not in safe subset: bad_expr()"),
+    ):
+        results = list(
+            multi_spec_transform(
+                linkml_test_setup["data_loader"],
+                [spec_file],
+                linkml_test_setup["source_sv"],
+                linkml_test_setup["target_sv"],
+                strict=False,
+            )
+        )
+    assert results == []
+
+
+def test_multi_spec_transform_strict_raises_on_runtime_error(linkml_test_setup, temp_dir):
+    """Test that RuntimeError from bad expressions propagates in strict mode."""
+    spec_file = Path(temp_dir) / "bad_expr_spec.yaml"
+    spec_file.write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: demographics\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: subject_id\n"
+    )
+    with patch(
+        "dm_bip.map_data.map_data.ObjectTransformer.map_object",
+        side_effect=RuntimeError("Expression not in safe subset: bad_expr()"),
+    ):
+        with pytest.raises(RuntimeError, match="Expression not in safe subset"):
+            list(
+                multi_spec_transform(
+                    linkml_test_setup["data_loader"],
+                    [spec_file],
+                    linkml_test_setup["source_sv"],
+                    linkml_test_setup["target_sv"],
+                    strict=True,
+                )
+            )
+
+
 def test_multi_spec_transform_unexpected_exception_propagates(linkml_test_setup, temp_dir):
     """Test that unexpected exceptions propagate regardless of strict setting."""
     spec_file = Path(temp_dir) / "bad_structure_spec.yaml"
@@ -781,3 +837,33 @@ def test_main_creates_output_directory(temp_dir):
         output_type="jsonl",
     )
     assert output_dir.exists()
+
+
+def test_main_exits_nonzero_on_non_strict_errors(temp_dir):
+    """Test that main raises typer.Exit(1) when non-strict mapping encounters errors."""
+    # Create a spec dir with a spec referencing a nonexistent data file
+    spec_dir = Path(temp_dir) / "specs"
+    spec_dir.mkdir()
+    (spec_dir / "bad_spec.yaml").write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: nonexistent_table\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: subject_id\n"
+    )
+    output_dir = Path(temp_dir) / "output"
+
+    with pytest.raises(typer.Exit) as exc_info:
+        main(
+            source_schema=TOY_DATA / "pre_cleaned/source-schema.yaml",
+            target_schema=TOY_DATA / "target-schema.yaml",
+            data_dir=TOY_DATA / "data/pre_cleaned",
+            var_dir=spec_dir,
+            output_dir=output_dir,
+            output_prefix="test",
+            output_postfix="v1",
+            output_type="jsonl",
+            strict=False,
+        )
+    assert exc_info.value.exit_code == 1

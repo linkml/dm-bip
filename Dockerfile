@@ -27,8 +27,20 @@ RUN uv sync --frozen
 # Copy the rest (scripts, tests, configs, etc.)
 COPY . ./
 
+# Archive the Dockerfile used to build this image at a known root-level path
+COPY Dockerfile /Dockerfile.archived
+
 # Clone external repos (shallow, single layer)
-RUN git clone --depth 1 --branch v1.1.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
-    git clone --depth 1 --branch v1.0.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git
+# When BDC_PULL_LATEST=true (dev builds), clone default branches so git pull works at runtime.
+# When false (release builds), pin to specific tags for reproducibility.
+ARG BDC_PULL_LATEST=false
+ENV BDC_PULL_LATEST=${BDC_PULL_LATEST}
+RUN if [ "$BDC_PULL_LATEST" = "true" ]; then \
+      git clone --depth 1 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
+      git clone --depth 1 https://github.com/amc-corey-cox/bdc-harmonized-variables.git; \
+    else \
+      git clone --depth 1 --branch v1.2.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
+      git clone --depth 1 --branch 2026.03-2 https://github.com/amc-corey-cox/bdc-harmonized-variables.git; \
+    fi
 
 CMD ["uv", "run", "dm-bip", "run"]
