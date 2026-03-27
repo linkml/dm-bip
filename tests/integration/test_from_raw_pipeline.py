@@ -139,7 +139,17 @@ def test_mapping_cross_table_age(from_raw_pipeline_output):
     mo_files = list(mapped_dir.glob("*MeasurementObservation*.yaml"))
     assert mo_files, "No MeasurementObservation output file"
 
-    records = [r for r in yaml.safe_load_all(mo_files[0].read_text()) if r]
+    # Debug: show what files exist and what the composed spec looks like
+    all_mapped = sorted(p.name for p in mapped_dir.glob("*.yaml"))
+    composed_dir = mapped_dir / "composed-specs"
+    composed_files = sorted(p.name for p in composed_dir.glob("*.yaml")) if composed_dir.exists() else []
+    mo_file = mo_files[0]
+    first_500 = mo_file.read_text()[:500]
+    composed_mo = (composed_dir / "MeasurementObservation.yaml").read_text()[:500] if (composed_dir / "MeasurementObservation.yaml").exists() else "NOT FOUND"
+    log_dir = mapped_dir / "logs"
+    mo_log = (log_dir / "MeasurementObservation.log").read_text()[:500] if (log_dir / "MeasurementObservation.log").exists() else "NOT FOUND"
+
+    records = [r for r in yaml.safe_load_all(mo_file.read_text()) if r]
 
     observation_types = {r.get("observation_type") for r in records}
     # Body height records (OBA:VT0001253) should have age_at_observation from cross-table join
@@ -147,7 +157,13 @@ def test_mapping_cross_table_age(from_raw_pipeline_output):
     assert height_records, (
         f"No body height records found. "
         f"Got {len(records)} records with observation_types: {observation_types}. "
-        f"First record keys: {list(records[0].keys()) if records else 'empty'}"
+        f"First record keys: {list(records[0].keys()) if records else 'empty'}. "
+        f"Mapped files: {all_mapped}. "
+        f"Composed specs: {composed_files}. "
+        f"MO file: {mo_file.name}. "
+        f"First 500 chars of output:\n{first_500}\n"
+        f"First 500 chars of composed spec:\n{composed_mo}\n"
+        f"MO log:\n{mo_log}"
     )
 
     ages = [r.get("age_at_observation") for r in height_records if r.get("age_at_observation")]
