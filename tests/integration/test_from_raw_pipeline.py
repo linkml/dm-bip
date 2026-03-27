@@ -141,9 +141,14 @@ def test_mapping_cross_table_age(from_raw_pipeline_output):
 
     records = [r for r in yaml.safe_load_all(mo_files[0].read_text()) if r]
 
+    observation_types = {r.get("observation_type") for r in records}
     # Body height records (OBA:VT0001253) should have age_at_observation from cross-table join
     height_records = [r for r in records if r.get("observation_type") == "OBA:VT0001253"]
-    assert height_records, "No body height records found"
+    assert height_records, (
+        f"No body height records found. "
+        f"Got {len(records)} records with observation_types: {observation_types}. "
+        f"First record keys: {list(records[0].keys()) if records else 'empty'}"
+    )
 
     ages = [r.get("age_at_observation") for r in height_records if r.get("age_at_observation")]
     assert ages, "No age_at_observation values in height records"
