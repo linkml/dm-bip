@@ -11,7 +11,7 @@ dependencies = [
     "pandas>=2.2.3,<3",
     "schema-automator==0.5.4",
     "schemasheets==0.4.0",
-    "linkml-map @ git+https://github.com/linkml/linkml-map.git@test-merge-dm-bip",
+    "linkml-map @ git+https://github.com/linkml/linkml-map.git@main",
     "typing-extensions>=4.0,<5",
 ]
 
