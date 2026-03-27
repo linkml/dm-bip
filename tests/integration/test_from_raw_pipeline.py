@@ -143,35 +143,14 @@ def test_mapping_demography_values(from_raw_pipeline_output):
 def test_mapping_cross_table_age(from_raw_pipeline_output):
     """MeasurementObservation should have age_at_observation from cross-table join."""
     mapped_dir = from_raw_pipeline_output["output_dir"] / "mapped-data"
-    mo_files = list(mapped_dir.glob("*MeasurementObservation*.yaml"))
+    mo_files = list(mapped_dir.glob("*MeasurementObservation--*.yaml"))
     assert mo_files, "No MeasurementObservation output file"
 
-    # Debug: show what files exist and what the composed spec looks like
-    all_mapped = sorted(p.name for p in mapped_dir.glob("*.yaml"))
-    composed_dir = mapped_dir / "composed-specs"
-    composed_files = sorted(p.name for p in composed_dir.glob("*.yaml")) if composed_dir.exists() else []
-    mo_file = mo_files[0]
-    first_500 = mo_file.read_text()[:500]
-    composed_mo = (composed_dir / "MeasurementObservation.yaml").read_text()[:500] if (composed_dir / "MeasurementObservation.yaml").exists() else "NOT FOUND"
-    log_dir = mapped_dir / "logs"
-    mo_log = (log_dir / "MeasurementObservation.log").read_text()[:500] if (log_dir / "MeasurementObservation.log").exists() else "NOT FOUND"
+    records = [r for r in yaml.safe_load_all(mo_files[0].read_text()) if r]
 
-    records = [r for r in yaml.safe_load_all(mo_file.read_text()) if r]
-
-    observation_types = {r.get("observation_type") for r in records}
     # Body height records (OBA:VT0001253) should have age_at_observation from cross-table join
     height_records = [r for r in records if r.get("observation_type") == "OBA:VT0001253"]
-    assert height_records, (
-        f"No body height records found. "
-        f"Got {len(records)} records with observation_types: {observation_types}. "
-        f"First record keys: {list(records[0].keys()) if records else 'empty'}. "
-        f"Mapped files: {all_mapped}. "
-        f"Composed specs: {composed_files}. "
-        f"MO file: {mo_file.name}. "
-        f"First 500 chars of output:\n{first_500}\n"
-        f"First 500 chars of composed spec:\n{composed_mo}\n"
-        f"MO log:\n{mo_log}"
-    )
+    assert height_records, "No body height records found"
 
     ages = [r.get("age_at_observation") for r in height_records if r.get("age_at_observation")]
     assert ages, "No age_at_observation values in height records"
