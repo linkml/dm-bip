@@ -1,0 +1,47 @@
+- class_derivations:
+    Observation:
+      populated_from: pht000005
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000041
+        associated_visit:
+          value: TOY VISIT 1
+          range: string
+        observation_type:
+          value: OMOP:4282779
+          range: string
+        age_at_observation:
+          expr: '{phv00000046} * 365'
+        value_enum:
+          populated_from: phv00000049
+  enum_derivations:
+    value_enum_enum:
+      populated_from: phv00000049_enum
+      mirror_source: false
+      permissible_value_derivations:
+        OMOP:40766945:
+          populated_from: '1'
+
+- class_derivations:
+    Observation:
+      populated_from: pht000005
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000041
+        associated_visit:
+          value: TOY VISIT 2
+          range: string
+        observation_type:
+          value: OMOP:4282779
+          range: string
+        age_at_observation:
+          expr: '{phv00000047} * 365'
+        value_enum:
+          populated_from: phv00000050
+  enum_derivations:
+    value_enum_enum:
+      populated_from: phv00000050_enum
+      mirror_source: false
+      permissible_value_derivations:
+        OMOP:40766945:
+          populated_from: '1'

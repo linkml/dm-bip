@@ -9,14 +9,6 @@ imports:
 default_prefix: target
 default_range: string
 
-enums:
-  target_sex_enum:
-    permissible_values:
-      OMOP:8507:
-        description: Male
-      OMOP:8532:
-        description: Female
-
 classes:
   Person:
     description: A person in the study with demographic information
@@ -24,7 +16,6 @@ classes:
       id:
         identifier: true
       gender:
-        range: target_sex_enum
       race:
       ethnicity:
       age:
@@ -86,18 +77,6 @@ classes:
       condition_status:
       condition_provenance:
       relationship_to_participant:
-
-  MeasurementObservationSet:
-    description: A structured object to hold related MeasurementObservations in a set
-    attributes:
-      associated_participant:
-      associated_visit:
-      method_type:
-      observations:
-        range: MeasurementObservation
-        multivalued: true
-        inlined_as_list: true
-        required: true
 
   Quantity:
     description: A value with unit

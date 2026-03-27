@@ -25,9 +25,17 @@ logger = logging.getLogger(__name__)
 class DataLoader:
     """Load TSV files based on populated_from identifiers."""
 
-    def __init__(self, base_path: Path):
-        """Initialize with the base directory containing TSV files."""
+    def __init__(self, base_path: Path, *, schema_path: Path | None = None):
+        """
+        Initialize with the base directory containing TSV files.
+
+        :param base_path: Directory containing TSV data files.
+        :param schema_path: Optional LinkML schema path for schema-aware type coercion.
+            When provided, each ``__getitem__`` call uses the populated_from identifier
+            as the target class so the loader knows which slots are strings/enums.
+        """
         self.base_path = base_path
+        self.schema_path = schema_path
 
     def __getitem__(self, pht_id: str):
         """Load instances from the TSV file corresponding to the given populated_from identifier."""
@@ -36,7 +44,7 @@ class DataLoader:
         if not file_path.exists():
             raise FileNotFoundError(f"No TSV file found for {pht_id} at {file_path}")
 
-        return TsvLoader(file_path).iter_instances()
+        return TsvLoader(file_path, schema_path=self.schema_path, target_class=pht_id).iter_instances()
 
     def __contains__(self, pht_id):
         """Check if a TSV file exists for the given populated_from identifier."""
@@ -296,7 +304,7 @@ def main(
     source_schemaview = SchemaView(get_schema(source_schema))
     target_schemaview = SchemaView(get_schema(target_schema))
 
-    data_loader = DataLoader(data_dir)
+    data_loader = DataLoader(data_dir, schema_path=source_schema)
 
     entities = discover_entities(var_dir)
     logger.info("Discovered entities: %s", entities)

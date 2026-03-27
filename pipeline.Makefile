@@ -69,6 +69,9 @@ DM_ENUM_THRESHOLD ?= 1.0
 #   Default 0 disables size-based enum creation.
 #   Set to 50 (schema-automator default) to enable.
 DM_MAX_ENUM_SIZE ?= 0
+# DM_INFER_ENUM_FROM_INTEGERS: treat low-cardinality integer columns as enum candidates.
+#   Default is empty (disabled). Set to any non-empty value to enable.
+DM_INFER_ENUM_FROM_INTEGERS ?=
 
 # Derived output files
 # ============
@@ -267,6 +270,7 @@ $(SCHEMA_FILE): $(INPUT_FILES) $(if $(DM_RAW_SOURCE),| $(PREPARED_INPUT_MK))
 	$(RUN) schemauto generalize-tsvs -n $(DM_SCHEMA_NAME) \
 		--enum-threshold $(DM_ENUM_THRESHOLD) \
 		--max-enum-size $(DM_MAX_ENUM_SIZE) \
+		$(if $(DM_INFER_ENUM_FROM_INTEGERS),--infer-enum-from-integers) \
 		$^ -o $@
 	@echo
 	@echo "  Created schema at $@"

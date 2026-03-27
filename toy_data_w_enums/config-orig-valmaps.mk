@@ -1,0 +1,10 @@
+DM_RAW_SOURCE        := toy_data_w_enums/data/raw
+DM_SCHEMA_NAME       := ToyEnums
+DM_OUTPUT_DIR        := $(or $(TOY_OUTPUT_DIR),output/ToyEnums/orig-valmaps)
+DM_INPUT_DIR         := $(DM_OUTPUT_DIR)/prepared
+DM_TRANS_SPEC_DIR    := toy_data_w_enums/specs/with_value_mappings
+DM_MAPPING_SPEC      := $(DM_TRANS_SPEC_DIR)
+DM_MAP_TARGET_SCHEMA := toy_data_w_enums/target-schema-orig-valmaps.yaml
+DM_MAPPING_PREFIX    := TOY
+DM_MAPPING_POSTFIX   := -data
+DM_MAP_STRICT        := false

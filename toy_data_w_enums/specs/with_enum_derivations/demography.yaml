@@ -1,0 +1,63 @@
+- class_derivations:
+    Demography:
+      populated_from: pht000001
+      slot_derivations:
+        associated_participant:
+          populated_from: phv00000001
+        associated_visit:
+          value: TOY BASELINE
+        sex:
+          populated_from: phv00000002
+        race:
+          populated_from: phv00000003
+        ethnicity:
+          populated_from: phv00000004
+        age_at_observation:
+          expr: '{phv00000005} * 365'
+        smoking_status:
+          populated_from: phv00000016
+  enum_derivations:
+    sex_enum:
+      populated_from: phv00000002_enum
+      mirror_source: false
+      permissible_value_derivations:
+        OMOP:8507:
+          populated_from: '1'
+        OMOP:8532:
+          populated_from: '2'
+    race_enum:
+      populated_from: phv00000003_enum
+      mirror_source: false
+      permissible_value_derivations:
+        OMOP:8527:
+          populated_from: '1'
+        OMOP:8516:
+          populated_from: '2'
+        OMOP:8515:
+          populated_from: '3'
+        OMOP:8557:
+          populated_from: '4'
+        OMOP:8657:
+          populated_from: '5'
+    ethnicity_enum:
+      populated_from: phv00000004_enum
+      mirror_source: false
+      permissible_value_derivations:
+        OMOP:38003563:
+          populated_from: '1'
+        OMOP:38003564:
+          populated_from: '0'
+    smoking_status_enum:
+      populated_from: phv00000016_enum
+      mirror_source: false
+      permissible_value_derivations:
+        OMOP:36309784:
+          populated_from: '1'
+        OMOP:36310471:
+          populated_from: '2'
+        OMOP:45884037:
+          populated_from: Former
+        OMOP:45879404:
+          populated_from: Never
+        OMOP:0:
+          populated_from: Unknown

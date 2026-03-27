@@ -76,6 +76,17 @@ To run commands within the virtual environment, preface the command with `uv run
 
 For users of the pipeline, see the [pipeline user documentation](./docs/pipeline_user_docs.md) for details on how to run the pipeline and generate data formatted for your LinkML model.
 
+## Enum pipeline (issue [#211](https://github.com/linkml/dm-bip/issues/211))
+
+The enum pipeline extends the original pipeline with formal `enum_derivations` for categorical data transformations. This complements (rather than replaces) `value_mappings`, which remain appropriate for some transformations. Transform specs with `enum_derivations` and a target schema with enum definitions are committed at `toy_data_w_enums/specs/with_enum_derivations/` and `toy_data_w_enums/target-schema-enums.yaml`.
+
+```bash
+uv sync
+make pipeline CONFIG=toy_data_w_enums/config-enums.mk
+```
+
+See [Pipeline Steps](./docs/pipeline-steps.md) for the full developer reference, including a comparison of both pipelines and local fork details.
+
 #### Verify Development setup
 Once we have everything set up, we should run `tox` and  to make sure that the setup is correct and functioning.
 ```
