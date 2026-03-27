@@ -26,7 +26,8 @@ class DataLoader:
     """Load TSV files based on populated_from identifiers."""
 
     def __init__(self, base_path: Path, *, schema_path: Path | None = None):
-        """Initialize with the base directory containing TSV files.
+        """
+        Initialize with the base directory containing TSV files.
 
         :param base_path: Directory containing TSV data files.
         :param schema_path: Optional LinkML schema path for schema-aware type coercion.
