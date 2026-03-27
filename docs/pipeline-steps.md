@@ -19,7 +19,7 @@ The enum config ([`config-enums.mk`](../toy_data_w_enums/config-enums.mk)) adds 
 ```makefile
 DM_ENUM_THRESHOLD           := 0.1
 DM_MAX_ENUM_SIZE            := 50
-DM_INFER_ENUM_FROM_INTEGERS := true     # local fork: schema-automator 86afe6d
+DM_INFER_ENUM_FROM_INTEGERS := true     # unreleased: schema-automator PR #188
 ```
 
 And points at committed enum specs and target schema:
@@ -37,11 +37,11 @@ See [`pipeline.Makefile` L59–73](../pipeline.Makefile) for all enum inference 
 | Step                                                                                              | value_mappings pipeline                                                                                                                                        | enum_derivations pipeline                                                                                       |
 |---------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
 | 1\. [`prepare-input`](#1-prepare-input)<br/>Strip dbGaP headers, filter tables, output clean TSVs | Same                                                                                                                                                           | Same                                                                                                            |
-| 2\. [`schema-create`](#2-schema-create)<br/>Infer source schema from TSV data                     | No enums inferred. Output: `$(DM_OUTPUT_DIR)/ToyEnums.yaml`                                                                                                   | Enums inferred from low-cardinality columns. [Local fork: schema-automator](#local-fork-changes)                |
+| 2\. [`schema-create`](#2-schema-create)<br/>Infer source schema from TSV data                     | No enums inferred. Output: `$(DM_OUTPUT_DIR)/ToyEnums.yaml`                                                                                                   | Enums inferred from low-cardinality columns. [Unreleased: schema-automator](#unreleased-upstream-changes)                |
 | 2a. [`schema-lint`](#2a-schema-lint)<br/>Lint the generated source schema                         | Same                                                                                                                                                           | Same                                                                                                            |
 | 3\. Target schema and transform specs                                                             | Curator hand-writes [target schema](../toy_data_w_enums/target-schema-orig-valmaps.yaml) and [transform specs](../toy_data_w_enums/specs/with_value_mappings) with `value_mappings` | Committed [target schema](../toy_data_w_enums/target-schema-enums.yaml) and [transform specs](../toy_data_w_enums/specs/with_enum_derivations) with `enum_derivations` |
-| 4\. [`validate-data`](#4-validate-data)<br/>Validate each TSV against the source schema           | Same                                                                                                                                                           | Same. [Local fork: linkml](#local-fork-changes) for integer-coded enums                                         |
-| 5\. [`map-data`](#5-map-data)<br/>Transform data using LinkML-Map                                 | Uses `value_mappings` in hand-written specs                                                                                                                    | Uses `enum_derivations` in committed specs. [Local fork: linkml-map](#local-fork-changes)                       |
+| 4\. [`validate-data`](#4-validate-data)<br/>Validate each TSV against the source schema           | Same                                                                                                                                                           | Same. [Unreleased: linkml](#unreleased-upstream-changes) for integer-coded enums                                         |
+| 5\. [`map-data`](#5-map-data)<br/>Transform data using LinkML-Map                                 | Uses `value_mappings` in hand-written specs                                                                                                                    | Uses `enum_derivations` in committed specs. [Unreleased: linkml-map](#unreleased-upstream-changes)                       |
 
 ---
 
@@ -111,7 +111,7 @@ uv run schemauto generalize-tsvs \
 
 **Enum inference (enum-focused pipeline):** With `DM_ENUM_THRESHOLD=0.1`, `DM_MAX_ENUM_SIZE=50`, and `DM_INFER_ENUM_FROM_INTEGERS=true`, schema-automator creates enum definitions for low-cardinality columns. For example, `phv00000002` (with values `1`, `2`) gets `range: phv00000002_enum` and an enum `phv00000002_enum` with permissible values `'1'`, `'2'`.
 
-**Local fork note:** `--infer-enum-from-integers` requires our schema-automator fork (`86afe6d`). Without it, integer columns get `range: integer` regardless of cardinality.
+**Note:** `--infer-enum-from-integers` requires an unreleased schema-automator change ([PR #188](https://github.com/linkml/schema-automator/pull/188)). Without it, integer columns get `range: integer` regardless of cardinality.
 
 ---
 
@@ -174,7 +174,7 @@ uv run linkml validate \
 
 **Output:** Per-file logs in `output/ToyEnums/validation-logs/data-validation/`. Error symlinks in `output/ToyEnums/validation-logs/data-validation-errors/`. Summary in `output/ToyEnums/validation-logs/ToyEnums-data-validate.log`.
 
-**Local fork note:** With enum-enabled schemas, validation requires our linkml fork (`06ed4720`) — the schema-aware TSV loader that identifies numeric-ranged slots and only coerces those to int/float, preserving string and enum values as strings.
+**Note:** With enum-enabled schemas, validation requires an unreleased linkml change — the schema-aware TSV loader that identifies numeric-ranged slots and only coerces those to int/float, preserving string and enum values as strings.
 
 ---
 
@@ -217,7 +217,7 @@ uv run python src/dm_bip/map_data/map_data.py \
 
 **Output:** One file per target entity, e.g., `output/ToyEnums/mapped-data/TOY-Demography-data.yaml`. Log at `output/ToyEnums/mapped-data/mapping.log`.
 
-**Local fork note:** Schema-aware data loading during mapping requires our linkml-map fork (`53ad099`) which forwards `schema_path`/`target_class` to linkml's delimited file loader.
+**Note:** Schema-aware data loading during mapping requires an unreleased linkml-map change which forwards `schema_path`/`target_class` to linkml's delimited file loader.
 
 #### How `map_data.py` works
 
@@ -292,31 +292,21 @@ For TSV output, if new columns appear mid-stream (a row has keys not in the init
 
 ---
 
-## Local fork changes
+## Unreleased upstream changes
 
-The enum pipeline requires unreleased fixes to three LinkML packages that resolve an int/string type mismatch where numeric TSV values were parsed as integers, breaking string enum matching. They are installed via git URL sources in [`pyproject.toml`](../pyproject.toml) `[tool.uv.sources]`:
+The enum pipeline requires changes to three LinkML packages that have been merged upstream but not yet released. They are pinned to upstream commit hashes via PEP 440 direct references in [`pyproject.toml`](../pyproject.toml):
 
-```toml
-[tool.uv.sources]
-schema-automator = { git = "https://github.com/Sigfried/schema-automator.git", rev = "86afe6d" }
-linkml = { git = "https://github.com/Sigfried/linkml.git", rev = "06ed4720" }
-linkml-map = { git = "https://github.com/Sigfried/linkml-map.git", rev = "53ad099" }
-```
+| Package | Change | Upstream PR | Used in step |
+|---------|--------|-------------|-------------|
+| schema-automator | `--infer-enum-from-integers` flag | [linkml/schema-automator#188](https://github.com/linkml/schema-automator/pull/188) | [2. schema-create](#2-schema-create) |
+| linkml | Schema-aware TSV loader preserves string/enum values | merged to main | [4. validate-data](#4-validate-data) |
+| linkml-map | Forwards schema_path/target_class to linkml's loader | merged to main | [5. map-data](#5-map-data) |
 
-Install with `uv sync` — no manual fork setup required.
-
-| Package | Fork | Branch | Change | Used in step |
-|---------|------|--------|--------|-------------|
-| schema-automator | [Sigfried/schema-automator](https://github.com/Sigfried/schema-automator) | `infer-enum-from-integers` | `--infer-enum-from-integers` flag | [2. schema-create](#2-schema-create) |
-| linkml | [Sigfried/linkml](https://github.com/Sigfried/linkml) | `schema-aware-delimited-loader` | Schema-aware TSV loader preserves string/enum values | [4. validate-data](#4-validate-data) |
-| linkml-map | [Sigfried/linkml-map](https://github.com/Sigfried/linkml-map) | `main` | Forwards schema_path/target_class to linkml's loader | [5. map-data](#5-map-data) |
-
-The original pipeline (`config-orig-valmaps.mk`) also works with these forks installed — the fixes are backward-compatible.
+Install with `uv sync` — no manual setup required. The original pipeline (`config-orig-valmaps.mk`) also works with these versions — the changes are backward-compatible.
 
 ### Cleanup (when upstream releases are available)
 
-When the upstream packages release versions that include these fixes:
+When the upstream packages release versions that include these changes:
 
-1. Remove the `[tool.uv.sources]` section from [`pyproject.toml`](../pyproject.toml)
-2. Pin release versions in `[project.dependencies]` (e.g., `schema-automator>=X.Y.Z`)
-3. Run `uv sync` to switch from fork commits to released packages
+1. Replace the git direct references in `[project.dependencies]` with version pins (e.g., `schema-automator>=X.Y.Z`)
+2. Run `uv sync` to switch from commit pins to released packages

@@ -126,7 +126,8 @@ def test_mapping_uses_enum_derivations(enum_pipeline_output):
         content = yaml.safe_load(f)
 
     assert content, "Demography mapped output is empty"
-    records = content if isinstance(content, list) else [content]
+    # Output is a dict like {"demographys": [...]}, unwrap the collection key
+    records = next(iter(content.values())) if isinstance(content, dict) else content
     sex_values = {r.get("sex") for r in records if r.get("sex")}
     assert sex_values, "No sex values found in mapped Demography output"
     # These are the target enum permissible values from sex_enum

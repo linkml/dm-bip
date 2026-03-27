@@ -9,10 +9,10 @@ license = "MIT"
 dependencies = [
     "importlib-metadata>=8.2.0",
     "pandas>=2.2.3,<3",
-    "linkml",
-    "schema-automator",
+    "linkml @ git+https://github.com/linkml/linkml.git@06ed4720#subdirectory=packages/linkml",
+    "schema-automator @ git+https://github.com/linkml/schema-automator.git@59f27296",
     "schemasheets==0.4.0",
-    "linkml-map",
+    "linkml-map @ git+https://github.com/linkml/linkml-map.git@53ad099",
     "typing-extensions>=4.0,<5",
     "flatten-dict>=0.4.2,<0.5",
     "typer>=0.20.0",
@@ -53,15 +53,6 @@ default-groups = [
     "dev",
     "env",
 ]
-# The linkml fork uses uv-dynamic-versioning with fallback-version = "0.0.0",
-# which fails to satisfy schema-automator's linkml>=1.9.1 constraint when
-# built from a git URL. Override to accept any version.
-override-dependencies = ["linkml>=0"]
-
-[tool.uv.sources]
-schema-automator = { git = "https://github.com/Sigfried/schema-automator.git", rev = "86afe6d" }
-linkml = { git = "https://github.com/Sigfried/linkml.git", rev = "06ed4720", subdirectory = "packages/linkml" }
-linkml-map = { git = "https://github.com/Sigfried/linkml-map.git", rev = "53ad099" }
 
 [tool.poetry-dynamic-versioning]
 enable = true
