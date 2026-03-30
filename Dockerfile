@@ -32,16 +32,14 @@ COPY . ./
 COPY Dockerfile /Dockerfile.archived
 
 
-#Change here 2
-#
-
-ARG CACHE_BUST=2
+# Force rebuild of this layer to bust the Docker build cache
+ARG CACHE_BUST=4
 
 # Clone external repos (shallow, single layer)
 # When BDC_PULL_LATEST=true (dev builds), clone default branches so git pull works at runtime.
 # When false (release builds), pin to specific tags for reproducibility.
 RUN git clone --depth 1 --branch v1.2.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
-    git clone --depth 1 --branch fix/copdgene-chr-2026-03-23 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git;
+    git clone --depth 1 --branch fix/jhs-chr-20260328 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git;
 
 
 
