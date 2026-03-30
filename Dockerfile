@@ -37,12 +37,12 @@ COPY Dockerfile /Dockerfile.archived
 # When BDC_PULL_LATEST=true (dev builds), clone default branches so git pull works at runtime.
 # When false (release builds), pin to specific tags for reproducibility.
 RUN git clone --depth 1 --branch v1.2.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
-    git clone --depth 1 --branch fix/copdgene-chr-2026-03-23 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git;
+    git clone --depth 1 --branch jhs-chr-20260328 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git;
 
 
 
 
-    
+
 #fix/fhs-chr-blockers
 #fix/aric-chr-20260328
 #fix/jhs-chr-20260328
