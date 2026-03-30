@@ -47,6 +47,9 @@ jobs:
       - name: Build, tag, and push image
         run: |
           IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
-          docker build --build-arg BDC_PULL_LATEST=${{ steps.build-config.outputs.pull_latest }} -t $IMAGE_NAME .
+          docker build \
+            --build-arg BDC_PULL_LATEST=${{ steps.build-config.outputs.pull_latest }} \
+            --build-arg CACHE_BUST=$(date +%s) \
+            -t $IMAGE_NAME .
           docker tag $IMAGE_NAME $IMAGE_URI:latest
           docker push $IMAGE_URI:latest
