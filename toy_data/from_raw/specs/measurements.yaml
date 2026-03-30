@@ -55,6 +55,7 @@
                     unit_conversion:
                       source_unit: "[lb_av]"
                       target_unit: kg
+                      none_if_non_numeric: true
                   unit:
                     value: kg
                     range: string

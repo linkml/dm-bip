@@ -184,6 +184,16 @@ def test_mapping_unit_conversion(from_raw_pipeline_output):
     # Input: 135.6 lbs → 61.51 kg (135.6 * 0.453592)
     assert any(abs(w - 61.51) < 0.1 for w in weights), f"Expected ~61.51 kg in weights, got {weights[:5]}"
 
+    # Subjects 1005 and 1010 have 'A' (coded missing) in weight column.
+    # With none_if_non_numeric: true, these should produce null value_decimal.
+    null_weight_records = [
+        r for r in weight_records
+        if r.get("value_quantity") and r["value_quantity"].get("value_decimal") is None
+    ]
+    assert len(null_weight_records) >= 2, (
+        f"Expected at least 2 null weights from coded missing values, got {len(null_weight_records)}"
+    )
+
 
 # --- Error handling tests ---
 # These reuse the prepared data and schema from the main pipeline run,
