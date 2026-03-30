@@ -160,6 +160,31 @@ def test_mapping_cross_table_age(from_raw_pipeline_output):
     assert 14600 in ages, f"Expected 14600 (40*365) in ages, got {ages[:5]}"
 
 
+def test_mapping_unit_conversion(from_raw_pipeline_output):
+    """Body height should be converted from inches to cm via unit_conversion."""
+    output = from_raw_pipeline_output["output_dir"]
+    mapped_dir = output / "mapped-data"
+    mo_files = list(mapped_dir.glob("*MeasurementObservation--*.yaml"))
+    records = [r for r in yaml.safe_load_all(mo_files[0].read_text()) if r]
+
+    height_records = [r for r in records if r.get("observation_type") == "OBA:VT0001253"]
+    values = [r["value_quantity"]["value_decimal"] for r in height_records if r.get("value_quantity")]
+    assert values, "No converted height values found"
+
+    # Input: 59.5 inches → 151.13 cm (59.5 * 2.54)
+    assert any(abs(v - 151.13) < 0.01 for v in values), f"Expected ~151.13 cm in values, got {values[:5]}"
+
+    # All values should be in cm range (not raw inches)
+    assert all(v > 100 for v in values), f"Values look unconverted (still in inches?): {values[:5]}"
+
+    weight_records = [r for r in records if r.get("observation_type") == "OBA:VT0001254"]
+    weights = [r["value_quantity"]["value_decimal"] for r in weight_records if r.get("value_quantity")]
+    assert weights, "No converted weight values found"
+
+    # Input: 135.6 lbs → 61.51 kg (135.6 * 0.453592)
+    assert any(abs(w - 61.51) < 0.1 for w in weights), f"Expected ~61.51 kg in weights, got {weights[:5]}"
+
+
 # --- Error handling tests ---
 # These reuse the prepared data and schema from the main pipeline run,
 # then run the map step through Make with deliberately broken specs.

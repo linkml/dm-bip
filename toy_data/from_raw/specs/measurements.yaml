@@ -1,4 +1,4 @@
-# Body height — from pht000002, inches → cm via expr
+# Body height — from pht000002, inches → cm via unit_conversion
 # age_at_observation uses cross-table join to pht000001 (demographics)
 - class_derivations:
     MeasurementObservation:
@@ -24,11 +24,14 @@
                 populated_from: pht000002
                 slot_derivations:
                   value_decimal:
-                    expr: '{phv00000012} * 2.54'
+                    populated_from: phv00000012
+                    unit_conversion:
+                      source_unit: "[in_i]"
+                      target_unit: cm
                   unit:
                     value: cm
                     range: string
-# Body weight — from pht000002, lbs → kg via expr
+# Body weight — from pht000002, lbs → kg via unit_conversion
 - class_derivations:
     MeasurementObservation:
       populated_from: pht000002
@@ -48,7 +51,10 @@
                 populated_from: pht000002
                 slot_derivations:
                   value_decimal:
-                    expr: '{phv00000013} * 0.453592'
+                    populated_from: phv00000013
+                    unit_conversion:
+                      source_unit: "[lb_av]"
+                      target_unit: kg
                   unit:
                     value: kg
                     range: string

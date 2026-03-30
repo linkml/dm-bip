@@ -11,7 +11,7 @@ dependencies = [
     "pandas>=2.2.3,<3",
     "schema-automator==0.5.4",
     "schemasheets==0.4.0",
-    "linkml-map @ git+https://github.com/linkml/linkml-map.git@main",
+    "linkml-map>=0.4.0",
     "typing-extensions>=4.0,<5",
 ]
 
@@ -44,6 +44,9 @@ env = [
     "poetry>=2.0.1,<3",
     "cruft>=2.16.0,<3",
 ]
+
+[tool.uv.sources]
+linkml-map = { git = "https://github.com/linkml/linkml-map.git", branch = "test-dm-bip-v041" }
 
 [tool.uv]
 default-groups = [
