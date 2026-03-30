@@ -279,5 +279,6 @@ echo "================================================================"
 # 7. Copy Log Files and Build Artifacts to Processed Directory
 #    NOTE: Must remain last — any echoes after this won't appear in the log
 #------------------------------------------------------------------------------
+cp -R ${DM_TRANS_SPEC_DIR} "$PROCESSED_DIR/"
 cp /Dockerfile.archived "$PROCESSED_DIR/"
 find "${HOME}" -maxdepth 1 -name "*.log" -exec cp {} "$PROCESSED_DIR/" \;
