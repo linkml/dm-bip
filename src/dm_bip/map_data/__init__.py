@@ -1,1 +1,1 @@
-"""Map data module for LinkML-Map transformations."""
+"""Map data module — spec composition for linkml-map CLI."""

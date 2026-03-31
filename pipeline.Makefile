@@ -84,10 +84,9 @@ PREPARED_INPUT_MK := $(DM_OUTPUT_DIR)/_prepared_inputs.mk
 # ============
 SCHEMA_LINT_LOG             := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-schema-lint.log
 SCHEMA_VALIDATE_LOG         := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-schema-validate.log
-DATA_VALIDATE_LOG           := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-data-validate.log
 DATA_VALIDATE_FILES_DIR     := $(VALIDATE_OUTPUT_DIR)/data-validation
 DATA_VALIDATE_ERRORS_DIR    := $(VALIDATE_OUTPUT_DIR)/data-validation-errors
-MAPPING_LOG                 := $(MAPPING_OUTPUT_DIR)/mapping.log
+MAPPING_LOG_DIR             := $(MAPPING_OUTPUT_DIR)/logs
 
 VALIDATION_SUCCESS_SENTINEL := $(VALIDATE_OUTPUT_DIR)/_data_validation_complete
 MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
@@ -163,10 +162,9 @@ Generated variables
 Generated logs:
   schema lint log:                $(SCHEMA_LINT_LOG)
   schema validation log:          $(SCHEMA_VALIDATE_LOG)
-  data validation log:            $(DATA_VALIDATE_LOG)
   data validation logs by file:   $(DATA_VALIDATE_FILES_DIR)
   data validation errors by file: $(DATA_VALIDATE_ERRORS_DIR)
-  mapping log:                    $(MAPPING_LOG)
+  mapping logs:                   $(MAPPING_LOG_DIR)
 
 endef
 
@@ -389,27 +387,24 @@ $(VALIDATED_FILES_LIST):
 # This creates the summary log after all parallel validations finish
 $(VALIDATION_SUCCESS_SENTINEL): $(VALIDATED_FILES_LIST) $(VALIDATE_SUCCESS_LOGS)
 	@mkdir -p $(VALIDATE_OUTPUT_DIR)
-	@{ \
+	@echo
+	@echo "=== Data Validation Summary ==="
+	@echo
+	@echo "Validation complete."
+	@echo "Number of input files: $$(cat $< | wc -l)"
+	@NUM_FAILURES=$$(ls $(DATA_VALIDATE_ERRORS_DIR) 2>/dev/null | grep -F -f $< | wc -l); \
+	if [ $$NUM_FAILURES -gt 0 ]; then \
+		echo "Number of files with validation errors: $$NUM_FAILURES"; \
 		echo; \
-		echo "=== Data Validation Summary ==="; \
+		echo "Failing files:"; \
+		ls -1 $(DATA_VALIDATE_ERRORS_DIR) | grep -F -f $< | sed -e 's/^/    /'; \
 		echo; \
-		echo "Validation complete."; \
-		echo "Number of input files: $$(cat $< | wc -l)"; \
-		NUM_FAILURES=$$(ls $(DATA_VALIDATE_ERRORS_DIR) 2>/dev/null | grep -F -f $< | wc -l); \
-		if [ $$NUM_FAILURES -gt 0 ]; then \
-			echo "Number of files with validation errors: $$NUM_FAILURES"; \
-			echo; \
-			echo "Failing files:"; \
-			ls -1 $(DATA_VALIDATE_ERRORS_DIR) | grep -F -f $< | sed -e 's/^/    /'; \
-			echo; \
-			echo "See $(DATA_VALIDATE_ERRORS_DIR) for error logs."; \
-			echo; \
-		else \
-			echo "All files validated successfully."; \
-			echo; \
-		fi; \
-	} > $(DATA_VALIDATE_LOG)
-	@cat $(DATA_VALIDATE_LOG)
+		echo "See $(DATA_VALIDATE_ERRORS_DIR) for error logs."; \
+		echo; \
+	else \
+		echo "All files validated successfully."; \
+		echo; \
+	fi
 	@NUM_FAILURES=$$(ls $(DATA_VALIDATE_ERRORS_DIR) 2>/dev/null | grep -F -f $< | wc -l); \
 	if [ $$NUM_FAILURES -eq 0 ]; then \
 		touch $@; \
@@ -433,42 +428,103 @@ validate-debug:
 
 # Mapping (Transformation) Goals
 # ==============================
+#
+# Two-phase design for -j parallelism:
+#   1. Compositor: merge per-variable specs into per-entity TransformationSpecifications
+#   2. Recursive $(MAKE): discover composed specs, map each entity in parallel
+#
+# DM_MAP_OUTPUT_TYPE is a space-separated list of formats. The first value is the
+# primary format (-f), and any additional values produce extra outputs (-O).
+# Example: DM_MAP_OUTPUT_TYPE := tsv jsonl   →   -f tsv -O ...Entity.jsonl
 
 MAP_TARGET_SCHEMA_FILE := $(DM_MAP_TARGET_SCHEMA)
+COMPOSED_SPEC_DIR      := $(MAPPING_OUTPUT_DIR)/composed-specs
 
-MAP_TRANS_SPEC_FILES := $(shell find $(DM_TRANS_SPEC_DIR) -maxdepth 1 -type f -name '*.yaml' 2>/dev/null)
+MAP_TRANS_SPEC_FILES := $(shell find $(DM_TRANS_SPEC_DIR) -type f \( -name '*.yaml' -o -name '*.yml' \) 2>/dev/null)
 
 check_map_input_files = $(call check_target_schema)$(call check_trans_spec_files)
+
+# Output format helpers
+_MAP_PRIMARY_FMT     := $(firstword $(DM_MAP_OUTPUT_TYPE))
+_MAP_ADDITIONAL_FMTS := $(wordlist 2,$(words $(DM_MAP_OUTPUT_TYPE)),$(DM_MAP_OUTPUT_TYPE))
+
+# Build output basename: {prefix}-{entity}-{postfix} (omitting empty parts)
+_map_base = $(if $(DM_MAPPING_PREFIX),$(DM_MAPPING_PREFIX)-)$1$(if $(DM_MAPPING_POSTFIX),-$(DM_MAPPING_POSTFIX))
+
+# Build -O flags for additional output formats
+_map_additional_outputs = $(foreach fmt,$(_MAP_ADDITIONAL_FMTS),-O $(MAPPING_OUTPUT_DIR)/$(call _map_base,$1).$(fmt))
+
+# Discover composed specs (populated on recursive make after compositor runs)
+_COMPOSED_SPECS   := $(wildcard $(COMPOSED_SPEC_DIR)/*.yaml)
+_ENTITIES         := $(basename $(notdir $(_COMPOSED_SPECS)))
+_ENTITY_SENTINELS := $(foreach e,$(_ENTITIES),$(MAPPING_OUTPUT_DIR)/.$(e)_complete)
 
 .PHONY: map-data
 map-data: $(MAPPING_SUCCESS_SENTINEL)
 
-$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL)
+# Phase 1: Compose per-variable specs into per-entity TransformationSpecifications
+$(COMPOSED_SPEC_DIR)/.composed: $(MAP_TRANS_SPEC_FILES)
 	@$(call check_map_input_files)
+	@mkdir -p $(@D)
+	$(RUN) python -m dm_bip.map_data.compose_specs $(DM_TRANS_SPEC_DIR) $(COMPOSED_SPEC_DIR)
+	@touch $@
+
+# Phase 2: Run compositor, then recursive make to map each entity
+$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(COMPOSED_SPEC_DIR)/.composed
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
-	set -o pipefail && $(RUN) python ./src/dm_bip/map_data/map_data.py \
-		--source-schema $(SCHEMA_FILE) \
-		--target-schema $(DM_MAP_TARGET_SCHEMA) \
-		--data-dir $(DM_INPUT_DIR) \
-		--var-dir $(DM_TRANS_SPEC_DIR) \
-		--output-dir $(MAPPING_OUTPUT_DIR) \
-		$(if $(DM_MAPPING_PREFIX),--output-prefix $(DM_MAPPING_PREFIX)) \
-		$(if $(DM_MAPPING_POSTFIX),--output-postfix "$(DM_MAPPING_POSTFIX)") \
-		--output-type $(DM_MAP_OUTPUT_TYPE) \
-		--chunk-size $(DM_MAP_CHUNK_SIZE) \
-		$(if $(filter false,$(DM_MAP_STRICT)),--no-strict) \
-		2>&1 | tee $(MAPPING_LOG)
+	$(MAKE) _map-all-entities CONFIG=$(CONFIG)
 	@echo "✓ Data mapping complete. Output written to $(MAPPING_OUTPUT_DIR)"
-	@echo "Mapping log written to $(MAPPING_LOG)"
+	@echo "Mapping logs written to $(MAPPING_LOG_DIR)"
+	@FAILED=$$(grep -l "transformation error" $(MAPPING_LOG_DIR)/*.log 2>/dev/null); \
+	if [ -n "$$FAILED" ]; then \
+		echo; \
+		echo "=== Mapping Error Summary ==="; \
+		echo "Entities with mapping errors:"; \
+		echo "$$FAILED" | xargs -n1 basename | sed -e 's/\.log$$//' -e 's/^/    /'; \
+		echo "See $(MAPPING_LOG_DIR) for details."; \
+		echo; \
+	fi
+	@touch $@
+
+# Internal target invoked by recursive make — discovers and maps all entities
+.PHONY: _map-all-entities
+_map-all-entities: $(_ENTITY_SENTINELS)
+
+# Per-entity pattern rule — parallelizable with -j
+#
+# In strict mode (default): pipefail propagates linkml-map errors immediately.
+# In non-strict mode: --continue-on-error lets linkml-map produce partial output
+# and exit 1 on errors. We capture the exit code and always touch the sentinel
+# so other entities can proceed. The summary step greps logs for failures.
+$(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(MAP_TARGET_SCHEMA_FILE)
+	@mkdir -p $(MAPPING_LOG_DIR)
+	set -o pipefail && $(RUN) linkml-map map-data \
+		-T $< \
+		-s $(SCHEMA_FILE) \
+		--target-schema $(MAP_TARGET_SCHEMA_FILE) \
+		-o $(MAPPING_OUTPUT_DIR)/$(call _map_base,$*).$(_MAP_PRIMARY_FMT) \
+		-f $(_MAP_PRIMARY_FMT) \
+		$(call _map_additional_outputs,$*) \
+		--chunk-size $(DM_MAP_CHUNK_SIZE) \
+		$(if $(filter false,$(DM_MAP_STRICT)),--continue-on-error) \
+		$(DM_INPUT_DIR)/ \
+		2>&1 | tee $(MAPPING_LOG_DIR)/$*.log; \
+	rc=$$?; \
+	if [ $$rc -ne 0 ] && [ "$(DM_MAP_STRICT)" != "false" ]; then \
+		exit $$rc; \
+	fi
 	@touch $@
 
 .PHONY: map-debug
 map-debug:
 	@echo "DM_TRANS_SPEC_DIR: $(DM_TRANS_SPEC_DIR)"
 	@echo "DM_MAP_TARGET_SCHEMA: $(DM_MAP_TARGET_SCHEMA)"
+	@echo "DM_MAP_OUTPUT_TYPE: $(DM_MAP_OUTPUT_TYPE)"
+	@echo "COMPOSED_SPEC_DIR: $(COMPOSED_SPEC_DIR)"
 	@echo "MAPPING_OUTPUT_DIR: $(MAPPING_OUTPUT_DIR)"
-	@echo "MAPPING_LOG: $(MAPPING_LOG)"
+	@echo "MAPPING_LOG_DIR: $(MAPPING_LOG_DIR)"
+	@echo "DM_MAP_STRICT: $(DM_MAP_STRICT)"
 
 .PHONY: map-clean
 map-clean:
