@@ -187,8 +187,7 @@ def test_mapping_unit_conversion(from_raw_pipeline_output):
     # Subjects 1005 and 1010 have 'A' (coded missing) in weight column.
     # With none_if_non_numeric: true, these should produce null value_decimal.
     null_weight_records = [
-        r for r in weight_records
-        if r.get("value_quantity") and r["value_quantity"].get("value_decimal") is None
+        r for r in weight_records if r.get("value_quantity") and r["value_quantity"].get("value_decimal") is None
     ]
     assert len(null_weight_records) >= 2, (
         f"Expected at least 2 null weights from coded missing values, got {len(null_weight_records)}"
