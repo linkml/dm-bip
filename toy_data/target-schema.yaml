@@ -78,6 +78,18 @@ classes:
       condition_provenance:
       relationship_to_participant:
 
+  MeasurementObservationSet:
+    description: A structured object to hold related MeasurementObservations in a set
+    attributes:
+      associated_participant:
+      associated_visit:
+      method_type:
+      observations:
+        range: MeasurementObservation
+        multivalued: true
+        inlined_as_list: true
+        required: true
+
   Quantity:
     description: A value with unit
     attributes:

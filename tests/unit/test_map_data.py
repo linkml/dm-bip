@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+import typer
 import yaml
 from linkml_runtime import SchemaView
 
@@ -836,3 +837,33 @@ def test_main_creates_output_directory(temp_dir):
         output_type="jsonl",
     )
     assert output_dir.exists()
+
+
+def test_main_exits_nonzero_on_non_strict_errors(temp_dir):
+    """Test that main raises typer.Exit(1) when non-strict mapping encounters errors."""
+    # Create a spec dir with a spec referencing a nonexistent data file
+    spec_dir = Path(temp_dir) / "specs"
+    spec_dir.mkdir()
+    (spec_dir / "bad_spec.yaml").write_text(
+        "- class_derivations:\n"
+        "    Person:\n"
+        "      populated_from: nonexistent_table\n"
+        "      slot_derivations:\n"
+        "        id:\n"
+        "          populated_from: subject_id\n"
+    )
+    output_dir = Path(temp_dir) / "output"
+
+    with pytest.raises(typer.Exit) as exc_info:
+        main(
+            source_schema=TOY_DATA / "pre_cleaned/source-schema.yaml",
+            target_schema=TOY_DATA / "target-schema.yaml",
+            data_dir=TOY_DATA / "data/pre_cleaned",
+            var_dir=spec_dir,
+            output_dir=output_dir,
+            output_prefix="test",
+            output_postfix="v1",
+            output_type="jsonl",
+            strict=False,
+        )
+    assert exc_info.value.exit_code == 1
