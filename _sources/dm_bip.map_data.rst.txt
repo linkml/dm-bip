@@ -4,18 +4,10 @@ dm\_bip.map\_data package
 Submodules
 ----------
 
-dm\_bip.map\_data.map\_data module
-----------------------------------
+dm\_bip.map\_data.compose\_specs module
+---------------------------------------
 
-.. automodule:: dm_bip.map_data.map_data
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-dm\_bip.map\_data.streams module
---------------------------------
-
-.. automodule:: dm_bip.map_data.streams
+.. automodule:: dm_bip.map_data.compose_specs
    :members:
    :show-inheritance:
    :undoc-members:
