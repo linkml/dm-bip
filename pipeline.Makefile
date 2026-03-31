@@ -497,7 +497,7 @@ _map-all-entities: $(_ENTITY_SENTINELS)
 # In non-strict mode: --continue-on-error lets linkml-map produce partial output
 # and exit 1 on errors. We capture the exit code and always touch the sentinel
 # so other entities can proceed. The summary step greps logs for failures.
-$(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE)
+$(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(MAP_TARGET_SCHEMA_FILE)
 	@mkdir -p $(MAPPING_LOG_DIR)
 	set -o pipefail && $(RUN) linkml-map map-data \
 		-T $< \
