@@ -10,8 +10,8 @@ import urllib.request
 from pathlib import Path
 
 SBG_BASE_URL = "https://api.sb.biodatacatalyst.nhlbi.nih.gov/v2"
-SBG_DEFAULT_PROJECT = "rmathur2/dmc-task-4-controlled"
-SBG_DEFAULT_APP = "rmathur2/dmc-task-4-controlled/dm-bip-test-siege/31"
+SBG_DEFAULT_PROJECT = os.environ.get("SBG_DEFAULT_PROJECT", "rmathur2/dmc-task-4-controlled")
+SBG_DEFAULT_APP = os.environ.get("SBG_DEFAULT_APP", "rmathur2/dmc-task-4-controlled/dm-bip-test-siege/31")
 SBG_TOKEN_PATH = Path.home() / ".sevenbridges" / "token"
 
 
@@ -43,7 +43,7 @@ def sbg_request(path: str, *, method: str = "GET", body: dict | None = None) -> 
     data = json.dumps(body).encode() if body else None
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
     try:
-        with urllib.request.urlopen(req) as resp:
+        with urllib.request.urlopen(req, timeout=30) as resp:
             return json.loads(resp.read())
     except urllib.error.HTTPError as e:
         error_body = e.read().decode() if e.fp else ""
