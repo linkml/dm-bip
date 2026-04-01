@@ -809,7 +809,7 @@ env = [
 [package.metadata]
 requires-dist = [
     { name = "importlib-metadata", specifier = ">=8.2.0" },
-    { name = "linkml-map", specifier = "==0.5.0rc1" },
+    { name = "linkml-map", specifier = "==0.5.0rc3" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
     { name = "schema-automator", specifier = "==0.5.5rc1" },
     { name = "schemasheets", specifier = "==0.4.0" },
@@ -1956,7 +1956,7 @@ wheels = [
 
 [[package]]
 name = "linkml-map"
-version = "0.5.0rc1"
+version = "0.5.0rc3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asteval" },
@@ -1976,9 +1976,9 @@ dependencies = [
     { name = "simpleeval" },
     { name = "ucumvert" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a5/a4/7ce83aa0cbe72a3e7ace238b959690569293e9457843ce8a1d9d345a1d8b/linkml_map-0.5.0rc1.tar.gz", hash = "sha256:2ed96bbfea5b180a52f7e5b5d1db5290328fa2c307c29819b72c43991e54d0bf", size = 454589, upload-time = "2026-03-31T21:16:20.65Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a0/7c/5578308c29340b10cf2f7b695b623ddce312179bb105e2f1eb18266fb2ea/linkml_map-0.5.0rc3.tar.gz", hash = "sha256:1e80e9b2b822579e2e7fbaed609026a7bb8dffc15a029274ff0516d591094477", size = 455797, upload-time = "2026-04-01T21:10:23.069Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/64/37/ee6f31d20a20188a5eaaba8fa5fb1886ea8116c970b1b6d611518b1e11d4/linkml_map-0.5.0rc1-py3-none-any.whl", hash = "sha256:a11817b134689decd63bc11ff05f757e074823a29dbfb26febd7b0b0cab1936d", size = 86397, upload-time = "2026-03-31T21:16:19.342Z" },
+    { url = "https://files.pythonhosted.org/packages/2d/ab/dc20a53f5c4fc18a183768ac7a66234a8bb7a04bd4f14a3a50866f6b74a4/linkml_map-0.5.0rc3-py3-none-any.whl", hash = "sha256:f8dc6899a3b4e6bd21374d1cb0dc096ae3dc1f49058e983d91540dc3c10ae549", size = 87039, upload-time = "2026-04-01T21:10:21.662Z" },
 ]
 
 [[package]]
