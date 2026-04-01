@@ -58,7 +58,7 @@ Options:
 
 ```bash
 # Use a different app revision
-uv run python scripts/sevenbridges/submit_tasks.py --app "rmathur2/dmc-task-4-controlled/dm-bip-test-siege/32"
+uv run python scripts/sevenbridges/submit_tasks.py --app "rmathur2/dmc-task-4-controlled/cc-dm-bip-test/4"
 
 # Change throttle between submissions
 uv run python scripts/sevenbridges/submit_tasks.py --throttle 30

@@ -8,20 +8,23 @@
 #   Harmonized Model) format.
 #
 # Usage:
-#   ./bdc-workflow.sh --schema <SCHEMA_NAME> --source <RAW_DATA_PATH> [--workdir <PATH>] [--jobs <N>]
+#   ./bdc-workflow.sh --schema <SCHEMA_NAME> --source <RAW_DATA_PATH> [OPTIONS]
 #
 # Required Parameters:
-#   --schema    Name of the schema configuration (e.g., "FHS", "COPDGene")
-#   --source    Path to the raw data source directory
+#   --schema      Name of the schema configuration (e.g., "FHS", "COPDGene")
+#   --source      Path to the raw data source directory
 #
 # Optional Parameters:
-#   --workdir   Working directory for pipeline execution (default: /app)
-#   --jobs      Number of parallel make jobs (default: 8)
+#   --trans-spec  Alternate trans-spec source (format: OWNER/REPO@REF:PATH)
+#   --workdir     Working directory for pipeline execution (default: /app)
+#   --jobs        Number of parallel make jobs (default: 8)
 #
 # Examples:
 #   ./bdc-workflow.sh --schema FHS --source /data/raw/fhs_study
 #   ./bdc-workflow.sh --schema FHS --source /data/raw/fhs_study --workdir /custom/path
 #   ./bdc-workflow.sh --schema FHS --source /data/raw/fhs_study --jobs 4
+#   ./bdc-workflow.sh --schema FHS --source /data/raw/fhs_study \
+#     --trans-spec RTIInternational/NHLBI-BDC-DMC-HV@main
 #
 # Environment:
 #   - Designed to run within the dm-bip Docker container
@@ -42,27 +45,6 @@ set -euo pipefail
 exec 2> >(tee -a "${HOME}/stderr_internal_copy.log" >&2)
 
 #------------------------------------------------------------------------------
-# Pull latest cloned repos if BDC_PULL_LATEST is set (for dev/testing)
-#------------------------------------------------------------------------------
-if [[ "${BDC_PULL_LATEST:-false}" == "true" ]]; then
-  echo "BDC_PULL_LATEST=true — checking network connectivity..."
-  if timeout 10 curl -sf --max-time 5 https://github.com > /dev/null 2>&1; then
-    echo "  Network available — pulling latest from cloned repos..."
-    for repo in /app/bdc-harmonized-variables /app/NHLBI-BDC-DMC-HM; do
-      if [[ -d "$repo/.git" ]]; then
-        echo "  Updating $(basename "$repo")..."
-        if ! timeout 30 git -C "$repo" pull --ff-only 2>&1; then
-          echo "  WARNING: Failed to pull $(basename "$repo"), continuing with build-time version"
-        fi
-      fi
-    done
-    echo "✓ Repos updated"
-  else
-    echo "  WARNING: No network access (github.com unreachable), using build-time versions"
-  fi
-fi
-
-#------------------------------------------------------------------------------
 # Function: Display usage information
 #------------------------------------------------------------------------------
 usage() {
@@ -70,16 +52,18 @@ usage() {
 Usage: $0 --schema <SCHEMA_NAME> --source <RAW_DATA_PATH> [OPTIONS]
 
 Required Parameters:
-  --schema    Name of the schema configuration for the study
-  --source    Path to the raw data source directory
+  --schema      Name of the schema configuration for the study
+  --source      Path to the raw data source directory
 
 Optional Parameters:
-  --workdir   Working directory for pipeline execution (default: /app)
-  --jobs      Number of parallel make jobs (default: 8)
+  --trans-spec  Alternate trans-spec source (OWNER/REPO@REF:PATH)
+  --workdir     Working directory for pipeline execution (default: /app)
+  --jobs        Number of parallel make jobs (default: 8)
 
 Examples:
   $0 --schema FHS --source /data/raw/fhs_study
-  $0 --schema FHS --source /data/raw/fhs_study --workdir /custom/path
+  $0 --schema FHS --source /data/raw/fhs_study \
+     --trans-spec RTIInternational/NHLBI-BDC-DMC-HV@main
   $0 --schema FHS --source /data/raw/fhs_study --jobs 4
 
 EOF
@@ -91,6 +75,7 @@ EOF
 #------------------------------------------------------------------------------
 DM_SCHEMA_NAME=""
 DM_RAW_SOURCE=""
+TRANS_SPEC_SLUG=""
 WORKING_DIR="/app"  # Default working directory
 MAKE_JOBS=8         # Default parallel jobs
 
@@ -117,6 +102,11 @@ while [[ $# -gt 0 ]]; do
     --workdir)
       [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --workdir requires a value"; exit 1; }
       WORKING_DIR="$2"
+      shift 2
+      ;;
+    --trans-spec)
+      [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --trans-spec requires a value (OWNER/REPO@REF:PATH)"; exit 1; }
+      TRANS_SPEC_SLUG="$2"
       shift 2
       ;;
     --jobs)
@@ -161,7 +151,95 @@ if [[ ! -d "$DM_RAW_SOURCE" ]]; then
 fi
 
 #------------------------------------------------------------------------------
-# 3. Configuration and Path Setup
+# 3. Pull Repos and Resolve Trans-Spec
+#------------------------------------------------------------------------------
+TRANS_SPEC_REPO_DIR=""
+TRANS_SPEC_EXPLICIT_PATH=""
+
+if [[ "${BDC_PULL_LATEST:-false}" == "true" ]]; then
+  echo "BDC_PULL_LATEST=true — checking network connectivity..."
+  if timeout 10 curl -sf --max-time 5 https://github.com > /dev/null 2>&1; then
+    NETWORK_AVAILABLE=true
+    echo "  Network available — pulling latest from cloned repos..."
+    # Always pull the target schema repo
+    if [[ -d /app/NHLBI-BDC-DMC-HM/.git ]]; then
+      echo "  Updating NHLBI-BDC-DMC-HM..."
+      if ! timeout 30 git -C /app/NHLBI-BDC-DMC-HM pull --ff-only 2>&1; then
+        echo "  WARNING: Failed to pull NHLBI-BDC-DMC-HM, continuing with build-time version"
+      fi
+    fi
+    # Pull the default trans-spec repo unless overridden by --trans-spec
+    if [[ -z "$TRANS_SPEC_SLUG" ]] && [[ -d /app/bdc-harmonized-variables/.git ]]; then
+      echo "  Updating bdc-harmonized-variables..."
+      if ! timeout 30 git -C /app/bdc-harmonized-variables pull --ff-only 2>&1; then
+        echo "  WARNING: Failed to pull bdc-harmonized-variables, continuing with build-time version"
+      fi
+    fi
+    echo "✓ Repos updated"
+  else
+    NETWORK_AVAILABLE=false
+    echo "  WARNING: No network access (github.com unreachable), using build-time versions"
+  fi
+fi
+
+# Handle --trans-spec slug: clone alternate trans-spec repo (dev mode only)
+if [[ -n "$TRANS_SPEC_SLUG" ]]; then
+  if [[ "${BDC_PULL_LATEST:-false}" != "true" ]]; then
+    echo "ERROR: --trans-spec is only supported when BDC_PULL_LATEST=true (dev mode)"
+    exit 1
+  fi
+  if [[ "${NETWORK_AVAILABLE:-false}" != "true" ]]; then
+    echo "ERROR: --trans-spec requires network access but github.com is unreachable"
+    exit 1
+  fi
+
+  # Parse slug: OWNER/REPO@REF:PATH
+  slug_remainder="$TRANS_SPEC_SLUG"
+
+  # Extract :PATH (if present)
+  if [[ "$slug_remainder" == *:* ]]; then
+    TRANS_SPEC_EXPLICIT_PATH="${slug_remainder##*:}"
+    slug_remainder="${slug_remainder%:*}"
+  fi
+
+  # Extract @REF (if present)
+  TRANS_SPEC_REF=""
+  if [[ "$slug_remainder" == *@* ]]; then
+    TRANS_SPEC_REF="${slug_remainder##*@}"
+    slug_remainder="${slug_remainder%@*}"
+  fi
+
+  TRANS_SPEC_OWNER_REPO="$slug_remainder"
+  TRANS_SPEC_REPO_NAME="${TRANS_SPEC_OWNER_REPO##*/}"
+  TRANS_SPEC_REPO_DIR="/app/${TRANS_SPEC_REPO_NAME}"
+
+  echo "Trans-spec override: ${TRANS_SPEC_OWNER_REPO}"
+  [[ -n "$TRANS_SPEC_REF" ]] && echo "  Ref: ${TRANS_SPEC_REF}"
+  [[ -n "$TRANS_SPEC_EXPLICIT_PATH" ]] && echo "  Path: ${TRANS_SPEC_EXPLICIT_PATH}"
+
+  # Clone or update the repo
+  if [[ -d "${TRANS_SPEC_REPO_DIR}/.git" ]]; then
+    echo "  Repo already present at ${TRANS_SPEC_REPO_DIR}, fetching..."
+    timeout 30 git -C "$TRANS_SPEC_REPO_DIR" fetch origin 2>&1
+  else
+    echo "  Cloning ${TRANS_SPEC_OWNER_REPO}..."
+    timeout 60 git clone "https://github.com/${TRANS_SPEC_OWNER_REPO}.git" "$TRANS_SPEC_REPO_DIR" 2>&1
+  fi
+
+  # Checkout the requested ref (or pull default branch)
+  if [[ -n "$TRANS_SPEC_REF" ]]; then
+    echo "  Checking out ${TRANS_SPEC_REF}..."
+    git -C "$TRANS_SPEC_REPO_DIR" checkout "$TRANS_SPEC_REF" 2>&1 \
+      || git -C "$TRANS_SPEC_REPO_DIR" checkout "origin/${TRANS_SPEC_REF}" 2>&1
+  else
+    git -C "$TRANS_SPEC_REPO_DIR" pull --ff-only 2>&1 || true
+  fi
+
+  echo "✓ Trans-spec repo ready: ${TRANS_SPEC_REPO_DIR} ($(git -C "$TRANS_SPEC_REPO_DIR" rev-parse --short HEAD))"
+fi
+
+#------------------------------------------------------------------------------
+# 4. Configuration and Path Setup
 #------------------------------------------------------------------------------
 echo "================================================================"
 echo "BDC Data Harmonization Workflow"
@@ -185,15 +263,40 @@ DM_OUTPUT_DIR="${PROCESSED_DIR}/${OUTPUT_NAME}"
 DM_INPUT_DIR="${PROCESSED_DIR}/${RAW_DIR_NAME}_CleanedSource"
 
 # Define paths to external dependencies (within container)
-# Find the latest version directory for this study's trans-specs
-TRANS_SPEC_BASE="/app/bdc-harmonized-variables/trans_specs/${DM_SCHEMA_NAME}"
-latest_version_dir=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V | tail -1)
-if [[ -z "${latest_version_dir:-}" ]]; then
-  echo "ERROR: No trans-spec version directory found under $TRANS_SPEC_BASE"
-  exit 1
+# Resolve trans-spec directory based on --trans-spec slug or default
+if [[ -n "$TRANS_SPEC_EXPLICIT_PATH" ]]; then
+  # Explicit path from slug — use directly
+  DM_TRANS_SPEC_DIR="${TRANS_SPEC_REPO_DIR}/${TRANS_SPEC_EXPLICIT_PATH}"
+elif [[ -n "$TRANS_SPEC_REPO_DIR" ]]; then
+  # Auto-detect layout from repo name
+  if [[ -d "${TRANS_SPEC_REPO_DIR}/priority_variables_transform" ]]; then
+    # NHLBI-BDC-DMC-HV layout
+    DM_TRANS_SPEC_DIR="${TRANS_SPEC_REPO_DIR}/priority_variables_transform/${DM_SCHEMA_NAME}-ingest"
+  elif [[ -d "${TRANS_SPEC_REPO_DIR}/trans_specs" ]]; then
+    # bdc-harmonized-variables layout (versioned subdirectories)
+    TRANS_SPEC_BASE="${TRANS_SPEC_REPO_DIR}/trans_specs/${DM_SCHEMA_NAME}"
+    latest_version_dir=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V | tail -1)
+    if [[ -z "${latest_version_dir:-}" ]]; then
+      echo "ERROR: No trans-spec version directory found under $TRANS_SPEC_BASE"
+      exit 1
+    fi
+    DM_TRANS_SPEC_DIR="${TRANS_SPEC_BASE}/${latest_version_dir}"
+  else
+    echo "ERROR: Cannot auto-detect trans-spec layout in ${TRANS_SPEC_REPO_DIR}"
+    echo "       Use OWNER/REPO@REF:PATH to specify the path explicitly"
+    exit 1
+  fi
+else
+  # Default: bdc-harmonized-variables (build-time clone)
+  TRANS_SPEC_BASE="/app/bdc-harmonized-variables/trans_specs/${DM_SCHEMA_NAME}"
+  latest_version_dir=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V | tail -1)
+  if [[ -z "${latest_version_dir:-}" ]]; then
+    echo "ERROR: No trans-spec version directory found under $TRANS_SPEC_BASE"
+    exit 1
+  fi
+  DM_TRANS_SPEC_DIR="${TRANS_SPEC_BASE}/${latest_version_dir}"
 fi
-DM_TRANS_SPEC_DIR="${TRANS_SPEC_BASE}/${latest_version_dir}"
-echo "  Trans-spec version:   $(basename "$DM_TRANS_SPEC_DIR")"
+echo "  Trans-spec version:   ${DM_TRANS_SPEC_DIR}"
 DM_MAP_TARGET_SCHEMA="/app/NHLBI-BDC-DMC-HM/src/bdchm/schema/bdchm.yaml"
 
 echo ""
@@ -217,7 +320,7 @@ if [[ ! -f "$DM_MAP_TARGET_SCHEMA" ]]; then
 fi
 
 #------------------------------------------------------------------------------
-# 4. Create Workspace Directories
+# 5. Create Workspace Directories
 #------------------------------------------------------------------------------
 echo ""
 echo "Creating workspace directories..."
@@ -227,7 +330,7 @@ mkdir -p "$DM_INPUT_DIR"
 echo "✓ Workspace directories created"
 
 #------------------------------------------------------------------------------
-# 5. Execute Data Harmonization Pipeline
+# 6. Execute Data Harmonization Pipeline
 #------------------------------------------------------------------------------
 echo ""
 echo "Starting data harmonization pipeline..."
@@ -262,7 +365,7 @@ make -j "$MAKE_JOBS" pipeline \
   $DM_MAP_STRICT_ARG
 
 #------------------------------------------------------------------------------
-# 6. Pipeline Completion
+# 7. Pipeline Completion
 #------------------------------------------------------------------------------
 echo ""
 echo "================================================================"
@@ -272,7 +375,7 @@ echo "Output Location: $PROCESSED_DIR"
 echo "================================================================"
 
 #------------------------------------------------------------------------------
-# 7. Copy Log Files and Build Artifacts to Processed Directory
+# 8. Copy Log Files and Build Artifacts to Processed Directory
 #    NOTE: Must remain last — any echoes after this won't appear in the log
 #------------------------------------------------------------------------------
 cp /Dockerfile.archived "$PROCESSED_DIR/"
