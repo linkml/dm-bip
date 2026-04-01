@@ -17,13 +17,14 @@ _DEFAULT_OUTPUT = Path(__file__).parent / "batch_tasks.csv"
 @app.command()
 def main(
     project: str = typer.Option(SBG_DEFAULT_PROJECT, help="SBG project ID"),
+    root_folder: str = typer.Option("PilotParentStudies_NoDRS", "--study-root", help="Root folder containing cohorts"),
     output: Path = typer.Option(_DEFAULT_OUTPUT, help="Output CSV path"),
 ):
-    """Crawl PilotParentStudies and generate batch_tasks.csv."""
+    """Crawl the root folder for cohorts and generate batch_tasks.csv."""
     root_folders = get_folders(project=project)
-    pilot_root = next((f for f in root_folders if f["name"] == "PilotParentStudies"), None)
+    pilot_root = next((f for f in root_folders if f["name"] == root_folder), None)
     if not pilot_root:
-        typer.echo("Could not find 'PilotParentStudies' folder.", err=True)
+        typer.echo(f"Could not find '{root_folder}' folder.", err=True)
         raise typer.Exit(1)
 
     rows = []

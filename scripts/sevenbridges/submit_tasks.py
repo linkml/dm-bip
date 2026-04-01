@@ -20,6 +20,7 @@ _DEFAULT_MANIFEST = Path(__file__).parent / "batch_tasks.csv"
 def main(
     project: str = typer.Option(SBG_DEFAULT_PROJECT, help="SBG project ID"),
     app_id: str = typer.Option(SBG_DEFAULT_APP, "--app", help="SBG app (CWL workflow) ID"),
+    root_folder: str = typer.Option("PilotParentStudies_NoDRS", "--study-root", help="Root folder containing cohorts"),
     manifest: Path = typer.Option(_DEFAULT_MANIFEST, help="Task manifest CSV"),
     throttle: int = typer.Option(60, help="Seconds between task submissions"),
 ):
@@ -30,9 +31,9 @@ def main(
 
     # Pre-fetch cohort folder IDs
     root_folders = get_folders(project=project)
-    pilot_root = next((f for f in root_folders if f["name"] == "PilotParentStudies"), None)
+    pilot_root = next((f for f in root_folders if f["name"] == root_folder), None)
     if not pilot_root:
-        typer.echo("Could not find 'PilotParentStudies' folder.", err=True)
+        typer.echo(f"Could not find '{root_folder}' folder.", err=True)
         raise typer.Exit(1)
 
     cohort_lookup = {f["name"]: f["id"] for f in get_folders(parent=pilot_root["id"])}
