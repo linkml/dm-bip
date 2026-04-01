@@ -263,7 +263,7 @@ make -j "$MAKE_JOBS" pipeline \
   DM_TRANS_SPEC_DIR="$DM_TRANS_SPEC_DIR" \
   DM_MAP_TARGET_SCHEMA="$DM_MAP_TARGET_SCHEMA" \
   DM_MAP_OUTPUT_TYPE=tsv \
-  $DM_MAP_STRICT_ARG
+  DM_MAP_STRICT=false
 
 #------------------------------------------------------------------------------
 # 6. Pipeline Completion
