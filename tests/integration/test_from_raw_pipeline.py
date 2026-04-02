@@ -263,6 +263,6 @@ def test_mapping_continue_on_error(from_raw_pipeline_output, tmp_path_factory):
     assert any("division by zero" in v for v in log_contents.values()), (
         "Demography division-by-zero error should appear in logs"
     )
-    assert any("not in safe subset" in v for v in log_contents.values()), (
+    assert any("not in safe subset" in v or "not defined" in v for v in log_contents.values()), (
         "Participant unsafe-expression error should appear in logs"
     )

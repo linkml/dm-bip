@@ -11,7 +11,7 @@ from pathlib import Path
 
 SBG_BASE_URL = "https://api.sb.biodatacatalyst.nhlbi.nih.gov/v2"
 SBG_DEFAULT_PROJECT = os.environ.get("SBG_DEFAULT_PROJECT", "rmathur2/dmc-task-4-controlled")
-SBG_DEFAULT_APP = os.environ.get("SBG_DEFAULT_APP", "rmathur2/dmc-task-4-controlled/dm-bip-test-siege/31")
+SBG_DEFAULT_APP = os.environ.get("SBG_DEFAULT_APP", "rmathur2/dmc-task-4-controlled/cc-dm-bip-test/4")
 SBG_TOKEN_PATH = Path.home() / ".sevenbridges" / "token"
 
 

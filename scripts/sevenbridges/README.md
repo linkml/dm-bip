@@ -58,7 +58,7 @@ Options:
 
 ```bash
 # Use a different app revision
-uv run python scripts/sevenbridges/submit_tasks.py --app "rmathur2/dmc-task-4-controlled/dm-bip-test-siege/32"
+uv run python scripts/sevenbridges/submit_tasks.py --app "rmathur2/dmc-task-4-controlled/cc-dm-bip-test/4"
 
 # Change throttle between submissions
 uv run python scripts/sevenbridges/submit_tasks.py --throttle 30
@@ -81,8 +81,18 @@ Default project and app IDs are set in `sbg_api.py`. Override per-run via CLI op
 uv run python scripts/sevenbridges/submit_tasks.py --project "other/project" --app "other/app/id/1"
 ```
 
-| Default | Value |
+| Setting | Value |
 |---|---|
 | Project | `rmathur2/dmc-task-4-controlled` |
-| App | `rmathur2/dmc-task-4-controlled/dm-bip-test-siege/31` |
+| Default App (dev) | `rmathur2/dmc-task-4-controlled/cc-dm-bip-test/4` |
+| Prod App | `rmathur2/dmc-task-4-controlled/dm-bip-test-siege/32` |
 | API URL | `https://api.sb.biodatacatalyst.nhlbi.nih.gov/v2` |
+
+The **dev app** (`cc-dm-bip-test`) runs with `BDC_PULL_LATEST=true` (non-strict mode,
+pulls latest repos, supports `--trans-spec`). The **prod app** (`dm-bip-test-siege`)
+runs with pinned versions and strict mode. Switch with `--app`:
+
+```bash
+# Run against prod app
+uv run python scripts/sevenbridges/submit_tasks.py --app "rmathur2/dmc-task-4-controlled/dm-bip-test-siege/32"
+```

@@ -22,6 +22,7 @@ def main(
     app_id: str = typer.Option(SBG_DEFAULT_APP, "--app", help="SBG app (CWL workflow) ID"),
     root_folder: str = typer.Option("PilotParentStudies_NoDRS", "--study-root", help="Root folder containing cohorts"),
     manifest: Path = typer.Option(_DEFAULT_MANIFEST, help="Task manifest CSV"),
+    trans_spec: str = typer.Option("", "--trans-spec", help="Alternate trans-spec (OWNER/REPO@REF:PATH)"),
     throttle: int = typer.Option(60, help="Seconds between task submissions"),
 ):
     """Read batch_tasks.csv and launch harmonization tasks."""
@@ -69,6 +70,7 @@ def main(
             "inputs": {
                 "Schema": schema,
                 "RawSource": {"class": "Directory", "path": folder["id"]},
+                **({"TransSpec": trans_spec} if trans_spec else {}),
             },
         }
         try:
