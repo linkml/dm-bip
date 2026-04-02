@@ -39,6 +39,9 @@ jobs:
           if [[ "${{ github.ref }}" == "refs/heads/docker-dev" ]]; then
             echo "pull_latest=true" >> "$GITHUB_OUTPUT"
             echo "registry_project=${{ vars.SB_REGISTRY_PROJECT_DEV }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.ref }}" == refs/tags/bdc-v* ]]; then
+            echo "pull_latest=false" >> "$GITHUB_OUTPUT"
+            echo "registry_project=${{ vars.SB_REGISTRY_PROJECT_PROD }}" >> "$GITHUB_OUTPUT"
           else
             echo "pull_latest=false" >> "$GITHUB_OUTPUT"
             echo "registry_project=${{ vars.SB_REGISTRY_PROJECT }}" >> "$GITHUB_OUTPUT"
