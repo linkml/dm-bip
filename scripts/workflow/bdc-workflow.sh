@@ -15,7 +15,7 @@
 #   --source      Path to the raw data source directory
 #
 # Optional Parameters:
-#   --trans-spec  Alternate trans-spec source (format: OWNER/REPO@REF:PATH)
+#   --trans-spec  Alternate trans-spec source (OWNER/REPO[@REF][:PATH])
 #   --workdir     Working directory for pipeline execution (default: /app)
 #   --jobs        Number of parallel make jobs (default: 8)
 #
@@ -56,7 +56,7 @@ Required Parameters:
   --source      Path to the raw data source directory
 
 Optional Parameters:
-  --trans-spec  Alternate trans-spec source (OWNER/REPO@REF:PATH)
+  --trans-spec  Alternate trans-spec source (OWNER/REPO[@REF][:PATH])
   --workdir     Working directory for pipeline execution (default: /app)
   --jobs        Number of parallel make jobs (default: 8)
 
@@ -105,7 +105,7 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --trans-spec)
-      [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --trans-spec requires a value (OWNER/REPO@REF:PATH)"; exit 1; }
+      [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --trans-spec requires a value (OWNER/REPO[@REF][:PATH])"; exit 1; }
       TRANS_SPEC_SLUG="$2"
       shift 2
       ;;
@@ -193,7 +193,7 @@ if [[ -n "$TRANS_SPEC_SLUG" ]]; then
     exit 1
   fi
 
-  # Parse slug: OWNER/REPO@REF:PATH
+  # Parse slug: OWNER/REPO[@REF][:PATH]
   slug_remainder="$TRANS_SPEC_SLUG"
 
   # Extract :PATH (if present)
@@ -209,21 +209,43 @@ if [[ -n "$TRANS_SPEC_SLUG" ]]; then
     slug_remainder="${slug_remainder%@*}"
   fi
 
+  # Validate OWNER/REPO format
+  if [[ ! "$slug_remainder" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]]; then
+    echo "ERROR: Invalid --trans-spec slug '${TRANS_SPEC_SLUG}'" >&2
+    echo "       Expected OWNER/REPO[@REF][:PATH]" >&2
+    exit 1
+  fi
+
   TRANS_SPEC_OWNER_REPO="$slug_remainder"
   TRANS_SPEC_REPO_NAME="${TRANS_SPEC_OWNER_REPO##*/}"
   TRANS_SPEC_REPO_DIR="/app/${TRANS_SPEC_REPO_NAME}"
+
+  # Validate explicit path (no traversal or absolute paths)
+  if [[ -n "$TRANS_SPEC_EXPLICIT_PATH" ]]; then
+    if [[ "$TRANS_SPEC_EXPLICIT_PATH" == /* || "$TRANS_SPEC_EXPLICIT_PATH" == *".."* ]]; then
+      echo "ERROR: Explicit trans-spec path must be relative and not contain '..': $TRANS_SPEC_EXPLICIT_PATH" >&2
+      exit 1
+    fi
+  fi
 
   echo "Trans-spec override: ${TRANS_SPEC_OWNER_REPO}"
   [[ -n "$TRANS_SPEC_REF" ]] && echo "  Ref: ${TRANS_SPEC_REF}"
   [[ -n "$TRANS_SPEC_EXPLICIT_PATH" ]] && echo "  Path: ${TRANS_SPEC_EXPLICIT_PATH}"
 
   # Clone or update the repo
+  EXPECTED_URL="https://github.com/${TRANS_SPEC_OWNER_REPO}.git"
   if [[ -d "${TRANS_SPEC_REPO_DIR}/.git" ]]; then
+    # Verify the existing clone points to the requested repo
+    CURRENT_URL=$(git -C "$TRANS_SPEC_REPO_DIR" remote get-url origin 2>/dev/null || true)
+    if [[ "$CURRENT_URL" != "$EXPECTED_URL" ]]; then
+      echo "  Updating origin URL: ${CURRENT_URL} → ${EXPECTED_URL}"
+      git -C "$TRANS_SPEC_REPO_DIR" remote set-url origin "$EXPECTED_URL"
+    fi
     echo "  Repo already present at ${TRANS_SPEC_REPO_DIR}, fetching..."
     timeout 30 git -C "$TRANS_SPEC_REPO_DIR" fetch origin 2>&1
   else
     echo "  Cloning ${TRANS_SPEC_OWNER_REPO}..."
-    timeout 60 git clone "https://github.com/${TRANS_SPEC_OWNER_REPO}.git" "$TRANS_SPEC_REPO_DIR" 2>&1
+    timeout 60 git clone "$EXPECTED_URL" "$TRANS_SPEC_REPO_DIR" 2>&1
   fi
 
   # Checkout the requested ref (or pull default branch)
@@ -265,10 +287,14 @@ DM_INPUT_DIR="${PROCESSED_DIR}/${RAW_DIR_NAME}_CleanedSource"
 # Define paths to external dependencies (within container)
 # Resolve trans-spec directory based on --trans-spec slug or default
 if [[ -n "$TRANS_SPEC_EXPLICIT_PATH" ]]; then
-  # Explicit path from slug — use directly
+  # Explicit path from slug
   DM_TRANS_SPEC_DIR="${TRANS_SPEC_REPO_DIR}/${TRANS_SPEC_EXPLICIT_PATH}"
+  if [[ ! -d "$DM_TRANS_SPEC_DIR" ]]; then
+    echo "ERROR: Explicit trans-spec path not found: $DM_TRANS_SPEC_DIR"
+    exit 1
+  fi
 elif [[ -n "$TRANS_SPEC_REPO_DIR" ]]; then
-  # Auto-detect layout from repo name
+  # Auto-detect layout from repo contents
   if [[ -d "${TRANS_SPEC_REPO_DIR}/priority_variables_transform" ]]; then
     # NHLBI-BDC-DMC-HV layout
     DM_TRANS_SPEC_DIR="${TRANS_SPEC_REPO_DIR}/priority_variables_transform/${DM_SCHEMA_NAME}-ingest"
@@ -283,6 +309,11 @@ elif [[ -n "$TRANS_SPEC_REPO_DIR" ]]; then
     DM_TRANS_SPEC_DIR="${TRANS_SPEC_BASE}/${latest_version_dir}"
   else
     echo "ERROR: Cannot auto-detect trans-spec layout in ${TRANS_SPEC_REPO_DIR}"
+    echo "       Use OWNER/REPO@REF:PATH to specify the path explicitly"
+    exit 1
+  fi
+  if [[ ! -d "$DM_TRANS_SPEC_DIR" ]]; then
+    echo "ERROR: Auto-detected trans-spec directory not found: $DM_TRANS_SPEC_DIR"
     echo "       Use OWNER/REPO@REF:PATH to specify the path explicitly"
     exit 1
   fi
