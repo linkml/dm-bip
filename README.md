@@ -15,7 +15,7 @@ Currently used by the [BioData Catalyst](https://biodatacatalyst.nhlbi.nih.gov/)
 src/dm_bip/
 ├── cli.py                 # CLI entry point (Typer)
 ├── cleaners/              # Data cleaning and preparation utilities
-├── make_yaml/             # Transformation spec generation utilities
+├── trans_spec_gen/        # Transformation spec generation utilities
 └── map_data/              # LinkML-Map integration for data transformation
 
 tests/                     # Unit and integration tests
