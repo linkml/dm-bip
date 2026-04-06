@@ -36,6 +36,7 @@ def generate_yaml(
 
     """
     df = pd.read_csv(input_csv)
+    df = df.fillna(0)
 
     df_filtered = df[(df["bdchm_entity"] == entity) & (df["cohort"] == cohort)].copy()
     if df_filtered.empty:
