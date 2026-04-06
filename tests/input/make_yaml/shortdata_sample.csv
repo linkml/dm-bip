@@ -1,0 +1,6 @@
+bdchm_entity,cohort,bdchm_varname,row_good,pht,participantidphv,associatedvisit,ageinyearsphv,onto_id,phv,bdchm_unit,unit_match,unit_convert,unit_expr,unit_casestmt,source_unit,target_unit,conversion_rule,case_stmt
+MeasurementObservation,aric,albumin_bld,1,pht000001,phv00000101,Visit_1,phv00000102,LOINC:1751-7,phv00000103,g/dL,1,0,0,0,,,,
+MeasurementObservation,aric,bdy_hgt,1,pht000002,phv00000201,Visit_1,phv00000202,LOINC:8302-2,phv00000203,cm,0,1,0,0,in,cm,,
+MeasurementObservation,aric,bdy_wgt,1,pht000003,phv00000301,Visit_1,phv00000302,LOINC:29463-7,phv00000303,kg,0,0,1,0,,,* 0.453592,
+MeasurementObservation,aric,hemo_a1c,0,pht000004,phv00000401,Visit_1,phv00000402,LOINC:4548-4,phv00000403,%,1,0,0,0,,,,
+MeasurementObservation,jhs,bp_systolic,1,pht000005,phv00000501,Visit_1,phv00000502,LOINC:8480-6,phv00000503,mmHg,1,0,0,0,,,,
