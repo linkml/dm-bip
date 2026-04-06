@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-from dm_bip.make_yaml.generate_trans_specs import generate_yaml
+from dm_bip.trans_spec_gen.generate_trans_specs import generate_yaml
 
 SAMPLE_CSV = Path(__file__).parents[1] / "input" / "make_yaml" / "shortdata_sample.csv"
 
