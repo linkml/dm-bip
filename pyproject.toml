@@ -29,7 +29,7 @@ dev = [
     "pytest-cov>=6.0",
     "codespell>=2.4.1",
     "docstr-coverage>=2.3.2",
-    "rstfmt>=0.0.14",
+
     "ipykernel>=6.29.5,<7",
     "notebook>=7.4.2,<8",
 ]
