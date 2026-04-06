@@ -1,0 +1,39 @@
+- class_derivations:
+    MeasurementObservation:
+      populated_from: {{pht}}
+      slot_derivations:
+        associated_participant:
+          populated_from: {{participantidphv}}
+        associated_visit:
+          value: {{associatedvisit}}
+        age_at_observation:
+          expr: {{ '{' }}{{ageinyearsphv}}{{ '}' }} * 365
+        observation_type:
+          value: {{onto_id}}
+        value_quantity:
+          object_derivations:
+          - class_derivations:
+              Quantity:
+                populated_from: {{pht}}
+                slot_derivations:
+                  value_decimal:
+                  {% if unit_match == 1 %}
+                    populated_from: {{phv}}
+                  unit:
+                    value: "{{bdchm_unit}}"
+                  {% elif unit_convert == 1 %}
+                    populated_from: {{phv}}
+                    unit_conversion:
+                      source_unit: "{{source_unit}}"
+                      target_unit: "{{target_unit}}"
+                  unit:
+                    value: "{{bdchm_unit}}"
+                    range: string
+                  {% elif unit_expr == 1 %}
+                    expr: {{ '{' }}{{phv}}{{ '}' }} {{conversion_rule}}
+                  {% elif unit_casestmt == 1 %}
+                    {{case_stmt}}
+                  unit:
+                    value: "{{bdchm_unit}}"
+                    range: string
+                  {% endif %}
