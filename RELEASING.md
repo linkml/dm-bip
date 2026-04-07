@@ -19,11 +19,11 @@ Container images are pushed to the Seven Bridges Image Registry via GitHub Actio
 
 ### Dev (`docker-dev` branch)
 
-For iterative development. Images are built with `BDC_PULL_LATEST=true`, so external repos (trans-specs, harmonized variables) are cloned at their default branch and can be updated with `git pull` at runtime.
+For testing pipeline changes (new code, updated dependencies). Images are built with `BDC_PULL_LATEST=true`, so external repos (trans-specs, harmonized variables) are cloned at their default branch and can be updated with `git pull` at runtime.
 
 ### Test (`docker-push-7bridges` branch)
 
-For pre-release validation of specific studies. Images are built with pinned dependency tags. Push commits to this branch to trigger a build to the test registry.
+For testing data work through a known-good pipeline (new trans-specs, speculative transformations, QA/QC). Images are built with pinned dependency tags. Push commits to this branch to trigger a build to the test registry.
 
 ### Prod (`bdc-v*` tags)
 
