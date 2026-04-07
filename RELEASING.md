@@ -3,7 +3,9 @@
 ## GitHub Releases
 
 1. Create release candidate tags (`v<X.Y.Z>-rc<N>`) for testing.
-2. When ready, create a GitHub release with tag `v<X.Y.Z>`. This auto-deploys documentation.
+2. When ready, create a GitHub release with tag `v<X.Y.Z>`.
+
+Documentation is deployed separately on pushes to `main`.
 
 ## BDC Container Deployment
 
