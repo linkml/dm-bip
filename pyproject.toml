@@ -9,9 +9,9 @@ license = "MIT"
 dependencies = [
     "importlib-metadata>=8.2.0",
     "pandas>=2.2.3,<3",
-    "schema-automator==0.5.5rc1",
+    "schema-automator==0.5.5",
     "schemasheets==0.4.0",
-    "linkml-map==0.5.0rc3",
+    "linkml-map==0.5.2",
     "typing-extensions>=4.0,<5",
 ]
 
