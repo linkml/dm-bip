@@ -9,9 +9,9 @@ license = "MIT"
 dependencies = [
     "importlib-metadata>=8.2.0",
     "pandas>=2.2.3,<3",
-    "schema-automator==0.5.5rc1",
+    "schema-automator==0.5.5",
     "schemasheets==0.4.0",
-    "linkml-map==0.5.0rc3",
+    "linkml-map==0.5.2",
     "typing-extensions>=4.0,<5",
 ]
 
@@ -29,7 +29,6 @@ dev = [
     "pytest-cov>=6.0",
     "codespell>=2.4.1",
     "docstr-coverage>=2.3.2",
-    "rstfmt>=0.0.14",
     "ipykernel>=6.29.5,<7",
     "notebook>=7.4.2,<8",
 ]
@@ -55,10 +54,6 @@ default-groups = [
 enable = true
 vcs = "git"
 style = "pep440"
-
-[tool.black]
-line-length = 120
-target-version = ["py312", "py313"]
 
 [tool.ruff]
 target-version = "py312"
