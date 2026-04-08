@@ -53,7 +53,8 @@ def generate_yaml(
             subset = df_filtered[df_filtered["row_good"] != 1]
 
         for varname, group in subset.groupby("bdchm_varname"):
-            out_path = output_dir / cohort / quality / f"{varname}.yaml"
+            safe_name = Path(varname).name
+            out_path = output_dir / cohort / quality / f"{safe_name}.yaml"
             out_path.parent.mkdir(parents=True, exist_ok=True)
             with open(out_path, "w") as f:
                 for _, row in group.iterrows():
