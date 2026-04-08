@@ -1,4 +1,4 @@
-"""Tests for the make_yaml generate_trans_specs module."""
+"""Tests for the dm_bip.trans_spec_gen.generate_trans_specs module."""
 
 from pathlib import Path
 
@@ -95,6 +95,7 @@ class TestUnitExpr:
         quantity = parsed[0]["class_derivations"]["MeasurementObservation"]["slot_derivations"]["value_quantity"]
         slots = quantity["object_derivations"][0]["class_derivations"]["Quantity"]["slot_derivations"]
         assert slots["value_decimal"]["expr"] == "{phv00000303} * 0.453592"
+        assert slots["unit"]["value"] == "kg"
 
 
 class TestUnitCaseStmt:
@@ -125,8 +126,10 @@ class TestVisitHandling:
         _run(tmp_path)
         _, parsed = _read_yaml(tmp_path, "aric", "good", "bp_systolic")
         slots = parsed[0]["class_derivations"]["MeasurementObservation"]["slot_derivations"]
-        assert "uuid5(" in slots["associated_visit"]["expr"]
-        assert "Visit_1_label" in slots["associated_visit"]["expr"]
+        expr = slots["associated_visit"]["expr"]
+        assert expr.startswith("uuid5(")
+        assert "Visit_1_label" in expr
+        assert expr.endswith(")")
 
 
 class TestAgeHandling:

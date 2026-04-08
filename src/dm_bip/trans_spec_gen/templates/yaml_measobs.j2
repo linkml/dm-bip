@@ -9,7 +9,7 @@
           value: {{associatedvisit}}
         {% elif has_visit_expr == 1 %}
         associated_visit:
-          expr: 'uuid5("https://w3id.org/bdchm/Visit", str({{ '{' }}{{participantidphv}}{{ '}' }}) + ":" + {{associatedvisit_expr}}'
+          expr: 'uuid5("https://w3id.org/bdchm/Visit", str({{ '{' }}{{participantidphv}}{{ '}' }}) + ":" + {{associatedvisit_expr}})'
         {% endif %}
       {% if has_age == 1 %}
         age_at_observation:
@@ -38,6 +38,9 @@
                     range: string
                   {% elif unit_expr == 1 %}
                     expr: '{{ '{' }}{{phv}}{{ '}' }} {{conversion_rule}}'
+                  unit:
+                    value: '{{bdchm_unit}}'
+                    range: string
                   {% elif unit_casestmt == 1 %}
                     expr: '{{unit_casestmt_custom}}'
                   unit:
