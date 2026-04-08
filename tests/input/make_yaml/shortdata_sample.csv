@@ -1,0 +1,9 @@
+bdchm_entity,cohort,bdchm_varname,row_good,pht,participantidphv,associatedvisit,has_visit,has_visit_expr,associatedvisit_expr,ageinyearsphv,has_age,onto_id,phv,bdchm_unit,unit_match,unit_convert,unit_expr,unit_casestmt,source_unit,target_unit,conversion_rule,unit_casestmt_custom
+MeasurementObservation,aric,albumin_bld,1,pht000001,phv00000101,Visit_1,1,0,,phv00000102,1,LOINC:1751-7,phv00000103,g/dL,1,0,0,0,,,,
+MeasurementObservation,aric,bdy_hgt,1,pht000002,phv00000201,Visit_1,1,0,,phv00000202,1,LOINC:8302-2,phv00000203,cm,0,1,0,0,in,cm,,
+MeasurementObservation,aric,bdy_wgt,1,pht000003,phv00000301,Visit_1,1,0,,phv00000302,1,LOINC:29463-7,phv00000303,kg,0,0,1,0,,,* 0.453592,
+MeasurementObservation,aric,waist_circ,1,pht000006,phv00000601,Visit_1,1,0,,phv00000602,1,LOINC:56086-2,phv00000603,cm,0,0,0,1,,,,case({phv00000603} == 1; {phv00000603} * 2.54)
+MeasurementObservation,aric,bp_systolic,1,pht000007,phv00000701,,0,1,Visit_1_label,phv00000702,1,LOINC:8480-6,phv00000703,mmHg,1,0,0,0,,,,
+MeasurementObservation,aric,glucose_bld,1,pht000008,phv00000801,Visit_1,1,0,,,0,LOINC:2345-7,phv00000803,mg/dL,1,0,0,0,,,,
+MeasurementObservation,aric,hemo_a1c,0,pht000004,phv00000401,Visit_1,1,0,,phv00000402,1,LOINC:4548-4,phv00000403,%,1,0,0,0,,,,
+MeasurementObservation,jhs,bp_systolic,1,pht000005,phv00000501,Visit_1,1,0,,phv00000502,1,LOINC:8480-6,phv00000503,mmHg,1,0,0,0,,,,

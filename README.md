@@ -24,7 +24,7 @@ The main effort of this project is to use existing [LinkML](https://linkml.io/li
    - Within the `dm_bip` directory, there are core python files:
      - `main.py` - Core entry point
      - `cli.py` for [`click`](https://click.palletsprojects.com) commands.
-   - Plus subdirectories for pipeline functionality: `cleaners/`, `format_converter/`, `map_data/`
+   - Plus subdirectories for pipeline functionality: `cleaners/`, `format_converter/`, `map_data/`, `trans_spec_gen/`
  - `tests` directory with a very basic test.
  - `uv` compatible `pyproject.toml` file containing minimal package requirements.
  - `tox.ini` file containing configuration for:
