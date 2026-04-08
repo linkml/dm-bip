@@ -9,13 +9,13 @@ dm\_bip.map\_data.compose\_specs module
 
 .. automodule:: dm_bip.map_data.compose_specs
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------
 
 .. automodule:: dm_bip.map_data
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:
