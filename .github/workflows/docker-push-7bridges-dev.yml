@@ -36,6 +36,7 @@ jobs:
       - name: Configure build for branch
         id: build-config
         run: |
+          echo "build_date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
           if [[ "${{ github.ref }}" == "refs/heads/docker-dev" ]]; then
             echo "pull_latest=true" >> "$GITHUB_OUTPUT"
             echo "registry_project=${{ vars.SB_REGISTRY_PROJECT_DEV }}" >> "$GITHUB_OUTPUT"
@@ -47,9 +48,24 @@ jobs:
             echo "registry_project=${{ vars.SB_REGISTRY_PROJECT }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build, tag, and push image
-        run: |
-          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
-          docker build --build-arg BDC_PULL_LATEST=${{ steps.build-config.outputs.pull_latest }} -t $IMAGE_NAME .
-          docker tag $IMAGE_NAME $IMAGE_URI:latest
-          docker push $IMAGE_URI:latest
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ steps.build-config.outputs.registry_project }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=match,pattern=bdc-v.*,enable=${{ startsWith(github.ref, 'refs/tags/bdc-v') }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            BDC_PULL_LATEST=${{ steps.build-config.outputs.pull_latest }}
+            DM_BIP_VERSION=${{ github.ref_name }}
+            DM_BIP_GIT_REF=${{ github.sha }}
+            DM_BIP_BUILD_DATE=${{ steps.build-config.outputs.build_date }}

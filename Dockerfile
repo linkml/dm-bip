@@ -30,6 +30,20 @@ COPY . ./
 # Archive the Dockerfile used to build this image at a known root-level path
 COPY Dockerfile /Dockerfile.archived
 
+# Build metadata — set by CI (docker/build-push-action) or manual builds
+ARG DM_BIP_VERSION=unknown
+ARG DM_BIP_GIT_REF=unknown
+ARG DM_BIP_BUILD_DATE=unknown
+
+ENV DM_BIP_VERSION=${DM_BIP_VERSION}
+ENV DM_BIP_GIT_REF=${DM_BIP_GIT_REF}
+ENV DM_BIP_BUILD_DATE=${DM_BIP_BUILD_DATE}
+
+LABEL org.opencontainers.image.version=${DM_BIP_VERSION}
+LABEL org.opencontainers.image.revision=${DM_BIP_GIT_REF}
+LABEL org.opencontainers.image.created=${DM_BIP_BUILD_DATE}
+LABEL org.opencontainers.image.source=https://github.com/linkml/dm-bip
+
 # Clone external repos (shallow, single layer)
 # When BDC_PULL_LATEST=true (dev builds), clone default branches so git pull works at runtime.
 # When false (release builds), pin to specific tags for reproducibility.
