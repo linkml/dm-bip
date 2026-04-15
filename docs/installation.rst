@@ -7,7 +7,7 @@ Requirements:
 -------------
 - Python >= 3.11, <= 3.13
 - `uv <https://docs.astral.sh/uv/>`_
-- `Cruft <https://cruft.github.io/cruft/>`_
+- `make <https://www.gnu.org/software/make/>`_ (usually pre-installed on Mac/Linux)
 
 To install and set up the project:
 
@@ -15,16 +15,6 @@ To install and set up the project:
 
     git clone https://github.com/linkml/dm-bip.git
     cd dm-bip
-
-Using uv (default):
-
-.. code-block:: bash
-
     uv sync
 
-Using Virtual Environment explicitly:
-
-.. code-block:: bash
-
-    pyenv local 3.12
-    uv sync
+``uv sync`` handles the Python version, virtual environment, and all dependencies.
