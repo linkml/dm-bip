@@ -10,20 +10,20 @@ The `pyproject.toml` file includes Schema Automator as a dependency. If you have
 To test Schema Automator as a stand-alone tool on a file in the `toy_data` directory:
 
 ```bash
-schemauto generalize-tsv toy_data/initial/study.tsv -n StudyInfo -o study_toy_data_schema.yaml
+uv run schemauto generalize-tsv toy_data/initial/study.tsv -n StudyInfo -o study_toy_data_schema.yaml
 ```
 
 ## Help
 To see a full list of commands:
 
 ```bash
-schemauto --help
+uv run schemauto --help
 ```
 
 To see arguments for the `generalize-tsv` command:
 
 ```bash
-schemauto generalize-tsv --help
+uv run schemauto generalize-tsv --help
 ```
 
 Issues for Schema Automator can be submitted via the [GitHub issue tracker](https://github.com/linkml/schema-automator).

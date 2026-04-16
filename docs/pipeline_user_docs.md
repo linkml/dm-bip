@@ -28,7 +28,7 @@ The pipeline has four stages, orchestrated by `make`. Running `make pipeline` ex
 
 1. **Prepare** (`make prepare-input`) — Clean raw input files: strip dbGaP metadata headers, filter tables by ID, output clean TSVs. Only runs when `DM_RAW_SOURCE` is set. *Skip this if your data is already clean TSV/CSV.*
 2. **Schema** (`make schema-create`) — Infer a source [LinkML](https://linkml.io/linkml/) schema from the data using [schema-automator](https://linkml.io/schema-automator/). Produces one class per file, one slot per column.
-3. **Validate** (`make validate-data`) — Validate each input file against the generated schema using [linkml validate](https://linkml.io/linkml/). Supports parallel execution (`make -j 4 validate-data`).
+3. **Validate** (`make validate-data`) — Validate each input file against the generated schema using [uv run linkml validate](https://linkml.io/linkml/). Supports parallel execution (`make -j 4 validate-data`).
 4. **Map** (`make map-data`) — Transform data to a target schema using [linkml-map](https://linkml.io/linkml-map/) transformation specifications.
 
 ## Preparing Your Data
@@ -40,7 +40,7 @@ Input files must meet these requirements:
 
 To convert a CSV to TSV:
 ```bash
-python -c "import pandas as pd; pd.read_csv('file.csv').to_csv('file.tsv', sep='\t', index=False)"
+uv run python -c "import pandas as pd; pd.read_csv('file.csv').to_csv('file.tsv', sep='\t', index=False)"
 ```
 
 ### Raw dbGaP Data
@@ -110,22 +110,22 @@ Each pipeline step can be run directly using the underlying CLI tool. These exam
 
 **Prepare** — clean raw dbGaP files ([prepare_input.py](https://github.com/linkml/dm-bip/blob/main/src/dm_bip/cleaners/prepare_input.py)):
 ```bash
-python src/dm_bip/cleaners/prepare_input.py --source toy_data/data/raw --mapping toy_data/from_raw/specs --output output/ToyRaw/prepared
+uv run python src/dm_bip/cleaners/prepare_input.py --source toy_data/data/raw --mapping toy_data/from_raw/specs --output output/ToyRaw/prepared
 ```
 
 **Schema** — infer schema from data ([schema-automator](https://linkml.io/schema-automator/)):
 ```bash
-schemauto generalize-tsvs -n ToyPreCleaned toy_data/data/pre_cleaned/*.tsv -o output/ToyPreCleaned/ToyPreCleaned.yaml
+uv run schemauto generalize-tsvs -n ToyPreCleaned toy_data/data/pre_cleaned/*.tsv -o output/ToyPreCleaned/ToyPreCleaned.yaml
 ```
 
 **Validate** — validate a single file against the schema ([linkml](https://linkml.io/linkml/)):
 ```bash
-linkml validate --schema output/ToyPreCleaned/ToyPreCleaned.yaml --target-class subject toy_data/data/pre_cleaned/subject.tsv
+uv run linkml validate --schema output/ToyPreCleaned/ToyPreCleaned.yaml --target-class subject toy_data/data/pre_cleaned/subject.tsv
 ```
 
 **Map** — transform data for one entity ([linkml-map](https://linkml.io/linkml-map/)):
 ```bash
-linkml-map map-data \
+uv run linkml-map map-data \
   -T output/ToyPreCleaned/mapped-data/composed-specs/Participant.yaml \
   -s output/ToyPreCleaned/ToyPreCleaned.yaml \
   --target-schema toy_data/target-schema.yaml \
