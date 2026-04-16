@@ -24,12 +24,45 @@ See `toy_data/README.md` for details on the toy dataset.
 
 ## Pipeline Overview
 
-The pipeline has four stages, orchestrated by `make`. Running `make pipeline` executes all applicable stages in order.
+The pipeline has four stages, orchestrated by `make`. Running `make pipeline` executes all applicable stages in order. The manual commands below use the toy data as examples.
 
-1. **Prepare** (`make prepare-input`) — Clean raw input files: strip dbGaP metadata headers, filter tables by ID, output clean TSVs. Only runs when `DM_RAW_SOURCE` is set. *Skip this if your data is already clean TSV/CSV.*
-2. **Schema** (`make schema-create`) — Infer a source [LinkML](https://linkml.io/linkml/) schema from the data using [schema-automator](https://linkml.io/schema-automator/). Produces one class per file, one slot per column.
-3. **Validate** (`make validate-data`) — Validate each input file against the generated schema using [uv run linkml validate](https://linkml.io/linkml/). Supports parallel execution (`make -j 4 validate-data`).
-4. **Map** (`make map-data`) — Transform data to a target schema using [linkml-map](https://linkml.io/linkml-map/) transformation specifications.
+### 1. Prepare (`make prepare-input`)
+
+Clean raw input files: strip dbGaP metadata headers, filter tables by ID, output clean TSVs. Only runs when `DM_RAW_SOURCE` is set. *Skip this if your data is already clean TSV/CSV.*
+
+```bash
+uv run python src/dm_bip/cleaners/prepare_input.py --source toy_data/data/raw --mapping toy_data/from_raw/specs --output output/ToyRaw/prepared
+```
+
+### 2. Schema (`make schema-create`)
+
+Infer a source LinkML schema from the data using [schema-automator](https://linkml.io/schema-automator/). Produces one class per file, one slot per column.
+
+```bash
+uv run schemauto generalize-tsvs -n ToyPreCleaned toy_data/data/pre_cleaned/*.tsv -o output/ToyPreCleaned/ToyPreCleaned.yaml
+```
+
+### 3. Validate (`make validate-data`)
+
+Validate each input file against the generated schema using [linkml validate](https://linkml.io/linkml/). Supports parallel execution (`make -j 4 validate-data`).
+
+```bash
+uv run linkml validate --schema output/ToyPreCleaned/ToyPreCleaned.yaml --target-class subject toy_data/data/pre_cleaned/subject.tsv
+```
+
+### 4. Map (`make map-data`)
+
+Transform data to a target schema using [linkml-map](https://linkml.io/linkml-map/) transformation specifications.
+
+```bash
+uv run linkml-map map-data \
+  -T output/ToyPreCleaned/mapped-data/composed-specs/Participant.yaml \
+  -s output/ToyPreCleaned/ToyPreCleaned.yaml \
+  --target-schema toy_data/target-schema.yaml \
+  -o output/ToyPreCleaned/mapped-data/TOY-Participant-data.yaml \
+  -f yaml \
+  toy_data/data/pre_cleaned/
+```
 
 ## Preparing Your Data
 
@@ -102,36 +135,6 @@ output/MyStudy/
 │   ├── data-validation/            # Per-file validation results
 │   └── data-validation-errors/     # Symlinks to files with errors
 └── mapped-data/                    # Transformed output files
-```
-
-## Running Steps Manually
-
-Each pipeline step can be run directly using the underlying CLI tool. These examples use the toy data:
-
-**Prepare** — clean raw dbGaP files ([prepare_input.py](https://github.com/linkml/dm-bip/blob/main/src/dm_bip/cleaners/prepare_input.py)):
-```bash
-uv run python src/dm_bip/cleaners/prepare_input.py --source toy_data/data/raw --mapping toy_data/from_raw/specs --output output/ToyRaw/prepared
-```
-
-**Schema** — infer schema from data ([schema-automator](https://linkml.io/schema-automator/)):
-```bash
-uv run schemauto generalize-tsvs -n ToyPreCleaned toy_data/data/pre_cleaned/*.tsv -o output/ToyPreCleaned/ToyPreCleaned.yaml
-```
-
-**Validate** — validate a single file against the schema ([linkml](https://linkml.io/linkml/)):
-```bash
-uv run linkml validate --schema output/ToyPreCleaned/ToyPreCleaned.yaml --target-class subject toy_data/data/pre_cleaned/subject.tsv
-```
-
-**Map** — transform data for one entity ([linkml-map](https://linkml.io/linkml-map/)):
-```bash
-uv run linkml-map map-data \
-  -T output/ToyPreCleaned/mapped-data/composed-specs/Participant.yaml \
-  -s output/ToyPreCleaned/ToyPreCleaned.yaml \
-  --target-schema toy_data/target-schema.yaml \
-  -o output/ToyPreCleaned/mapped-data/TOY-Participant-data.yaml \
-  -f yaml \
-  toy_data/data/pre_cleaned/
 ```
 
 ## Writing Transformation Specifications
