@@ -100,7 +100,7 @@ clean:
 	rm -rf `find . -name __pycache__`
 	rm -rf .ruff_cache
 	rm -rf .pytest_cache
-	rm -rf docs/_build
+	rm -rf site
 	rm -rf $(VENV)
 
 .PHONY: clobber

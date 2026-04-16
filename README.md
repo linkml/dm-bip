@@ -53,7 +53,7 @@ make pipeline DM_INPUT_DIR=path/to/data DM_SCHEMA_NAME=MyStudy
 
 To try it with the included toy data:
 ```bash
-make pipeline DM_INPUT_DIR=toy_data/pre_cleaned DM_SCHEMA_NAME=ToyData
+make pipeline CONFIG=toy_data/pre_cleaned/config.mk
 ```
 
 Run `make help` to see all targets and configuration variables. Key variables:
