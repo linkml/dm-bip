@@ -7,12 +7,8 @@ Currently used by the [BioData Catalyst](https://biodatacatalyst.nhlbi.nih.gov/)
 ## Getting Started
 See the [installation guide](installation.md), or the [README](https://github.com/linkml/dm-bip#readme) for a quick start.
 
-```{toctree}
-:maxdepth: 2
-:caption: Contents
-
-installation
-pipeline_user_docs
-schema_automator
-schemasheets
-```
+## Contents
+- [Installation](installation.md)
+- [Pipeline User Guide](pipeline_user_docs.md)
+- [Schema Automator](schema_automator.md)
+- [Schemasheets](schemasheets.md)

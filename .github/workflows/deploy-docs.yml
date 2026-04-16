@@ -1,11 +1,11 @@
-name: Auto-deployment of Documentation
+name: Deploy Documentation
 on:
   push:
     branches: [ main ]
 permissions:
   contents: write
 jobs:
-  build-docs:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -13,7 +13,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Set up Python 3.
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: "3.12"
@@ -21,23 +21,8 @@ jobs:
     - name: Install uv
       uses: astral-sh/setup-uv@v6
 
-    - name: Install dependencies.
+    - name: Install dependencies
       run: uv sync --group docs
 
-    - name: Build documentation.
-      run: |
-        mkdir gh-pages
-        touch gh-pages/.nojekyll
-        cd docs/
-        uv run sphinx-apidoc -o . ../src/dm_bip/ --ext-autodoc -f
-        uv run sphinx-build -b html . _build
-        cp -r _build/* ../gh-pages/
-
-    - name: Deploy documentation.
-      if: ${{ github.event_name == 'push' }}
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        branch: gh-pages
-        force: true
-        folder: gh-pages
-        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Deploy to GitHub Pages
+      run: uv run mkdocs gh-deploy --force

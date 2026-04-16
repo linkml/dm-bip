@@ -82,8 +82,7 @@ git-hooks-install: .git/hooks/pre-commit
 
 .PHONY: docs
 docs: $(INSTALL_SENTINEL)
-	$(RUN) sphinx-apidoc -o docs src/dm_bip/ --ext-autodoc -f
-	$(RUN) sphinx-build -b html docs docs/_build
+	$(RUN) mkdocs build
 
 
 ### Testing ###

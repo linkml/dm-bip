@@ -4,7 +4,7 @@ This guide walks through using the dm-bip pipeline to transform tabular data int
 
 ## Prerequisites
 
-- dm-bip installed (see [Installation](installation.rst))
+- dm-bip installed (see [Installation](installation.md))
 - `make` installed (pre-installed on most Mac/Linux systems)
 - Input data as TSV or CSV files
 
