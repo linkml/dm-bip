@@ -87,7 +87,7 @@ See `toy_data/pre_cleaned/config.mk` for an example.
 | `DM_TRANS_SPEC_DIR` | Transformation specification directory | |
 | `DM_MAP_TARGET_SCHEMA` | Target schema for transformation | |
 | `DM_RAW_SOURCE` | Directory of raw `.txt.gz` files (enables prepare step) | |
-| `DM_MAP_OUTPUT_TYPE` | Output format: `yaml`, `jsonl`, `json`, or `tsv` | `yaml` |
+| `DM_MAP_OUTPUT_TYPE` | Output format(s): `yaml`, `jsonl`, `json`, `tsv` (space-separated for multiple, e.g., `yaml jsonl`) | `yaml` |
 | `DM_MAP_CHUNK_SIZE` | Rows per processing batch | `10000` |
 
 Run `make help` to see the full list of targets and variables.

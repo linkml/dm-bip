@@ -20,7 +20,7 @@ src/dm_bip/
 
 tests/                     # Unit and integration tests
 toy_data/                  # Sample datasets for trying the pipeline
-docs/                      # Sphinx documentation source
+docs/                      # MkDocs documentation source
 Makefile                   # Development and project targets
 pipeline.Makefile          # Pipeline orchestration
 ```
