@@ -16,7 +16,7 @@
 - **Language**: Python 3.11-3.13
 - **CLI**: Typer
 - **Data Processing**: Pandas
-- **Schema Tools**: LinkML, schema-automator, linkml-map, schemasheets
+- **Schema Tools**: LinkML, schema-automator, linkml-map
 - **Build**: uv
 - **Task Automation**: Make
 - **Testing**: pytest

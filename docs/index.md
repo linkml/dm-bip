@@ -11,4 +11,3 @@ See the [installation guide](installation.md), or the [README](https://github.co
 - [Installation](installation.md)
 - [Pipeline User Guide](pipeline_user_docs.md)
 - [Schema Automator](schema_automator.md)
-- [Schemasheets](schemasheets.md)

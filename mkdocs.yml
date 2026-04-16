@@ -25,7 +25,6 @@ nav:
   - Pipeline User Guide: pipeline_user_docs.md
   - LinkML Tools:
     - Schema Automator: schema_automator.md
-    - Schemasheets: schemasheets.md
 
 markdown_extensions:
   - tables
