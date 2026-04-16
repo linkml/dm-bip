@@ -99,3 +99,9 @@ uv run pytest tests/unit/test_something.py
 make lint       # Check for issues
 make format     # Auto-fix formatting
 ```
+
+### Documentation
+```bash
+uv run mkdocs serve   # Live preview at http://localhost:8000
+make docs             # Build static site
+```

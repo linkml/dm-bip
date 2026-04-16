@@ -21,7 +21,7 @@
 - **Task Automation**: Make
 - **Testing**: pytest
 - **Linting**: Ruff
-- **Docs**: Sphinx
+- **Docs**: MkDocs (mkdocs-material)
 
 ---
 
