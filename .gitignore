@@ -5,6 +5,9 @@
 # IDE
 .vscode/
 
+# MkDocs build output
+site/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -75,7 +78,6 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
 
 # PyBuilder
 target/

@@ -82,8 +82,7 @@ git-hooks-install: .git/hooks/pre-commit
 
 .PHONY: docs
 docs: $(INSTALL_SENTINEL)
-	$(RUN) sphinx-apidoc -o docs src/dm_bip/ --ext-autodoc -f
-	$(RUN) sphinx-build -b html docs docs/_build
+	$(RUN) mkdocs build
 
 
 ### Testing ###
@@ -101,7 +100,7 @@ clean:
 	rm -rf `find . -name __pycache__`
 	rm -rf .ruff_cache
 	rm -rf .pytest_cache
-	rm -rf docs/_build
+	rm -rf site
 	rm -rf $(VENV)
 
 .PHONY: clobber
