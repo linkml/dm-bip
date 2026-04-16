@@ -14,7 +14,7 @@
 ## Tech Stack
 
 - **Language**: Python 3.11-3.13
-- **CLI**: Click
+- **CLI**: Typer
 - **Data Processing**: Pandas
 - **Schema Tools**: LinkML, schema-automator, linkml-map, schemasheets
 - **Build**: uv
@@ -60,10 +60,10 @@ uv run dm-bip run      # Basic CLI test
 
 ```
 src/dm_bip/
-├── cli.py                 # Click CLI definitions
+├── cli.py                 # Typer CLI definitions
 ├── main.py                # Core entry point
 ├── cleaners/              # Data cleaning utilities
-├── format_converter/      # Data format conversion (melt, merge, flatten)
+├── make_yaml/             # Transformation spec generation utilities
 └── map_data/              # LinkML-Map integration
 
 tests/
