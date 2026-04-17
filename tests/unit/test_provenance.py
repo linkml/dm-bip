@@ -62,8 +62,7 @@ def test_generate_provenance_with_repo(tmp_path):
     subprocess.run(["git", "init", str(repo)], capture_output=True, check=True)
     subprocess.run(["git", "-C", str(repo), "config", "user.email", "test@test"], capture_output=True, check=True)
     subprocess.run(["git", "-C", str(repo), "config", "user.name", "test"], capture_output=True, check=True)
-    subprocess.run(["git", "-C", str(repo), "commit", "--allow-empty", "-m", "init"],
-                   capture_output=True, check=True)
+    subprocess.run(["git", "-C", str(repo), "commit", "--allow-empty", "-m", "init"], capture_output=True, check=True)
 
     output = tmp_path / "provenance.yaml"
     generate_provenance(output_path=output, repos=[repo])
@@ -97,6 +96,7 @@ def test_version_env_fallback():
     with patch.dict(os.environ, {"DM_BIP_VERSION": "bdc-v2.0.0"}):
         # Re-import to test the fallback logic
         import dm_bip
+
         # Save original
         original = dm_bip.__version__
         # Simulate container scenario

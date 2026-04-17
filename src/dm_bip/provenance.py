@@ -48,13 +48,17 @@ def _get_repo_info(repo_path: Path) -> dict:
     try:
         commit = subprocess.run(
             ["git", "-C", str(repo_path), "rev-parse", "HEAD"],
-            capture_output=True, text=True, check=True,
+            capture_output=True,
+            text=True,
+            check=True,
         ).stdout.strip()
         info["commit"] = commit
 
         ref = subprocess.run(
             ["git", "-C", str(repo_path), "describe", "--tags", "--always"],
-            capture_output=True, text=True, check=True,
+            capture_output=True,
+            text=True,
+            check=True,
         ).stdout.strip()
         info["ref"] = ref
     except (subprocess.CalledProcessError, FileNotFoundError) as e:
@@ -82,18 +86,18 @@ def generate_provenance(
     if no_external_repos:
         provenance["external_repos"] = "none (local run)"
     elif repos:
-        provenance["external_repos"] = {
-            repo.name: _get_repo_info(repo) for repo in repos
-        }
+        provenance["external_repos"] = {repo.name: _get_repo_info(repo) for repo in repos}
 
     provenance["pipeline"] = {
-        k: v for k, v in {
+        k: v
+        for k, v in {
             "schema_name": schema_name,
             "input_dir": input_dir,
             "trans_spec_dir": trans_spec_dir,
             "target_schema": target_schema,
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        }.items() if v
+        }.items()
+        if v
     }
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -112,10 +116,10 @@ def main():
     parser.add_argument("--input-dir", default="")
     parser.add_argument("--trans-spec-dir", default="")
     parser.add_argument("--target-schema", default="")
-    parser.add_argument("--repo", action="append", type=Path, dest="repos", default=[],
-                        help="Path to external git repo (repeatable)")
-    parser.add_argument("--no-external-repos", action="store_true",
-                        help="Indicate no external repos are expected")
+    parser.add_argument(
+        "--repo", action="append", type=Path, dest="repos", default=[], help="Path to external git repo (repeatable)"
+    )
+    parser.add_argument("--no-external-repos", action="store_true", help="Indicate no external repos are expected")
     args = parser.parse_args()
 
     generate_provenance(
