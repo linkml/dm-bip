@@ -93,6 +93,8 @@ unfixable = []
     "S603",
     "S607",
 ]
+"src/dm_bip/provenance.py" = ["S603", "S607"]
+"tests/unit/test_provenance.py" = ["S603", "S607"]
 
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.

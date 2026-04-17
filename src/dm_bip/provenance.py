@@ -105,6 +105,7 @@ def generate_provenance(
 
 
 def main():
+    """CLI entry point for generating pipeline provenance YAML."""
     parser = argparse.ArgumentParser(description="Generate pipeline provenance YAML")
     parser.add_argument("--output", required=True, type=Path, help="Output YAML path")
     parser.add_argument("--schema-name", default="")

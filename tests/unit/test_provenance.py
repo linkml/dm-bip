@@ -60,6 +60,8 @@ def test_generate_provenance_with_repo(tmp_path):
     repo = tmp_path / "fake-repo"
     repo.mkdir()
     subprocess.run(["git", "init", str(repo)], capture_output=True, check=True)
+    subprocess.run(["git", "-C", str(repo), "config", "user.email", "test@test"], capture_output=True, check=True)
+    subprocess.run(["git", "-C", str(repo), "config", "user.name", "test"], capture_output=True, check=True)
     subprocess.run(["git", "-C", str(repo), "commit", "--allow-empty", "-m", "init"],
                    capture_output=True, check=True)
 
@@ -94,7 +96,6 @@ def test_version_env_fallback():
     """__version__ falls back to DM_BIP_VERSION when package version is 0.0.0."""
     with patch.dict(os.environ, {"DM_BIP_VERSION": "bdc-v2.0.0"}):
         # Re-import to test the fallback logic
-        import importlib
         import dm_bip
         # Save original
         original = dm_bip.__version__
