@@ -1,7 +1,6 @@
 """Unit tests for the provenance module."""
 
 import os
-import subprocess
 from pathlib import Path
 from unittest.mock import patch
 
@@ -55,31 +54,35 @@ def test_generate_provenance_basic(tmp_path):
     assert "timestamp" in data["pipeline"]
 
 
-def test_generate_provenance_with_repo(tmp_path):
-    """Provenance includes git info for external repos."""
-    repo = tmp_path / "fake-repo"
-    repo.mkdir()
-    subprocess.run(["git", "init", str(repo)], capture_output=True, check=True)
-    subprocess.run(["git", "-C", str(repo), "config", "user.email", "test@test"], capture_output=True, check=True)
-    subprocess.run(["git", "-C", str(repo), "config", "user.name", "test"], capture_output=True, check=True)
-    subprocess.run(["git", "-C", str(repo), "commit", "--allow-empty", "-m", "init"], capture_output=True, check=True)
+def test_generate_provenance_with_manifest(tmp_path):
+    """Provenance includes repo info from a manifest file."""
+    manifest = tmp_path / "repo-manifest.yaml"
+    manifest.write_text(
+        yaml.safe_dump(
+            {
+                "fake-repo": {
+                    "commit": "a" * 40,
+                    "ref": "v1.0.0",
+                }
+            }
+        )
+    )
 
     output = tmp_path / "provenance.yaml"
-    generate_provenance(output_path=output, repos=[repo])
+    generate_provenance(output_path=output, repo_manifest=manifest)
     data = yaml.safe_load(output.read_text())
     repo_info = data["external_repos"]["fake-repo"]
-    assert "commit" in repo_info
-    assert len(repo_info["commit"]) == 40
+    assert repo_info["commit"] == "a" * 40
+    assert repo_info["ref"] == "v1.0.0"
 
 
-def test_generate_provenance_missing_repo(tmp_path):
-    """Missing repo path logs error but still writes provenance."""
+def test_generate_provenance_missing_manifest(tmp_path):
+    """Missing manifest logs error but still writes provenance."""
     output = tmp_path / "provenance.yaml"
-    generate_provenance(output_path=output, repos=[Path("/nonexistent/repo")])
+    generate_provenance(output_path=output, repo_manifest=Path("/nonexistent/manifest.yaml"))
     assert output.exists()
     data = yaml.safe_load(output.read_text())
-    repo_info = data["external_repos"]["repo"]
-    assert "error" in repo_info
+    assert data["external_repos"] == {}
 
 
 def test_generate_provenance_empty_params_omitted(tmp_path):

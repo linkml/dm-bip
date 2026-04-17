@@ -57,4 +57,11 @@ RUN if [ "$BDC_PULL_LATEST" = "true" ]; then \
       git clone --depth 1 --branch 2026.03-2 https://github.com/amc-corey-cox/bdc-harmonized-variables.git; \
     fi
 
+# Capture git metadata for cloned repos so Python never needs to shell out to git
+RUN for repo in NHLBI-BDC-DMC-HM bdc-harmonized-variables; do \
+      echo "${repo}:"; \
+      echo "  commit: $(git -C ${repo} rev-parse HEAD)"; \
+      echo "  ref: $(git -C ${repo} describe --tags --always)"; \
+    done > /app/repo-manifest.yaml
+
 CMD ["uv", "run", "dm-bip", "run"]

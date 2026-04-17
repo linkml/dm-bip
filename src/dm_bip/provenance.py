@@ -3,7 +3,6 @@
 import argparse
 import logging
 import os
-import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -42,29 +41,14 @@ def _get_package_versions() -> dict:
     return versions
 
 
-def _get_repo_info(repo_path: Path) -> dict:
-    """Get git commit and ref for a cloned repo. Returns error info on failure."""
-    info = {"path": str(repo_path)}
+def _load_repo_manifest(manifest_path: Path) -> dict:
+    """Load pre-built repo manifest YAML. Returns empty dict on failure."""
     try:
-        commit = subprocess.run(
-            ["git", "-C", str(repo_path), "rev-parse", "HEAD"],
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout.strip()
-        info["commit"] = commit
-
-        ref = subprocess.run(
-            ["git", "-C", str(repo_path), "describe", "--tags", "--always"],
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout.strip()
-        info["ref"] = ref
-    except (subprocess.CalledProcessError, FileNotFoundError) as e:
-        logger.error("Failed to get git info for %s: %s", repo_path, e)
-        info["error"] = str(e)
-    return info
+        with open(manifest_path) as f:
+            return yaml.safe_load(f) or {}
+    except (FileNotFoundError, yaml.YAMLError) as e:
+        logger.error("Failed to load repo manifest %s: %s", manifest_path, e)
+        return {}
 
 
 def generate_provenance(
@@ -73,7 +57,7 @@ def generate_provenance(
     input_dir: str = "",
     trans_spec_dir: str = "",
     target_schema: str = "",
-    repos: list[Path] | None = None,
+    repo_manifest: Path | None = None,
     no_external_repos: bool = False,
 ) -> Path:
     """Write provenance YAML to output_path."""
@@ -85,8 +69,8 @@ def generate_provenance(
 
     if no_external_repos:
         provenance["external_repos"] = "none (local run)"
-    elif repos:
-        provenance["external_repos"] = {repo.name: _get_repo_info(repo) for repo in repos}
+    elif repo_manifest:
+        provenance["external_repos"] = _load_repo_manifest(repo_manifest)
 
     provenance["pipeline"] = {
         k: v
@@ -116,9 +100,7 @@ def main():
     parser.add_argument("--input-dir", default="")
     parser.add_argument("--trans-spec-dir", default="")
     parser.add_argument("--target-schema", default="")
-    parser.add_argument(
-        "--repo", action="append", type=Path, dest="repos", default=[], help="Path to external git repo (repeatable)"
-    )
+    parser.add_argument("--repo-manifest", type=Path, help="Path to repo-manifest.yaml with pre-captured git info")
     parser.add_argument("--no-external-repos", action="store_true", help="Indicate no external repos are expected")
     args = parser.parse_args()
 
@@ -128,7 +110,7 @@ def main():
         input_dir=args.input_dir,
         trans_spec_dir=args.trans_spec_dir,
         target_schema=args.target_schema,
-        repos=args.repos or None,
+        repo_manifest=args.repo_manifest,
         no_external_repos=args.no_external_repos,
     )
 
