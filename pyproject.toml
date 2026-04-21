@@ -7,7 +7,6 @@ requires-python = ">=3.11,<=3.13"
 readme = "README.md"
 license = "MIT"
 dependencies = [
-    "importlib-metadata>=8.2.0",
     "pandas>=2.2.3,<3",
     "schema-automator==0.5.5",
     "linkml-map==0.5.2",
@@ -20,8 +19,6 @@ dm-bip = "dm_bip.cli:app"
 [dependency-groups]
 dev = [
     "pytest>=8.3.2",
-    "tox>=4.16.0",
-    "tox-uv>=1.11.3",
     "pre-commit>=3.3.3",
     "ruff>=0.12.9",
     "coverage>=7.3.0",
