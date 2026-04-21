@@ -17,7 +17,7 @@ TRACKED_PACKAGES = ["dm-bip", "linkml-map", "schema-automator", "linkml"]
 
 def get_build_info() -> dict:
     """Read build-time metadata from environment variables."""
-    dm_bip_version = os.environ.get("DM_BIP_VERSION", "unknown")
+    dm_bip_version = os.environ.get("DM_BIP_VERSION", "").strip() or "unknown"
     if dm_bip_version == "unknown":
         try:
             dm_bip_version = version("dm-bip")

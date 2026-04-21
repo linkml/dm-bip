@@ -13,4 +13,4 @@ except importlib_metadata.PackageNotFoundError:
 # In containers, poetry-dynamic-versioning has no .git dir so __version__ is 0.0.0.
 # Fall back to the build arg injected as an env var.
 if __version__ == "0.0.0":
-    __version__ = os.environ.get("DM_BIP_VERSION", __version__)
+    __version__ = os.environ.get("DM_BIP_VERSION", "").strip() or __version__

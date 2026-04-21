@@ -30,8 +30,10 @@ def test_get_build_info_fallback():
         for k in env_clear:
             os.environ.pop(k, None)
         info = get_build_info()
-    # Should get something from importlib_metadata (not "unknown" since dm-bip is installed)
-    assert info["version"] != "unknown" or info["git_ref"] == "unknown"
+    # dm-bip is installed, so importlib_metadata should provide a real version
+    assert info["version"] != "unknown"
+    assert info["git_ref"] == "unknown"
+    assert info["build_date"] == "unknown"
 
 
 def test_generate_provenance_basic(tmp_path):
