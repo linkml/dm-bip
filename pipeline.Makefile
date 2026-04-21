@@ -256,7 +256,7 @@ prepare-clean:
 
 # Provenance
 # ============
-$(PROVENANCE_FILE):
+$(PROVENANCE_FILE): FORCE
 	@mkdir -p $(@D)
 	$(RUN) python -m dm_bip.provenance \
 		--output $@ \
@@ -548,3 +548,6 @@ map-debug:
 .PHONY: map-clean
 map-clean:
 	rm -rf $(MAPPING_OUTPUT_DIR)
+
+.PHONY: FORCE
+FORCE:
