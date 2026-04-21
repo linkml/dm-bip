@@ -260,10 +260,10 @@ $(PROVENANCE_FILE): FORCE
 	@mkdir -p $(@D)
 	$(RUN) python -m dm_bip.provenance \
 		--output $@ \
-		--schema-name $(DM_SCHEMA_NAME) \
-		--input-dir $(DM_INPUT_DIR) \
-		--trans-spec-dir $(DM_TRANS_SPEC_DIR) \
-		--target-schema $(DM_MAP_TARGET_SCHEMA) \
+		$(if $(DM_SCHEMA_NAME),--schema-name $(DM_SCHEMA_NAME)) \
+		$(if $(DM_INPUT_DIR),--input-dir $(DM_INPUT_DIR)) \
+		$(if $(DM_TRANS_SPEC_DIR),--trans-spec-dir $(DM_TRANS_SPEC_DIR)) \
+		$(if $(DM_MAP_TARGET_SCHEMA),--target-schema $(DM_MAP_TARGET_SCHEMA)) \
 		$(if $(DM_REPO_MANIFEST),--repo-manifest $(DM_REPO_MANIFEST),--no-external-repos)
 
 .PHONY: provenance
