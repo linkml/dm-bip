@@ -10,6 +10,8 @@ from pathlib import Path
 import yaml
 from importlib_metadata import PackageNotFoundError, version
 
+import dm_bip
+
 logger = logging.getLogger(__name__)
 
 TRACKED_PACKAGES = ["dm-bip", "linkml-map", "schema-automator", "linkml"]
@@ -17,14 +19,8 @@ TRACKED_PACKAGES = ["dm-bip", "linkml-map", "schema-automator", "linkml"]
 
 def get_build_info() -> dict:
     """Read build-time metadata from environment variables."""
-    dm_bip_version = os.environ.get("DM_BIP_VERSION", "").strip() or "unknown"
-    if dm_bip_version == "unknown":
-        try:
-            dm_bip_version = version("dm-bip")
-        except PackageNotFoundError:
-            pass
     return {
-        "version": dm_bip_version,
+        "version": dm_bip.__version__,
         "git_ref": os.environ.get("DM_BIP_GIT_REF", "unknown"),
         "build_date": os.environ.get("DM_BIP_BUILD_DATE", "unknown"),
     }

@@ -4,33 +4,32 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
+import importlib_metadata
 import yaml
 
 from dm_bip.provenance import generate_provenance, get_build_info
 
 
 def test_get_build_info_from_env():
-    """Build info reads from environment variables."""
+    """Build info reads version from dm_bip.__version__ and other fields from env."""
     env = {
-        "DM_BIP_VERSION": "bdc-v1.2.0",
         "DM_BIP_GIT_REF": "abc123",
         "DM_BIP_BUILD_DATE": "2026-04-14T12:00:00Z",
     }
     with patch.dict(os.environ, env):
-        info = get_build_info()
+        with patch("dm_bip.__version__", "bdc-v1.2.0"):
+            info = get_build_info()
     assert info["version"] == "bdc-v1.2.0"
     assert info["git_ref"] == "abc123"
     assert info["build_date"] == "2026-04-14T12:00:00Z"
 
 
-def test_get_build_info_fallback():
-    """Without env vars, version falls back to importlib_metadata."""
-    env_clear = {"DM_BIP_VERSION": "", "DM_BIP_GIT_REF": "", "DM_BIP_BUILD_DATE": ""}
+def test_get_build_info_defaults():
+    """Without env vars, git_ref and build_date default to 'unknown'."""
     with patch.dict(os.environ, {}, clear=False):
-        for k in env_clear:
+        for k in ("DM_BIP_GIT_REF", "DM_BIP_BUILD_DATE"):
             os.environ.pop(k, None)
         info = get_build_info()
-    # dm-bip is installed, so importlib_metadata should provide a real version
     assert info["version"] != "unknown"
     assert info["git_ref"] == "unknown"
     assert info["build_date"] == "unknown"
@@ -98,16 +97,16 @@ def test_generate_provenance_empty_params_omitted(tmp_path):
 
 def test_version_env_fallback():
     """__version__ falls back to DM_BIP_VERSION when package version is 0.0.0."""
-    with patch.dict(os.environ, {"DM_BIP_VERSION": "bdc-v2.0.0"}):
-        # Re-import to test the fallback logic
-        import dm_bip
+    import importlib
 
-        # Save original
-        original = dm_bip.__version__
-        # Simulate container scenario
-        dm_bip.__version__ = "0.0.0"
-        if dm_bip.__version__ == "0.0.0":
-            dm_bip.__version__ = os.environ.get("DM_BIP_VERSION", "0.0.0")
-        assert dm_bip.__version__ == "bdc-v2.0.0"
-        # Restore
-        dm_bip.__version__ = original
+    import dm_bip
+
+    try:
+        with patch.dict(os.environ, {"DM_BIP_VERSION": "bdc-v2.0.0"}):
+            with patch("importlib_metadata.version", side_effect=importlib_metadata.PackageNotFoundError("dm_bip")):
+                importlib.reload(dm_bip)
+                assert dm_bip.__version__ == "bdc-v2.0.0"
+    finally:
+        with patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("DM_BIP_VERSION", None)
+        importlib.reload(dm_bip)
