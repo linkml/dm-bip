@@ -1,10 +1,10 @@
 """Unit tests for the provenance module."""
 
 import os
+from importlib.metadata import PackageNotFoundError
 from pathlib import Path
 from unittest.mock import patch
 
-from importlib.metadata import PackageNotFoundError
 import yaml
 
 from dm_bip.provenance import generate_provenance, get_build_info

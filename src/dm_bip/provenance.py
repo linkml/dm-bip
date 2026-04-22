@@ -5,10 +5,10 @@ import logging
 import os
 import sys
 from datetime import datetime, timezone
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 import yaml
-from importlib.metadata import PackageNotFoundError, version
 
 import dm_bip
 
