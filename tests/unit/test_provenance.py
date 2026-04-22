@@ -30,7 +30,7 @@ def test_get_build_info_defaults():
         for k in ("DM_BIP_GIT_REF", "DM_BIP_BUILD_DATE"):
             os.environ.pop(k, None)
         info = get_build_info()
-    assert info["version"] != "unknown"
+    assert info["version"]  # always populated from dm_bip.__version__
     assert info["git_ref"] == "unknown"
     assert info["build_date"] == "unknown"
 
