@@ -37,7 +37,6 @@ help::
 	@echo "│     all                 Install everything                  │"
 	@echo "│     fresh               Clean and install everything        │"
 	@echo "│     clean               Clean up build artifacts            │"
-	@echo "│     clobber             Clean up generated files            │"
 	@echo "│                                                             │"
 	@echo "│     install             Set up the virtual environment      |"
 	@echo "│     git-hooks-install   Install git pre-commit hooks        |"
@@ -59,7 +58,7 @@ help::
 all: install
 
 .PHONY: fresh
-fresh: clean clobber all
+fresh: clean all
 
 
 $(INSTALL_SENTINEL): uv.lock
@@ -82,8 +81,7 @@ git-hooks-install: .git/hooks/pre-commit
 
 .PHONY: docs
 docs: $(INSTALL_SENTINEL)
-	$(RUN) sphinx-apidoc -o docs src/dm_bip/ --ext-autodoc -f
-	$(RUN) sphinx-build -b html docs docs/_build
+	$(RUN) mkdocs build
 
 
 ### Testing ###
@@ -101,12 +99,8 @@ clean:
 	rm -rf `find . -name __pycache__`
 	rm -rf .ruff_cache
 	rm -rf .pytest_cache
-	rm -rf docs/_build
+	rm -rf site
 	rm -rf $(VENV)
-
-.PHONY: clobber
-clobber:
-
 
 .PHONY: lint
 lint: $(PYTHON)

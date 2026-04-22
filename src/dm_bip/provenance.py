@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
-from importlib_metadata import PackageNotFoundError, version
+from importlib.metadata import PackageNotFoundError, version
 
 import dm_bip
 

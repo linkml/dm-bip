@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-import importlib_metadata
+from importlib.metadata import PackageNotFoundError
 import yaml
 
 from dm_bip.provenance import generate_provenance, get_build_info
@@ -103,7 +103,7 @@ def test_version_env_fallback():
 
     try:
         with patch.dict(os.environ, {"DM_BIP_VERSION": "bdc-v2.0.0"}):
-            with patch("importlib_metadata.version", side_effect=importlib_metadata.PackageNotFoundError("dm_bip")):
+            with patch("importlib.metadata.version", side_effect=PackageNotFoundError("dm_bip")):
                 importlib.reload(dm_bip)
                 assert dm_bip.__version__ == "bdc-v2.0.0"
     finally:

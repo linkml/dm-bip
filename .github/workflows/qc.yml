@@ -15,10 +15,10 @@ jobs:
         python-version: ["3.11", "3.12" ] # Removing 3.13 for now due to dependency issues
 
     steps:
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v4
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v6
 
       - name: Install Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
@@ -27,7 +27,7 @@ jobs:
         run: make install CI=1
 
       - name: Check common spelling errors
-        run: uv run tox -e codespell
+        run: uv run codespell --ignore-words=.codespellignore src/ tests/ -S tests/input/,tests/output/
 
       - name: Check code quality with ruff
         run: make lint
