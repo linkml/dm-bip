@@ -393,6 +393,7 @@ make -j "$MAKE_JOBS" pipeline \
   DM_INPUT_DIR="$DM_INPUT_DIR" \
   DM_TRANS_SPEC_DIR="$DM_TRANS_SPEC_DIR" \
   DM_MAP_TARGET_SCHEMA="$DM_MAP_TARGET_SCHEMA" \
+  DM_REPO_MANIFEST="/app/repo-manifest.yaml" \
   $DM_MAP_STRICT_ARG
 
 #------------------------------------------------------------------------------
