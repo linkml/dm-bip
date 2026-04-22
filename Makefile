@@ -37,7 +37,6 @@ help::
 	@echo "│     all                 Install everything                  │"
 	@echo "│     fresh               Clean and install everything        │"
 	@echo "│     clean               Clean up build artifacts            │"
-	@echo "│     clobber             Clean up generated files            │"
 	@echo "│                                                             │"
 	@echo "│     install             Set up the virtual environment      |"
 	@echo "│     git-hooks-install   Install git pre-commit hooks        |"
@@ -59,7 +58,7 @@ help::
 all: install
 
 .PHONY: fresh
-fresh: clean clobber all
+fresh: clean all
 
 
 $(INSTALL_SENTINEL): uv.lock
@@ -102,10 +101,6 @@ clean:
 	rm -rf .pytest_cache
 	rm -rf site
 	rm -rf $(VENV)
-
-.PHONY: clobber
-clobber:
-
 
 .PHONY: lint
 lint: $(PYTHON)

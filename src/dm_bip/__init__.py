@@ -1,9 +1,9 @@
 """dm-bip package."""
 
-import importlib_metadata
+from importlib.metadata import PackageNotFoundError, version
 
 try:
-    __version__ = importlib_metadata.version(__name__)
-except importlib_metadata.PackageNotFoundError:
+    __version__ = version(__name__)
+except PackageNotFoundError:
     # package is not installed
     __version__ = "0.0.0"  # pragma: no cover
