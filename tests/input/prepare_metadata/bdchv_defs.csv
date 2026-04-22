@@ -1,0 +1,12 @@
+bdchm_entity,bdchm_varlabel,bdchm_varname,bdchm_vartype,bdchm_unit,obacurie,omop
+MeasurementObservation,Albumin in blood,albumin_bld,decimal,g/dL,OBA:2050068,OMOP:2212186
+MeasurementObservation,BMI,bmi,decimal,kg/m2,OBA:2045455,OMOP:3038553
+MeasurementObservation,Body weight,bdy_wgt,decimal,kg,OBA:VT0001259,OMOP:4099154
+MeasurementObservation,Body height,bdy_hgt,decimal,cm,,OMOP:4177340
+MeasurementObservation,Diastolic blood pressure,bp_diastolic,decimal,mm[Hg],,OMOP:4154790
+MeasurementObservation,Systolic blood pressure,bp_systolic,decimal,mm[Hg],,OMOP:4152194
+MeasurementObservation,HDL,hdl,decimal,mg/dL,,OMOP:4055865
+MeasurementObservation,Glucose in blood,glucose_bld,decimal,mg/dL,,OMOP:4144235
+MeasurementObservation,Sleep hours,sleep_hours,decimal,h,,OMOP:40762499
+MeasurementObservation,Alcohol servings,alcohol_servings,integer,{#}/wk,,OMOP:35609491
+Condition,Stroke,stroke,Uriorcurie,,,OMOP:443454

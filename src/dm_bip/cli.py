@@ -78,5 +78,28 @@ def generate_trans_specs(
         raise typer.Exit(code=1)
 
 
+@app.command()
+def prepare_metadata(
+    raw_files: Annotated[list[Path], typer.Option("--raw", "-r", help="Raw metadata Excel file(s)")],
+    bdchv_defs: Annotated[Path, typer.Option("--bdchv-defs", help="Path to bdchv_defs.csv")],
+    contextual_vars: Annotated[Path, typer.Option("--contextual-vars", help="Path to contextual_variables_key.csv")],
+    unit_key: Annotated[Path, typer.Option("--unit-key", help="Path to unit_key.xlsx")],
+    output: Annotated[Path, typer.Option("--output", "-o", help="Output CSV path")],
+    fixes: Annotated[Optional[Path], typer.Option("--fixes", "-f", help="Curator fixes CSV")] = None,
+):
+    """Prepare metadata for trans-spec generation from raw dbGaP exports."""
+    from dm_bip.trans_spec_gen.prepare_metadata import prepare_metadata as _prepare
+
+    result = _prepare(
+        raw_files=raw_files,
+        bdchv_defs_path=bdchv_defs,
+        contextual_vars_path=contextual_vars,
+        unit_key_path=unit_key,
+        output_path=output,
+        fixes_file=fixes,
+    )
+    typer.echo(f"Output written to {result}")
+
+
 if __name__ == "__main__":
     app()
