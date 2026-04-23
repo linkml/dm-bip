@@ -67,10 +67,10 @@ gantt
     Fix Measurement Observation Sets (#174)             :done, i174, 2025-12-10, 2026-03-15
     Create QC metrics (#196)                            :active, i196, 2026-02-01, 2026-05-15
     Create QC Documentation (#195)                      :i195, 2026-03-15, 2026-06-15
-    Post-harmonization QC reporting tool (#303)         :i303, 2026-06-16, 2026-08-15
-    Cross-cohort QC comparison dashboard (#304)         :i304, 2026-06-16, 2026-08-15
-    Source-vs-output data comparison in QC (#305)       :i305, 2026-06-16, 2026-08-15
-    hv-lint cleanup and migration (#312)                :i312, 2026-06-16, 2026-08-15
+    Post-harmonization QC reporting tool (#303)         :i303, 2026-04-15, 2026-08-15
+    Cross-cohort QC comparison dashboard (#304)         :i304, 2026-04-30, 2026-08-25
+    Source-vs-output data comparison in QC (#305)       :i305, 2026-05-10, 2026-08-30
+    hv-lint cleanup and migration (#312)                :i312, 2026-06-01, 2026-08-30
 
     section Pipeline Improvement
     Tracking Issue #188                     :crit, t188, 2025-10-10, 6w
@@ -96,11 +96,11 @@ gantt
     Use MultiStreamWriter for multi-format output (#256) :done, i256, 2026-05-16, 2026-08-10
     Remove temp map_data.py code (#269)                  :done, i269, 2026-05-16, 2026-08-01
     Rewrite dm-bip to use LinkML-Map as a tool (#275)    :done, i275, 2026-02-15, 2026-06-01
-    Store output artifacts in subdirectories (#278)      :done, i278, 2026-03-01, 2026-06-01
-    Exit non-zero on mapping errors (#283)               :done, i283, 2026-03-01, 2026-06-01
-    Add SB API scripts for task execution (#287)         :done, i287, 2026-03-01, 2026-06-01
-    Add DuckDB output format (#273)                      :i273, 2026-06-01, 2026-08-01
-    Adopt linkml-map multi-spec loading (#310)           :i310, 2026-06-01, 2026-08-01
+    Store output artifacts in subdirectories (#278)      :done, i278, 2026-02-15, 2026-06-15
+    Exit non-zero on mapping errors (#283)               :done, i283, 2026-03-15, 2026-06-15
+    Add SB API scripts for task execution (#287)         :done, i287, 2026-03-01, 2026-06-20
+    Add DuckDB output format (#273)                      :i273, 2026-05-15, 2026-08-15
+    Adopt linkml-map multi-spec loading (#310)           :i310, 2026-05-01, 2026-08-20
 
     section Audit Logs
     Tracking Issue #189                     :crit, t189, 2025-10-10, 6w
@@ -143,11 +143,11 @@ gantt
     Add tooling for SchemaAutomator/Schemasheets (#80)  :i80, 2026-03-15, 2026-07-10
     make a data dictionary template (#103)              :i103, 2026-03-01, 2026-06-01
     Add variable digest files to pipeline (#204)        :active, i204, 2025-12-01, 2026-03-01
-    Trans-spec authoring pipeline overview (#306)       :i306, 2026-04-16, 2026-08-15
-    Enrich schemas with data dictionary metadata (#307) :i307, 2026-04-16, 2026-08-15
-    Variable alignment in trans-spec authoring (#308)   :i308, 2026-04-16, 2026-08-15
-    Variable library — mapping catalog (#309)           :i309, 2026-04-16, 2026-08-15
-    Port Stata data preparation to Python (#315)        :i315, 2026-06-16, 2026-08-15
+    Trans-spec authoring pipeline overview (#306)       :i306, 2026-04-16, 2026-08-20
+    Enrich schemas with data dictionary metadata (#307) :i307, 2026-04-01, 2026-08-15
+    Variable alignment in trans-spec authoring (#308)   :i308, 2026-04-20, 2026-08-25
+    Variable library — mapping catalog (#309)           :i309, 2026-05-01, 2026-08-30
+    Port Stata data preparation to Python (#315)        :i315, 2026-05-15, 2026-08-30
 
     click t186 href "https://github.com/linkml/dm-bip/issues/186"
     click t185 href "https://github.com/linkml/dm-bip/issues/185"
