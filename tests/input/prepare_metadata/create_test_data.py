@@ -1,4 +1,5 @@
-"""Create synthetic test data files for prepare_metadata tests.
+"""
+Create synthetic test data files for prepare_metadata tests.
 
 Run once to generate unit_key.xlsx and raw_metadata.xlsx.
 """
@@ -11,6 +12,7 @@ HERE = Path(__file__).parent
 
 
 def create_unit_key():
+    """Create unit_key.xlsx with conversion, equivalency, and UCUM sheets."""
     unit_key = pd.DataFrame({
         "source_value": ["percent", "lbs", "inches", "mmhg", "mg/dl", "gm/dl"],
         "standard_value": ["%", "[lb_av]", "[in_us]", "mm[Hg]", "mg/dL", "g/dL"],
@@ -41,6 +43,7 @@ def create_unit_key():
 
 
 def create_raw_metadata():
+    """Create raw_metadata.xlsx with synthetic dbGaP-style rows."""
     rows = [
         {"cohort": "aric", "bdchm_label": "albumin in blood", "var_id": "phv00202900.v1",
          "study_id": "phs000280.v1", "data_table_id": "pht004027.v1",

@@ -30,7 +30,8 @@ def _clean_whitespace(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_bdchv_defs(path: Path) -> pd.DataFrame:
-    """Load BDC harmonized variable definitions.
+    """
+    Load BDC harmonized variable definitions.
 
     Creates onto_id from obacurie/omop and merge_bdchm_label for joining.
     """
@@ -96,96 +97,9 @@ def load_unit_equivalencies(path: Path) -> pd.DataFrame:
 
 # --- Step 2: Import raw data ---
 
-# Column rename mappings for the two source formats
-_FHS_COLUMN_MAP = {
-    "data_tablestudy_id": "study_id",
-    "data_tablevariableid": "var_id",
-    "data_tabledataset_id": "data_table_id",
-    "data_tablevariable_description": "var_desc",
-    "data_tablevariableunits": "var_units",
-    "data_tablevariablecalculated_type": "var_type",
-    "data_tablevariablecomment": "var_comment",
-    "data_tablename": "data_table_name",
-    "data_tabledescription": "data_table_descr",
-    "data_tablestudy_name": "cohort_long",
-    "note": "curator_note",
-    "source_variable_name": "var_name",
-}
-
-_NONFHS_COLUMN_MAP = {
-    "var_reportvariable_id": "var_id",
-    "var_reportvariable_description": "var_desc",
-    "var_reportvariable_units": "var_units",
-    "var_reportvariable_calculated_type": "var_type",
-    "var_reportvariable_comment": "var_comment",
-    "var_reportname": "data_table_name",
-    "var_reportdescription": "data_table_descr",
-    "var_reportdataset_id": "data_table_id",
-    "var_reportstudy_id": "study_id",
-    "var_reportstudy_name": "cohort_long",
-    "source_variable_name": "var_name",
-    "topmed_harmonized_variable": "topmed_varname",
-    "notes": "curator_note",
-    "bdchm_label_(corrected)": "bdchm_label_corrected",
-}
-
-
-def _normalize_column_names(df: pd.DataFrame) -> pd.DataFrame:
-    """Lowercase column names and flatten dotted/nested names (like Stata varlab processing)."""
-    df.columns = [c.lower().replace(" ", "_") for c in df.columns]
-    # Flatten dotted names: take the last meaningful segment
-    new_cols = {}
-    for col in df.columns:
-        parts = col.split(".")
-        if len(parts) > 1:
-            # Use the deepest non-stat segment or join the last two
-            flat = "_".join(p for p in parts if p not in ("data_table", "var_report", "variable"))
-            if flat:
-                new_cols[col] = flat
-    if new_cols:
-        df = df.rename(columns=new_cols)
-    return df
-
-
-def load_raw_fhs(path: Path, sheet_name: str = "right_join_full") -> pd.DataFrame:
-    """Load FHS-format raw metadata Excel file."""
-    df = pd.read_excel(path, sheet_name=sheet_name, dtype=str)
-    df.columns = [c.lower().replace(" ", "_") for c in df.columns]
-    df = _clean_whitespace(df)
-    df = df.dropna(axis=1, how="all")
-    df["cohort"] = "fhs"
-
-    # Backfill from alternative column names
-    for target, source in [
-        ("data_tablestudy_id", "dbgapstudyaccession"),
-        ("data_tablevariableid", "variableaccession"),
-        ("data_tabledataset_id", "datasetaccession"),
-        ("data_tablevariable_description", "sourcevariabledescription"),
-    ]:
-        if target in df.columns and source in df.columns:
-            df[target] = df[target].fillna(df[source])
-    return df
-
-
-def load_raw_nonfhs(path: Path, sheet_name: str = "Export_BDCHM_noFHS-noCOPDGene_p") -> pd.DataFrame:
-    """Load non-FHS-format raw metadata Excel file."""
-    df = pd.read_excel(path, sheet_name=sheet_name, dtype=str)
-    df.columns = [c.lower().replace(" ", "_") for c in df.columns]
-    df = _clean_whitespace(df)
-    df = df.dropna(axis=1, how="all")
-
-    # Apply corrected label
-    if "bdchmlabelcorrected" in df.columns and "bdchmlabel" in df.columns:
-        df["bdchmlabel"] = df["bdchmlabelcorrected"]
-    return df
-
 
 def load_raw_data(raw_files: list[Path]) -> pd.DataFrame:
-    """Load and combine raw metadata from multiple files.
-
-    Accepts a list of file paths. Each file is loaded and combined.
-    The format (FHS vs non-FHS) is detected by filename convention or column presence.
-    """
+    """Load and combine raw metadata from multiple Excel files."""
     frames = []
     for path in raw_files:
         df = pd.read_excel(path, dtype=str)
@@ -203,7 +117,8 @@ def load_raw_data(raw_files: list[Path]) -> pd.DataFrame:
 
 
 def standardize_raw_data(df: pd.DataFrame) -> pd.DataFrame:
-    """Standardize the combined raw data (step 2, section 5 of Stata).
+    """
+    Standardize the combined raw data (step 2, section 5 of Stata).
 
     Splits accession IDs, lowercases values, normalizes units.
     """
@@ -249,7 +164,8 @@ def standardize_raw_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def clean_data(df: pd.DataFrame, fixes_file: Path | None = None) -> pd.DataFrame:
-    """Clean data: exclude bad rows, fix labels, fix units, merge curator fixes.
+    """
+    Clean data: exclude bad rows, fix labels, fix units, merge curator fixes.
 
     Faithful translation of DMCYAML_03_CleanData.do.
     """
@@ -348,7 +264,8 @@ def merge_data_docs(
     contextual_vars: pd.DataFrame,
     fixes_file: Path | None = None,
 ) -> pd.DataFrame:
-    """Merge data with documentation files and compute quality flags.
+    """
+    Merge data with documentation files and compute quality flags.
 
     Faithful translation of DMCYAML_04_MergeDataDocs.do.
     """
@@ -394,14 +311,32 @@ def merge_data_docs(
     else:
         has_pht_merge = pd.Series(False, index=df.index)
 
-    # Apply curator overrides for specific fields
+    # Apply curator overrides for specific fields (Stata merges fixed_bdchm_mappings in step 4)
     if fixes_file and fixes_file.exists():
-        for col in ["participantidphv", "associatedvisit", "associatedvisit_expr", "ageinyearsphv", "conversion_rule"]:
-            fixed_col = f"{col}_fixed"
-            if fixed_col in df.columns:
-                mask = df[fixed_col].notna() & (df[fixed_col] != "")
-                df.loc[mask, col] = df.loc[mask, fixed_col]
-                df = df.drop(columns=[fixed_col])
+        fixes = pd.read_csv(fixes_file, dtype=str)
+        if "phv" in fixes.columns and "bdchm_label" in fixes.columns:
+            override_cols = ["participantidphv", "associatedvisit", "associatedvisit_expr",
+                             "ageinyearsphv", "conversion_rule"]
+            fixed_cols = {col: f"{col}_fixed" for col in override_cols if col in fixes.columns}
+            if fixed_cols:
+                fixes["pair_id"] = fixes["phv"] + fixes["bdchm_label"]
+                df["pair_id"] = df["phv"].fillna("") + df["bdchm_label"].fillna("")
+                keep_cols = ["pair_id"] + list(fixed_cols.values())
+                keep_cols = [c for c in keep_cols if c in fixes.columns or c == "pair_id"]
+                # Rename source columns to _fixed for the merge
+                rename_map = {col: f"{col}_fixed" for col in override_cols if col in fixes.columns}
+                fixes_subset = fixes[["pair_id"] + [c for c in override_cols if c in fixes.columns]].copy()
+                fixes_subset = fixes_subset.rename(columns=rename_map).drop_duplicates()
+                df = df.merge(fixes_subset, on="pair_id", how="left")
+                for col in override_cols:
+                    fixed_col = f"{col}_fixed"
+                    if fixed_col in df.columns:
+                        mask = df[fixed_col].notna() & (df[fixed_col] != "")
+                        if col not in df.columns:
+                            df[col] = ""
+                        df.loc[mask, col] = df.loc[mask, fixed_col]
+                        df = df.drop(columns=[fixed_col])
+                df = df.drop(columns=["pair_id"])
 
     # Drop rows where table no longer exists in dbgap
     if "drop_table" in df.columns:
@@ -553,7 +488,8 @@ def prepare_metadata(
     output_path: Path,
     fixes_file: Path | None = None,
 ) -> Path:
-    """Run the full metadata preparation pipeline.
+    """
+    Run the full metadata preparation pipeline.
 
     Args:
         raw_files: Paths to raw metadata Excel files.

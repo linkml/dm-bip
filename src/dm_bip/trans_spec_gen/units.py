@@ -309,8 +309,9 @@ UNIT_NORMALIZATION: dict[str, str] = {
 }
 
 
-def normalize_unit(value: str) -> str:
-    """Normalize a unit string to its canonical UCUM representation.
+def normalize_unit(value: str | None) -> str:
+    """
+    Normalize a unit string to its canonical UCUM representation.
 
     Mirrors the Stata units.do logic: lowercase, strip spaces, look up in table.
     Values mapping to "none" are returned as empty string.

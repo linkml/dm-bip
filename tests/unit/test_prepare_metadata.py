@@ -103,7 +103,8 @@ class TestLoadContextualVars:
     def test_loads_and_renames(self):
         """Renames notes column and drops datatablename."""
         df = load_contextual_vars(TEST_DATA / "contextual_variables_key.csv")
-        assert "contextvars_notes" in df.columns or "notes" not in df.columns
+        assert "contextvars_notes" in df.columns
+        assert "notes" not in df.columns
         assert "datatablename" not in df.columns
 
     def test_drops_empty_pht(self):
