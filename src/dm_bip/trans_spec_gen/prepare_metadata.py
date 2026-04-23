@@ -315,8 +315,13 @@ def merge_data_docs(
     if fixes_file and fixes_file.exists():
         fixes = pd.read_csv(fixes_file, dtype=str)
         if "phv" in fixes.columns and "bdchm_label" in fixes.columns:
-            override_cols = ["participantidphv", "associatedvisit", "associatedvisit_expr",
-                             "ageinyearsphv", "conversion_rule"]
+            override_cols = [
+                "participantidphv",
+                "associatedvisit",
+                "associatedvisit_expr",
+                "ageinyearsphv",
+                "conversion_rule",
+            ]
             fixed_cols = {col: f"{col}_fixed" for col in override_cols if col in fixes.columns}
             if fixed_cols:
                 fixes["pair_id"] = fixes["phv"] + fixes["bdchm_label"]
