@@ -100,15 +100,114 @@ def load_unit_equivalencies(path: Path) -> pd.DataFrame:
 
 # --- Step 2: Import raw data ---
 
+# Column rename mappings from real Excel formats to the standardized names
+# the pipeline expects. Derived from the Stata ImportData step.
+_COLUMN_RENAMES = {
+    # FHS format (data_table.* prefix)
+    "data_table.study_id": "study_id",
+    "data_table.dataset_id": "data_table_id",
+    "data_table.variable.id": "var_id",
+    "data_table.variable.description": "var_desc",
+    "data_table.variable.units": "var_units",
+    "data_table.variable.calculated_type": "var_type",
+    "data_table.variable.comment": "var_comment",
+    "data_table.name": "data_table_name",
+    "data_table.description": "data_table_descr",
+    "data_table.study_name": "cohort_long",
+    # Non-FHS format (var_report.* prefix)
+    "var_report.study_id": "study_id",
+    "var_report.dataset_id": "data_table_id",
+    "var_report.variable.id": "var_id",
+    "var_report.variable.description": "var_desc",
+    "var_report.variable.units": "var_units",
+    "var_report.variable.calculated_type": "var_type",
+    "var_report.variable.comment": "var_comment",
+    "var_report.name": "data_table_name",
+    "var_report.description": "data_table_descr",
+    "var_report.study_name": "cohort_long",
+    # Common columns across formats
+    "bdchm_label": "bdchm_label",
+    "bdchm_variable": "bdchm_variable",
+    "source_variable_name": "var_name",
+    "source_variable_description": "var_desc",
+    "note": "curator_note",
+    "notes": "curator_note",
+    "transform_comment": "transform_comment",
+    "topmed_harmonized_variable": "topmed_varname",
+    "bdchm_label_(corrected)": "bdchm_label_corrected",
+    # FHS-specific alternate accession columns
+    "dbgap_study_accession": "dbgap_study_accession",
+    "dataset_accession": "dataset_accession",
+    "variable_accession": "variable_accession",
+    # Non-FHS bracketed columns
+    "first[data_table.study_id]": "first_study_id",
+    "first[data_table.dataset_id]": "first_dataset_id",
+    "first[data_table.variable.id]": "first_variable_id",
+    "vlookupresults": "vlookup_results",
+    # Stats/enum columns get passed through with prefix normalization
+}
+
+
+def _normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalize column names from real Excel formats to standardized names."""
+    # Lowercase all column names first
+    df.columns = [c.lower().strip() for c in df.columns]
+
+    # Apply known renames
+    rename_map = {}
+    for col in df.columns:
+        if col in _COLUMN_RENAMES:
+            rename_map[col] = _COLUMN_RENAMES[col]
+        else:
+            # Normalize remaining columns: replace spaces/dots with underscores
+            rename_map[col] = col.replace(".", "_").replace(" ", "_")
+    df = df.rename(columns=rename_map)
+
+    # Detect FHS format: has variable_accession but no cohort column
+    if "variable_accession" in df.columns and "cohort" not in df.columns:
+        df["cohort"] = "fhs"
+
+    # Detect cohort column (non-FHS has it as "Cohort")
+    # Already lowered above, so it's "cohort" now
+
+    # FHS backfill: use alternate accession columns when primary is empty
+    for target, source in [
+        ("study_id", "dbgap_study_accession"),
+        ("var_id", "variable_accession"),
+        ("data_table_id", "dataset_accession"),
+    ]:
+        if target in df.columns and source in df.columns:
+            df[target] = df[target].fillna(df[source])
+        elif source in df.columns and target not in df.columns:
+            df[target] = df[source]
+
+    # Non-FHS: apply corrected label if present
+    if "bdchm_label_corrected" in df.columns and "bdchm_label" in df.columns:
+        mask = df["bdchm_label_corrected"].notna() & (df["bdchm_label_corrected"] != "")
+        df.loc[mask, "bdchm_label"] = df.loc[mask, "bdchm_label_corrected"]
+
+    return df
+
+
+# Known sheet names from the Stata pipeline source formats
+_KNOWN_SHEETS = ["right_join_full", "Export_BDCHM_noFHS-noCOPDGene_p"]
+
 
 def load_raw_data(raw_files: list[Path]) -> pd.DataFrame:
     """Load and combine raw metadata from multiple Excel files."""
     frames = []
     for path in raw_files:
-        df = pd.read_excel(path, dtype=str)
-        df.columns = [c.lower().replace(" ", "_") for c in df.columns]
+        # Try known sheet names first, fall back to first sheet
+        sheet = 0
+        xl = pd.ExcelFile(path)
+        for known in _KNOWN_SHEETS:
+            if known in xl.sheet_names:
+                sheet = known
+                break
+        df = pd.read_excel(xl, sheet_name=sheet, dtype=str)
         df = _clean_whitespace(df)
         df = df.dropna(axis=1, how="all")
+        df = _normalize_columns(df)
         frames.append(df)
 
     if not frames:
