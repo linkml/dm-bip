@@ -6,6 +6,7 @@ Takes raw dbGaP metadata exports and reference files, produces the curated CSV
 that generate_trans_specs consumes.
 """
 
+import csv
 import logging
 import re
 from pathlib import Path
@@ -70,7 +71,9 @@ def load_contextual_vars(path: Path) -> pd.DataFrame:
 def load_unit_conversions(path: Path) -> pd.DataFrame:
     """Load unit conversion rules from unit_key.xlsx conversions tab."""
     conversions = pd.read_excel(path, sheet_name="conversions", dtype=str)
-    conversions = conversions[conversions["conversion_condition"].isna() | (conversions["conversion_condition"] == "")]
+    conversions = conversions[
+        conversions["conversion_condition"].isna() | (conversions["conversion_condition"] == "")
+    ].copy()
     conversions["unit_merge_key"] = conversions["this_unit"] + "_" + conversions["that_unit"]
 
     ucum = pd.read_excel(path, sheet_name="ucum", dtype=str)
@@ -88,7 +91,7 @@ def load_unit_conversions(path: Path) -> pd.DataFrame:
 def load_unit_equivalencies(path: Path) -> pd.DataFrame:
     """Load unit equivalency rules from unit_key.xlsx equivalencies tab."""
     equiv = pd.read_excel(path, sheet_name="equivalencies", dtype=str)
-    equiv = equiv[equiv["equivalency_always"] == "1"]
+    equiv = equiv[equiv["equivalency_always"] == "1"].copy()
     equiv["unit_merge_key"] = equiv["this_unit"] + "_" + equiv["that_unit"]
     equiv = equiv[["unit_merge_key"]].drop_duplicates()
     equiv["equivalent_units"] = 1
@@ -231,9 +234,10 @@ def clean_data(df: pd.DataFrame, fixes_file: Path | None = None) -> pd.DataFrame
     if fixes_file and fixes_file.exists():
         fixes = pd.read_csv(fixes_file, dtype=str)
         if "phv" in fixes.columns and "bdchm_label" in fixes.columns:
-            fixes["pair_id"] = fixes["phv"] + fixes["bdchm_label"]
-            df["pair_id"] = df["phv"] + df["bdchm_label"]
-            df = df.merge(fixes[["pair_id", "var_units_fixed", "bad_map"]].drop_duplicates(), on="pair_id", how="left")
+            fixes["pair_id"] = fixes["phv"] + "|" + fixes["bdchm_label"]
+            df["pair_id"] = df["phv"] + "|" + df["bdchm_label"]
+            fix_cols = ["pair_id"] + [c for c in ["var_units_fixed", "bad_map"] if c in fixes.columns]
+            df = df.merge(fixes[fix_cols].drop_duplicates(), on="pair_id", how="left")
             if "var_units_fixed" in df.columns:
                 mask = df["var_units_fixed"].notna() & (df["var_units_fixed"] != "")
                 df.loc[mask, "var_units"] = df.loc[mask, "var_units_fixed"]
@@ -297,13 +301,7 @@ def merge_data_docs(
     df = df.merge(equivalencies, on="unit_merge_key", how="left", suffixes=("", "_equiv"))
 
     # Merge contextual variables by pht (Stata merges on pht only, not cohort)
-    # Lowercase cohort in contextual_vars to match the data
-    if "cohort" in contextual_vars.columns:
-        ctx = contextual_vars.copy()
-        ctx["cohort"] = ctx["cohort"].str.lower()
-        df = df.merge(ctx, on="pht", how="left", suffixes=("", "_ctx"))
-    else:
-        df = df.merge(contextual_vars, on="pht", how="left", suffixes=("", "_ctx"))
+    df = df.merge(contextual_vars, on="pht", how="left", suffixes=("", "_ctx"))
 
     # Track which rows matched on pht merge (participantidphv comes from contextual_vars)
     if "participantidphv" in df.columns:
@@ -321,19 +319,18 @@ def merge_data_docs(
                 "associatedvisit_expr",
                 "ageinyearsphv",
                 "conversion_rule",
+                "unit_expr_custom",
+                "unit_casestmt_custom",
             ]
-            fixed_cols = {col: f"{col}_fixed" for col in override_cols if col in fixes.columns}
-            if fixed_cols:
-                fixes["pair_id"] = fixes["phv"] + fixes["bdchm_label"]
-                df["pair_id"] = df["phv"].fillna("") + df["bdchm_label"].fillna("")
-                keep_cols = ["pair_id"] + list(fixed_cols.values())
-                keep_cols = [c for c in keep_cols if c in fixes.columns or c == "pair_id"]
-                # Rename source columns to _fixed for the merge
-                rename_map = {col: f"{col}_fixed" for col in override_cols if col in fixes.columns}
-                fixes_subset = fixes[["pair_id"] + [c for c in override_cols if c in fixes.columns]].copy()
+            present_cols = [col for col in override_cols if col in fixes.columns]
+            if present_cols:
+                fixes["pair_id"] = fixes["phv"] + "|" + fixes["bdchm_label"]
+                df["pair_id"] = df["phv"].fillna("") + "|" + df["bdchm_label"].fillna("")
+                rename_map = {col: f"{col}_fixed" for col in present_cols}
+                fixes_subset = fixes[["pair_id"] + present_cols].copy()
                 fixes_subset = fixes_subset.rename(columns=rename_map).drop_duplicates()
                 df = df.merge(fixes_subset, on="pair_id", how="left")
-                for col in override_cols:
+                for col in present_cols:
                     fixed_col = f"{col}_fixed"
                     if fixed_col in df.columns:
                         mask = df[fixed_col].notna() & (df[fixed_col] != "")
@@ -492,7 +489,7 @@ def prepare_metadata(
     unit_key_path: Path,
     output_path: Path,
     fixes_file: Path | None = None,
-) -> Path:
+) -> Path | None:
     """
     Run the full metadata preparation pipeline.
 
@@ -505,7 +502,7 @@ def prepare_metadata(
         fixes_file: Optional path to curator fixes CSV.
 
     Returns:
-        Path to the written output CSV.
+        Path to the written output CSV, or None if no data was loaded.
 
     """
     logger.info("Loading documentation files...")
@@ -518,7 +515,7 @@ def prepare_metadata(
     df = load_raw_data(raw_files)
     if df.empty:
         logger.warning("No data loaded from raw files")
-        return output_path
+        return None
 
     logger.info("Standardizing raw data...")
     df = standardize_raw_data(df)
@@ -530,6 +527,6 @@ def prepare_metadata(
     df = merge_data_docs(df, bdchv_defs, conversions, equivalencies, contextual_vars, fixes_file)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(output_path, index=False, quoting=1)
+    df.to_csv(output_path, index=False, quoting=csv.QUOTE_ALL)
     logger.info("Wrote %d rows to %s", len(df), output_path)
     return output_path

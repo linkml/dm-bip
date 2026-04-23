@@ -57,7 +57,7 @@ class TestUnitNormalization:
         assert normalize_unit("codes") == ""
 
     def test_unknown_passthrough(self):
-        """Unknown values pass through unchanged."""
+        """Values not in the lookup table pass through after lowering and space removal."""
         assert normalize_unit("mg/dL") == "mg/dL"
 
     def test_empty_input(self):
@@ -208,22 +208,22 @@ class TestCleanData:
         """Infers 'h' unit for sleep hours from description."""
         result = clean_data(standardized_df)
         sleep = result[result["bdchm_label"] == "sleep hours"]
-        if not sleep.empty:
-            assert sleep.iloc[0]["var_units"] == "h"
+        assert not sleep.empty, "Expected sleep hours row in output"
+        assert sleep.iloc[0]["var_units"] == "h"
 
     def test_infers_bmi_unit(self, standardized_df):
         """Infers 'kg/m2' unit from description containing kg/m2."""
         result = clean_data(standardized_df)
         bmi = result[result["bdchm_label"] == "bmi"]
-        if not bmi.empty:
-            assert bmi.iloc[0]["var_units"] == "kg/m2"
+        assert not bmi.empty, "Expected bmi row in output"
+        assert bmi.iloc[0]["var_units"] == "kg/m2"
 
     def test_infers_alcohol_weekly_unit(self, standardized_df):
         """Infers '{#}/wk' unit for alcohol servings from 'per week' description."""
         result = clean_data(standardized_df)
         alcohol = result[result["bdchm_label"] == "alcohol servings"]
-        if not alcohol.empty:
-            assert alcohol.iloc[0]["var_units"] == "{#}/wk"
+        assert not alcohol.empty, "Expected alcohol servings row in output"
+        assert alcohol.iloc[0]["var_units"] == "{#}/wk"
 
 
 # --- Full pipeline test ---
@@ -301,8 +301,8 @@ class TestFullPipeline:
         df = pd.read_csv(output)
         # albumin: var_units=g/dL, bdchm_unit=g/dL -> unit_match=1
         albumin = df[df["bdchm_varname"] == "albumin_bld"]
-        if not albumin.empty:
-            assert albumin.iloc[0]["unit_match"] == 1
+        assert not albumin.empty, "Expected albumin_bld row in output"
+        assert albumin.iloc[0]["unit_match"] == 1
 
     def test_unit_convert_flag(self, tmp_path):
         """Sets unit_convert=1 when both units are valid UCUM with a conversion."""
@@ -317,8 +317,8 @@ class TestFullPipeline:
         df = pd.read_csv(output)
         # height: var_units=inches->[in_us], bdchm_unit=cm, both in UCUM -> unit_convert=1
         height = df[df["bdchm_varname"] == "bdy_hgt"]
-        if not height.empty:
-            assert height.iloc[0]["unit_convert"] == 1
+        assert not height.empty, "Expected bdy_hgt row in output"
+        assert height.iloc[0]["unit_convert"] == 1
 
     def test_row_good_flag(self, tmp_path):
         """Sets row_good=1 when has_pht, has_onto, and unit handling are all present."""
@@ -331,11 +331,30 @@ class TestFullPipeline:
             output_path=output,
         )
         df = pd.read_csv(output)
-        # At least some rows should be good
         assert df["row_good"].sum() > 0
-        # Rows with unit handling and pht should be good
-        albumin = df[df["bdchm_varname"] == "albumin_bld"]
-        if not albumin.empty:
-            aric_albumin = albumin[albumin["cohort"] == "aric"]
-            if not aric_albumin.empty:
-                assert aric_albumin.iloc[0]["row_good"] == 1
+        aric_albumin = df[(df["bdchm_varname"] == "albumin_bld") & (df["cohort"] == "aric")]
+        assert not aric_albumin.empty, "Expected aric albumin_bld row in output"
+        assert aric_albumin.iloc[0]["row_good"] == 1
+
+    def test_curator_fixes_applied(self, tmp_path):
+        """Curator fixes CSV overrides unit and marks bad maps."""
+        fixes_csv = tmp_path / "fixes.csv"
+        fixes_csv.write_text(
+            "phv,bdchm_label,var_units_fixed,bad_map\nphv00202900,albumin in blood,mg/dL,\nphv00202901,bmi,,1\n"
+        )
+        output = tmp_path / "shortdata.csv"
+        prepare_metadata(
+            raw_files=[TEST_DATA / "raw_metadata.xlsx"],
+            bdchv_defs_path=TEST_DATA / "bdchv_defs.csv",
+            contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
+            unit_key_path=TEST_DATA / "unit_key.xlsx",
+            output_path=output,
+            fixes_file=fixes_csv,
+        )
+        df = pd.read_csv(output)
+        # albumin should have overridden var_units
+        albumin = df[df["phv"] == "phv00202900"]
+        assert not albumin.empty
+        assert albumin.iloc[0]["var_units"] == "mg/dL"
+        # bmi should be excluded (bad_map=1 clears bdchm_label, then filtered out)
+        assert "phv00202901" not in df["phv"].values

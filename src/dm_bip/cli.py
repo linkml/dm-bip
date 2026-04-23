@@ -98,6 +98,9 @@ def prepare_metadata(
         output_path=output,
         fixes_file=fixes,
     )
+    if result is None:
+        typer.echo("No data loaded from raw files")
+        raise typer.Exit(code=1)
     typer.echo(f"Output written to {result}")
 
 
