@@ -50,7 +50,7 @@ gantt
     Fix linting errors in notebooks (#219)              :i219, 2026-04-01, 2026-06-15
     Silent Exception in updated_flatten_to_tsv (#226)   :done, i226, 2026-03-01, 2026-06-15
     Mixed CLI frameworks (#227)                         :done, i227, 2025-12-20, 2026-03-01
-    Tag container images with version (#300)            :done, i300, 2026-04-01, 2026-06-15
+    Tag container images with version (#300)            :done, i300, 2026-02-15, 2026-06-15
 
     section Pilot Data Delivery 
     Tracking Issue #185                     :crit, t185,2025-10-10, 6w
@@ -131,7 +131,7 @@ gantt
     Implement or remove CLI (#216)                     :done, i216, 2025-11-01, 2026-01-19
     Remove Hardcoded entity list (#220)                :done, i220, 2026-01-19, 2026-04-10
     Retrieve Data from S3 (#267)                       :i267, 2026-04-11, 2026-08-01
-    Move bdc-workflow.sh entrypoint to Python (#297)   :i297, 2026-06-01, 2026-08-01
+    Move bdc-workflow.sh entrypoint to Python (#297)   :i297, 2026-04-15, 2026-08-15
 
     section Trans-Spec Authoring
     Tracking Issue #197                     :crit, t197, 2025-10-10, 6w
@@ -146,8 +146,8 @@ gantt
     Trans-spec authoring pipeline overview (#306)       :i306, 2026-04-16, 2026-08-20
     Enrich schemas with data dictionary metadata (#307) :i307, 2026-04-01, 2026-08-15
     Variable alignment in trans-spec authoring (#308)   :i308, 2026-04-20, 2026-08-25
-    Variable library — mapping catalog (#309)           :i309, 2026-05-01, 2026-08-30
-    Port Stata data preparation to Python (#315)        :i315, 2026-05-15, 2026-08-30
+    Variable library — mapping catalog (#309)           :i309, 2026-04-01, 2026-08-01
+    Port Stata data preparation to Python (#315)        :i315, 2026-04-20, 2026-08-15
 
     click t186 href "https://github.com/linkml/dm-bip/issues/186"
     click t185 href "https://github.com/linkml/dm-bip/issues/185"
