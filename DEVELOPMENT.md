@@ -157,7 +157,6 @@ gantt
     click t191 href "https://github.com/linkml/dm-bip/issues/191"
     click t192 href "https://github.com/linkml/dm-bip/issues/192"
     click t197 href "https://github.com/linkml/dm-bip/issues/197"
-    click i41 href "https://github.com/linkml/dm-bip/issues/41"
     click i50 href "https://github.com/linkml/dm-bip/issues/50"
     click i80 href "https://github.com/linkml/dm-bip/issues/80"
     click i90 href "https://github.com/linkml/dm-bip/issues/90"
@@ -253,7 +252,6 @@ Procedures for controlling releases of tool-chains, repositories, and data sets.
 - [x] First dm-bip release (#193) - Corey
 - [x] Automate Release creation process (#194) - Corey
 - [x] Improve Documentation (#50) - Corey
-- [x] Add Markdown plugin for Sphinx (#41) - Patrick
 - [x] Move Harmonica (OntoAnntate) to external tool (#215)
 - [x] Implement Code Coverage Monitoring (#217)
 - [x] Improve Test Coverage (#218)
