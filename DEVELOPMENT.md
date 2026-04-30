@@ -89,11 +89,11 @@ gantt
     Tweak prefix and postfix in the Makefile (#230)     :done, i230, 2026-01-01, 2026-04-10
     Add CONFIG include support (#237)                   :done, i237, 2025-11-01, 2026-02-02
     LinkML-Map GUID generation (#235)                   :done, i235, 2026-02-03, 2026-05-01
-    Refactor pipeline Makefile sentinels/variables (#247) :done, i247, 2026-01-15, 2026-04-15
+    Refactor pipeline Makefile sentinels/variables (#247) :done, i247, 2025-12-15, 2026-04-30
     Parallel consent group processing (#251)             :i251, 2026-05-02, 2026-08-01
     Add consent group filtering to prepare_input (#260)  :done, i260, 2026-02-01, 2026-05-15
     Migrate stream writers to linkml-map (#253)          :done, i253, 2026-05-16, 2026-08-10
-    Use MultiStreamWriter for multi-format output (#256) :done, i256, 2026-05-16, 2026-08-10
+    Use MultiStreamWriter for multi-format output (#256) :done, i256, 2026-04-01, 2026-08-10
     Remove temp map_data.py code (#269)                  :done, i269, 2026-05-16, 2026-08-01
     Rewrite dm-bip to use LinkML-Map as a tool (#275)    :done, i275, 2026-02-15, 2026-06-01
     Store output artifacts in subdirectories (#278)      :done, i278, 2026-02-15, 2026-06-15
