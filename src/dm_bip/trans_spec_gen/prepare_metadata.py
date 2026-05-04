@@ -68,15 +68,19 @@ def load_contextual_vars(path: Path) -> pd.DataFrame:
     return df
 
 
-def load_unit_conversions(path: Path) -> pd.DataFrame:
+def load_unit_conversions(
+    path: Path,
+    conversions_sheet: str = "conversions",
+    ucum_sheet: str = "ucum",
+) -> pd.DataFrame:
     """Load unit conversion rules from unit_key.xlsx conversions tab."""
-    conversions = pd.read_excel(path, sheet_name="conversions", dtype=str)
+    conversions = pd.read_excel(path, sheet_name=conversions_sheet, dtype=str)
     conversions = conversions[
         conversions["conversion_condition"].isna() | (conversions["conversion_condition"] == "")
     ].copy()
     conversions["unit_merge_key"] = conversions["this_unit"] + "_" + conversions["that_unit"]
 
-    ucum = pd.read_excel(path, sheet_name="ucum", dtype=str)
+    ucum = pd.read_excel(path, sheet_name=ucum_sheet, dtype=str)
     ucum_set = set(ucum["ucum_code"].dropna())
 
     conversions["source_unit_valid"] = conversions["this_unit"].isin(ucum_set).astype(int)
@@ -88,9 +92,12 @@ def load_unit_conversions(path: Path) -> pd.DataFrame:
     return conversions
 
 
-def load_unit_equivalencies(path: Path) -> pd.DataFrame:
+def load_unit_equivalencies(
+    path: Path,
+    equivalencies_sheet: str = "equivalencies",
+) -> pd.DataFrame:
     """Load unit equivalency rules from unit_key.xlsx equivalencies tab."""
-    equiv = pd.read_excel(path, sheet_name="equivalencies", dtype=str)
+    equiv = pd.read_excel(path, sheet_name=equivalencies_sheet, dtype=str)
     equiv = equiv[equiv["equivalency_always"] == "1"].copy()
     equiv["unit_merge_key"] = equiv["this_unit"] + "_" + equiv["that_unit"]
     equiv = equiv[["unit_merge_key"]].drop_duplicates()
@@ -189,18 +196,29 @@ def _normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# Known sheet names from the Stata pipeline source formats
-_KNOWN_SHEETS = ["right_join_full", "Export_BDCHM_noFHS-noCOPDGene_p"]
+# Default sheet names from the Stata pipeline source formats. Callers can supply
+# alternates via load_raw_data(known_sheets=...).
+DEFAULT_KNOWN_SHEETS = ["right_join_full", "Export_BDCHM_noFHS-noCOPDGene_p"]
 
 
-def load_raw_data(raw_files: list[Path]) -> pd.DataFrame:
-    """Load and combine raw metadata from multiple Excel files."""
+def load_raw_data(raw_files: list[Path], known_sheets: list[str] | None = None) -> pd.DataFrame:
+    """
+    Load and combine raw metadata from multiple Excel files.
+
+    Args:
+        raw_files: Paths to raw metadata Excel files.
+        known_sheets: Sheet names to look for in each file, in priority order. If none
+            of the listed names is present, falls back to the first sheet. Defaults to
+            DEFAULT_KNOWN_SHEETS.
+
+    """
+    sheet_candidates = DEFAULT_KNOWN_SHEETS if known_sheets is None else known_sheets
     frames = []
     for path in raw_files:
         # Try known sheet names first, fall back to first sheet
         sheet = 0
         xl = pd.ExcelFile(path)
-        for known in _KNOWN_SHEETS:
+        for known in sheet_candidates:
             if known in xl.sheet_names:
                 sheet = known
                 break
@@ -366,11 +384,24 @@ def merge_data_docs(
     equivalencies: pd.DataFrame,
     contextual_vars: pd.DataFrame,
     fixes_file: Path | None = None,
+    entity_filter: str | None = "MeasurementObservation",
 ) -> pd.DataFrame:
     """
     Merge data with documentation files and compute quality flags.
 
     Faithful translation of DMCYAML_04_MergeDataDocs.do.
+
+    Args:
+        df: Cleaned data rows from clean_data.
+        bdchv_defs: BDC harmonized variable definitions (from load_bdchv_defs).
+        conversions: Unit conversion table (from load_unit_conversions).
+        equivalencies: Unit equivalency table (from load_unit_equivalencies).
+        contextual_vars: Contextual variables key (from load_contextual_vars).
+        fixes_file: Optional path to a curator fixes CSV.
+        entity_filter: If set, restrict the output to rows whose bdchm_entity matches.
+            Pass None to keep all entity types. Defaults to "MeasurementObservation"
+            to match the Stata pipeline's behavior.
+
     """
     # Merge BDCHM definitions
     df = df.merge(bdchv_defs, on="merge_bdchm_label", how="left", suffixes=("", "_defs"))
@@ -572,8 +603,8 @@ def merge_data_docs(
     df = df[output_cols]
     df = df.drop_duplicates()
 
-    if "bdchm_entity" in df.columns:
-        df = df[df["bdchm_entity"] == "MeasurementObservation"]
+    if entity_filter is not None and "bdchm_entity" in df.columns:
+        df = df[df["bdchm_entity"] == entity_filter]
 
     return df
 
@@ -588,6 +619,8 @@ def prepare_metadata(
     unit_key_path: Path,
     output_path: Path,
     fixes_file: Path | None = None,
+    known_sheets: list[str] | None = None,
+    entity_filter: str | None = "MeasurementObservation",
 ) -> Path | None:
     """
     Run the full metadata preparation pipeline.
@@ -599,6 +632,10 @@ def prepare_metadata(
         unit_key_path: Path to unit_key.xlsx.
         output_path: Path for the output CSV.
         fixes_file: Optional path to curator fixes CSV.
+        known_sheets: Excel sheet names to look for when loading raw data.
+            Defaults to DEFAULT_KNOWN_SHEETS.
+        entity_filter: Restrict output to rows with this bdchm_entity value.
+            Pass None to keep all entities. Defaults to "MeasurementObservation".
 
     Returns:
         Path to the written output CSV, or None if no data was loaded.
@@ -611,7 +648,7 @@ def prepare_metadata(
     equivalencies = load_unit_equivalencies(unit_key_path)
 
     logger.info("Loading raw data from %d file(s)...", len(raw_files))
-    df = load_raw_data(raw_files)
+    df = load_raw_data(raw_files, known_sheets=known_sheets)
     if df.empty:
         logger.warning("No data loaded from raw files")
         return None
@@ -623,7 +660,9 @@ def prepare_metadata(
     df = clean_data(df, fixes_file)
 
     logger.info("Merging with documentation...")
-    df = merge_data_docs(df, bdchv_defs, conversions, equivalencies, contextual_vars, fixes_file)
+    df = merge_data_docs(
+        df, bdchv_defs, conversions, equivalencies, contextual_vars, fixes_file, entity_filter=entity_filter
+    )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(output_path, index=False, quoting=csv.QUOTE_ALL)
