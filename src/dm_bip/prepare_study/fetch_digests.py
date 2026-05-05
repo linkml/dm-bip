@@ -284,3 +284,93 @@ def fetch_digests(
     result.data_dicts.sort()
     result.var_reports.sort()
     return result
+
+
+# --- Canonical data-dictionary TSV output ------------------------------------
+
+DD_TSV_COLUMNS = ("name", "type", "description", "codes", "unit", "min", "max", "uri")
+
+_DBGAP_TYPE_MAP = {
+    "string": "string",
+    "integer": "integer",
+    "decimal": "decimal",
+    "encoded value": "permissible_values",
+    "date": "date",
+    "datetime": "datetime",
+    "time": "time",
+    "boolean": "boolean",
+}
+
+
+def _translate_type(dbgap_type: str | None) -> str:
+    """Translate a dbGaP <type> value to the schema-automator canonical type vocabulary."""
+    if not dbgap_type:
+        return "string"
+    canonical = _DBGAP_TYPE_MAP.get(dbgap_type.strip().lower())
+    if canonical is None:
+        logger.debug("Unknown dbGaP type %r; defaulting to 'string'", dbgap_type)
+        return "string"
+    return canonical
+
+
+def _sanitize_label(label: str) -> str:
+    """Replace characters that conflict with the codes-encoding separators."""
+    return label.replace("\t", " ").replace("|", "/").replace(",", ";")
+
+
+def _encode_codes(values: list[DigestValue]) -> str:
+    """Render encoded values as REDCap-style 'code, label | code, label | ...' string."""
+    return " | ".join(f"{v.code}, {_sanitize_label(v.label)}" for v in values)
+
+
+def _dd_row(variable: DigestVariable) -> dict[str, str]:
+    """Build one canonical-DD row from a parsed dbGaP variable."""
+    return {
+        "name": variable.name,
+        "type": _translate_type(variable.type),
+        "description": variable.description or "",
+        "codes": _encode_codes(variable.values),
+        "unit": "",
+        "min": "",
+        "max": "",
+        "uri": f"dbgap:{variable.id}" if variable.id else "",
+    }
+
+
+def write_canonical_dd(dd: DataDictionary, output_path: Path) -> Path:
+    """Write a parsed DataDictionary to a TSV file in the schema-automator canonical format."""
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as f:
+        f.write("\t".join(DD_TSV_COLUMNS) + "\n")
+        for var in dd.variables:
+            row = _dd_row(var)
+            f.write("\t".join(row[col] for col in DD_TSV_COLUMNS) + "\n")
+    logger.info("Wrote %s (%d variables)", output_path, len(dd.variables))
+    return output_path
+
+
+def _dd_output_filename(dd: DataDictionary) -> str:
+    """Build a stable output filename: <phs>.<pht>.dd.tsv."""
+    phs = dd.study_id.split(".")[0] if dd.study_id else "unknown_phs"
+    pht = dd.data_table_id.split(".")[0] if dd.data_table_id else "unknown_pht"
+    return f"{phs}.{pht}.dd.tsv"
+
+
+def parse_cached_digests(
+    cohort: Cohort,
+    cache_root: Path = DEFAULT_CACHE_DIR,
+    output_root: Path = Path("output"),
+) -> list[Path]:
+    """Convert all cached data_dict.xml files for a cohort into canonical-DD TSVs (offline)."""
+    cache_dir = _study_cache_path(cache_root, cohort)
+    if not cache_dir.exists():
+        raise FileNotFoundError(f"No cached digests at {cache_dir} (run fetch-digests first)")
+
+    out_dir = output_root / cohort.key / "dd"
+    written = []
+    for dd_path in sorted(cache_dir.glob("*.data_dict.xml")):
+        dd = parse_data_dict(dd_path)
+        out_path = out_dir / _dd_output_filename(dd)
+        write_canonical_dd(dd, out_path)
+        written.append(out_path)
+    return written

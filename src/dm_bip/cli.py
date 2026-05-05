@@ -140,5 +140,24 @@ def fetch_digests(
     )
 
 
+@app.command()
+def parse_digests(
+    cohort_key: Annotated[str, typer.Argument(help="Cohort key (e.g. jhs, aric)")],
+    cache_dir: Annotated[Path, typer.Option("--cache-dir", help="dbGaP digest cache (input)")] = Path(".dbgap-cache"),
+    output_dir: Annotated[Path, typer.Option("--output-dir", "-o", help="Output root directory")] = Path("output"),
+    refresh_cohorts: Annotated[bool, typer.Option("--refresh-cohorts", help="Re-fetch cohorts.yaml")] = False,
+):
+    """Convert cached dbGaP digests for a cohort into schema-automator canonical-DD TSVs."""
+    from dm_bip.prepare_study.fetch_digests import load_cohorts, parse_cached_digests
+
+    cohorts = load_cohorts(cache_dir=cache_dir, refresh=refresh_cohorts)
+    if cohort_key not in cohorts:
+        typer.echo(f"Unknown cohort '{cohort_key}'. Available: {', '.join(sorted(cohorts))}")
+        raise typer.Exit(code=2)
+
+    written = parse_cached_digests(cohorts[cohort_key], cache_root=cache_dir, output_root=output_dir)
+    typer.echo(f"Wrote {len(written)} data dictionaries under {output_dir / cohort_key / 'dd'}")
+
+
 if __name__ == "__main__":
     app()

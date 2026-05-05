@@ -3,9 +3,11 @@
 from pathlib import Path
 
 from dm_bip.prepare_study.fetch_digests import (
+    DD_TSV_COLUMNS,
     DigestValue,
     parse_data_dict,
     parse_var_report,
+    write_canonical_dd,
 )
 
 FIXTURES = Path(__file__).parent.parent / "input" / "dbgap_digests"
@@ -50,3 +52,29 @@ def test_parse_var_report_jhs_subject():
     assert total_row.stats is not None
     assert total_row.stats.n == 5885
     assert total_row.stats.nulls == 0
+
+
+def test_write_canonical_dd_jhs_subject(tmp_path):
+    """Convert the JHS Subject data_dict to canonical TSV; check shape, types, codes."""
+    dd = parse_data_dict(FIXTURES / "JHS_Subject.data_dict.xml")
+    out_path = tmp_path / "jhs.subject.dd.tsv"
+    write_canonical_dd(dd, out_path)
+
+    lines = out_path.read_text(encoding="utf-8").strip().split("\n")
+    header = lines[0].split("\t")
+    assert tuple(header) == DD_TSV_COLUMNS
+
+    rows = [dict(zip(header, line.split("\t"), strict=False)) for line in lines[1:]]
+    by_name = {r["name"]: r for r in rows}
+
+    subject = by_name["SUBJECT_ID"]
+    assert subject["type"] == "string"
+    assert subject["description"] == "Subject ID"
+    assert subject["codes"] == ""
+    assert subject["uri"].startswith("dbgap:phv")
+
+    consent = by_name["CONSENT"]
+    assert consent["type"] == "permissible_values"
+    assert consent["codes"].startswith("0, ")
+    assert " | 1, " in consent["codes"]
+    assert "," not in consent["codes"].split("|")[0].split(",", 1)[1]  # comma-in-label sanitized to ;
