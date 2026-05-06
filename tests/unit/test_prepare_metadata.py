@@ -861,9 +861,9 @@ class TestPipelineGoldenOutput:
             output_path=output,
         )
         df = pd.read_csv(output)
-        # Fixture has 11 aric measurement rows + 1 jhs measurement row + 1 condition row.
-        # Filters: medication-adherence dropped, glucose dropped (pht009999 drop_table=1),
-        # stroke dropped (Condition entity). 12 - 2 = 10.
+        # Fixture: 13 rows (11 aric MeasurementObservation + 1 jhs MeasurementObservation + 1 Condition).
+        # Filters: medication-adherence (1), glucose (pht009999 drop_table=1), stroke (Condition entity).
+        # 13 - 3 = 10.
         assert len(df) == 10
 
     def test_output_matches_golden_file(self, tmp_path):
