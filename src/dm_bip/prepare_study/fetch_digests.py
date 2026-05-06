@@ -154,8 +154,7 @@ def parse_data_dict(path: Path) -> DataDictionary:
     variables = []
     for v_elem in root.findall("variable"):
         values = [
-            DigestValue(code=val.get("code", ""), label=(val.text or "").strip())
-            for val in v_elem.findall("value")
+            DigestValue(code=val.get("code", ""), label=(val.text or "").strip()) for val in v_elem.findall("value")
         ]
         variables.append(
             DigestVariable(
