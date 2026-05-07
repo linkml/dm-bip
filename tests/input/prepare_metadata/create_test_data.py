@@ -1,7 +1,21 @@
 """
 Create synthetic test data files for prepare_metadata tests.
 
-Run once to generate unit_key.xlsx and raw_metadata.xlsx.
+Generates the fixture set:
+- unit_key.xlsx
+- raw_metadata.xlsx
+- golden_pipeline_output.csv (the pinned full-pipeline output used by
+  test_output_matches_golden_file)
+
+Run via `uv run python tests/input/prepare_metadata/create_test_data.py`
+whenever any input fixture, reference file, or pipeline behavior changes,
+then commit the regenerated files together. The golden CSV is intentionally
+checked in so test_output_matches_golden_file catches drift.
+
+Note: pandas.to_excel rewrites internal timestamps each run, so the .xlsx
+files will show as "modified" even when their data is unchanged. If you only
+intended to refresh the golden CSV, `git checkout` the .xlsx files before
+committing.
 """
 
 from pathlib import Path
@@ -228,7 +242,21 @@ def create_raw_metadata():
     df.to_excel(HERE / "raw_metadata.xlsx", index=False)
 
 
+def create_golden_output():
+    """Run the pipeline against the synthetic fixtures and write golden_pipeline_output.csv."""
+    from dm_bip.trans_spec_gen.prepare_metadata import prepare_metadata
+
+    prepare_metadata(
+        raw_files=[HERE / "raw_metadata.xlsx"],
+        bdchv_defs_path=HERE / "bdchv_defs.csv",
+        contextual_vars_path=HERE / "contextual_variables_key.csv",
+        unit_key_path=HERE / "unit_key.xlsx",
+        output_path=HERE / "golden_pipeline_output.csv",
+    )
+
+
 if __name__ == "__main__":
     create_unit_key()
     create_raw_metadata()
+    create_golden_output()
     print("Test data created.")
