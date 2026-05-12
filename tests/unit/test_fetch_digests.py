@@ -95,11 +95,7 @@ class TestListDigestFiles:
 
     def test_returns_sorted_unique_filenames(self, monkeypatch, cohort):
         """Duplicates collapse and results sort alphabetically."""
-        html = (
-            '<a href="b.data_dict.xml">b</a>'
-            '<a href="a.var_report.xml">a</a>'
-            '<a href="b.data_dict.xml">b again</a>'
-        )
+        html = '<a href="b.data_dict.xml">b</a><a href="a.var_report.xml">a</a><a href="b.data_dict.xml">b again</a>'
         monkeypatch.setattr(fd_mod, "_http_get", lambda url: html.encode("utf-8"))
         assert list_digest_files(cohort) == ["a.var_report.xml", "b.data_dict.xml"]
 
