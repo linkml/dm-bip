@@ -1,80 +1,95 @@
-"""Unit tests for prepare_study.fetch_digests parsers."""
+"""Unit tests for prepare_study.fetch_digests fetcher-layer logic."""
 
 from pathlib import Path
 
+import pytest
+
 from dm_bip.prepare_study.fetch_digests import (
-    DD_TSV_COLUMNS,
-    DigestValue,
-    parse_data_dict,
-    parse_var_report,
-    write_canonical_dd,
+    _DIGEST_FILENAME_RE,
+    Cohort,
+    _study_cache_path,
+    _study_url,
+    load_cohorts,
 )
 
 FIXTURES = Path(__file__).parent.parent / "input" / "dbgap_digests"
 
 
-def test_parse_data_dict_jhs_subject():
-    """Round-trip a real JHS data_dict.xml through parse_data_dict and check key fields."""
-    dd = parse_data_dict(FIXTURES / "JHS_Subject.data_dict.xml")
-
-    assert dd.data_table_id == "pht001920.v6"
-    assert dd.study_id == "phs000286.v7"
-    assert dd.participant_set == "2"
-
-    by_name = {v.name: v for v in dd.variables}
-    assert "SUBJECT_ID" in by_name
-    assert by_name["SUBJECT_ID"].type == "String"
-    assert by_name["SUBJECT_ID"].values == []
-
-    consent = by_name["CONSENT"]
-    assert consent.type == "encoded value"
-    assert consent.description == "Consent group as determined by DAC"
-    assert len(consent.values) >= 5
-    assert DigestValue(code="0", label=consent.values[0].label) == consent.values[0]
-    assert all(v.code.isdigit() for v in consent.values)
+@pytest.fixture()
+def cohort():
+    """Provide a single cohort for path-construction tests."""
+    return Cohort(key="jhs", study_id="phs000286", data_version="v7.p2", display_name="Jackson Heart Study")
 
 
-def test_parse_var_report_jhs_subject():
-    """Round-trip a real JHS var_report.xml through parse_var_report and check key fields."""
-    vr = parse_var_report(FIXTURES / "JHS_Subject.var_report.xml")
+class TestLoadCohorts:
+    """Parse cohorts.yaml into a {key: Cohort} dict."""
 
-    assert vr.name == "JHS_Subject"
-    assert vr.dataset_id == "pht001920.v6"
-    assert vr.study_id == "phs000286.v7"
-    assert vr.study_name and "Jackson Heart Study" in vr.study_name
+    def test_parses_cohort_fields(self, tmp_path):
+        """Each entry yields a Cohort with study_id, data_version, display_name."""
+        (tmp_path / "cohorts.yaml").write_text(
+            "cohorts:\n"
+            "  jhs:\n"
+            "    study_id: phs000286\n"
+            "    data_version: v7.p2\n"
+            "    display_name: Jackson Heart Study\n"
+            "  aric:\n"
+            "    study_id: phs000280\n"
+            "    data_version: v8.p2\n"
+            "    display_name: ARIC\n",
+        )
+        cohorts = load_cohorts(cache_dir=tmp_path)
+        assert set(cohorts) == {"jhs", "aric"}
+        assert cohorts["jhs"].study_id == "phs000286"
+        assert cohorts["jhs"].data_version == "v7.p2"
+        assert cohorts["jhs"].display_name == "Jackson Heart Study"
 
-    subject_id_rows = [v for v in vr.variables if v.var_name == "SUBJECT_ID"]
-    assert subject_id_rows, "expected at least one SUBJECT_ID row"
+    def test_display_name_defaults_to_key(self, tmp_path):
+        """When display_name is omitted, the cohort key is used."""
+        (tmp_path / "cohorts.yaml").write_text(
+            "cohorts:\n  foo:\n    study_id: phs999999\n    data_version: v1.p1\n",
+        )
+        cohorts = load_cohorts(cache_dir=tmp_path)
+        assert cohorts["foo"].display_name == "foo"
 
-    total_row = next((v for v in subject_id_rows if v.id.endswith(".p2")), None)
-    assert total_row is not None
-    assert total_row.calculated_type == "string"
-    assert total_row.stats is not None
-    assert total_row.stats.n == 5885
-    assert total_row.stats.nulls == 0
+    def test_uses_cached_file_without_refresh(self, tmp_path):
+        """An existing cohorts.yaml is read; refresh=False does not re-fetch."""
+        (tmp_path / "cohorts.yaml").write_text("cohorts:\n  jhs:\n    study_id: phs000286\n    data_version: v7.p2\n")
+        # No network call needed because cache is present and refresh=False.
+        cohorts = load_cohorts(cache_dir=tmp_path, refresh=False)
+        assert "jhs" in cohorts
 
 
-def test_write_canonical_dd_jhs_subject(tmp_path):
-    """Convert the JHS Subject data_dict to canonical TSV; check shape, types, codes."""
-    dd = parse_data_dict(FIXTURES / "JHS_Subject.data_dict.xml")
-    out_path = tmp_path / "jhs.subject.dd.tsv"
-    write_canonical_dd(dd, out_path)
+class TestDigestFilenameRegex:
+    """The HTML scrape regex must pick out only the two digest file suffixes."""
 
-    lines = out_path.read_text(encoding="utf-8").strip().split("\n")
-    header = lines[0].split("\t")
-    assert tuple(header) == DD_TSV_COLUMNS
+    def test_matches_data_dict_and_var_report(self):
+        """Both digest suffixes are picked up from typical FTP-listing HTML."""
+        html = (
+            '<a href="JHS_Subject.data_dict.xml">JHS_Subject.data_dict.xml</a>'
+            '<a href="JHS_Subject.var_report.xml">JHS_Subject.var_report.xml</a>'
+        )
+        assert _DIGEST_FILENAME_RE.findall(html) == [
+            "JHS_Subject.data_dict.xml",
+            "JHS_Subject.var_report.xml",
+        ]
 
-    rows = [dict(zip(header, line.split("\t"), strict=False)) for line in lines[1:]]
-    by_name = {r["name"]: r for r in rows}
+    def test_ignores_other_xml_files(self):
+        """Files that aren't .data_dict.xml or .var_report.xml are skipped."""
+        html = '<a href="MULTI.MULTI.xml">other</a><a href="JHS.data_dict.xml">dd</a>'
+        assert _DIGEST_FILENAME_RE.findall(html) == ["JHS.data_dict.xml"]
 
-    subject = by_name["SUBJECT_ID"]
-    assert subject["type"] == "string"
-    assert subject["description"] == "Subject ID"
-    assert subject["codes"] == ""
-    assert subject["uri"].startswith("dbgap:phv")
 
-    consent = by_name["CONSENT"]
-    assert consent["type"] == "permissible_values"
-    assert consent["codes"].startswith("0, ")
-    assert " | 1, " in consent["codes"]
-    assert "," not in consent["codes"].split("|")[0].split(",", 1)[1]  # comma-in-label sanitized to ;
+class TestPathConstruction:
+    """Cache + URL path layout for a cohort."""
+
+    def test_study_url(self, cohort):
+        """FTP URL composes cohort study_id and version into the dbGaP layout."""
+        assert _study_url(cohort) == (
+            "https://ftp.ncbi.nlm.nih.gov/dbgap/studies/phs000286/phs000286.v7.p2/pheno_variable_summaries/"
+        )
+
+    def test_study_cache_path(self, cohort, tmp_path):
+        """Cache path mirrors the FTP layout with the cohort key on top."""
+        assert _study_cache_path(tmp_path, cohort) == (
+            tmp_path / "jhs" / "phs000286.v7.p2" / "pheno_variable_summaries"
+        )

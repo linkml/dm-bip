@@ -755,7 +755,6 @@ name = "dm-bip"
 version = "0.0.0"
 source = { editable = "." }
 dependencies = [
-    { name = "defusedxml" },
     { name = "linkml-map" },
     { name = "pandas" },
     { name = "schema-automator" },
@@ -785,7 +784,6 @@ env = [
 
 [package.metadata]
 requires-dist = [
-    { name = "defusedxml", specifier = ">=0.7,<1" },
     { name = "linkml-map", specifier = "==0.5.2" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
     { name = "schema-automator", specifier = "==0.5.5" },

@@ -11,7 +11,6 @@ dependencies = [
     "schema-automator==0.5.5",
     "linkml-map==0.5.2",
     "typing-extensions>=4.0,<5",
-    "defusedxml>=0.7,<1",
 ]
 
 [project.scripts]

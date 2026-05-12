@@ -1,9 +1,12 @@
 """
-Fetch and parse dbGaP variable digest files (data_dict.xml, var_report.xml).
+Fetch dbGaP variable digest files (data_dict.xml, var_report.xml).
 
-Brings minimal structure over from NHLBI-BDC-DMC-HV/hv-lint/ ahead of the full
-hv-lint migration tracked in #312. Cohort version pins (cohorts.yaml) are sourced
-from upstream — we do not maintain a local copy.
+Cohort version pins (cohorts.yaml) are sourced from upstream
+NHLBI-BDC-DMC-HV/hv-lint/cohorts.yaml — we do not maintain a local copy.
+
+Parsing and translation of digest XML into canonical-DD format is handled by
+schema-automator's `adapt-dbgap` adapter; this module is only responsible for
+populating a local cache the adapter can read from.
 """
 
 from __future__ import annotations
@@ -12,11 +15,9 @@ import logging
 import re
 import time
 import urllib.request
-import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import defusedxml.ElementTree as DET
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -66,156 +67,6 @@ def load_cohorts(cache_dir: Path = DEFAULT_CACHE_DIR, refresh: bool = False) -> 
         )
         for key, entry in (parsed.get("cohorts") or {}).items()
     }
-
-
-# --- Parsed-form models ------------------------------------------------------
-
-
-@dataclass
-class DigestValue:
-    """One entry in a data dictionary's encoded value list."""
-
-    code: str
-    label: str
-
-
-@dataclass
-class DigestVariable:
-    """A variable as described in a dbGaP data_dict.xml file."""
-
-    id: str
-    name: str
-    description: str | None = None
-    type: str | None = None
-    values: list[DigestValue] = field(default_factory=list)
-
-
-@dataclass
-class DataDictionary:
-    """Parsed contents of a dbGaP data_dict.xml file (one phenotype data table)."""
-
-    data_table_id: str
-    study_id: str
-    participant_set: str | None
-    date_created: str | None
-    description: str | None
-    variables: list[DigestVariable] = field(default_factory=list)
-
-
-@dataclass
-class ReportStat:
-    """Summary statistics for a variable from a var_report.xml entry."""
-
-    n: int | None
-    nulls: int | None
-
-
-@dataclass
-class ReportVariable:
-    """A variable record from a var_report.xml file (one row per total/consent group)."""
-
-    id: str
-    var_name: str
-    calculated_type: str | None = None
-    reported_type: str | None = None
-    description: str | None = None
-    stats: ReportStat | None = None
-
-
-@dataclass
-class VarReport:
-    """Parsed contents of a dbGaP var_report.xml file."""
-
-    name: str
-    dataset_id: str
-    study_id: str
-    study_name: str | None
-    participant_set: str | None
-    date_created: str | None
-    description: str | None
-    variables: list[ReportVariable] = field(default_factory=list)
-
-
-# --- XML parsers -------------------------------------------------------------
-
-
-def _text(elem: ET.Element | None) -> str | None:
-    if elem is None:
-        return None
-    return (elem.text or "").strip() or None
-
-
-def parse_data_dict(path: Path) -> DataDictionary:
-    """Parse a dbGaP data_dict.xml file into a DataDictionary."""
-    root = DET.parse(path).getroot()
-    if root.tag != "data_table":
-        raise ValueError(f"{path}: expected <data_table> root, got <{root.tag}>")
-
-    variables = []
-    for v_elem in root.findall("variable"):
-        values = [
-            DigestValue(code=val.get("code", ""), label=(val.text or "").strip()) for val in v_elem.findall("value")
-        ]
-        variables.append(
-            DigestVariable(
-                id=v_elem.get("id", ""),
-                name=_text(v_elem.find("name")) or "",
-                description=_text(v_elem.find("description")),
-                type=_text(v_elem.find("type")),
-                values=values,
-            )
-        )
-
-    return DataDictionary(
-        data_table_id=root.get("id", ""),
-        study_id=root.get("study_id", ""),
-        participant_set=root.get("participant_set"),
-        date_created=root.get("date_created"),
-        description=_text(root.find("description")),
-        variables=variables,
-    )
-
-
-def _parse_stats(v_elem: ET.Element) -> ReportStat | None:
-    stat = v_elem.find("./total/stats/stat")
-    if stat is None:
-        return None
-    n = stat.get("n")
-    nulls = stat.get("nulls")
-    return ReportStat(
-        n=int(n) if n and n.isdigit() else None,
-        nulls=int(nulls) if nulls and nulls.isdigit() else None,
-    )
-
-
-def parse_var_report(path: Path) -> VarReport:
-    """Parse a dbGaP var_report.xml file into a VarReport."""
-    root = DET.parse(path).getroot()
-    if root.tag != "data_table":
-        raise ValueError(f"{path}: expected <data_table> root, got <{root.tag}>")
-
-    variables = [
-        ReportVariable(
-            id=v_elem.get("id", ""),
-            var_name=v_elem.get("var_name", ""),
-            calculated_type=v_elem.get("calculated_type"),
-            reported_type=v_elem.get("reported_type"),
-            description=_text(v_elem.find("description")),
-            stats=_parse_stats(v_elem),
-        )
-        for v_elem in root.findall("variable")
-    ]
-
-    return VarReport(
-        name=root.get("name", ""),
-        dataset_id=root.get("dataset_id", ""),
-        study_id=root.get("study_id", ""),
-        study_name=root.get("study_name"),
-        participant_set=root.get("participant_set"),
-        date_created=root.get("date_created"),
-        description=_text(root.find("description")),
-        variables=variables,
-    )
 
 
 # --- Fetch -------------------------------------------------------------------
@@ -285,91 +136,54 @@ def fetch_digests(
     return result
 
 
-# --- Canonical data-dictionary TSV output ------------------------------------
-
-DD_TSV_COLUMNS = ("name", "type", "description", "codes", "unit", "min", "max", "uri")
-
-_DBGAP_TYPE_MAP = {
-    "string": "string",
-    "integer": "integer",
-    "decimal": "decimal",
-    "encoded value": "permissible_values",
-    "date": "date",
-    "datetime": "datetime",
-    "time": "time",
-    "boolean": "boolean",
-}
+# --- Pair discovery and Makefile-include emission ----------------------------
+#
+# dbGaP's filename convention puts the participant-set segment (`.p<N>`) into
+# var_report filenames but not into data_dict filenames:
+#     phs000286.v7.pht001920.v6.JHS_Subject.data_dict.xml
+#     phs000286.v7.pht001920.v6.p2.JHS_Subject.var_report.xml
+#
+# Pure Make pattern rules can't pair these (no shared stem). The fetcher knows
+# both filenames at fetch time, so we emit a tiny `digest_pairs.mk` the Makefile
+# includes — explicit pair vars keyed by the data_dict basename.
 
 
-def _translate_type(dbgap_type: str | None) -> str:
-    """Translate a dbGaP <type> value to the schema-automator canonical type vocabulary."""
-    if not dbgap_type:
-        return "string"
-    canonical = _DBGAP_TYPE_MAP.get(dbgap_type.strip().lower())
-    if canonical is None:
-        logger.debug("Unknown dbGaP type %r; defaulting to 'string'", dbgap_type)
-        return "string"
-    return canonical
+_PARTICIPANT_SET_RE = re.compile(r"^p\d+$")
 
 
-def _sanitize_label(label: str) -> str:
-    """Replace characters that conflict with the codes-encoding separators."""
-    return label.replace("\t", " ").replace("|", "/").replace(",", ";")
+def _identity_key(filename: str) -> tuple[str, ...]:
+    """Identity key for pairing: filename stem minus suffix minus any `.p<N>` segment."""
+    stem = filename.rsplit(".data_dict.xml", 1)[0].rsplit(".var_report.xml", 1)[0]
+    return tuple(part for part in stem.split(".") if not _PARTICIPANT_SET_RE.fullmatch(part))
 
 
-def _encode_codes(values: list[DigestValue]) -> str:
-    """Render encoded values as REDCap-style 'code, label | code, label | ...' string."""
-    return " | ".join(f"{v.code}, {_sanitize_label(v.label)}" for v in values)
+def pair_digests(digests: CohortDigests) -> list[tuple[Path, Path]]:
+    """Pair each data_dict with its matching var_report by phs.pht.<table> identity."""
+    vr_index = {_identity_key(p.name): p for p in digests.var_reports}
+    pairs = []
+    for dd in digests.data_dicts:
+        vr = vr_index.get(_identity_key(dd.name))
+        if vr is None:
+            logger.warning("No var_report match for %s", dd.name)
+            continue
+        pairs.append((dd, vr))
+    return pairs
 
 
-def _dd_row(variable: DigestVariable) -> dict[str, str]:
-    """Build one canonical-DD row from a parsed dbGaP variable."""
-    return {
-        "name": variable.name,
-        "type": _translate_type(variable.type),
-        "description": variable.description or "",
-        "codes": _encode_codes(variable.values),
-        "unit": "",
-        "min": "",
-        "max": "",
-        "uri": f"dbgap:{variable.id}" if variable.id else "",
-    }
-
-
-def write_canonical_dd(dd: DataDictionary, output_path: Path) -> Path:
-    """Write a parsed DataDictionary to a TSV file in the schema-automator canonical format."""
+def write_pairs_mk(digests: CohortDigests, output_path: Path) -> Path:
+    """Emit a Makefile include with explicit data_dict/var_report pair mappings."""
+    pairs = pair_digests(digests)
+    lines = [
+        "# Generated by `dm-bip fetch-digests` - do not edit",
+        f"# Cohort: {digests.cohort.key} ({digests.cohort.study_id}.{digests.cohort.data_version})",
+        "",
+    ]
+    keys = [dd.name.removesuffix(".data_dict.xml") for dd, _ in pairs]
+    lines.append("DBGAP_DIGEST_KEYS := " + " ".join(keys))
+    lines.append("")
+    for (dd, vr), key in zip(pairs, keys, strict=True):
+        lines.append(f"DBGAP_DD_{key} := {dd}")
+        lines.append(f"DBGAP_VR_{key} := {vr}")
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with output_path.open("w", encoding="utf-8") as f:
-        f.write("\t".join(DD_TSV_COLUMNS) + "\n")
-        for var in dd.variables:
-            row = _dd_row(var)
-            f.write("\t".join(row[col] for col in DD_TSV_COLUMNS) + "\n")
-    logger.info("Wrote %s (%d variables)", output_path, len(dd.variables))
+    output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return output_path
-
-
-def _dd_output_filename(dd: DataDictionary) -> str:
-    """Build a stable output filename: <phs>.<pht>.dd.tsv."""
-    phs = dd.study_id.split(".")[0] if dd.study_id else "unknown_phs"
-    pht = dd.data_table_id.split(".")[0] if dd.data_table_id else "unknown_pht"
-    return f"{phs}.{pht}.dd.tsv"
-
-
-def parse_cached_digests(
-    cohort: Cohort,
-    cache_root: Path = DEFAULT_CACHE_DIR,
-    output_root: Path = Path("output"),
-) -> list[Path]:
-    """Convert all cached data_dict.xml files for a cohort into canonical-DD TSVs (offline)."""
-    cache_dir = _study_cache_path(cache_root, cohort)
-    if not cache_dir.exists():
-        raise FileNotFoundError(f"No cached digests at {cache_dir} (run fetch-digests first)")
-
-    out_dir = output_root / cohort.key / "dd"
-    written = []
-    for dd_path in sorted(cache_dir.glob("*.data_dict.xml")):
-        dd = parse_data_dict(dd_path)
-        out_path = out_dir / _dd_output_filename(dd)
-        write_canonical_dd(dd, out_path)
-        written.append(out_path)
-    return written
