@@ -29,7 +29,7 @@ DBGAP_FTP_BASE = "https://ftp.ncbi.nlm.nih.gov/dbgap/studies"
 NCBI_DELAY_SECONDS = 0.5
 DEFAULT_CACHE_DIR = Path(".dbgap-cache")
 
-_DIGEST_FILENAME_RE = re.compile(r'href="([^"]+\.(?:data_dict|var_report)\.xml)"')
+_DIGEST_FILENAME_RE = re.compile(r'href="([^"/]+\.(?:data_dict|var_report)\.xml)"')
 
 
 # --- Cohort registry ---------------------------------------------------------
