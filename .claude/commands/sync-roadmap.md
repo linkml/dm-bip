@@ -14,7 +14,7 @@ gh issue list --repo linkml/dm-bip --state open --label "Tracking" --json number
 
 # Get all issues (open and closed) with tracking category labels
 # Excludes issues closed as NOT_PLANNED (duplicates, obsolete)
-gh issue list --repo linkml/dm-bip --state all --limit 200 --json number,title,state,stateReason,labels,assignees | jq '[.[] | select(.labels | length > 0) | select(.stateReason != "NOT_PLANNED") | select(.labels[].name | test("Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|AI Integration|Audit Logs|Schema Explorer|Data Delivery"))]'
+gh issue list --repo linkml/dm-bip --state all --limit 300 --json number,title,state,stateReason,labels,assignees | jq '[.[] | select(.labels | length > 0) | select(.stateReason != "NOT_PLANNED") | select(.labels[].name | test("Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|Trans-Spec Authoring|Audit Logs|Data Delivery"))]'
 ```
 
 ### 2. Triage Unlabeled Issues
@@ -62,9 +62,8 @@ Compare GitHub state to DEVELOPMENT.md and categorize:
   - "Pipeline Improvement" → section 4
   - "Audit Logs" → section 5
   - "DMC Integration" → section 6
-  - "Schema Explorer" → section 7
-  - "BDC Application" → section 8
-  - "AI Integration" → section 9
+  - "BDC Application" → section 7
+  - "Trans-Spec Authoring" → section 8
 
 **Status changes:**
 - Issues marked CLOSED in GitHub but not `done` in GANTT
