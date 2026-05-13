@@ -36,7 +36,7 @@ For each unlabeled issue:
    - Test coverage, linting, CI → Quality Control
    - Versioning, releases, packaging → Release Control
    - Data delivery, output QC → Data Delivery
-   - Not ready for current roadmap → Future
+   - Not ready for current roadmap → future
 3. Present suggestions to the user for approval before applying labels
 4. Apply approved labels, then re-run the step 1 query so they're included in the sync
 
