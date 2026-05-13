@@ -59,6 +59,7 @@ gantt
     Independent Re-ingestion of Dataset (#171)          :done, i171, 2025-09-25, 2025-12-19
     Ensure all Cohort groups are ingested (#221)        :active, i221, 2025-12-31, 2026-04-11
     Test new longitudinal trans specs from HV repo (#252) :done, i252, 2026-03-01, 2026-06-30
+    Pipeline & Pilot Data Release (#272)                :done, i272, 2026-01-15, 2026-03-30
 
     section Quality Control 
     Tracking Issue #187                     :crit, t187,2025-10-10, 6w
@@ -90,7 +91,6 @@ gantt
     Add CONFIG include support (#237)                   :done, i237, 2025-11-01, 2026-02-02
     LinkML-Map GUID generation (#235)                   :done, i235, 2026-02-03, 2026-05-01
     Refactor pipeline Makefile sentinels/variables (#247) :done, i247, 2025-12-15, 2026-04-30
-    Parallel consent group processing (#251)             :i251, 2026-05-02, 2026-08-01
     Add consent group filtering to prepare_input (#260)  :done, i260, 2026-02-01, 2026-05-15
     Migrate stream writers to linkml-map (#253)          :done, i253, 2026-05-16, 2026-08-10
     Use MultiStreamWriter for multi-format output (#256) :done, i256, 2026-04-01, 2026-08-10
@@ -126,7 +126,7 @@ gantt
 
     section 7 
     Update README.md to current usage (#144)            :done, i144, 2025-09-01, 2025-12-15
-    Post Pilot Toy Dataset Improvement (#117)           :active, i117, 2025-12-15, 2026-04-01
+    Post Pilot Toy Dataset Improvement (#117)           :done, i117, 2025-12-15, 2026-04-01
     Packages without wheels for Python 3.13 (#151)      :done, i151, 2026-04-01, 2026-07-15
     Implement or remove CLI (#216)                     :done, i216, 2025-11-01, 2026-01-19
     Remove Hardcoded entity list (#220)                :done, i220, 2026-01-19, 2026-04-10
@@ -147,7 +147,8 @@ gantt
     Enrich schemas with data dictionary metadata (#307) :i307, 2026-04-01, 2026-08-15
     Variable alignment in trans-spec authoring (#308)   :i308, 2026-04-20, 2026-08-25
     Variable library — mapping catalog (#309)           :i309, 2026-04-01, 2026-08-01
-    Port Stata data preparation to Python (#315)        :i315, 2026-04-20, 2026-08-15
+    Port Stata data preparation to Python (#315)        :done, i315, 2026-04-20, 2026-08-15
+    Refactor ported Stata data preparation pipeline (#318) :i318, 2026-05-01, 2026-08-30
 
     click t186 href "https://github.com/linkml/dm-bip/issues/186"
     click t185 href "https://github.com/linkml/dm-bip/issues/185"
@@ -210,13 +211,13 @@ gantt
     click i237 href "https://github.com/linkml/dm-bip/issues/237"
     click i243 href "https://github.com/linkml/dm-bip/issues/243"
     click i247 href "https://github.com/linkml/dm-bip/issues/247"
-    click i251 href "https://github.com/linkml/dm-bip/issues/251"
     click i252 href "https://github.com/linkml/dm-bip/issues/252"
     click i253 href "https://github.com/linkml/dm-bip/issues/253"
     click i256 href "https://github.com/linkml/dm-bip/issues/256"
     click i260 href "https://github.com/linkml/dm-bip/issues/260"
     click i267 href "https://github.com/linkml/dm-bip/issues/267"
     click i269 href "https://github.com/linkml/dm-bip/issues/269"
+    click i272 href "https://github.com/linkml/dm-bip/issues/272"
     click i273 href "https://github.com/linkml/dm-bip/issues/273"
     click i275 href "https://github.com/linkml/dm-bip/issues/275"
     click i278 href "https://github.com/linkml/dm-bip/issues/278"
@@ -234,6 +235,7 @@ gantt
     click i310 href "https://github.com/linkml/dm-bip/issues/310"
     click i312 href "https://github.com/linkml/dm-bip/issues/312"
     click i315 href "https://github.com/linkml/dm-bip/issues/315"
+    click i318 href "https://github.com/linkml/dm-bip/issues/318"
 
     axisFormat %B
     tickInterval 1month
@@ -265,6 +267,7 @@ Preparation, ingestion, and QC of the original pilot data set.
 - [x] Independent Re-ingestion of Dataset (#171) - Roman, Corey
 - [ ] Ensure all Cohort groups are ingested (#221)
 - [x] Test new longitudinal transformation specs from HV repo (#252)
+- [x] Pipeline & Pilot Data Release (#272)
 
 ## 3. Quality Control (Tracking: #187)
 Procedures and workflows for quality control.
@@ -292,7 +295,6 @@ Improving automation, testing, workflows, and integration.
 - [x] Add CONFIG include support to pipeline Makefile (#237) - Corey
 - [x] LinkML-Map needs to be able to make GUIDs (#235)
 - [x] Refactor pipeline Makefile: standardize sentinels and clarify variable naming (#247)
-- [ ] Support parallel processing of multiple consent groups with shared schema (#251)
 - [x] Migrate stream writers to linkml-map StreamWriter classes (#253)
 - [x] Use MultiStreamWriter for simultaneous multi-format output (#256)
 - [x] Add consent group filtering to prepare_input.py (#260)
@@ -322,7 +324,7 @@ Integrating the Harmonization Pipeline into DMC pre-ingestion.
 
 ## 7. BDC User On-Demand (Tracking: #192)
 Bringing the Harmonization Pipeline to BDC for user on-demand harmonization.
-- [ ] Post Pilot Toy Dataset Improvement (#117)
+- [x] Post Pilot Toy Dataset Improvement (#117)
 - [x] Update README.md to current usage (#144) - Roman, Corey
 - [x] Packages without wheels for Python 3.13 (#151) - Patrick
 - [x] Implement or remove CLI (#216)
@@ -344,5 +346,6 @@ Automated pathway from raw study data to finished transformation specifications.
 - [ ] Enrich generated schemas with data dictionary metadata (#307)
 - [ ] Integrate variable alignment into trans-spec authoring (#308)
 - [ ] Variable library — source-to-target mapping catalog (#309)
-- [ ] Port Stata data preparation pipeline to Python (#315) - Corey
+- [x] Port Stata data preparation pipeline to Python (#315) - Corey
+- [ ] Refactor ported Stata data preparation pipeline (#318)
 - [ ] Integrate AI curation into pipeline
