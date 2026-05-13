@@ -121,6 +121,21 @@ After applying changes, summarize:
 - Date adjustments made
 - Any issues requiring manual attention
 
+### 8. Offer Rendered Preview (after PR is open)
+
+Once the sync PR has been pushed, offer to render the updated `DEVELOPMENT.md` to PDF so the user can visually scan the Mermaid GANTT for layout/overflow issues before review. Don't render proactively — just offer; the user may prefer to look in the GitHub UI directly.
+
+If the user agrees, render the GitHub blob view (which executes the Mermaid JS) via Chrome headless:
+
+```bash
+google-chrome --headless --disable-gpu --no-sandbox --hide-scrollbars \
+  --virtual-time-budget=15000 \
+  --print-to-pdf=/tmp/development-pr<N>.pdf --print-to-pdf-no-header \
+  "https://github.com/linkml/dm-bip/blob/<branch>/DEVELOPMENT.md"
+```
+
+Then `Read` the PDF and look for: bar text overflow, missing/misplaced rows, broken section headers, GANTT label collisions in compact mode.
+
 ## Usage Notes
 
 - Run this command periodically to keep roadmap in sync
