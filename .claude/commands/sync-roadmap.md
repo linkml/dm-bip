@@ -17,9 +17,9 @@ gh issue list --repo linkml/dm-bip --state open --label "Tracking" --json number
 gh issue list --repo linkml/dm-bip --state all --limit 300 --json number,title,state,stateReason,labels,assignees | jq '[.[] | select(.labels | length > 0) | select(.stateReason != "NOT_PLANNED") | select(.labels[].name | test("Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|Trans-Spec Authoring|Audit Logs|Data Delivery"))]'
 ```
 
-### 2. Triage Unlabeled Issues
+### 2. Triage Unlabeled and Multi-Labeled Issues
 
-Check for open issues with no labels that would be invisible to the sync:
+**A. Unlabeled issues.** Check for open issues with no labels that would be invisible to the sync:
 
 ```bash
 gh issue list --repo linkml/dm-bip --state open --limit 300 \
@@ -39,6 +39,16 @@ For each unlabeled issue:
    - Not ready for current roadmap → future
 3. Present suggestions to the user for approval before applying labels
 4. Apply approved labels, then re-run the step 1 query so they're included in the sync
+
+**B. Multi-tracker-labeled issues.** Each issue should have exactly one tracking-category label — it belongs in one lane. Surface any with more than one:
+
+```bash
+gh issue list --repo linkml/dm-bip --state all --limit 300 \
+  --json number,title,labels \
+  --jq '[.[] | {number, title, trackers: [.labels[].name | select(test("^(Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|Trans-Spec Authoring|Audit Logs|Data Delivery)$"))]} | select(.trackers | length > 1)]'
+```
+
+If any results come back, present them to the user and ask which label is correct before continuing — the sync's jq filter will otherwise emit the issue once per matching label, which would double-place it in the roadmap.
 
 ### 3. Parse Current DEVELOPMENT.md
 
