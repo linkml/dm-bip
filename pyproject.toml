@@ -9,8 +9,8 @@ license = "MIT"
 dependencies = [
     "importlib-metadata>=8.2.0",
     "pandas>=2.2.3,<3",
-    "linkml @ git+https://github.com/linkml/linkml.git@06ed4720#subdirectory=packages/linkml",
-    "schema-automator @ git+https://github.com/linkml/schema-automator.git@59f27296",
+    "linkml>=1.11.0",
+    "schema-automator>=0.5.5",
     "schemasheets==0.4.0",
     "linkml-map @ git+https://github.com/linkml/linkml-map.git@53ad099",
     "typing-extensions>=4.0,<5",

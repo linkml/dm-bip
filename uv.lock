@@ -868,10 +868,10 @@ env = [
 requires-dist = [
     { name = "flatten-dict", specifier = ">=0.4.2,<0.5" },
     { name = "importlib-metadata", specifier = ">=8.2.0" },
-    { name = "linkml", git = "https://github.com/linkml/linkml.git?subdirectory=packages%2Flinkml&rev=06ed4720" },
+    { name = "linkml", specifier = ">=1.11.0" },
     { name = "linkml-map", git = "https://github.com/linkml/linkml-map.git?rev=53ad099" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
-    { name = "schema-automator", git = "https://github.com/linkml/schema-automator.git?rev=59f27296" },
+    { name = "schema-automator", specifier = ">=0.5.5" },
     { name = "schemasheets", specifier = "==0.4.0" },
     { name = "typer", specifier = ">=0.20.0" },
     { name = "typing-extensions", specifier = ">=4.0,<5" },
@@ -2054,8 +2054,8 @@ wheels = [
 
 [[package]]
 name = "linkml"
-version = "1.10.0.post167.dev0+06ed4720"
-source = { git = "https://github.com/linkml/linkml.git?subdirectory=packages%2Flinkml&rev=06ed4720#06ed472077f9da803ad2859d35056eba9ef3ecfd" }
+version = "1.11.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "antlr4-python3-runtime" },
     { name = "click" },
@@ -2082,6 +2082,10 @@ dependencies = [
     { name = "sqlalchemy" },
     { name = "typing-extensions", marker = "python_full_version < '3.12'" },
     { name = "watchdog" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/02/4a/5c8c6a962b8623e7009ce3a334f0c81dac4a63b11f003e617614dd50c336/linkml-1.11.0.tar.gz", hash = "sha256:bbe7f31dbfaac10047feb951b56520e9467a763d7ae08cf5d38783b70965ad53", size = 379569, upload-time = "2026-05-13T20:34:24.414Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/14/5d/e147d30b54b999c006dc86e8119d4c3bca2c4f4a49a8b4a50d37b26abfcd/linkml-1.11.0-py3-none-any.whl", hash = "sha256:8145e5ae2d90d304d135e26aac5ddff4d752d89a80e476f65a14588dfb43e7b2", size = 489194, upload-time = "2026-05-13T20:34:20.075Z" },
 ]
 
 [[package]]
@@ -2124,8 +2128,8 @@ wheels = [
 
 [[package]]
 name = "linkml-runtime"
-version = "1.10.0.post167.dev0+06ed4720"
-source = { git = "https://github.com/linkml/linkml.git?subdirectory=packages%2Flinkml_runtime&rev=06ed4720#06ed472077f9da803ad2859d35056eba9ef3ecfd" }
+version = "1.11.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "curies" },
@@ -2140,6 +2144,10 @@ dependencies = [
     { name = "pyyaml" },
     { name = "rdflib" },
     { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fc/c9/a31c30d5ff7979e01182a6c2d1c7d19d1bd2ae8cb10e2f0368cc274aae14/linkml_runtime-1.11.0.tar.gz", hash = "sha256:f06ed1f4fbb9192283333f23dd427e2019c04aad297234c1a48111f88a97b516", size = 556686, upload-time = "2026-05-13T20:34:26.445Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1e/1d/88aac7cac40721e12cdbbe0364ff80afc6f2620be96002bc50d11ee38621/linkml_runtime-1.11.0-py3-none-any.whl", hash = "sha256:5ccaee2763b92feb273f56f316d23a80b1d9231c5aba3cf6ad1eec5a0f8269b2", size = 654770, upload-time = "2026-05-13T20:34:22.475Z" },
 ]
 
 [[package]]
@@ -3929,20 +3937,18 @@ wheels = [
 
 [[package]]
 name = "schema-automator"
-version = "0.5.4.post2.dev0+59f2729"
-source = { git = "https://github.com/linkml/schema-automator.git?rev=59f27296#59f27296b02ccfc7ff2916219a5b210f05c0b2fc" }
+version = "0.5.5"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "click-log" },
     { name = "deprecated" },
-    { name = "deprecation" },
     { name = "funowl" },
     { name = "inflect" },
     { name = "jsonasobj2" },
     { name = "linkml" },
     { name = "linkml-runtime" },
     { name = "lxml" },
-    { name = "numpy" },
     { name = "oaklib" },
     { name = "pandas" },
     { name = "pandera" },
@@ -3956,6 +3962,10 @@ dependencies = [
     { name = "sqlalchemy" },
     { name = "strsimpy" },
     { name = "tomlkit" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f9/0f/ee8397a4f6f2cb32ab8b92f894faa664c64688d611abca8aafade0a8b2c2/schema_automator-0.5.5.tar.gz", hash = "sha256:52f3a974af433a437c9e0d8e790e854c8a500d837b55bd84ed8c953427e137ae", size = 90759, upload-time = "2026-04-06T21:49:03.462Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bf/73/eb42cb3406a6016093253402f10a5d7e89bb48bbce304e1fa6ec42ff7eb0/schema_automator-0.5.5-py3-none-any.whl", hash = "sha256:c657e08da9ee7b6ff1fd1a24a4139fb9ee37948de754380ec525bd8d99cc8834", size = 112551, upload-time = "2026-04-06T21:49:02.033Z" },
 ]
 
 [[package]]
