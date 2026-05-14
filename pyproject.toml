@@ -9,9 +9,15 @@ license = "MIT"
 dependencies = [
     "pandas>=2.2.3,<3",
     "schema-automator==0.5.5",
-    "linkml-map==0.5.2",
+    "linkml-map",
     "typing-extensions>=4.0,<5",
 ]
+
+# TODO(#310): Pin linkml-map to the released version that includes
+# linkml/linkml-map#203 (multi-spec -T, --entity filter, --emit-spec) and drop
+# this git source. Tracked by the `staged` label on this PR.
+[tool.uv.sources]
+linkml-map = { git = "https://github.com/linkml/linkml-map.git", branch = "main" }
 
 [project.scripts]
 dm-bip = "dm_bip.cli:app"
