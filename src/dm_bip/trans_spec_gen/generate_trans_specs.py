@@ -12,6 +12,9 @@ from jinja2 import Environment, FileSystemLoader
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 
 
+DEFAULT_LAYOUT = "{cohort}/{quality}/{varname}.yaml"
+
+
 def generate_yaml(
     input_csv: Path,
     output_dir: Path,
@@ -19,6 +22,7 @@ def generate_yaml(
     cohort: str,
     template_name: str = "yaml_measobs.j2",
     templates_dir: Path = TEMPLATES_DIR,
+    layout: str = DEFAULT_LAYOUT,
 ) -> list[Path]:
     """
     Generate YAML files from a metadata CSV for a given entity and cohort.
@@ -30,6 +34,9 @@ def generate_yaml(
         cohort: Cohort to filter on (e.g. "aric").
         template_name: Jinja2 template filename.
         templates_dir: Directory containing Jinja2 templates.
+        layout: Output path template under ``output_dir``. Supports
+            ``{cohort}``, ``{quality}``, ``{varname}``. Defaults to
+            ``{cohort}/{quality}/{varname}.yaml``.
 
     Returns:
         List of paths to generated YAML files.
@@ -54,7 +61,8 @@ def generate_yaml(
 
         for varname, group in subset.groupby("bdchm_varname"):
             safe_name = Path(varname).name
-            out_path = output_dir / cohort / quality / f"{safe_name}.yaml"
+            rel = layout.format(cohort=cohort, quality=quality, varname=safe_name)
+            out_path = output_dir / rel
             out_path.parent.mkdir(parents=True, exist_ok=True)
             with open(out_path, "w") as f:
                 for _, row in group.iterrows():

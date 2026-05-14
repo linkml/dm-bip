@@ -1,0 +1,4 @@
+bdchm_label,var_units,bdchm_unit,conversion_rule
+hdl,mmol/L,mg/dL,* 38.67
+total cholesterol in blood,mmol/L,mg/dL,* 38.67
+factor viii,%,[IU]/mL,* 0.01
