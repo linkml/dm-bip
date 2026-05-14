@@ -67,6 +67,13 @@ def apply_curator_overrides(
     df["_pair_id"] = df["phv"] + "|" + df["bdchm_label"]
     fixes["_pair_id"] = fixes["phv"] + "|" + fixes["bdchm_label"]
 
+    duplicates = fixes["_pair_id"][fixes["_pair_id"].duplicated()].unique().tolist()
+    if duplicates:
+        raise ValueError(
+            f"fixes CSV has duplicate (phv, bdchm_label) keys: {duplicates}. "
+            f"Each row in the fixes CSV must have a unique key."
+        )
+
     for fix_col, target_col in _OVERRIDE_COLUMNS.items():
         if fix_col not in fixes.columns:
             continue

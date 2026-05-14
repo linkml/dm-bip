@@ -99,6 +99,19 @@ def test_fixes_file_missing_required_columns(tmp_path):
         apply_curator_overrides(pipeline_csv=pipeline_out, fixes_csv=fixes, output_csv=tmp_path / "out.csv")
 
 
+def test_duplicate_pair_id_in_fixes_raises(tmp_path):
+    """Duplicate (phv, bdchm_label) keys in fixes CSV raise with the duplicate listed."""
+    pipeline_out = tmp_path / "pipeline.csv"
+    _run_pipeline(pipeline_out)
+
+    fixes = tmp_path / "fixes.csv"
+    fixes.write_text(
+        "phv,bdchm_label,var_units_fixed\nphv00202900,albumin in blood,mg/dL\nphv00202900,albumin in blood,g/L\n"
+    )
+    with pytest.raises(ValueError, match="duplicate"):
+        apply_curator_overrides(pipeline_csv=pipeline_out, fixes_csv=fixes, output_csv=tmp_path / "out.csv")
+
+
 def test_no_matching_fixes_passes_through(tmp_path):
     """Fixes file with non-matching keys produces output identical to input (modulo recomputed flags)."""
     pipeline_out = tmp_path / "pipeline.csv"

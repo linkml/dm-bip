@@ -10,8 +10,8 @@ Rule grammar (one per row):
 
     rule_type      one of: alias, drop, clear_label, set_label, set_units
     match_field    column name to test (e.g. bdchm_label, var_desc, var_units, cohort)
-    pattern        substring (default) or regex string to match against match_field
-    is_regex       1 if pattern is a regex (default 0)
+    pattern        value to match against match_field; exact equality by default
+    is_regex       1 if pattern is a case-insensitive regex (default 0)
     when_label     additional condition: bdchm_label must equal one of these (semicolon list)
     when_units     additional condition: var_units must equal one of these (semicolon list, "" allowed)
     except_labels  inverse condition: skip rows whose bdchm_label is in this semicolon list
@@ -105,7 +105,13 @@ def _match_mask(df: pd.DataFrame, rule: pd.Series) -> pd.Series:
     series = df[field].fillna("")
 
     if is_regex:
-        return series.str.contains(pattern, flags=re.IGNORECASE, regex=True, na=False)
+        try:
+            return series.str.contains(pattern, flags=re.IGNORECASE, regex=True, na=False)
+        except re.error as e:
+            raise ValueError(
+                f"Invalid regex in cleanup rule "
+                f"(rule_type={rule['rule_type']!r}, match_field={field!r}, pattern={pattern!r}): {e}"
+            ) from e
     return series == pattern
 
 

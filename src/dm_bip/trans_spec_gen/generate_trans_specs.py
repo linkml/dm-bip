@@ -15,6 +15,18 @@ TEMPLATES_DIR = Path(__file__).parent / "templates"
 DEFAULT_LAYOUT = "{cohort}/{quality}/{varname}.yaml"
 
 
+def _safe_output_path(output_dir: Path, rel: str) -> Path:
+    """Reject absolute or traversal paths; ensure result stays under output_dir."""
+    rel_path = Path(rel)
+    if rel_path.is_absolute():
+        raise ValueError(f"layout produced absolute path {rel!r}; must be relative to output_dir")
+    candidate = (output_dir / rel_path).resolve()
+    base = output_dir.resolve()
+    if base != candidate and base not in candidate.parents:
+        raise ValueError(f"layout {rel!r} resolves outside output_dir {output_dir}")
+    return candidate
+
+
 def generate_yaml(
     input_csv: Path,
     output_dir: Path,
@@ -62,7 +74,7 @@ def generate_yaml(
         for varname, group in subset.groupby("bdchm_varname"):
             safe_name = Path(varname).name
             rel = layout.format(cohort=cohort, quality=quality, varname=safe_name)
-            out_path = output_dir / rel
+            out_path = _safe_output_path(output_dir, rel)
             out_path.parent.mkdir(parents=True, exist_ok=True)
             with open(out_path, "w") as f:
                 for _, row in group.iterrows():

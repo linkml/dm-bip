@@ -120,13 +120,21 @@ def load_unit_equivalencies(
     return equiv
 
 
+_CONVERSION_OVERRIDE_COLUMNS = {"bdchm_label", "var_units", "bdchm_unit", "conversion_rule"}
+_EQUIVALENCY_OVERRIDE_COLUMNS = {"bdchm_label", "var_units", "bdchm_unit"}
+
+
 def load_conversion_overrides(path: Path = DEFAULT_CONVERSION_OVERRIDES) -> pd.DataFrame:
     """
     Load label-keyed conversion overrides.
 
     Columns: bdchm_label, var_units, bdchm_unit, conversion_rule.
     """
-    return pd.read_csv(path, dtype=str).fillna("")
+    df = pd.read_csv(path, dtype=str).fillna("")
+    missing = _CONVERSION_OVERRIDE_COLUMNS - set(df.columns)
+    if missing:
+        raise ValueError(f"conversion overrides CSV {path} missing required columns: {sorted(missing)}")
+    return df
 
 
 def load_equivalency_overrides(path: Path = DEFAULT_EQUIVALENCY_OVERRIDES) -> pd.DataFrame:
@@ -135,7 +143,11 @@ def load_equivalency_overrides(path: Path = DEFAULT_EQUIVALENCY_OVERRIDES) -> pd
 
     Columns: bdchm_label, var_units, bdchm_unit. Presence implies equivalent_units=1.
     """
-    return pd.read_csv(path, dtype=str).fillna("")
+    df = pd.read_csv(path, dtype=str).fillna("")
+    missing = _EQUIVALENCY_OVERRIDE_COLUMNS - set(df.columns)
+    if missing:
+        raise ValueError(f"equivalency overrides CSV {path} missing required columns: {sorted(missing)}")
+    return df
 
 
 # --- Step 2: Import raw data ---
@@ -434,6 +446,10 @@ def merge_data_docs(
         "equivalent_units",
         "both_valid_ucums",
     ]
+    for col in ("equivalent_units", "both_valid_ucums"):
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
+
     output_cols = [c for c in output_cols if c in df.columns]
     df = df[output_cols]
     df = df.drop_duplicates()

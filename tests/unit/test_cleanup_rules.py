@@ -53,6 +53,17 @@ class TestLoadCleanupRules:
             load_cleanup_rules(bad)
 
 
+class TestInvalidRegex:
+    """Tests for actionable error reporting on bad regex patterns."""
+
+    def test_invalid_regex_includes_rule_context(self):
+        """A bad regex raises ValueError mentioning the rule context."""
+        df = pd.DataFrame({"var_desc": ["anything"], "bdchm_label": ["x"]})
+        rules = _rule(rule_type="clear_label", match_field="var_desc", pattern="(unclosed", is_regex="1")
+        with pytest.raises(ValueError, match="Invalid regex"):
+            apply_cleanup_rules(df, rules)
+
+
 class TestAlias:
     """Tests for alias rules — exact rewrite of a field value."""
 
