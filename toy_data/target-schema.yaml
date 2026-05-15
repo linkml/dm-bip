@@ -48,6 +48,8 @@ classes:
       associated_participant:
       associated_visit:
       sex:
+      sex_derived:
+        range: target_sex_enum
       race:
       ethnicity:
       age_at_observation:
