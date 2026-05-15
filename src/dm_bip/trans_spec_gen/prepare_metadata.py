@@ -124,6 +124,9 @@ _CONVERSION_OVERRIDE_COLUMNS = {"bdchm_label", "var_units", "bdchm_unit", "conve
 _EQUIVALENCY_OVERRIDE_COLUMNS = {"bdchm_label", "var_units", "bdchm_unit"}
 
 
+_OVERRIDE_KEY = ["bdchm_label", "var_units", "bdchm_unit"]
+
+
 def load_conversion_overrides(path: Path = DEFAULT_CONVERSION_OVERRIDES) -> pd.DataFrame:
     """
     Load label-keyed conversion overrides.
@@ -134,6 +137,7 @@ def load_conversion_overrides(path: Path = DEFAULT_CONVERSION_OVERRIDES) -> pd.D
     missing = _CONVERSION_OVERRIDE_COLUMNS - set(df.columns)
     if missing:
         raise ValueError(f"conversion overrides CSV {path} missing required columns: {sorted(missing)}")
+    _check_unique_keys(df, path, "conversion overrides")
     return df
 
 
@@ -147,7 +151,15 @@ def load_equivalency_overrides(path: Path = DEFAULT_EQUIVALENCY_OVERRIDES) -> pd
     missing = _EQUIVALENCY_OVERRIDE_COLUMNS - set(df.columns)
     if missing:
         raise ValueError(f"equivalency overrides CSV {path} missing required columns: {sorted(missing)}")
+    _check_unique_keys(df, path, "equivalency overrides")
     return df
+
+
+def _check_unique_keys(df: pd.DataFrame, path: Path, kind: str) -> None:
+    duplicated = df.duplicated(subset=_OVERRIDE_KEY, keep=False)
+    if duplicated.any():
+        dupes = df.loc[duplicated, _OVERRIDE_KEY].drop_duplicates().to_dict(orient="records")
+        raise ValueError(f"{kind} CSV {path} has duplicate (bdchm_label, var_units, bdchm_unit) keys: {dupes}")
 
 
 # --- Step 2: Import raw data ---

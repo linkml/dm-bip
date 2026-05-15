@@ -513,6 +513,29 @@ class TestConversionAndEquivalencyOverrides:
         equiv = load_equivalency_overrides()
         assert {"bdchm_label", "var_units", "bdchm_unit"}.issubset(equiv.columns)
 
+    def test_conversion_overrides_reject_duplicate_keys(self, tmp_path):
+        """Duplicate (label, var_units, bdchm_unit) triples raise at load time."""
+        bad = tmp_path / "dup_conv.csv"
+        bad.write_text(
+            "bdchm_label,var_units,bdchm_unit,conversion_rule\nhdl,mmol/L,mg/dL,* 38.67\nhdl,mmol/L,mg/dL,* 40\n"
+        )
+        with pytest.raises(ValueError, match="duplicate"):
+            load_conversion_overrides(bad)
+
+    def test_equivalency_overrides_reject_duplicate_keys(self, tmp_path):
+        """Duplicate (label, var_units, bdchm_unit) triples raise at load time."""
+        bad = tmp_path / "dup_equiv.csv"
+        bad.write_text("bdchm_label,var_units,bdchm_unit\nmchc,%,g/dL\nmchc,%,g/dL\n")
+        with pytest.raises(ValueError, match="duplicate"):
+            load_equivalency_overrides(bad)
+
+    def test_conversion_overrides_reject_missing_columns(self, tmp_path):
+        """Missing required columns raise at load time."""
+        bad = tmp_path / "missing.csv"
+        bad.write_text("bdchm_label,var_units\nhdl,mmol/L\n")
+        with pytest.raises(ValueError, match="missing required columns"):
+            load_conversion_overrides(bad)
+
     def test_conversion_override_applied(self, docs):
         """An override row sets conversion_rule for the matching (label, var_units, bdchm_unit) triple."""
         overrides = pd.DataFrame(

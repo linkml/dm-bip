@@ -108,6 +108,11 @@ Rule types:
 By default `pattern` is matched exactly. Set `is_regex=1` for case-insensitive
 regex matching.
 
+**Rule order matters.** Rules apply in the order they appear in the CSV.
+Aliases should generally come first so subsequent label-conditional rules
+(`set_label`, `set_units` with `when_label`) see the canonical label, not the
+pre-alias raw value.
+
 Conditional columns (AND'd onto the match):
 
 - `when_label` — semicolon list of values; `bdchm_label` must be in the list
@@ -151,7 +156,7 @@ Required key columns: `phv`, `bdchm_label`. Recognized override columns
 | `associatedvisit_expr` | Override `associatedvisit_expr` |
 | `ageinyearsphv` | Override `ageinyearsphv` |
 | `conversion_rule` | Override `conversion_rule` |
-| `unit_expr_custom` | Alias for `conversion_rule` |
+| `unit_expr_custom` | Alias for `conversion_rule`; setting both on the same row is an error |
 | `unit_casestmt_custom` | Override `unit_casestmt_custom` |
 
 `apply-overrides` recomputes quality flags after applying overrides. It does

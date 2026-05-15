@@ -74,6 +74,14 @@ def apply_curator_overrides(
             f"Each row in the fixes CSV must have a unique key."
         )
 
+    if "conversion_rule" in fixes.columns and "unit_expr_custom" in fixes.columns:
+        both_set = (fixes["conversion_rule"] != "") & (fixes["unit_expr_custom"] != "")
+        if both_set.any():
+            raise ValueError(
+                f"fixes CSV rows have both conversion_rule and unit_expr_custom set "
+                f"(they are aliases): {fixes.loc[both_set, '_pair_id'].tolist()}"
+            )
+
     for fix_col, target_col in _OVERRIDE_COLUMNS.items():
         if fix_col not in fixes.columns:
             continue

@@ -112,6 +112,17 @@ def test_duplicate_pair_id_in_fixes_raises(tmp_path):
         apply_curator_overrides(pipeline_csv=pipeline_out, fixes_csv=fixes, output_csv=tmp_path / "out.csv")
 
 
+def test_conversion_rule_and_unit_expr_custom_both_set_raises(tmp_path):
+    """Setting both conversion_rule and unit_expr_custom on the same row raises (they're aliases)."""
+    pipeline_out = tmp_path / "pipeline.csv"
+    _run_pipeline(pipeline_out)
+
+    fixes = tmp_path / "fixes.csv"
+    fixes.write_text("phv,bdchm_label,conversion_rule,unit_expr_custom\nphv00202900,albumin in blood,* 2,* 3\n")
+    with pytest.raises(ValueError, match="conversion_rule and unit_expr_custom"):
+        apply_curator_overrides(pipeline_csv=pipeline_out, fixes_csv=fixes, output_csv=tmp_path / "out.csv")
+
+
 def test_no_matching_fixes_passes_through(tmp_path):
     """Fixes file with non-matching keys produces output identical to input (modulo recomputed flags)."""
     pipeline_out = tmp_path / "pipeline.csv"
