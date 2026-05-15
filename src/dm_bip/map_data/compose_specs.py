@@ -32,6 +32,7 @@ def compose_specs(spec_dir: Path, output_dir: Path) -> list[Path]:
     Returns the list of written output file paths.
     """
     entity_blocks: dict[str, list[dict]] = defaultdict(list)
+    enum_blocks: dict[str, dict] = {}
 
     yaml_files = sorted([*spec_dir.rglob("*.yaml"), *spec_dir.rglob("*.yml")])
     for yaml_file in yaml_files:
@@ -43,16 +44,21 @@ def compose_specs(spec_dir: Path, output_dir: Path) -> list[Path]:
         if not isinstance(specs, list):
             continue
         for block in specs:
-            if not isinstance(block, dict) or "class_derivations" not in block:
+            if not isinstance(block, dict):
                 continue
-            for class_name in block["class_derivations"]:
-                entity_blocks[class_name].append(block["class_derivations"])
+            if "class_derivations" in block:
+                for class_name in block["class_derivations"]:
+                    entity_blocks[class_name].append(block["class_derivations"])
+            if "enum_derivations" in block and isinstance(block["enum_derivations"], dict):
+                enum_blocks.update(block["enum_derivations"])
 
     output_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
     for entity in sorted(entity_blocks):
         out_path = output_dir / f"{entity}.yaml"
-        spec = {"class_derivations": [{entity: d[entity]} for d in entity_blocks[entity]]}
+        spec: dict = {"class_derivations": [{entity: d[entity]} for d in entity_blocks[entity]]}
+        if enum_blocks:
+            spec["enum_derivations"] = enum_blocks
         out_path.write_text(yaml.dump(spec, default_flow_style=False, sort_keys=False))
         written.append(out_path)
         logger.info("Wrote %s (%d derivation(s))", out_path.name, len(entity_blocks[entity]))
