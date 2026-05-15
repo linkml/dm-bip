@@ -10,7 +10,7 @@ dependencies = [
     "pandas>=2.2.3,<3",
     "linkml>=1.11.0",
     "schema-automator>=0.5.5",
-    "linkml-map @ git+https://github.com/linkml/linkml-map.git@53ad099",
+    "linkml-map @ git+https://github.com/linkml/linkml-map.git@8267d3a",
     "typing-extensions>=4.0,<5",
 ]
 

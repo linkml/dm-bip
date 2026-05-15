@@ -786,7 +786,7 @@ env = [
 [package.metadata]
 requires-dist = [
     { name = "linkml", specifier = ">=1.11.0" },
-    { name = "linkml-map", git = "https://github.com/linkml/linkml-map.git?rev=53ad099" },
+    { name = "linkml-map", git = "https://github.com/linkml/linkml-map.git?rev=8267d3a" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
     { name = "schema-automator", specifier = ">=0.5.5" },
     { name = "typing-extensions", specifier = ">=4.0,<5" },
@@ -1938,8 +1938,8 @@ wheels = [
 
 [[package]]
 name = "linkml-map"
-version = "0.4.0.post1.dev0+53ad099"
-source = { git = "https://github.com/linkml/linkml-map.git?rev=53ad099#53ad09930ff352d94200440de101e4dfd031ec62" }
+version = "0.5.2.post22.dev0+8267d3a"
+source = { git = "https://github.com/linkml/linkml-map.git?rev=8267d3a#8267d3a6ae32490dde416a02219f16b336674207" }
 dependencies = [
     { name = "asteval" },
     { name = "click" },
@@ -1950,6 +1950,7 @@ dependencies = [
     { name = "graphviz" },
     { name = "jinja2" },
     { name = "lark" },
+    { name = "linkml" },
     { name = "linkml-runtime" },
     { name = "more-itertools" },
     { name = "pint" },
@@ -1976,7 +1977,7 @@ wheels = [
 
 [[package]]
 name = "linkml-runtime"
-version = "1.10.0"
+version = "1.11.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -1993,9 +1994,9 @@ dependencies = [
     { name = "rdflib" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/36/3d/031e2e8ef7ca872340fb7b7102cfd1fe4a0b329dc04ff694ad9ec6ccaddc/linkml_runtime-1.10.0.tar.gz", hash = "sha256:899889d584ce8056c5c44512b2d247bdc84a8484c3aa228aeb2db283e3a9d2ec", size = 589957, upload-time = "2026-02-25T17:13:34.034Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fc/c9/a31c30d5ff7979e01182a6c2d1c7d19d1bd2ae8cb10e2f0368cc274aae14/linkml_runtime-1.11.0.tar.gz", hash = "sha256:f06ed1f4fbb9192283333f23dd427e2019c04aad297234c1a48111f88a97b516", size = 556686, upload-time = "2026-05-13T20:34:26.445Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1c/2d/6ab4127bb9aa6e3b54ad5d81fd0c0c12e4d1a80300f2bfdac8f2e18f9d17/linkml_runtime-1.10.0-py3-none-any.whl", hash = "sha256:b7caf806e1b49bf62005d8f398b070c282742c5f6626469fdc1660add0c9da58", size = 584001, upload-time = "2026-02-25T17:13:30.603Z" },
+    { url = "https://files.pythonhosted.org/packages/1e/1d/88aac7cac40721e12cdbbe0364ff80afc6f2620be96002bc50d11ee38621/linkml_runtime-1.11.0-py3-none-any.whl", hash = "sha256:5ccaee2763b92feb273f56f316d23a80b1d9231c5aba3cf6ad1eec5a0f8269b2", size = 654770, upload-time = "2026-05-13T20:34:22.475Z" },
 ]
 
 [[package]]
