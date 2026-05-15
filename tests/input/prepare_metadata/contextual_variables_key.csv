@@ -1,0 +1,7 @@
+cohort,pht,datatablename,associatedvisit,associatedvisit_expr,xassociatedvisit,participantidphv,ageinyearsphv,ageinyears_expr,notes,drop_table
+ARIC,pht004027,ARIC_Exam1,ARIC EXAM 1,,,phv00202851,phv00202852,,,
+ARIC,pht004028,ARIC_Exam3,ARIC EXAM 3,,,phv00202861,phv00202862,,,
+JHS,pht001200,JHS_Visit1,JHS VISIT 1,,,phv00100001,phv00100002,,JHS baseline visit,
+JHS,pht001201,JHS_Visit2,,Visit_2_label,,phv00100011,phv00100012,,,
+FHS,pht000001,FHS_Exam1,FHS EXAM 1,,,phv00000101,phv00000102,,,
+ARIC,pht009999,ARIC_Dropped,,,,,,,,1

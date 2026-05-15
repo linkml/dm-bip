@@ -6,6 +6,9 @@
 .vscode/
 .idea/
 
+# MkDocs build output
+site/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -76,7 +79,6 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
 
 # PyBuilder
 target/
@@ -148,3 +150,6 @@ CLAUDE.local.md
 
 # Generated pipeline outputs
 output/
+
+# Generated SevenBridges task manifest
+scripts/sevenbridges/batch_tasks.csv

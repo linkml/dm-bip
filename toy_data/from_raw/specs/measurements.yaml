@@ -1,7 +1,11 @@
-# Body height — from pht000002, inches → cm via expr
+# Body height — from pht000002, inches → cm via unit_conversion
+# age_at_observation uses cross-table join to pht000001 (demographics)
 - class_derivations:
     MeasurementObservation:
       populated_from: pht000002
+      joins:
+        pht000001:
+          join_on: dbGaP_Subject_ID
       slot_derivations:
         associated_participant:
           populated_from: phv00000011
@@ -11,6 +15,8 @@
         observation_type:
           value: OBA:VT0001253
           range: string
+        age_at_observation:
+          expr: '{pht000001.phv00000005} * 365'
         value_quantity:
           object_derivations:
           - class_derivations:
@@ -18,11 +24,14 @@
                 populated_from: pht000002
                 slot_derivations:
                   value_decimal:
-                    expr: '{phv00000012} * 2.54'
+                    populated_from: phv00000012
+                    unit_conversion:
+                      source_unit: "[in_i]"
+                      target_unit: cm
                   unit:
                     value: cm
                     range: string
-# Body weight — from pht000002, lbs → kg via expr
+# Body weight — from pht000002, lbs → kg via unit_conversion
 - class_derivations:
     MeasurementObservation:
       populated_from: pht000002
@@ -42,14 +51,22 @@
                 populated_from: pht000002
                 slot_derivations:
                   value_decimal:
-                    expr: '{phv00000013} * 0.453592'
+                    populated_from: phv00000013
+                    unit_conversion:
+                      source_unit: "[lb_av]"
+                      target_unit: kg
+                      none_if_non_numeric: true
                   unit:
                     value: kg
                     range: string
 # HDL cholesterol — from pht000003, direct copy
+# age_at_observation uses cross-table join to pht000001 (demographics)
 - class_derivations:
     MeasurementObservation:
       populated_from: pht000003
+      joins:
+        pht000001:
+          join_on: dbGaP_Subject_ID
       slot_derivations:
         associated_participant:
           populated_from: phv00000021
@@ -59,6 +76,8 @@
         observation_type:
           value: OMOP:4041720
           range: string
+        age_at_observation:
+          expr: '{pht000001.phv00000005} * 365'
         method_type:
           value: fasted for minimum 12 hrs
           range: string

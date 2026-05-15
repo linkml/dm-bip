@@ -1,0 +1,9 @@
+# Bad Participant: unsafe expression triggers RuntimeError
+- class_derivations:
+    Participant:
+      populated_from: pht000001
+      slot_derivations:
+        id:
+          populated_from: phv00000001
+        member_of_research_study:
+          expr: '__import__("os").getcwd()'

@@ -1,4 +1,4 @@
-subject_id	asthma	stroke	heart_disease	diabetes	consent_codes	study.id	project.id	participant.id
+subject_id	asthma	stroke	heart_disease	diabetes	consent_codes	study_id	project_id	participant_external_id
 1001	No	No	No	No	open	STUDY001	PROJ001	NA19669
 1002	No	No	No	No	open	STUDY001	PROJ001	HG02941
 1003	No	No	No	No	open	STUDY001	PROJ001	HG03814

@@ -7,3 +7,4 @@ DM_MAP_TARGET_SCHEMA := toy_data/target-schema.yaml
 DM_MAPPING_PREFIX    := TOY
 DM_MAPPING_POSTFIX   := -data
 DM_MAP_STRICT        := false
+DM_MAP_OUTPUT_TYPE   := yaml tsv
