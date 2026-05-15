@@ -1,9 +1,18 @@
 """
 Prepare metadata for trans-spec generation.
 
-Ported from the Stata pipeline (steps 1-4) in RTIInternational/NHLBI-BDC-DMC-HV.
-Takes raw dbGaP metadata exports and reference files, produces the curated CSV
-that generate_trans_specs consumes.
+Mechanical pipeline: load raw dbGaP exports, normalize columns, apply
+curator-maintained cleanup rules, join with reference tables, compute
+quality flags, emit the curated CSV that generate_trans_specs consumes.
+
+Curator decisions live outside this module:
+
+- Pre-pipeline cleanups (label aliases, label/unit inference, row drops)
+  come from a CSV consumed by ``cleanup_rules.apply_cleanup_rules``.
+- Reference-data overrides (label-keyed conversion/equivalency rules)
+  live under ``trans_spec_gen/data/`` and join in mechanically.
+- Per-row curator overrides (visit, age, custom conversion rules,
+  ``bad_map``) are applied post-pipeline by ``apply_overrides``.
 """
 
 import csv
@@ -13,9 +22,15 @@ from pathlib import Path
 
 import pandas as pd
 
+from dm_bip.trans_spec_gen.cleanup_rules import apply_cleanup_rules, load_cleanup_rules
 from dm_bip.trans_spec_gen.units import normalize_unit
 
 logger = logging.getLogger(__name__)
+
+
+REFERENCE_DATA_DIR = Path(__file__).parent / "data"
+DEFAULT_CONVERSION_OVERRIDES = REFERENCE_DATA_DIR / "conversion_overrides.csv"
+DEFAULT_EQUIVALENCY_OVERRIDES = REFERENCE_DATA_DIR / "equivalency_overrides.csv"
 
 
 # --- Step 1: Import documentation files ---
@@ -105,6 +120,48 @@ def load_unit_equivalencies(
     return equiv
 
 
+_CONVERSION_OVERRIDE_COLUMNS = {"bdchm_label", "var_units", "bdchm_unit", "conversion_rule"}
+_EQUIVALENCY_OVERRIDE_COLUMNS = {"bdchm_label", "var_units", "bdchm_unit"}
+
+
+_OVERRIDE_KEY = ["bdchm_label", "var_units", "bdchm_unit"]
+
+
+def load_conversion_overrides(path: Path = DEFAULT_CONVERSION_OVERRIDES) -> pd.DataFrame:
+    """
+    Load label-keyed conversion overrides.
+
+    Columns: bdchm_label, var_units, bdchm_unit, conversion_rule.
+    """
+    df = pd.read_csv(path, dtype=str).fillna("")
+    missing = _CONVERSION_OVERRIDE_COLUMNS - set(df.columns)
+    if missing:
+        raise ValueError(f"conversion overrides CSV {path} missing required columns: {sorted(missing)}")
+    _check_unique_keys(df, path, "conversion overrides")
+    return df
+
+
+def load_equivalency_overrides(path: Path = DEFAULT_EQUIVALENCY_OVERRIDES) -> pd.DataFrame:
+    """
+    Load label-keyed equivalency overrides.
+
+    Columns: bdchm_label, var_units, bdchm_unit. Presence implies equivalent_units=1.
+    """
+    df = pd.read_csv(path, dtype=str).fillna("")
+    missing = _EQUIVALENCY_OVERRIDE_COLUMNS - set(df.columns)
+    if missing:
+        raise ValueError(f"equivalency overrides CSV {path} missing required columns: {sorted(missing)}")
+    _check_unique_keys(df, path, "equivalency overrides")
+    return df
+
+
+def _check_unique_keys(df: pd.DataFrame, path: Path, kind: str) -> None:
+    duplicated = df.duplicated(subset=_OVERRIDE_KEY, keep=False)
+    if duplicated.any():
+        dupes = df.loc[duplicated, _OVERRIDE_KEY].drop_duplicates().to_dict(orient="records")
+        raise ValueError(f"{kind} CSV {path} has duplicate (bdchm_label, var_units, bdchm_unit) keys: {dupes}")
+
+
 # --- Step 2: Import raw data ---
 
 # Column rename mappings from real Excel formats to the standardized names
@@ -174,9 +231,6 @@ def _normalize_columns(df: pd.DataFrame) -> pd.DataFrame:
     if "variable_accession" in df.columns and "cohort" not in df.columns:
         df["cohort"] = "fhs"
 
-    # Detect cohort column (non-FHS has it as "Cohort")
-    # Already lowered above, so it's "cohort" now
-
     # FHS backfill: use alternate accession columns when primary is empty
     for target, source in [
         ("study_id", "dbgap_study_accession"),
@@ -238,9 +292,10 @@ def load_raw_data(raw_files: list[Path], known_sheets: list[str] | None = None) 
 
 def standardize_raw_data(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Standardize the combined raw data (step 2, section 5 of Stata).
+    Standardize the combined raw data.
 
-    Splits accession IDs, lowercases values, normalizes units.
+    Splits accession IDs, lowercases values, normalizes units. Mechanical
+    only — no editorial corrections.
     """
     # Drop bdchm_variable if present (redundant)
     df = df.drop(columns=["bdchm_variable"], errors="ignore")
@@ -253,18 +308,14 @@ def standardize_raw_data(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df[df["phv"].notna() & (df["phv"] != "")]
 
-    # Lowercase values
-    for col in ["cohort", "var_units", "var_desc"]:
+    # Lowercase free-text columns used as join keys or filter values
+    for col in ["cohort", "var_units", "var_desc", "transform_comment"]:
         if col in df.columns:
             df[col] = df[col].str.lower()
     if "bdchm_label" in df.columns:
         df["bdchm_label"] = df["bdchm_label"].str.lower()
 
-    # Cohort name fix
-    if "cohort" in df.columns:
-        df["cohort"] = df["cohort"].str.replace("hchs/sol", "hchs_sol", regex=False)
-
-    # Normalize units
+    # Normalize units via the canonical UCUM lookup
     if "var_units" in df.columns:
         df["var_units"] = df["var_units"].fillna("").apply(normalize_unit)
 
@@ -280,97 +331,20 @@ def standardize_raw_data(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# --- Step 3: Clean data ---
+# --- Step 3: Final shape after curator cleanup ---
 
 
-def clean_data(df: pd.DataFrame, fixes_file: Path | None = None) -> pd.DataFrame:
+def finalize_cleaned_data(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Clean data: exclude bad rows, fix labels, fix units, merge curator fixes.
+    Drop rows with empty join keys, deduplicate, build the merge_bdchm_label join key.
 
-    Faithful translation of DMCYAML_03_CleanData.do.
+    Runs after curator cleanup rules have been applied.
     """
-    # ----- 1. Exclude rows/variables -----
-    if "bdchm_label" in df.columns:
-        df = df[df["bdchm_label"] != "medication adherence"].copy()
-
-    # Drop bad mappings based on transform_comment
-    if "transform_comment" in df.columns:
-        df["transform_comment"] = df["transform_comment"].fillna("").str.lower()
-        drop_mask = (
-            df["transform_comment"].isin(["bad phv map", "not going to include", "phv doesn't exist"])
-            | df["transform_comment"].str.contains("out of scope", na=False)
-            | df["transform_comment"].str.contains("not a measurement", na=False)
-        )
-        df = df[~drop_mask].copy()
-
-    # ----- 2. Correct BDCHM variable mappings (spot-fixes) -----
-    if "bdchm_label" in df.columns:
-        label_fixes = {
-            "stroke status": "stroke",
-            "copd status": "copd",
-            "sleep apnea status": "sleep apnea",
-            "alcohol consumption": "alcohol servings",
-            "fruit consumption": "fruit servings",
-            "vegetable consumption": "vegetable servings",
-        }
-        df["bdchm_label"] = df["bdchm_label"].replace(label_fixes)
-
-        # Time indicator detection: clear label if time measurement mapped to non-time BDCHV
-        if "var_desc" in df.columns:
-            time_pattern = r"^days |days since| date$|^date |visit year|^age|age at|\(days\)|follow up days|\(years\)"
-            time_mask = df["var_desc"].fillna("").str.contains(time_pattern, flags=re.IGNORECASE, na=False)
-            allowed_time_labels = {"death", "age at follow-up"}
-            df.loc[time_mask & ~df["bdchm_label"].isin(allowed_time_labels), "bdchm_label"] = ""
-            df.loc[df["var_desc"] == "visit type", "bdchm_label"] = ""
-
-            # Blood pressure diastolic/systolic disambiguation
-            diastolic = df["var_desc"].str.contains("diastolic", case=False, na=False)
-            systolic = df["var_desc"].str.contains("systolic", case=False, na=False)
-            bp = df["bdchm_label"].str.contains("blood pressure", na=False)
-            df.loc[bp & diastolic, "bdchm_label"] = "diastolic blood pressure"
-            df.loc[bp & systolic, "bdchm_label"] = "systolic blood pressure"
-
-    # ----- 3. Correct units (spot-fixes) -----
-    if "var_desc" in df.columns and "var_units" in df.columns and "bdchm_label" in df.columns:
-        servday = df["var_desc"].str.contains(r"serv/day|daily|per day", case=False, na=False)
-        servweek = df["var_desc"].str.contains(r"per week|weekly|serv/week", case=False, na=False)
-        serving_labels = {"alcohol servings", "fruit servings", "vegetable servings"}
-        serving_mask = df["bdchm_label"].isin(serving_labels)
-        empty_or_servings = df["var_units"].isin(["", "{servings}"])
-
-        df.loc[servday & serving_mask & empty_or_servings, "var_units"] = "{#}/d"
-        df.loc[servweek & serving_mask & empty_or_servings, "var_units"] = "{#}/wk"
-
-        hrs = df["var_desc"].str.contains(r"how many hours|number of hours|hours", case=False, na=False)
-        df.loc[hrs & (df["bdchm_label"] == "sleep hours") & (df["var_units"] == ""), "var_units"] = "h"
-
-        kgm2 = df["var_desc"].str.contains(r"kg/m2", case=False, na=False)
-        df.loc[kgm2 & (df["var_units"] == ""), "var_units"] = "kg/m2"
-
-    # ----- 4. Merge in curator fixes -----
-    if fixes_file and fixes_file.exists():
-        fixes = pd.read_csv(fixes_file, dtype=str)
-        if "phv" in fixes.columns and "bdchm_label" in fixes.columns:
-            fixes["pair_id"] = fixes["phv"] + "|" + fixes["bdchm_label"]
-            df["pair_id"] = df["phv"] + "|" + df["bdchm_label"]
-            fix_cols = ["pair_id"] + [c for c in ["var_units_fixed", "bad_map"] if c in fixes.columns]
-            df = df.merge(fixes[fix_cols].drop_duplicates(), on="pair_id", how="left")
-            if "var_units_fixed" in df.columns:
-                mask = df["var_units_fixed"].notna() & (df["var_units_fixed"] != "")
-                df.loc[mask, "var_units"] = df.loc[mask, "var_units_fixed"]
-                df = df.drop(columns=["var_units_fixed"])
-            if "bad_map" in df.columns:
-                df.loc[df["bad_map"] == "1", "bdchm_label"] = ""
-                df = df.drop(columns=["bad_map"])
-            df = df.drop(columns=["pair_id"])
-
-    # ----- 5. Final cleanup -----
     df = df.drop_duplicates()
     df = df[df["phv"].notna() & (df["phv"] != "")]
     if "bdchm_label" in df.columns:
         df = df[df["bdchm_label"].notna() & (df["bdchm_label"] != "")]
         df["merge_bdchm_label"] = df["bdchm_label"].str.replace(" ", "", regex=False)
-
     return df
 
 
@@ -383,37 +357,31 @@ def merge_data_docs(
     conversions: pd.DataFrame,
     equivalencies: pd.DataFrame,
     contextual_vars: pd.DataFrame,
-    fixes_file: Path | None = None,
+    conversion_overrides: pd.DataFrame | None = None,
+    equivalency_overrides: pd.DataFrame | None = None,
     entity_filter: str | None = "MeasurementObservation",
 ) -> pd.DataFrame:
     """
-    Merge data with documentation files and compute quality flags.
+    Merge data with reference tables and compute quality flags.
 
-    Faithful translation of DMCYAML_04_MergeDataDocs.do.
+    Mechanical only — joins reference data, applies label-keyed
+    overrides, computes derived flags. No editorial logic.
 
     Args:
-        df: Cleaned data rows from clean_data.
+        df: Cleaned data rows from finalize_cleaned_data.
         bdchv_defs: BDC harmonized variable definitions (from load_bdchv_defs).
         conversions: Unit conversion table (from load_unit_conversions).
         equivalencies: Unit equivalency table (from load_unit_equivalencies).
         contextual_vars: Contextual variables key (from load_contextual_vars).
-        fixes_file: Optional path to a curator fixes CSV.
-        entity_filter: If set, restrict the output to rows whose bdchm_entity matches.
-            Pass None to keep all entity types. Defaults to "MeasurementObservation"
-            to match the Stata pipeline's behavior.
+        conversion_overrides: Label-keyed conversion rules (from load_conversion_overrides).
+        equivalency_overrides: Label-keyed equivalency rules (from load_equivalency_overrides).
+        entity_filter: Restrict the output to rows whose bdchm_entity matches.
+            Pass None to keep all entity types. Defaults to "MeasurementObservation".
 
     """
-    # Merge BDCHM definitions
     df = df.merge(bdchv_defs, on="merge_bdchm_label", how="left", suffixes=("", "_defs"))
-    # Apply fixed values if present
-    for col in ["bdchm_varname", "bdchm_unit"]:
-        fixed_col = f"{col}_fixed"
-        if fixed_col in df.columns:
-            mask = df[fixed_col].notna() & (df[fixed_col] != "")
-            df.loc[mask, col] = df.loc[mask, fixed_col]
-            df = df.drop(columns=[fixed_col])
 
-    # Merge unit conversions
+    # Unit conversion lookup keyed on (var_units, bdchm_unit)
     df["unit_merge_key"] = df["var_units"].fillna("") + "_" + df["bdchm_unit"].fillna("")
     conv_cols = [
         "unit_merge_key",
@@ -427,10 +395,15 @@ def merge_data_docs(
     conv_cols = [c for c in conv_cols if c in conversions.columns]
     df = df.merge(conversions[conv_cols].drop_duplicates(), on="unit_merge_key", how="left", suffixes=("", "_conv"))
 
-    # Merge unit equivalencies
     df = df.merge(equivalencies, on="unit_merge_key", how="left", suffixes=("", "_equiv"))
 
-    # Merge contextual variables by pht (Stata merges on pht only, not cohort)
+    # Apply label-keyed overrides for unit conversions/equivalencies that the
+    # generic unit-pair lookup can't express on its own.
+    if conversion_overrides is not None and not conversion_overrides.empty:
+        df = _apply_conversion_overrides(df, conversion_overrides)
+    if equivalency_overrides is not None and not equivalency_overrides.empty:
+        df = _apply_equivalency_overrides(df, equivalency_overrides)
+
     df = df.merge(contextual_vars, on="pht", how="left", suffixes=("", "_ctx"))
 
     # Track which rows matched on pht merge (participantidphv comes from contextual_vars)
@@ -439,132 +412,15 @@ def merge_data_docs(
     else:
         has_pht_merge = pd.Series(False, index=df.index)
 
-    # Apply curator overrides for specific fields (Stata merges fixed_bdchm_mappings in step 4)
-    if fixes_file and fixes_file.exists():
-        fixes = pd.read_csv(fixes_file, dtype=str)
-        if "phv" in fixes.columns and "bdchm_label" in fixes.columns:
-            override_cols = [
-                "participantidphv",
-                "associatedvisit",
-                "associatedvisit_expr",
-                "ageinyearsphv",
-                "conversion_rule",
-                "unit_expr_custom",
-                "unit_casestmt_custom",
-            ]
-            present_cols = [col for col in override_cols if col in fixes.columns]
-            if present_cols:
-                fixes["pair_id"] = fixes["phv"] + "|" + fixes["bdchm_label"]
-                df["pair_id"] = df["phv"].fillna("") + "|" + df["bdchm_label"].fillna("")
-                rename_map = {col: f"{col}_fixed" for col in present_cols}
-                fixes_subset = fixes[["pair_id"] + present_cols].copy()
-                fixes_subset = fixes_subset.rename(columns=rename_map).drop_duplicates()
-                df = df.merge(fixes_subset, on="pair_id", how="left")
-                for col in present_cols:
-                    fixed_col = f"{col}_fixed"
-                    if fixed_col in df.columns:
-                        mask = df[fixed_col].notna() & (df[fixed_col] != "")
-                        if col not in df.columns:
-                            df[col] = ""
-                        df.loc[mask, col] = df.loc[mask, fixed_col]
-                        df = df.drop(columns=[fixed_col])
-                df = df.drop(columns=["pair_id"])
-
     # Drop rows where table no longer exists in dbgap
     if "drop_table" in df.columns:
         df = df[df["drop_table"] != "1"]
         df = df.drop(columns=["drop_table"])
+        has_pht_merge = has_pht_merge.loc[df.index]
 
-    # ----- Hardcoded conversion spot-fixes -----
-    if all(c in df.columns for c in ["var_units", "bdchm_unit", "bdchm_label", "conversion_rule"]):
-        df["conversion_rule"] = df["conversion_rule"].fillna("")
-        # Cholesterol: mmol/L to mg/dL
-        cholesterol_labels = ["hdl", "total cholesterol in blood"]
-        mask = (
-            (df["var_units"] == "mmol/L") & (df["bdchm_unit"] == "mg/dL") & df["bdchm_label"].isin(cholesterol_labels)
-        )
-        df.loc[mask, "conversion_rule"] = "* 38.67"
-        # Factor VIII: % to IU/mL
-        mask = (df["var_units"] == "%") & (df["bdchm_unit"] == "[IU]/mL") & (df["bdchm_label"] == "factor viii")
-        df.loc[mask, "conversion_rule"] = "* 0.01"
+    df = compute_quality_flags(df, has_pht_merge=has_pht_merge)
 
-    # Hardcoded equivalency spot-fixes
-    if "equivalent_units" in df.columns and all(c in df.columns for c in ["var_units", "bdchm_unit", "bdchm_label"]):
-        df["equivalent_units"] = df["equivalent_units"].fillna(0)
-        # MCHC: % is equivalent to g/dL
-        mask = (
-            (df["var_units"] == "%")
-            & (df["bdchm_unit"] == "g/dL")
-            & (df["bdchm_label"] == "mean corpuscular hemoglobin concentration")
-        )
-        df.loc[mask, "equivalent_units"] = 1
-        # Sodium: meq/L is equivalent to mmol/L
-        mask = (df["bdchm_label"] == "sodium in blood") & (df["var_units"] == "meq/L") & (df["bdchm_unit"] == "mmol/L")
-        df.loc[mask, "equivalent_units"] = 1
-
-    # Manual conversion rule from curator fixes
-    if fixes_file and fixes_file.exists() and "unit_expr_custom" in df.columns:
-        mask = df["unit_expr_custom"].notna() & (df["unit_expr_custom"] != "")
-        if "conversion_rule" in df.columns:
-            df.loc[mask, "conversion_rule"] = df.loc[mask, "unit_expr_custom"]
-
-    # ----- Compute quality flags -----
-    df["has_pht"] = has_pht_merge.astype(int)
-    df["has_onto"] = (df["onto_id"].fillna("") != "").astype(int)
-
-    df["unit_match"] = 0
-    if "var_units" in df.columns and "bdchm_unit" in df.columns:
-        exact_match = (df["var_units"] == df["bdchm_unit"]) & (df["var_units"] != "")
-        equiv_match = df["equivalent_units"].fillna(0).astype(int) == 1 if "equivalent_units" in df.columns else False
-        df["unit_match"] = (exact_match | equiv_match).astype(int)
-
-    df["unit_convert"] = 0
-    if "both_valid_ucums" in df.columns:
-        df["unit_convert"] = ((df["unit_match"] != 1) & (df["both_valid_ucums"].fillna(0).astype(int) == 1)).astype(int)
-
-    df["unit_expr"] = 0
-    df.loc[
-        (df["unit_match"] != 1)
-        & (df.get("both_valid_ucums", pd.Series(0, index=df.index)).fillna(0).astype(int) != 1)
-        & (df["conversion_rule"].fillna("") != ""),
-        "unit_expr",
-    ] = 1
-
-    df["unit_casestmt"] = 0
-    if "unit_casestmt_custom" in df.columns:
-        df.loc[df["unit_casestmt_custom"].fillna("") != "", "unit_casestmt"] = 1
-
-    # Visit flags
-    if "associatedvisit" in df.columns:
-        df["has_visit"] = (df["associatedvisit"].fillna("").str.strip() != "").astype(int)
-    else:
-        df["has_visit"] = 0
-    if "associatedvisit_expr" in df.columns:
-        # Clear expr if direct visit exists
-        has_both = (df["has_visit"] == 1) & (df["associatedvisit_expr"].fillna("").str.strip() != "")
-        df.loc[has_both, "associatedvisit_expr"] = ""
-        df["has_visit_expr"] = (df["associatedvisit_expr"].fillna("").str.strip() != "").astype(int)
-    else:
-        df["has_visit_expr"] = 0
-
-    # Exam descriptor from var_desc
-    if "var_desc" in df.columns:
-        df["var_desc_exam"] = df["var_desc"].str.extract(r"(exam\s+\d+)", flags=re.IGNORECASE)[0]
-    else:
-        df["var_desc_exam"] = ""
-
-    # Age flag
-    if "ageinyearsphv" in df.columns:
-        df["has_age"] = (df["ageinyearsphv"].fillna("").str.strip() != "").astype(int)
-    else:
-        df["has_age"] = 0
-
-    # Row quality: good if has pht, has ontology, and has some unit handling
-    df["row_good"] = 0
-    unit_ok = (df["unit_match"] == 1) | (df["unit_convert"] == 1) | (df["unit_expr"] == 1) | (df["unit_casestmt"] == 1)
-    df.loc[(df["has_pht"] == 1) & (df["has_onto"] == 1) & unit_ok, "row_good"] = 1
-
-    # ----- Output: keep only relevant columns, MeasurementObservation only -----
+    # ----- Output: keep only relevant columns -----
     output_cols = [
         "row_good",
         "cohort",
@@ -597,14 +453,127 @@ def merge_data_docs(
         "unit_casestmt_custom",
         "source_unit",
         "target_unit",
+        # Internal lookup state surfaced so apply_curator_overrides can
+        # recompute quality flags without re-loading reference data.
+        "equivalent_units",
+        "both_valid_ucums",
     ]
-    # Keep only columns that exist
+    for col in ("equivalent_units", "both_valid_ucums"):
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
+
     output_cols = [c for c in output_cols if c in df.columns]
     df = df[output_cols]
     df = df.drop_duplicates()
 
     if entity_filter is not None and "bdchm_entity" in df.columns:
         df = df[df["bdchm_entity"] == entity_filter]
+
+    return df
+
+
+def _apply_conversion_overrides(df: pd.DataFrame, overrides: pd.DataFrame) -> pd.DataFrame:
+    """Set conversion_rule from a (bdchm_label, var_units, bdchm_unit) lookup."""
+    if "conversion_rule" not in df.columns:
+        df["conversion_rule"] = ""
+    df["conversion_rule"] = df["conversion_rule"].fillna("")
+    keyed = overrides.set_index(["bdchm_label", "var_units", "bdchm_unit"])["conversion_rule"]
+    triple = df.set_index(["bdchm_label", "var_units", "bdchm_unit"]).index
+    matches = triple.map(keyed.to_dict()).to_series(index=df.index)
+    mask = matches.notna()
+    df.loc[mask, "conversion_rule"] = matches[mask]
+    return df
+
+
+def _apply_equivalency_overrides(df: pd.DataFrame, overrides: pd.DataFrame) -> pd.DataFrame:
+    """Force equivalent_units=1 for any (bdchm_label, var_units, bdchm_unit) listed."""
+    if "equivalent_units" not in df.columns:
+        df["equivalent_units"] = 0
+    df["equivalent_units"] = df["equivalent_units"].fillna(0)
+    keyed = set(zip(overrides["bdchm_label"], overrides["var_units"], overrides["bdchm_unit"], strict=False))
+    triples = list(zip(df["bdchm_label"], df["var_units"], df["bdchm_unit"], strict=False))
+    mask = pd.Series([t in keyed for t in triples], index=df.index)
+    df.loc[mask, "equivalent_units"] = 1
+    return df
+
+
+# --- Step 5: Quality flag computation ---
+
+
+def compute_quality_flags(df: pd.DataFrame, has_pht_merge: pd.Series | None = None) -> pd.DataFrame:
+    """
+    Compute derived quality/structural flags.
+
+    has_pht, has_onto, unit_match, unit_convert, unit_expr, unit_casestmt,
+    has_visit, has_visit_expr, has_age, var_desc_exam, row_good.
+
+    Args:
+        df: DataFrame after reference data has been joined in.
+        has_pht_merge: Optional pre-computed pht-match mask. If None, derived
+            from participantidphv presence. Pass-through is needed because
+            apply_curator_overrides may overwrite participantidphv after the
+            initial join.
+
+    """
+    df = df.copy()
+
+    if has_pht_merge is None:
+        if "participantidphv" in df.columns:
+            has_pht_merge = df["participantidphv"].fillna("").astype(str).str.strip() != ""
+        else:
+            has_pht_merge = pd.Series(False, index=df.index)
+
+    df["has_pht"] = has_pht_merge.astype(int)
+    df["has_onto"] = (df["onto_id"].fillna("") != "").astype(int) if "onto_id" in df.columns else 0
+
+    df["unit_match"] = 0
+    if "var_units" in df.columns and "bdchm_unit" in df.columns:
+        exact_match = (df["var_units"] == df["bdchm_unit"]) & (df["var_units"] != "")
+        equiv_match = df["equivalent_units"].fillna(0).astype(int) == 1 if "equivalent_units" in df.columns else False
+        df["unit_match"] = (exact_match | equiv_match).astype(int)
+
+    df["unit_convert"] = 0
+    if "both_valid_ucums" in df.columns:
+        df["unit_convert"] = ((df["unit_match"] != 1) & (df["both_valid_ucums"].fillna(0).astype(int) == 1)).astype(int)
+
+    df["unit_expr"] = 0
+    if "conversion_rule" in df.columns:
+        df.loc[
+            (df["unit_match"] != 1)
+            & (df.get("both_valid_ucums", pd.Series(0, index=df.index)).fillna(0).astype(int) != 1)
+            & (df["conversion_rule"].fillna("") != ""),
+            "unit_expr",
+        ] = 1
+
+    df["unit_casestmt"] = 0
+    if "unit_casestmt_custom" in df.columns:
+        df.loc[df["unit_casestmt_custom"].fillna("") != "", "unit_casestmt"] = 1
+
+    if "associatedvisit" in df.columns:
+        df["has_visit"] = (df["associatedvisit"].fillna("").str.strip() != "").astype(int)
+    else:
+        df["has_visit"] = 0
+    if "associatedvisit_expr" in df.columns:
+        # Clear expr if direct visit exists
+        has_both = (df["has_visit"] == 1) & (df["associatedvisit_expr"].fillna("").str.strip() != "")
+        df.loc[has_both, "associatedvisit_expr"] = ""
+        df["has_visit_expr"] = (df["associatedvisit_expr"].fillna("").str.strip() != "").astype(int)
+    else:
+        df["has_visit_expr"] = 0
+
+    if "var_desc" in df.columns:
+        df["var_desc_exam"] = df["var_desc"].str.extract(r"(exam\s+\d+)", flags=re.IGNORECASE)[0]
+    else:
+        df["var_desc_exam"] = ""
+
+    if "ageinyearsphv" in df.columns:
+        df["has_age"] = (df["ageinyearsphv"].fillna("").str.strip() != "").astype(int)
+    else:
+        df["has_age"] = 0
+
+    df["row_good"] = 0
+    unit_ok = (df["unit_match"] == 1) | (df["unit_convert"] == 1) | (df["unit_expr"] == 1) | (df["unit_casestmt"] == 1)
+    df.loc[(df["has_pht"] == 1) & (df["has_onto"] == 1) & unit_ok, "row_good"] = 1
 
     return df
 
@@ -618,12 +587,18 @@ def prepare_metadata(
     contextual_vars_path: Path,
     unit_key_path: Path,
     output_path: Path,
-    fixes_file: Path | None = None,
+    cleanup_rules_path: Path | None = None,
+    conversion_overrides_path: Path | None = DEFAULT_CONVERSION_OVERRIDES,
+    equivalency_overrides_path: Path | None = DEFAULT_EQUIVALENCY_OVERRIDES,
     known_sheets: list[str] | None = None,
     entity_filter: str | None = "MeasurementObservation",
 ) -> Path | None:
     """
-    Run the full metadata preparation pipeline.
+    Run the full mechanical metadata preparation pipeline.
+
+    Curator decisions enter through cleanup_rules (pre-pipeline) and the
+    label-keyed override tables (reference data). Per-row curator fixes
+    happen post-pipeline via apply_curator_overrides.
 
     Args:
         raw_files: Paths to raw metadata Excel files.
@@ -631,11 +606,13 @@ def prepare_metadata(
         contextual_vars_path: Path to contextual_variables_key.csv.
         unit_key_path: Path to unit_key.xlsx.
         output_path: Path for the output CSV.
-        fixes_file: Optional path to curator fixes CSV.
+        cleanup_rules_path: Optional path to a curator cleanup rules CSV.
+        conversion_overrides_path: Path to label-keyed conversion overrides CSV.
+            Defaults to the in-repo file.
+        equivalency_overrides_path: Path to label-keyed equivalency overrides CSV.
+            Defaults to the in-repo file.
         known_sheets: Excel sheet names to look for when loading raw data.
-            Defaults to DEFAULT_KNOWN_SHEETS.
         entity_filter: Restrict output to rows with this bdchm_entity value.
-            Pass None to keep all entities. Defaults to "MeasurementObservation".
 
     Returns:
         Path to the written output CSV, or None if no data was loaded.
@@ -647,6 +624,11 @@ def prepare_metadata(
     conversions = load_unit_conversions(unit_key_path)
     equivalencies = load_unit_equivalencies(unit_key_path)
 
+    conversion_overrides = load_conversion_overrides(conversion_overrides_path) if conversion_overrides_path else None
+    equivalency_overrides = (
+        load_equivalency_overrides(equivalency_overrides_path) if equivalency_overrides_path else None
+    )
+
     logger.info("Loading raw data from %d file(s)...", len(raw_files))
     df = load_raw_data(raw_files, known_sheets=known_sheets)
     if df.empty:
@@ -656,12 +638,24 @@ def prepare_metadata(
     logger.info("Standardizing raw data...")
     df = standardize_raw_data(df)
 
-    logger.info("Cleaning data...")
-    df = clean_data(df, fixes_file)
+    if cleanup_rules_path is not None:
+        logger.info("Applying curator cleanup rules from %s...", cleanup_rules_path)
+        rules = load_cleanup_rules(cleanup_rules_path)
+        df = apply_cleanup_rules(df, rules)
+
+    logger.info("Finalizing cleaned data...")
+    df = finalize_cleaned_data(df)
 
     logger.info("Merging with documentation...")
     df = merge_data_docs(
-        df, bdchv_defs, conversions, equivalencies, contextual_vars, fixes_file, entity_filter=entity_filter
+        df,
+        bdchv_defs,
+        conversions,
+        equivalencies,
+        contextual_vars,
+        conversion_overrides=conversion_overrides,
+        equivalency_overrides=equivalency_overrides,
+        entity_filter=entity_filter,
     )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
