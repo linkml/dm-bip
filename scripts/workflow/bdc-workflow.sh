@@ -194,39 +194,12 @@ if [[ -n "$TRANS_SPEC_SLUG" ]]; then
   fi
 
   # Parse slug: OWNER/REPO[@REF][:PATH]
-  slug_remainder="$TRANS_SPEC_SLUG"
-
-  # Extract :PATH (if present)
-  if [[ "$slug_remainder" == *:* ]]; then
-    TRANS_SPEC_EXPLICIT_PATH="${slug_remainder##*:}"
-    slug_remainder="${slug_remainder%:*}"
-  fi
-
-  # Extract @REF (if present)
-  TRANS_SPEC_REF=""
-  if [[ "$slug_remainder" == *@* ]]; then
-    TRANS_SPEC_REF="${slug_remainder##*@}"
-    slug_remainder="${slug_remainder%@*}"
-  fi
-
-  # Validate OWNER/REPO format
-  if [[ ! "$slug_remainder" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]]; then
-    echo "ERROR: Invalid --trans-spec slug '${TRANS_SPEC_SLUG}'" >&2
-    echo "       Expected OWNER/REPO[@REF][:PATH]" >&2
-    exit 1
-  fi
-
-  TRANS_SPEC_OWNER_REPO="$slug_remainder"
-  TRANS_SPEC_REPO_NAME="${TRANS_SPEC_OWNER_REPO##*/}"
+  slug_fields=$(uv run --directory "$WORKING_DIR" scripts/workflow/parse_trans_spec_slug.py "$TRANS_SPEC_SLUG") || exit 1
+  { read -r TRANS_SPEC_OWNER_REPO
+    read -r TRANS_SPEC_REPO_NAME
+    read -r TRANS_SPEC_REF
+    read -r TRANS_SPEC_EXPLICIT_PATH; } <<< "$slug_fields"
   TRANS_SPEC_REPO_DIR="/app/${TRANS_SPEC_REPO_NAME}"
-
-  # Validate explicit path (no traversal or absolute paths)
-  if [[ -n "$TRANS_SPEC_EXPLICIT_PATH" ]]; then
-    if [[ "$TRANS_SPEC_EXPLICIT_PATH" == /* || "$TRANS_SPEC_EXPLICIT_PATH" == *".."* ]]; then
-      echo "ERROR: Explicit trans-spec path must be relative and not contain '..': $TRANS_SPEC_EXPLICIT_PATH" >&2
-      exit 1
-    fi
-  fi
 
   echo "Trans-spec override: ${TRANS_SPEC_OWNER_REPO}"
   [[ -n "$TRANS_SPEC_REF" ]] && echo "  Ref: ${TRANS_SPEC_REF}"
@@ -285,48 +258,14 @@ DM_OUTPUT_DIR="${PROCESSED_DIR}/${OUTPUT_NAME}"
 DM_INPUT_DIR="${PROCESSED_DIR}/${RAW_DIR_NAME}_CleanedSource"
 
 # Define paths to external dependencies (within container)
-# Resolve trans-spec directory based on --trans-spec slug or default
-if [[ -n "$TRANS_SPEC_EXPLICIT_PATH" ]]; then
-  # Explicit path from slug
-  DM_TRANS_SPEC_DIR="${TRANS_SPEC_REPO_DIR}/${TRANS_SPEC_EXPLICIT_PATH}"
-  if [[ ! -d "$DM_TRANS_SPEC_DIR" ]]; then
-    echo "ERROR: Explicit trans-spec path not found: $DM_TRANS_SPEC_DIR"
-    exit 1
-  fi
-elif [[ -n "$TRANS_SPEC_REPO_DIR" ]]; then
-  # Auto-detect layout from repo contents
-  if [[ -d "${TRANS_SPEC_REPO_DIR}/priority_variables_transform" ]]; then
-    # NHLBI-BDC-DMC-HV layout
-    DM_TRANS_SPEC_DIR="${TRANS_SPEC_REPO_DIR}/priority_variables_transform/${DM_SCHEMA_NAME}-ingest"
-  elif [[ -d "${TRANS_SPEC_REPO_DIR}/trans_specs" ]]; then
-    # bdc-harmonized-variables layout (versioned subdirectories)
-    TRANS_SPEC_BASE="${TRANS_SPEC_REPO_DIR}/trans_specs/${DM_SCHEMA_NAME}"
-    latest_version_dir=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V | tail -1)
-    if [[ -z "${latest_version_dir:-}" ]]; then
-      echo "ERROR: No trans-spec version directory found under $TRANS_SPEC_BASE"
-      exit 1
-    fi
-    DM_TRANS_SPEC_DIR="${TRANS_SPEC_BASE}/${latest_version_dir}"
-  else
-    echo "ERROR: Cannot auto-detect trans-spec layout in ${TRANS_SPEC_REPO_DIR}"
-    echo "       Use OWNER/REPO@REF:PATH to specify the path explicitly"
-    exit 1
-  fi
-  if [[ ! -d "$DM_TRANS_SPEC_DIR" ]]; then
-    echo "ERROR: Auto-detected trans-spec directory not found: $DM_TRANS_SPEC_DIR"
-    echo "       Use OWNER/REPO@REF:PATH to specify the path explicitly"
-    exit 1
-  fi
-else
-  # Default: bdc-harmonized-variables (build-time clone)
-  TRANS_SPEC_BASE="/app/bdc-harmonized-variables/trans_specs/${DM_SCHEMA_NAME}"
-  latest_version_dir=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V | tail -1)
-  if [[ -z "${latest_version_dir:-}" ]]; then
-    echo "ERROR: No trans-spec version directory found under $TRANS_SPEC_BASE"
-    exit 1
-  fi
-  DM_TRANS_SPEC_DIR="${TRANS_SPEC_BASE}/${latest_version_dir}"
+# Resolve trans-spec directory: use slug-cloned repo if --trans-spec was given,
+# otherwise fall back to the build-time clone of bdc-harmonized-variables.
+RESOLVER_REPO_DIR="${TRANS_SPEC_REPO_DIR:-/app/bdc-harmonized-variables}"
+RESOLVER_ARGS=(--repo-dir "$RESOLVER_REPO_DIR" --schema-name "$DM_SCHEMA_NAME")
+if [[ -n "${TRANS_SPEC_EXPLICIT_PATH:-}" ]]; then
+  RESOLVER_ARGS+=(--explicit-path "$TRANS_SPEC_EXPLICIT_PATH")
 fi
+DM_TRANS_SPEC_DIR=$(uv run --directory "$WORKING_DIR" scripts/workflow/resolve_trans_spec_dir.py "${RESOLVER_ARGS[@]}") || exit 1
 echo "  Trans-spec version:   ${DM_TRANS_SPEC_DIR}"
 DM_MAP_TARGET_SCHEMA="/app/NHLBI-BDC-DMC-HM/src/bdchm/schema/bdchm.yaml"
 
