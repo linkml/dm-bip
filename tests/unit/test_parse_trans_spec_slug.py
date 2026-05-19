@@ -107,38 +107,46 @@ def _run(*args) -> subprocess.CompletedProcess:
     )
 
 
-def test_cli_prints_four_lines_in_fixed_order():
-    """Output is exactly four lines: owner_repo, repo_name, ref, explicit_path."""
+def test_cli_prints_single_us_separated_line():
+    """Output is exactly one Unit-Separator-delimited line."""
     result = _run("owner/repo@main:sub/dir")
     assert result.returncode == 0
     lines = result.stdout.splitlines()
-    assert lines == ["owner/repo", "repo", "main", "sub/dir"]
+    assert lines == ["owner/repo\x1frepo\x1fmain\x1fsub/dir"]
 
 
-def test_cli_emits_empty_lines_for_missing_optionals():
-    """Missing ref and explicit_path produce empty lines (so position is preserved)."""
+def test_cli_emits_empty_fields_for_missing_optionals():
+    """Missing ref and explicit_path appear as empty fields between separators."""
     result = _run("owner/repo")
     assert result.returncode == 0
     lines = result.stdout.splitlines()
-    assert lines == ["owner/repo", "repo", "", ""]
+    assert lines == ["owner/repo\x1frepo\x1f\x1f"]
 
 
-def test_cli_consumable_via_bash_read():
-    """A bash caller can read the four lines into variables with `read`."""
-    result = _run("owner/repo@v1.0:nested/path")
-    assert result.returncode == 0
+@pytest.mark.parametrize(
+    ("slug", "expected"),
+    [
+        ("owner/repo@v1.0:nested/path", "owner/repo|repo|v1.0|nested/path"),
+        # Regression cases that broke earlier formats:
+        ("owner/repo", "owner/repo|repo||"),  # empty trailing fields must survive $()
+        ("owner/repo@main", "owner/repo|repo|main|"),
+        ("owner/repo:some/path", "owner/repo|repo||some/path"),  # empty middle field must not fold
+    ],
+)
+def test_cli_consumable_via_bash_capture_and_read(slug, expected):
+    """Mirror the exact $()+`read` pattern in bdc-workflow.sh, including empty fields."""
     bash_script = (
-        "read -r OWNER_REPO; read -r REPO_NAME; read -r REF; read -r EXPLICIT_PATH; "
-        'echo "$OWNER_REPO|$REPO_NAME|$REF|$EXPLICIT_PATH"'
+        f"slug_fields=$({sys.executable} {SCRIPT} {slug}) || exit 1; "
+        "IFS=$'\\x1f' read -r OWNER REPO REF EXPLICIT_PATH <<< \"$slug_fields\"; "
+        'echo "$OWNER|$REPO|$REF|$EXPLICIT_PATH"'
     )
     bash = subprocess.run(  # noqa: S603
-        ["bash", "-c", bash_script],  # noqa: S607
-        input=result.stdout,
+        ["bash", "-euo", "pipefail", "-c", bash_script],  # noqa: S607
         capture_output=True,
         text=True,
         check=True,
     )
-    assert bash.stdout.strip() == "owner/repo|repo|v1.0|nested/path"
+    assert bash.stdout.strip() == expected
 
 
 def test_cli_bad_slug_exits_nonzero_with_stderr_message():

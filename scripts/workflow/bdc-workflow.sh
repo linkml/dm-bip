@@ -195,10 +195,7 @@ if [[ -n "$TRANS_SPEC_SLUG" ]]; then
 
   # Parse slug: OWNER/REPO[@REF][:PATH]
   slug_fields=$(uv run --directory "$WORKING_DIR" scripts/workflow/parse_trans_spec_slug.py "$TRANS_SPEC_SLUG") || exit 1
-  { read -r TRANS_SPEC_OWNER_REPO
-    read -r TRANS_SPEC_REPO_NAME
-    read -r TRANS_SPEC_REF
-    read -r TRANS_SPEC_EXPLICIT_PATH; } <<< "$slug_fields"
+  IFS=$'\x1f' read -r TRANS_SPEC_OWNER_REPO TRANS_SPEC_REPO_NAME TRANS_SPEC_REF TRANS_SPEC_EXPLICIT_PATH <<< "$slug_fields"
   TRANS_SPEC_REPO_DIR="/app/${TRANS_SPEC_REPO_NAME}"
 
   echo "Trans-spec override: ${TRANS_SPEC_OWNER_REPO}"
