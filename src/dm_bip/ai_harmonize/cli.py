@@ -188,7 +188,9 @@ def wait(
     output: Annotated[
         Optional[Path], typer.Option("--output", "-o", help="Also fetch results to this path when complete.")
     ] = None,
-    interval: Annotated[int, typer.Option("--interval", help="Poll interval in seconds.")] = POLL_INTERVAL_SECONDS,
+    interval: Annotated[
+        int, typer.Option("--interval", min=0, help="Poll interval in seconds.")
+    ] = POLL_INTERVAL_SECONDS,
 ) -> None:
     """Poll until a job reaches a terminal status; optionally fetch results."""
     client = Client(load_config())

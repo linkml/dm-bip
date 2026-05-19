@@ -161,7 +161,16 @@ class Client:
         return self._api_call("POST", "submit-file", json_body=body)
 
     def upload_file(self, upload_url: str, path: Path, content_type: str) -> None:
-        """PUT a file to a presigned S3 URL — no auth header (URL is pre-signed)."""
+        """
+        PUT a file to a presigned S3 URL — no auth header (URL is pre-signed).
+
+        The body is buffered in memory rather than streamed. Input size is bounded by
+        study-variable-count × a small handful of metadata columns (~25MB worst case
+        for the largest BDC cohorts), well within comfortable in-memory limits on
+        any curator workstation. Streaming would require explicit Content-Length
+        handling to keep S3's presigned-URL signature valid; the complexity isn't
+        warranted at this scale. Revisit if input shape grows materially.
+        """
         logger.info("Uploading %s (%d bytes) to S3", path.name, path.stat().st_size)
         with path.open("rb") as fh:
             response = self.http.put(

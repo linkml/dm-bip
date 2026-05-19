@@ -64,12 +64,15 @@ def save_manifest(manifest_dir: Path, manifest: JobManifest) -> Path:
 
 
 def load_manifest(manifest_dir: Path, job_id: str) -> JobManifest | None:
-    """Load a previously saved manifest by job_id; None if not found."""
+    """Load a previously saved manifest by job_id; None if missing, unreadable, or malformed."""
     path = manifest_dir / f"{job_id}.json"
     if not path.exists():
         return None
-    data = json.loads(path.read_text())
-    return JobManifest(**data)
+    try:
+        return JobManifest(**json.loads(path.read_text()))
+    except (json.JSONDecodeError, TypeError, OSError) as exc:
+        logger.debug("Discarding unreadable manifest at %s: %s", path, exc)
+        return None
 
 
 def list_manifests(manifest_dir: Path) -> list[JobManifest]:
@@ -80,7 +83,7 @@ def list_manifests(manifest_dir: Path) -> list[JobManifest]:
     for path in manifest_dir.glob("*.json"):
         try:
             manifests.append(JobManifest(**json.loads(path.read_text())))
-        except (json.JSONDecodeError, TypeError) as exc:
-            logger.debug("Skipping malformed manifest %s: %s", path, exc)
+        except (json.JSONDecodeError, TypeError, OSError) as exc:
+            logger.debug("Skipping unreadable manifest %s: %s", path, exc)
     manifests.sort(key=lambda m: m.submitted_at, reverse=True)
     return manifests
