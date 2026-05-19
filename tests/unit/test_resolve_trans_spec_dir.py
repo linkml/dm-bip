@@ -18,24 +18,7 @@ def _load_module():
     return module
 
 
-_module = _load_module()
-resolve_trans_spec_dir = _module.resolve_trans_spec_dir
-_version_sort_key = _module._version_sort_key
-
-
-# --- Version sort key -------------------------------------------------------
-
-
-def test_version_sort_numeric():
-    """Numeric components sort numerically, not lexicographically."""
-    names = ["v1.2", "v1.10", "v1.1", "v2.0"]
-    assert sorted(names, key=_version_sort_key) == ["v1.1", "v1.2", "v1.10", "v2.0"]
-
-
-def test_version_sort_mixed_chunks():
-    """Names with mixed text and numbers sort coherently."""
-    names = ["1.0.0", "1.0.10", "1.0.2", "2.0.0"]
-    assert sorted(names, key=_version_sort_key) == ["1.0.0", "1.0.2", "1.0.10", "2.0.0"]
+resolve_trans_spec_dir = _load_module().resolve_trans_spec_dir
 
 
 # --- Explicit path branch ---------------------------------------------------
@@ -92,6 +75,14 @@ def test_bhv_layout_picks_latest_version(tmp_path):
     for v in ("v1.0", "v1.10", "v1.2", "v2.0"):
         (base / v).mkdir(parents=True)
     assert resolve_trans_spec_dir(tmp_path, "FHS") == base / "v2.0"
+
+
+def test_bhv_layout_natural_sorts_two_digit_versions(tmp_path):
+    """v1.10 must sort after v1.2 — lex-sort would get this wrong."""
+    base = tmp_path / "trans_specs" / "FHS"
+    (base / "v1.2").mkdir(parents=True)
+    (base / "v1.10").mkdir(parents=True)
+    assert resolve_trans_spec_dir(tmp_path, "FHS") == base / "v1.10"
 
 
 def test_bhv_layout_single_version(tmp_path):

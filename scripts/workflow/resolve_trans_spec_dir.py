@@ -23,7 +23,7 @@ from pathlib import Path
 
 import typer
 
-app = typer.Typer(help=__doc__.splitlines()[0], add_completion=False)
+app = typer.Typer(help=(__doc__ or "").splitlines()[0], add_completion=False)
 
 
 def _version_sort_key(name: str) -> tuple:

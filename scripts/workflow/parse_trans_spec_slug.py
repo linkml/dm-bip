@@ -21,7 +21,7 @@ import typer
 
 OWNER_REPO_RE = re.compile(r"^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$")
 
-app = typer.Typer(help=__doc__.splitlines()[0], add_completion=False)
+app = typer.Typer(help=(__doc__ or "").splitlines()[0], add_completion=False)
 
 
 def parse_slug(slug: str) -> dict[str, str]:
