@@ -200,6 +200,9 @@ Examples
 2. Run the pipeline for two files: `StudyA/data.tsv` and `StudyB/data.tsv`, with the default schema name:
 
     make pipeline DM_INPUT_FILES="StudyA/data.tsv StudyB/data.tsv"
+
+For individual operations (variable harmonization, trans-spec generation, metadata prep),
+see `dm-bip --help`.
 endef
 
 .PHONY: help
