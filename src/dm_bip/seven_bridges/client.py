@@ -126,7 +126,7 @@ class Client:
         Accepts either a relative path (joined to the configured base URL) or a full URL
         (used as-is — needed for SBG-returned download_info URLs).
         """
-        url = path if path.startswith("http") else f"{self.config.base_url}/{path.lstrip('/')}"
+        url = path if path.startswith(("http://", "https://")) else f"{self.config.base_url}/{path.lstrip('/')}"
         response = _request_with_retry(self.http, method, url, headers=self._auth_headers(), json=body)
         if not 200 <= response.status_code < 300:
             raise SevenBridgesError(f"SBG {method} {path} failed ({response.status_code}): {response.text[:300]}")

@@ -28,7 +28,6 @@ DEFAULT_STUDY_ROOT = "PilotParentStudies_NoDRS"
 DEFAULT_MANIFEST_PATH = Path("batch_tasks.csv")
 DEFAULT_THROTTLE_SECONDS = 60
 DEFAULT_LOG_DIR = Path("task_logs")
-PIPELINE_LOG_FILES = frozenset({"stdout_dm_bip.log", "stderr_dm_bip.log"})
 
 
 class LogLevel(str, enum.Enum):
@@ -145,7 +144,7 @@ def submit(
 ) -> None:
     """Read the manifest CSV and launch one harmonization task per row, throttled."""
     if not manifest_path.exists():
-        typer.echo(f"Manifest not found: {manifest_path}. Run `seven-bridges manifest` first.", err=True)
+        typer.echo(f"Manifest not found: {manifest_path}. Run `dm-bip seven-bridges manifest` first.", err=True)
         raise typer.Exit(code=2)
 
     client = _make_client()
