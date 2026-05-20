@@ -152,3 +152,7 @@ output/
 
 # Generated SevenBridges task manifest
 scripts/sevenbridges/batch_tasks.csv
+
+# SevenBridges task logs downloaded by get_logs.py
+scripts/sevenbridges/task_logs/
+task_logs/
