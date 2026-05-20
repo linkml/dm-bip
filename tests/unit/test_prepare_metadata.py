@@ -1,4 +1,4 @@
-"""Tests for the metadata preparation pipeline (Stata steps 1-4 port)."""
+"""Tests for the metadata preparation pipeline."""
 
 from pathlib import Path
 
@@ -7,9 +7,11 @@ import pytest
 
 from dm_bip.trans_spec_gen.prepare_metadata import (
     _normalize_columns,
-    clean_data,
+    finalize_cleaned_data,
     load_bdchv_defs,
     load_contextual_vars,
+    load_conversion_overrides,
+    load_equivalency_overrides,
     load_raw_data,
     load_unit_conversions,
     load_unit_equivalencies,
@@ -20,6 +22,22 @@ from dm_bip.trans_spec_gen.prepare_metadata import (
 from dm_bip.trans_spec_gen.units import normalize_unit
 
 TEST_DATA = Path(__file__).parent.parent / "input" / "prepare_metadata"
+CLEANUP_RULES = TEST_DATA / "cleanup_rules.csv"
+
+
+def _run_pipeline(output: Path, **overrides) -> pd.DataFrame:
+    """Run prepare_metadata against the standard fixture and return the output DataFrame."""
+    kwargs = {
+        "raw_files": [TEST_DATA / "raw_metadata.xlsx"],
+        "bdchv_defs_path": TEST_DATA / "bdchv_defs.csv",
+        "contextual_vars_path": TEST_DATA / "contextual_variables_key.csv",
+        "unit_key_path": TEST_DATA / "unit_key.xlsx",
+        "output_path": output,
+        "cleanup_rules_path": CLEANUP_RULES,
+    }
+    kwargs.update(overrides)
+    prepare_metadata(**kwargs)
+    return pd.read_csv(output)
 
 
 # --- Unit normalization tests ---
@@ -170,63 +188,29 @@ class TestStandardizeRawData:
         assert albumin_row["var_units"] == "g/dL"
 
 
-# --- Cleaning tests ---
+# --- finalize_cleaned_data tests ---
 
 
-class TestCleanData:
-    """Tests for data cleaning (label fixes, unit inference, BP disambiguation)."""
+class TestFinalizeCleanedData:
+    """Tests for the post-cleanup deduplication and join-key construction."""
 
-    @pytest.fixture()
-    def standardized_df(self):
-        """Load and standardize raw test metadata."""
-        df = pd.read_excel(TEST_DATA / "raw_metadata.xlsx", dtype=str)
-        return standardize_raw_data(df)
+    def test_drops_empty_phv(self):
+        """Rows with empty phv are dropped."""
+        df = pd.DataFrame({"phv": ["phv1", ""], "bdchm_label": ["alb", "alb"]})
+        result = finalize_cleaned_data(df)
+        assert (result["phv"] == "phv1").all()
 
-    def test_drops_medication_adherence(self, standardized_df):
-        """Excludes medication adherence rows."""
-        result = clean_data(standardized_df)
-        if "bdchm_label" in result.columns:
-            assert "medication adherence" not in result["bdchm_label"].values
+    def test_drops_empty_label(self):
+        """Rows with empty bdchm_label are dropped."""
+        df = pd.DataFrame({"phv": ["phv1", "phv2"], "bdchm_label": ["alb", ""]})
+        result = finalize_cleaned_data(df)
+        assert (result["bdchm_label"] == "alb").all()
 
-    def test_fixes_label_stroke_status(self, standardized_df):
-        """Corrects 'stroke status' to 'stroke'."""
-        result = clean_data(standardized_df)
-        assert "stroke status" not in result["bdchm_label"].values
-        assert "stroke" in result["bdchm_label"].values
-
-    def test_fixes_label_alcohol_consumption(self, standardized_df):
-        """Corrects 'alcohol consumption' to 'alcohol servings'."""
-        result = clean_data(standardized_df)
-        assert "alcohol consumption" not in result["bdchm_label"].values
-        assert "alcohol servings" in result["bdchm_label"].values
-
-    def test_bp_disambiguation(self, standardized_df):
-        """Splits 'blood pressure' into systolic/diastolic based on var_desc."""
-        result = clean_data(standardized_df)
-        assert "systolic blood pressure" in result["bdchm_label"].values
-        assert "diastolic blood pressure" in result["bdchm_label"].values
-        assert "blood pressure" not in result["bdchm_label"].values
-
-    def test_infers_sleep_hours_unit(self, standardized_df):
-        """Infers 'h' unit for sleep hours from description."""
-        result = clean_data(standardized_df)
-        sleep = result[result["bdchm_label"] == "sleep hours"]
-        assert not sleep.empty, "Expected sleep hours row in output"
-        assert sleep.iloc[0]["var_units"] == "h"
-
-    def test_infers_bmi_unit(self, standardized_df):
-        """Infers 'kg/m2' unit from description containing kg/m2."""
-        result = clean_data(standardized_df)
-        bmi = result[result["bdchm_label"] == "bmi"]
-        assert not bmi.empty, "Expected bmi row in output"
-        assert bmi.iloc[0]["var_units"] == "kg/m2"
-
-    def test_infers_alcohol_weekly_unit(self, standardized_df):
-        """Infers '{#}/wk' unit for alcohol servings from 'per week' description."""
-        result = clean_data(standardized_df)
-        alcohol = result[result["bdchm_label"] == "alcohol servings"]
-        assert not alcohol.empty, "Expected alcohol servings row in output"
-        assert alcohol.iloc[0]["var_units"] == "{#}/wk"
+    def test_builds_merge_label(self):
+        """Creates merge_bdchm_label from bdchm_label by stripping spaces."""
+        df = pd.DataFrame({"phv": ["phv1"], "bdchm_label": ["albumin in blood"]})
+        result = finalize_cleaned_data(df)
+        assert result.iloc[0]["merge_bdchm_label"] == "albumininblood"
 
 
 # --- Full pipeline test ---
@@ -237,71 +221,30 @@ class TestFullPipeline:
 
     def test_produces_output_csv(self, tmp_path):
         """Pipeline produces a non-empty output CSV."""
-        output = tmp_path / "shortdata.csv"
-        prepare_metadata(
-            raw_files=[TEST_DATA / "raw_metadata.xlsx"],
-            bdchv_defs_path=TEST_DATA / "bdchv_defs.csv",
-            contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
-            unit_key_path=TEST_DATA / "unit_key.xlsx",
-            output_path=output,
-        )
-        assert output.exists()
-        df = pd.read_csv(output)
+        df = _run_pipeline(tmp_path / "shortdata.csv")
         assert len(df) > 0
 
     def test_output_has_required_columns(self, tmp_path):
         """Output CSV contains all expected columns."""
-        output = tmp_path / "shortdata.csv"
-        prepare_metadata(
-            raw_files=[TEST_DATA / "raw_metadata.xlsx"],
-            bdchv_defs_path=TEST_DATA / "bdchv_defs.csv",
-            contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
-            unit_key_path=TEST_DATA / "unit_key.xlsx",
-            output_path=output,
-        )
-        df = pd.read_csv(output)
+        df = _run_pipeline(tmp_path / "shortdata.csv")
         required_cols = ["row_good", "cohort", "bdchm_entity", "bdchm_varname", "phv", "unit_match"]
         for col in required_cols:
             assert col in df.columns, f"Missing column: {col}"
 
     def test_only_measurement_observation(self, tmp_path):
         """Output contains only MeasurementObservation rows."""
-        output = tmp_path / "shortdata.csv"
-        prepare_metadata(
-            raw_files=[TEST_DATA / "raw_metadata.xlsx"],
-            bdchv_defs_path=TEST_DATA / "bdchv_defs.csv",
-            contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
-            unit_key_path=TEST_DATA / "unit_key.xlsx",
-            output_path=output,
-        )
-        df = pd.read_csv(output)
+        df = _run_pipeline(tmp_path / "shortdata.csv")
         assert (df["bdchm_entity"] == "MeasurementObservation").all()
 
     def test_dropped_table_excluded(self, tmp_path):
         """Rows with drop_table=1 in contextual_vars are excluded."""
-        output = tmp_path / "shortdata.csv"
-        prepare_metadata(
-            raw_files=[TEST_DATA / "raw_metadata.xlsx"],
-            bdchv_defs_path=TEST_DATA / "bdchv_defs.csv",
-            contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
-            unit_key_path=TEST_DATA / "unit_key.xlsx",
-            output_path=output,
-        )
-        df = pd.read_csv(output)
+        df = _run_pipeline(tmp_path / "shortdata.csv")
         # pht009999 has drop_table=1 in contextual_vars
         assert "pht009999" not in df["pht"].values
 
     def test_unit_match_flag(self, tmp_path):
         """Sets unit_match=1 when source and target units match exactly."""
-        output = tmp_path / "shortdata.csv"
-        prepare_metadata(
-            raw_files=[TEST_DATA / "raw_metadata.xlsx"],
-            bdchv_defs_path=TEST_DATA / "bdchv_defs.csv",
-            contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
-            unit_key_path=TEST_DATA / "unit_key.xlsx",
-            output_path=output,
-        )
-        df = pd.read_csv(output)
+        df = _run_pipeline(tmp_path / "shortdata.csv")
         # albumin: var_units=g/dL, bdchm_unit=g/dL -> unit_match=1
         albumin = df[df["bdchm_varname"] == "albumin_bld"]
         assert not albumin.empty, "Expected albumin_bld row in output"
@@ -309,15 +252,7 @@ class TestFullPipeline:
 
     def test_unit_convert_flag(self, tmp_path):
         """Sets unit_convert=1 when both units are valid UCUM with a conversion."""
-        output = tmp_path / "shortdata.csv"
-        prepare_metadata(
-            raw_files=[TEST_DATA / "raw_metadata.xlsx"],
-            bdchv_defs_path=TEST_DATA / "bdchv_defs.csv",
-            contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
-            unit_key_path=TEST_DATA / "unit_key.xlsx",
-            output_path=output,
-        )
-        df = pd.read_csv(output)
+        df = _run_pipeline(tmp_path / "shortdata.csv")
         # height: var_units=inches->[in_us], bdchm_unit=cm, both in UCUM -> unit_convert=1
         height = df[df["bdchm_varname"] == "bdy_hgt"]
         assert not height.empty, "Expected bdy_hgt row in output"
@@ -325,42 +260,11 @@ class TestFullPipeline:
 
     def test_row_good_flag(self, tmp_path):
         """Sets row_good=1 when has_pht, has_onto, and unit handling are all present."""
-        output = tmp_path / "shortdata.csv"
-        prepare_metadata(
-            raw_files=[TEST_DATA / "raw_metadata.xlsx"],
-            bdchv_defs_path=TEST_DATA / "bdchv_defs.csv",
-            contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
-            unit_key_path=TEST_DATA / "unit_key.xlsx",
-            output_path=output,
-        )
-        df = pd.read_csv(output)
+        df = _run_pipeline(tmp_path / "shortdata.csv")
         assert df["row_good"].sum() > 0
         aric_albumin = df[(df["bdchm_varname"] == "albumin_bld") & (df["cohort"] == "aric")]
         assert not aric_albumin.empty, "Expected aric albumin_bld row in output"
         assert aric_albumin.iloc[0]["row_good"] == 1
-
-    def test_curator_fixes_applied(self, tmp_path):
-        """Curator fixes CSV overrides unit and marks bad maps."""
-        fixes_csv = tmp_path / "fixes.csv"
-        fixes_csv.write_text(
-            "phv,bdchm_label,var_units_fixed,bad_map\nphv00202900,albumin in blood,mg/dL,\nphv00202901,bmi,,1\n"
-        )
-        output = tmp_path / "shortdata.csv"
-        prepare_metadata(
-            raw_files=[TEST_DATA / "raw_metadata.xlsx"],
-            bdchv_defs_path=TEST_DATA / "bdchv_defs.csv",
-            contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
-            unit_key_path=TEST_DATA / "unit_key.xlsx",
-            output_path=output,
-            fixes_file=fixes_csv,
-        )
-        df = pd.read_csv(output)
-        # albumin should have overridden var_units
-        albumin = df[df["phv"] == "phv00202900"]
-        assert not albumin.empty
-        assert albumin.iloc[0]["var_units"] == "mg/dL"
-        # bmi should be excluded (bad_map=1 clears bdchm_label, then filtered out)
-        assert "phv00202901" not in df["phv"].values
 
 
 # --- Column normalization tests ---
@@ -550,34 +454,6 @@ class TestMergeDataDocsFlags:
         assert result.iloc[0]["unit_match"] == 0
         assert result.iloc[0]["unit_convert"] == 1
 
-    def test_unit_expr_via_curator_fix(self, docs, tmp_path):
-        """unit_expr=1 when conversion_rule comes from a curator unit_expr_custom override."""
-        df = pd.DataFrame(
-            [
-                _make_clean_row(
-                    phv="phv999",
-                    var_units="weird_unit",
-                )
-            ]
-        )
-        fixes = tmp_path / "fixes.csv"
-        fixes.write_text(
-            "phv,bdchm_label,unit_expr_custom\nphv999,albumin in blood,* 0.5\n",
-        )
-        result = merge_data_docs(df, **docs, fixes_file=fixes)
-        assert result.iloc[0]["conversion_rule"] == "* 0.5"
-        assert result.iloc[0]["unit_expr"] == 1
-
-    def test_unit_casestmt_via_curator_fix(self, docs, tmp_path):
-        """A curator-supplied unit_casestmt_custom value sets unit_casestmt=1."""
-        df = pd.DataFrame([_make_clean_row(phv="phv888")])
-        fixes = tmp_path / "fixes.csv"
-        fixes.write_text(
-            "phv,bdchm_label,unit_casestmt_custom\nphv888,albumin in blood,case when x then y end\n",
-        )
-        result = merge_data_docs(df, **docs, fixes_file=fixes)
-        assert result.iloc[0]["unit_casestmt"] == 1
-
     def test_has_visit_from_contextual_vars(self, docs):
         """pht004027 → 'ARIC EXAM 1' in contextual_vars → has_visit=1."""
         df = pd.DataFrame([_make_clean_row(pht="pht004027")])
@@ -627,177 +503,54 @@ class TestMergeDataDocsFlags:
         assert result.iloc[0]["var_desc_exam"] == "exam 3"
 
 
-class TestMergeDataDocsSpotFixes:
-    """Pin the hardcoded conversion/equivalency spot-fixes (cholesterol, factor VIII, MCHC, sodium)."""
+class TestConversionAndEquivalencyOverrides:
+    """Pin label-keyed conversion/equivalency override behavior."""
 
-    def test_cholesterol_hdl_mmol_to_mgdl(self, docs):
-        """HDL with mmol/L → conversion_rule overridden to '* 38.67'."""
-        df = pd.DataFrame(
-            [
-                _make_clean_row(
-                    bdchm_label="hdl",
-                    merge_bdchm_label="hdl",
-                    var_units="mmol/L",
-                )
-            ]
-        )
-        result = merge_data_docs(df, **docs)
-        assert result.iloc[0]["conversion_rule"] == "* 38.67"
+    def test_default_overrides_load(self):
+        """The bundled override CSVs load and have the expected schema."""
+        conv = load_conversion_overrides()
+        assert {"bdchm_label", "var_units", "bdchm_unit", "conversion_rule"}.issubset(conv.columns)
+        equiv = load_equivalency_overrides()
+        assert {"bdchm_label", "var_units", "bdchm_unit"}.issubset(equiv.columns)
 
-    def test_factor_viii_pct_to_iuml(self, docs):
-        """Factor VIII spot-fix: % → [IU]/mL gets conversion_rule '* 0.01' (synthesizes a defs row)."""
-        bdchv = pd.concat(
-            [
-                docs["bdchv_defs"],
-                pd.DataFrame(
-                    [
-                        {
-                            "bdchm_entity": "MeasurementObservation",
-                            "bdchm_varlabel": "Factor VIII",
-                            "bdchm_varname": "factor_viii",
-                            "bdchm_vartype": "decimal",
-                            "bdchm_unit": "[IU]/mL",
-                            "onto_id": "OMOP:0000000",
-                            "merge_bdchm_label": "factorviii",
-                        }
-                    ]
-                ),
-            ],
-            ignore_index=True,
+    def test_conversion_overrides_reject_duplicate_keys(self, tmp_path):
+        """Duplicate (label, var_units, bdchm_unit) triples raise at load time."""
+        bad = tmp_path / "dup_conv.csv"
+        bad.write_text(
+            "bdchm_label,var_units,bdchm_unit,conversion_rule\nhdl,mmol/L,mg/dL,* 38.67\nhdl,mmol/L,mg/dL,* 40\n"
         )
-        df = pd.DataFrame(
-            [
-                _make_clean_row(
-                    bdchm_label="factor viii",
-                    merge_bdchm_label="factorviii",
-                    var_units="%",
-                )
-            ]
-        )
-        result = merge_data_docs(
-            df,
-            bdchv_defs=bdchv,
-            conversions=docs["conversions"],
-            equivalencies=docs["equivalencies"],
-            contextual_vars=docs["contextual_vars"],
-        )
-        assert result.iloc[0]["conversion_rule"] == "* 0.01"
+        with pytest.raises(ValueError, match="duplicate"):
+            load_conversion_overrides(bad)
 
-    def test_mchc_pct_equiv_to_gdl(self, docs):
-        """MCHC: % is equivalent to g/dL — equivalent_units forced to 1, sets unit_match=1."""
-        bdchv = pd.concat(
-            [
-                docs["bdchv_defs"],
-                pd.DataFrame(
-                    [
-                        {
-                            "bdchm_entity": "MeasurementObservation",
-                            "bdchm_varlabel": "MCHC",
-                            "bdchm_varname": "mchc",
-                            "bdchm_vartype": "decimal",
-                            "bdchm_unit": "g/dL",
-                            "onto_id": "OMOP:0000001",
-                            "merge_bdchm_label": "meancorpuscularhemoglobinconcentration",
-                        }
-                    ]
-                ),
-            ],
-            ignore_index=True,
+    def test_equivalency_overrides_reject_duplicate_keys(self, tmp_path):
+        """Duplicate (label, var_units, bdchm_unit) triples raise at load time."""
+        bad = tmp_path / "dup_equiv.csv"
+        bad.write_text("bdchm_label,var_units,bdchm_unit\nmchc,%,g/dL\nmchc,%,g/dL\n")
+        with pytest.raises(ValueError, match="duplicate"):
+            load_equivalency_overrides(bad)
+
+    def test_conversion_overrides_reject_missing_columns(self, tmp_path):
+        """Missing required columns raise at load time."""
+        bad = tmp_path / "missing.csv"
+        bad.write_text("bdchm_label,var_units\nhdl,mmol/L\n")
+        with pytest.raises(ValueError, match="missing required columns"):
+            load_conversion_overrides(bad)
+
+    def test_conversion_override_applied(self, docs):
+        """An override row sets conversion_rule for the matching (label, var_units, bdchm_unit) triple."""
+        overrides = pd.DataFrame(
+            [{"bdchm_label": "albumin in blood", "var_units": "g/dL", "bdchm_unit": "g/dL", "conversion_rule": "* 2"}]
         )
-        df = pd.DataFrame(
-            [
-                _make_clean_row(
-                    bdchm_label="mean corpuscular hemoglobin concentration",
-                    merge_bdchm_label="meancorpuscularhemoglobinconcentration",
-                    var_units="%",
-                )
-            ]
-        )
-        result = merge_data_docs(
-            df,
-            bdchv_defs=bdchv,
-            conversions=docs["conversions"],
-            equivalencies=docs["equivalencies"],
-            contextual_vars=docs["contextual_vars"],
-        )
+        df = pd.DataFrame([_make_clean_row(var_units="g/dL")])
+        result = merge_data_docs(df, **docs, conversion_overrides=overrides)
+        assert result.iloc[0]["conversion_rule"] == "* 2"
+
+    def test_equivalency_override_applied(self, docs):
+        """An equivalency override forces unit_match=1 for the matching triple."""
+        overrides = pd.DataFrame([{"bdchm_label": "albumin in blood", "var_units": "weird", "bdchm_unit": "g/dL"}])
+        df = pd.DataFrame([_make_clean_row(var_units="weird")])
+        result = merge_data_docs(df, **docs, equivalency_overrides=overrides)
         assert result.iloc[0]["unit_match"] == 1
-
-    def test_sodium_meq_equiv_to_mmol(self, docs):
-        """Sodium: meq/L is equivalent to mmol/L — sets unit_match=1."""
-        bdchv = pd.concat(
-            [
-                docs["bdchv_defs"],
-                pd.DataFrame(
-                    [
-                        {
-                            "bdchm_entity": "MeasurementObservation",
-                            "bdchm_varlabel": "Sodium in blood",
-                            "bdchm_varname": "sodium_bld",
-                            "bdchm_vartype": "decimal",
-                            "bdchm_unit": "mmol/L",
-                            "onto_id": "OMOP:0000002",
-                            "merge_bdchm_label": "sodiuminblood",
-                        }
-                    ]
-                ),
-            ],
-            ignore_index=True,
-        )
-        df = pd.DataFrame(
-            [
-                _make_clean_row(
-                    bdchm_label="sodium in blood",
-                    merge_bdchm_label="sodiuminblood",
-                    var_units="meq/L",
-                )
-            ]
-        )
-        result = merge_data_docs(
-            df,
-            bdchv_defs=bdchv,
-            conversions=docs["conversions"],
-            equivalencies=docs["equivalencies"],
-            contextual_vars=docs["contextual_vars"],
-        )
-        assert result.iloc[0]["unit_match"] == 1
-
-
-class TestMergeDataDocsCuratorOverrides:
-    """Curator fixes can override participant/visit/age/conversion fields in the merge step."""
-
-    def test_associatedvisit_override(self, docs, tmp_path):
-        """Curator fix overrides the associatedvisit value from contextual_vars."""
-        df = pd.DataFrame([_make_clean_row(phv="phv777", pht="pht004027")])
-        fixes = tmp_path / "fixes.csv"
-        fixes.write_text("phv,bdchm_label,associatedvisit\nphv777,albumin in blood,CUSTOM VISIT\n")
-        result = merge_data_docs(df, **docs, fixes_file=fixes)
-        assert result.iloc[0]["associatedvisit"] == "CUSTOM VISIT"
-
-    def test_participantidphv_override(self, docs, tmp_path):
-        """Curator fix supplies participantidphv when no pht-based match exists."""
-        df = pd.DataFrame([_make_clean_row(phv="phv777", pht="pht999999")])
-        fixes = tmp_path / "fixes.csv"
-        fixes.write_text("phv,bdchm_label,participantidphv\nphv777,albumin in blood,phvCUSTOM\n")
-        result = merge_data_docs(df, **docs, fixes_file=fixes)
-        assert result.iloc[0]["participantidphv"] == "phvCUSTOM"
-
-    def test_ageinyears_override(self, docs, tmp_path):
-        """Curator fix on ageinyearsphv supplies the value and sets has_age=1."""
-        df = pd.DataFrame([_make_clean_row(phv="phv777", pht="pht999999")])
-        fixes = tmp_path / "fixes.csv"
-        fixes.write_text("phv,bdchm_label,ageinyearsphv\nphv777,albumin in blood,phvAGE\n")
-        result = merge_data_docs(df, **docs, fixes_file=fixes)
-        assert result.iloc[0]["has_age"] == 1
-        assert result.iloc[0]["ageinyearsphv"] == "phvAGE"
-
-    def test_visit_expr_cleared_when_direct_visit_present(self, docs, tmp_path):
-        """If has_visit==1 and curator also sets associatedvisit_expr, the expr is cleared."""
-        df = pd.DataFrame([_make_clean_row(phv="phv777", pht="pht004027")])
-        fixes = tmp_path / "fixes.csv"
-        fixes.write_text("phv,bdchm_label,associatedvisit_expr\nphv777,albumin in blood,SOME_EXPR\n")
-        result = merge_data_docs(df, **docs, fixes_file=fixes)
-        assert result.iloc[0]["has_visit"] == 1
-        assert result.iloc[0]["has_visit_expr"] == 0
 
 
 # --- Golden-file regression test ---
@@ -808,15 +561,7 @@ class TestPipelineGoldenOutput:
 
     def test_output_columns_are_stable(self, tmp_path):
         """Lock the exact column set produced by the pipeline."""
-        output = tmp_path / "shortdata.csv"
-        prepare_metadata(
-            raw_files=[TEST_DATA / "raw_metadata.xlsx"],
-            bdchv_defs_path=TEST_DATA / "bdchv_defs.csv",
-            contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
-            unit_key_path=TEST_DATA / "unit_key.xlsx",
-            output_path=output,
-        )
-        df = pd.read_csv(output)
+        df = _run_pipeline(tmp_path / "shortdata.csv")
         expected_columns = {
             "row_good",
             "cohort",
@@ -847,39 +592,26 @@ class TestPipelineGoldenOutput:
             "unit_casestmt",
             "source_unit",
             "target_unit",
+            "equivalent_units",
+            "both_valid_ucums",
         }
         assert set(df.columns) == expected_columns
 
     def test_output_row_count_is_stable(self, tmp_path):
         """Lock the exact row count for the synthetic fixture."""
-        output = tmp_path / "shortdata.csv"
-        prepare_metadata(
-            raw_files=[TEST_DATA / "raw_metadata.xlsx"],
-            bdchv_defs_path=TEST_DATA / "bdchv_defs.csv",
-            contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
-            unit_key_path=TEST_DATA / "unit_key.xlsx",
-            output_path=output,
-        )
-        df = pd.read_csv(output)
-        # Fixture: 13 rows (11 aric MeasurementObservation + 1 jhs MeasurementObservation + 1 Condition).
-        # Filters: medication-adherence (1), glucose (pht009999 drop_table=1), stroke (Condition entity).
+        df = _run_pipeline(tmp_path / "shortdata.csv")
+        # Fixture: 13 rows (12 aric incl. 1 Condition + 1 jhs MeasurementObservation).
+        # Filters: medication-adherence drop (cleanup_rules), pht009999 drop_table, stroke Condition entity_filter.
         # 13 - 3 = 10.
         assert len(df) == 10
 
     def test_output_matches_golden_file(self, tmp_path):
         """Compare full pipeline output against checked-in golden CSV."""
-        output = tmp_path / "shortdata.csv"
-        prepare_metadata(
-            raw_files=[TEST_DATA / "raw_metadata.xlsx"],
-            bdchv_defs_path=TEST_DATA / "bdchv_defs.csv",
-            contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
-            unit_key_path=TEST_DATA / "unit_key.xlsx",
-            output_path=output,
-        )
-        actual = pd.read_csv(output, dtype=str).fillna("")
+        out = tmp_path / "shortdata.csv"
+        _run_pipeline(out)
+        actual = pd.read_csv(out, dtype=str).fillna("")
         golden = pd.read_csv(TEST_DATA / "golden_pipeline_output.csv", dtype=str).fillna("")
 
-        # Sort both deterministically before comparison so row order doesn't matter.
         sort_cols = ["cohort", "bdchm_varname", "phv"]
         actual = actual.sort_values(sort_cols).reset_index(drop=True)
         golden = golden.sort_values(sort_cols).reset_index(drop=True)
@@ -999,6 +731,7 @@ class TestParameterization:
             contextual_vars_path=TEST_DATA / "contextual_variables_key.csv",
             unit_key_path=TEST_DATA / "unit_key.xlsx",
             output_path=output,
+            cleanup_rules_path=CLEANUP_RULES,
             known_sheets=["real_data"],
         )
         assert result is not None
