@@ -1,6 +1,7 @@
 """Unit tests for scripts/workflow/parse_trans_spec_slug.py."""
 
 import importlib.util
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -94,6 +95,21 @@ def test_path_traversal_rejected():
         parse_slug("owner/repo:../outside")
 
 
+@pytest.mark.parametrize(
+    "bad_slug",
+    [
+        "owner/repo@bad\x1fref",  # ref contains Unit Separator
+        "owner/repo@bad\nref",  # ref contains newline
+        "owner/repo:bad\x1fpath",  # path contains Unit Separator
+        "owner/repo:bad\tpath",  # path contains tab
+    ],
+)
+def test_control_chars_in_ref_or_path_rejected(bad_slug):
+    r"""Control chars would corrupt the \x1f-delimited output and break bash IFS-split."""
+    with pytest.raises(ValueError, match="control characters"):
+        parse_slug(bad_slug)
+
+
 # --- CLI / shell-contract tests ---------------------------------------------
 
 
@@ -135,8 +151,9 @@ def test_cli_emits_empty_fields_for_missing_optionals():
 )
 def test_cli_consumable_via_bash_capture_and_read(slug, expected):
     """Mirror the exact $()+`read` pattern in bdc-workflow.sh, including empty fields."""
+    # Production call site quotes the slug as "$TRANS_SPEC_SLUG"; mirror that here.
     bash_script = (
-        f"slug_fields=$({sys.executable} {SCRIPT} {slug}) || exit 1; "
+        f"slug_fields=$({shlex.quote(sys.executable)} {shlex.quote(str(SCRIPT))} {shlex.quote(slug)}) || exit 1; "
         "IFS=$'\\x1f' read -r OWNER REPO REF EXPLICIT_PATH <<< \"$slug_fields\"; "
         'echo "$OWNER|$REPO|$REF|$EXPLICIT_PATH"'
     )

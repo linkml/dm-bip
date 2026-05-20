@@ -53,6 +53,7 @@ def resolve_trans_spec_dir(repo_dir: Path, schema_name: str, explicit_path: str 
     """
     if not repo_dir.is_dir():
         raise ValueError(f"Repo directory does not exist: {repo_dir}")
+    repo_dir = repo_dir.resolve()
 
     if explicit_path:
         if explicit_path.startswith("/") or ".." in explicit_path:

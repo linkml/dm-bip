@@ -57,6 +57,12 @@ def parse_slug(slug: str) -> dict[str, str]:
             f"Explicit trans-spec path must be relative and not contain '..': {explicit_path}"
         )
 
+    # Control characters in ref/explicit_path would corrupt the \x1f-delimited
+    # output and let bash mis-split the fields. Forbid them in both.
+    for field_name, field_value in (("ref", ref), ("explicit path", explicit_path)):
+        if any(ord(c) < 0x20 for c in field_value):
+            raise ValueError(f"Trans-spec {field_name} must not contain control characters")
+
     return {
         "owner_repo": remainder,
         "repo_name": remainder.rsplit("/", 1)[1],

@@ -1,0 +1,22 @@
+   Building dm-bip @ file:///app
+      Built dm-bip @ file:///app
+Uninstalled 1 package in 1ms
+warning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.
+         If the cache and target directories are on different filesystems, hardlinking may not be supported.
+         If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.
+Installed 1 package in 1ms
+Provenance written to /sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/provenance.yaml
+Wrote Condition.yaml (11 derivation(s))
+Wrote Demography.yaml (1 derivation(s))
+Wrote DrugExposure.yaml (6 derivation(s))
+Wrote MeasurementObservation.yaml (10 derivation(s))
+Wrote Observation.yaml (1 derivation(s))
+Wrote Participant.yaml (1 derivation(s))
+Wrote Person.yaml (1 derivation(s))
+Wrote Procedure.yaml (2 derivation(s))
+Wrote ResearchStudy.yaml (1 derivation(s))
+Wrote SdohObservation.yaml (1 derivation(s))
+Wrote Visit.yaml (1 derivation(s))
+/app/.venv/lib/python3.12/site-packages/quantulum3/classifier.py:28: UserWarning: Classifier dependencies not installed. Run pip install quantulum3[classifier] to install them. The classifer helps to dissambiguate units.
+  warnings.warn(
+Provenance written to /sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/provenance.yaml

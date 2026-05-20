@@ -1,0 +1,12 @@
+2026-05-19 18:22:32: Downloading input files: [/mnt/nosbgfs/Projects/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/PilotParentStudies_NoDRS/COPDGene/copdgene_phs000179_v7_r1_c1]
+2026-05-19 18:23:02: Download completed.
+2026-05-19 18:23:02: Docker pull started. Image: images.sb.biodatacatalyst.nhlbi.nih.gov/vbakalov/dm-bip-docker-dev/dm-bip-env:latest
+2026-05-19 18:23:24: Docker pull completed.
+2026-05-19 18:23:24: Starting docker container.
+2026-05-19 18:23:25: Docker container started.
+2026-05-19 18:23:25: Executing command: bash /app/scripts/workflow/bdc-workflow.sh --source /sbgenomics/Projects/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/PilotParentStudies_NoDRS/COPDGene/copdgene_phs000179_v7_r1_c1 --schema COPDGene --trans-spec amc-corey-cox/bdc-harmonized-variables@main > /sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/stdout_dm_bip.log
+2026-05-19 18:35:41: Glob expressions and their evaluated values are:
+{
+DMC*
+} -> DMC*
+

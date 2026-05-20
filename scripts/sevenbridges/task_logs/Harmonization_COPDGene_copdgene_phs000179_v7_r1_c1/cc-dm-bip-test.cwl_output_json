@@ -1,0 +1,681 @@
+{
+  "Output" : {
+    "basename" : "DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327",
+    "class" : "Directory",
+    "dirname" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test",
+    "listing" : [ {
+      "basename" : "copdgene_phs000179_v7_r1_c1_BDCHM",
+      "class" : "Directory",
+      "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327",
+      "listing" : [ {
+        "basename" : "_prepared_inputs.mk",
+        "checksum" : "sha1$4793b3c7f73d3dc4aa64718dc75f9cb51c8b82b6",
+        "class" : "File",
+        "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM",
+        "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/_prepared_inputs.mk",
+        "nameext" : ".mk",
+        "nameroot" : "_prepared_inputs",
+        "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/_prepared_inputs.mk",
+        "size" : 299
+      }, {
+        "basename" : "validation-logs",
+        "class" : "Directory",
+        "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM",
+        "listing" : [ {
+          "basename" : "input-files.txt",
+          "checksum" : "sha1$4eb5e15bc1532f39260c6fad27d816ebc588ab47",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/input-files.txt",
+          "nameext" : ".txt",
+          "nameroot" : "input-files",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/input-files.txt",
+          "size" : 14
+        }, {
+          "basename" : "data-validation",
+          "class" : "Directory",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs",
+          "listing" : [ {
+            "basename" : "pht002239.tsv",
+            "class" : "Directory",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation",
+            "listing" : [ {
+              "basename" : "pht002239.tsv.1779215008.log",
+              "checksum" : "sha1$8b1239a842113dca11bc82ac72d84695606fd5de",
+              "class" : "File",
+              "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation/pht002239.tsv",
+              "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation/pht002239.tsv/pht002239.tsv.1779215008.log",
+              "nameext" : ".log",
+              "nameroot" : "pht002239.tsv.1779215008",
+              "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation/pht002239.tsv/pht002239.tsv.1779215008.log",
+              "size" : 17944746
+            }, {
+              "basename" : "latest-error.log",
+              "checksum" : "sha1$8b1239a842113dca11bc82ac72d84695606fd5de",
+              "class" : "File",
+              "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation/pht002239.tsv",
+              "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation/pht002239.tsv/latest-error.log",
+              "nameext" : ".log",
+              "nameroot" : "latest-error",
+              "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation/pht002239.tsv/latest-error.log",
+              "size" : 17944746
+            } ],
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation/pht002239.tsv/",
+            "nameext" : ".tsv",
+            "nameroot" : "pht002239",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation/pht002239.tsv",
+            "size" : 66
+          } ],
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation/",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation",
+          "size" : 27
+        }, {
+          "basename" : "data-validation-errors",
+          "class" : "Directory",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs",
+          "listing" : [ {
+            "basename" : "pht002239.tsv",
+            "class" : "Directory",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation-errors",
+            "listing" : [ {
+              "basename" : "pht002239.tsv.1779215008.log",
+              "checksum" : "sha1$8b1239a842113dca11bc82ac72d84695606fd5de",
+              "class" : "File",
+              "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation-errors/pht002239.tsv",
+              "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation-errors/pht002239.tsv/pht002239.tsv.1779215008.log",
+              "nameext" : ".log",
+              "nameroot" : "pht002239.tsv.1779215008",
+              "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation-errors/pht002239.tsv/pht002239.tsv.1779215008.log",
+              "size" : 17944746
+            }, {
+              "basename" : "latest-error.log",
+              "checksum" : "sha1$8b1239a842113dca11bc82ac72d84695606fd5de",
+              "class" : "File",
+              "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation-errors/pht002239.tsv",
+              "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation-errors/pht002239.tsv/latest-error.log",
+              "nameext" : ".log",
+              "nameroot" : "latest-error",
+              "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation-errors/pht002239.tsv/latest-error.log",
+              "size" : 17944746
+            } ],
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation-errors/pht002239.tsv/",
+            "nameext" : ".tsv",
+            "nameroot" : "pht002239",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation-errors/pht002239.tsv",
+            "size" : 66
+          } ],
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation-errors/",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/data-validation-errors",
+          "size" : 27
+        }, {
+          "basename" : "_data_validation_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/_data_validation_complete",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/_data_validation_complete",
+          "size" : 0
+        } ],
+        "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs/",
+        "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/validation-logs",
+        "size" : 115
+      }, {
+        "basename" : "mapped-data",
+        "class" : "Directory",
+        "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM",
+        "listing" : [ {
+          "basename" : "composed-specs",
+          "class" : "Directory",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "listing" : [ {
+            "basename" : "Condition.yaml",
+            "checksum" : "sha1$a1f4adc55f176190372014b04216f42c73b2081f",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Condition.yaml",
+            "nameext" : ".yaml",
+            "nameroot" : "Condition",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Condition.yaml",
+            "size" : 7467
+          }, {
+            "basename" : "Demography.yaml",
+            "checksum" : "sha1$f0cbc6fd937c2533ef28ce10a6d0a441c780215b",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Demography.yaml",
+            "nameext" : ".yaml",
+            "nameroot" : "Demography",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Demography.yaml",
+            "size" : 720
+          }, {
+            "basename" : "DrugExposure.yaml",
+            "checksum" : "sha1$451e4129f81b75927ea875f388a7dfc76ed3ae76",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/DrugExposure.yaml",
+            "nameext" : ".yaml",
+            "nameroot" : "DrugExposure",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/DrugExposure.yaml",
+            "size" : 2823
+          }, {
+            "basename" : "MeasurementObservation.yaml",
+            "checksum" : "sha1$b029ba027a56daccbddcf4047faa0dd546271c01",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/MeasurementObservation.yaml",
+            "nameext" : ".yaml",
+            "nameroot" : "MeasurementObservation",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/MeasurementObservation.yaml",
+            "size" : 6176
+          }, {
+            "basename" : "Observation.yaml",
+            "checksum" : "sha1$044690e4e42b5c031f01500dc4d3f5c43b119489",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Observation.yaml",
+            "nameext" : ".yaml",
+            "nameroot" : "Observation",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Observation.yaml",
+            "size" : 464
+          }, {
+            "basename" : "Participant.yaml",
+            "checksum" : "sha1$9a20820867284671c7e46202eb9601e0a673ccf6",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Participant.yaml",
+            "nameext" : ".yaml",
+            "nameroot" : "Participant",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Participant.yaml",
+            "size" : 265
+          }, {
+            "basename" : "Person.yaml",
+            "checksum" : "sha1$478b6ea03783ea715af13e251a3be6c8208c5c09",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Person.yaml",
+            "nameext" : ".yaml",
+            "nameroot" : "Person",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Person.yaml",
+            "size" : 181
+          }, {
+            "basename" : "Procedure.yaml",
+            "checksum" : "sha1$e69e1b063ebbdb237f4f4234de84058925f9edd1",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Procedure.yaml",
+            "nameext" : ".yaml",
+            "nameroot" : "Procedure",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Procedure.yaml",
+            "size" : 741
+          }, {
+            "basename" : "ResearchStudy.yaml",
+            "checksum" : "sha1$45352f1f0b68849c0485397dd53881b2a02ed200",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/ResearchStudy.yaml",
+            "nameext" : ".yaml",
+            "nameroot" : "ResearchStudy",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/ResearchStudy.yaml",
+            "size" : 264
+          }, {
+            "basename" : "SdohObservation.yaml",
+            "checksum" : "sha1$af4b6e0719b2102ff2aeb9f145078b6e95c07494",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/SdohObservation.yaml",
+            "nameext" : ".yaml",
+            "nameroot" : "SdohObservation",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/SdohObservation.yaml",
+            "size" : 640
+          }, {
+            "basename" : "Visit.yaml",
+            "checksum" : "sha1$1571eec9cb441c9834ea37818296ade9e071a79d",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Visit.yaml",
+            "nameext" : ".yaml",
+            "nameroot" : "Visit",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/Visit.yaml",
+            "size" : 324
+          }, {
+            "basename" : ".composed",
+            "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/.composed",
+            "nameext" : ".composed",
+            "nameroot" : "",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/.composed",
+            "size" : 0
+          } ],
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs/",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/composed-specs",
+          "size" : 289
+        }, {
+          "basename" : "logs",
+          "class" : "Directory",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "listing" : [ {
+            "basename" : "Demography.log",
+            "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Demography.log",
+            "nameext" : ".log",
+            "nameroot" : "Demography",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Demography.log",
+            "size" : 0
+          }, {
+            "basename" : "MeasurementObservation.log",
+            "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/MeasurementObservation.log",
+            "nameext" : ".log",
+            "nameroot" : "MeasurementObservation",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/MeasurementObservation.log",
+            "size" : 0
+          }, {
+            "basename" : "Condition.log",
+            "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Condition.log",
+            "nameext" : ".log",
+            "nameroot" : "Condition",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Condition.log",
+            "size" : 0
+          }, {
+            "basename" : "DrugExposure.log",
+            "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/DrugExposure.log",
+            "nameext" : ".log",
+            "nameroot" : "DrugExposure",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/DrugExposure.log",
+            "size" : 0
+          }, {
+            "basename" : "Observation.log",
+            "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Observation.log",
+            "nameext" : ".log",
+            "nameroot" : "Observation",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Observation.log",
+            "size" : 0
+          }, {
+            "basename" : "Procedure.log",
+            "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Procedure.log",
+            "nameext" : ".log",
+            "nameroot" : "Procedure",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Procedure.log",
+            "size" : 0
+          }, {
+            "basename" : "Person.log",
+            "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Person.log",
+            "nameext" : ".log",
+            "nameroot" : "Person",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Person.log",
+            "size" : 0
+          }, {
+            "basename" : "Participant.log",
+            "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Participant.log",
+            "nameext" : ".log",
+            "nameroot" : "Participant",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Participant.log",
+            "size" : 0
+          }, {
+            "basename" : "ResearchStudy.log",
+            "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/ResearchStudy.log",
+            "nameext" : ".log",
+            "nameroot" : "ResearchStudy",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/ResearchStudy.log",
+            "size" : 0
+          }, {
+            "basename" : "SdohObservation.log",
+            "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/SdohObservation.log",
+            "nameext" : ".log",
+            "nameroot" : "SdohObservation",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/SdohObservation.log",
+            "size" : 0
+          }, {
+            "basename" : "Visit.log",
+            "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+            "class" : "File",
+            "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs",
+            "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Visit.log",
+            "nameext" : ".log",
+            "nameroot" : "Visit",
+            "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/Visit.log",
+            "size" : 0
+          } ],
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs/",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/logs",
+          "size" : 261
+        }, {
+          "basename" : "Person.yaml",
+          "checksum" : "sha1$9671702137b76e3ea54941b0736ba8d617aafdff",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Person.yaml",
+          "nameext" : ".yaml",
+          "nameroot" : "Person",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Person.yaml",
+          "size" : 965310
+        }, {
+          "basename" : "MeasurementObservation.yaml",
+          "checksum" : "sha1$39aeba3f806c08f4f52e509c27bd6981312db233",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/MeasurementObservation.yaml",
+          "nameext" : ".yaml",
+          "nameroot" : "MeasurementObservation",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/MeasurementObservation.yaml",
+          "size" : 38152854
+        }, {
+          "basename" : "Procedure.yaml",
+          "checksum" : "sha1$6f4fdbdc07e8822ad3bdc13ca3633b31e94ef46d",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Procedure.yaml",
+          "nameext" : ".yaml",
+          "nameroot" : "Procedure",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Procedure.yaml",
+          "size" : 5488592
+        }, {
+          "basename" : "Observation.yaml",
+          "checksum" : "sha1$fe4bd3a26e1863994b4b06be4f6aaa7bd9714b1c",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Observation.yaml",
+          "nameext" : ".yaml",
+          "nameroot" : "Observation",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Observation.yaml",
+          "size" : 3280167
+        }, {
+          "basename" : "Condition.yaml",
+          "checksum" : "sha1$f437bfaa4c775b54e0ca8b7d4aaa42cb64a2e2e0",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Condition.yaml",
+          "nameext" : ".yaml",
+          "nameroot" : "Condition",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Condition.yaml",
+          "size" : 53192495
+        }, {
+          "basename" : "Demography.yaml",
+          "checksum" : "sha1$aee3d20c27c7b3e430288b16ac724c18ada8a9b1",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Demography.yaml",
+          "nameext" : ".yaml",
+          "nameroot" : "Demography",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Demography.yaml",
+          "size" : 2958582
+        }, {
+          "basename" : "Participant.yaml",
+          "checksum" : "sha1$4e0dcf883fac557084fd0b07c637b9565c193aa8",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Participant.yaml",
+          "nameext" : ".yaml",
+          "nameroot" : "Participant",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Participant.yaml",
+          "size" : 2101577
+        }, {
+          "basename" : "DrugExposure.yaml",
+          "checksum" : "sha1$13acecbd611465ed80005f1b9f0784669b57d49d",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/DrugExposure.yaml",
+          "nameext" : ".yaml",
+          "nameroot" : "DrugExposure",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/DrugExposure.yaml",
+          "size" : 25250670
+        }, {
+          "basename" : ".Person_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Person_complete",
+          "nameext" : ".Person_complete",
+          "nameroot" : "",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Person_complete",
+          "size" : 0
+        }, {
+          "basename" : "ResearchStudy.yaml",
+          "checksum" : "sha1$3d23144b6005afee03c3eeef0a7b5ef7431c11a5",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/ResearchStudy.yaml",
+          "nameext" : ".yaml",
+          "nameroot" : "ResearchStudy",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/ResearchStudy.yaml",
+          "size" : 2058144
+        }, {
+          "basename" : ".Participant_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Participant_complete",
+          "nameext" : ".Participant_complete",
+          "nameroot" : "",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Participant_complete",
+          "size" : 0
+        }, {
+          "basename" : ".Observation_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Observation_complete",
+          "nameext" : ".Observation_complete",
+          "nameroot" : "",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Observation_complete",
+          "size" : 0
+        }, {
+          "basename" : "SdohObservation.yaml",
+          "checksum" : "sha1$366092064593f93ea56f92588cee1a9aa426b752",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/SdohObservation.yaml",
+          "nameext" : ".yaml",
+          "nameroot" : "SdohObservation",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/SdohObservation.yaml",
+          "size" : 3607518
+        }, {
+          "basename" : "Visit.yaml",
+          "checksum" : "sha1$6959ef481711e8709d08c5ca09ef546b2d0951d8",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Visit.yaml",
+          "nameext" : ".yaml",
+          "nameroot" : "Visit",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/Visit.yaml",
+          "size" : 2251095
+        }, {
+          "basename" : ".Demography_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Demography_complete",
+          "nameext" : ".Demography_complete",
+          "nameroot" : "",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Demography_complete",
+          "size" : 0
+        }, {
+          "basename" : ".ResearchStudy_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.ResearchStudy_complete",
+          "nameext" : ".ResearchStudy_complete",
+          "nameroot" : "",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.ResearchStudy_complete",
+          "size" : 0
+        }, {
+          "basename" : ".Procedure_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Procedure_complete",
+          "nameext" : ".Procedure_complete",
+          "nameroot" : "",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Procedure_complete",
+          "size" : 0
+        }, {
+          "basename" : ".SdohObservation_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.SdohObservation_complete",
+          "nameext" : ".SdohObservation_complete",
+          "nameroot" : "",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.SdohObservation_complete",
+          "size" : 0
+        }, {
+          "basename" : ".Visit_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Visit_complete",
+          "nameext" : ".Visit_complete",
+          "nameroot" : "",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Visit_complete",
+          "size" : 0
+        }, {
+          "basename" : ".DrugExposure_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.DrugExposure_complete",
+          "nameext" : ".DrugExposure_complete",
+          "nameroot" : "",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.DrugExposure_complete",
+          "size" : 0
+        }, {
+          "basename" : ".MeasurementObservation_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.MeasurementObservation_complete",
+          "nameext" : ".MeasurementObservation_complete",
+          "nameroot" : "",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.MeasurementObservation_complete",
+          "size" : 0
+        }, {
+          "basename" : ".Condition_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Condition_complete",
+          "nameext" : ".Condition_complete",
+          "nameroot" : "",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/.Condition_complete",
+          "size" : 0
+        }, {
+          "basename" : "_mapping_complete",
+          "checksum" : "sha1$da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "class" : "File",
+          "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+          "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/_mapping_complete",
+          "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/_mapping_complete",
+          "size" : 0
+        } ],
+        "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data/",
+        "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/mapped-data",
+        "size" : 4096
+      }, {
+        "basename" : "provenance.yaml",
+        "checksum" : "sha1$14e245e8de2085f228cd01ba51e187c7c62a1f2c",
+        "class" : "File",
+        "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM",
+        "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/provenance.yaml",
+        "nameext" : ".yaml",
+        "nameroot" : "provenance",
+        "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/provenance.yaml",
+        "size" : 904
+      }, {
+        "basename" : "COPDGene.yaml",
+        "checksum" : "sha1$5380142ad722e15c6628558657b84b426a93add4",
+        "class" : "File",
+        "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM",
+        "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/COPDGene.yaml",
+        "nameext" : ".yaml",
+        "nameroot" : "COPDGene",
+        "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/COPDGene.yaml",
+        "size" : 86857
+      } ],
+      "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM/",
+      "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_BDCHM",
+      "size" : 119
+    }, {
+      "basename" : "copdgene_phs000179_v7_r1_c1_CleanedSource",
+      "class" : "Directory",
+      "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327",
+      "listing" : [ {
+        "basename" : "pht002239.tsv",
+        "checksum" : "sha1$21b13487d7332cddec70cc148f73ceff520b770a",
+        "class" : "File",
+        "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_CleanedSource",
+        "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_CleanedSource/pht002239.tsv",
+        "nameext" : ".tsv",
+        "nameroot" : "pht002239",
+        "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_CleanedSource/pht002239.tsv",
+        "size" : 51826104
+      } ],
+      "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_CleanedSource/",
+      "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/copdgene_phs000179_v7_r1_c1_CleanedSource",
+      "size" : 27
+    }, {
+      "basename" : "Dockerfile.archived",
+      "checksum" : "sha1$4c3a93c00dc7c7755d739bc60f094ad2b9b8ee24",
+      "class" : "File",
+      "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327",
+      "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/Dockerfile.archived",
+      "nameext" : ".archived",
+      "nameroot" : "Dockerfile",
+      "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/Dockerfile.archived",
+      "size" : 2399
+    }, {
+      "basename" : "stdout_dm_bip.log",
+      "checksum" : "sha1$3e799c007e82ae50da73bd68f978e8188cbd56ab",
+      "class" : "File",
+      "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327",
+      "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/stdout_dm_bip.log",
+      "nameext" : ".log",
+      "nameroot" : "stdout_dm_bip",
+      "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/stdout_dm_bip.log",
+      "size" : 26185
+    }, {
+      "basename" : "stderr_internal_copy.log",
+      "checksum" : "sha1$a749931365855ed02328ca60c288810af3bbf87d",
+      "class" : "File",
+      "dirname" : "/mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327",
+      "location" : "file:///mnt/nosbgfs/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/stderr_internal_copy.log",
+      "nameext" : ".log",
+      "nameroot" : "stderr_internal_copy",
+      "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/stderr_internal_copy.log",
+      "size" : 1655
+    } ],
+    "location" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327",
+    "path" : "/sbgenomics/workspaces/ecba378c-1fb2-4dba-a7e9-e0faf9190fdb/tasks/94982b78-65b6-47be-b023-c4437bacf6b9/cc-dm-bip-test/DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_20260519_182327/",
+    "size" : 195
+  }
+}

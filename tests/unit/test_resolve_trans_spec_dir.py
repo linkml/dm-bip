@@ -139,6 +139,16 @@ def test_missing_repo_dir_raises(tmp_path):
         resolve_trans_spec_dir(tmp_path / "nope", "FHS")
 
 
+def test_relative_repo_dir_returns_absolute_path(tmp_path, monkeypatch):
+    """A relative repo_dir is resolved to absolute, matching the documented contract."""
+    target = tmp_path / "priority_variables_transform" / "FHS-ingest"
+    target.mkdir(parents=True)
+    monkeypatch.chdir(tmp_path)
+    result = resolve_trans_spec_dir(Path("."), "FHS")
+    assert result.is_absolute()
+    assert result == target.resolve()
+
+
 # --- CLI / shell-contract tests ---------------------------------------------
 
 

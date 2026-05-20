@@ -150,6 +150,14 @@ if [[ ! -d "$DM_RAW_SOURCE" ]]; then
   exit 1
 fi
 
+# Validate working directory exists — must happen before any `uv run --directory`
+# call below, so a bad --workdir surfaces this script's clearer error message
+# rather than uv's.
+if [[ ! -d "$WORKING_DIR" ]]; then
+  echo "ERROR: Working directory does not exist: $WORKING_DIR"
+  exit 1
+fi
+
 #------------------------------------------------------------------------------
 # 3. Pull Repos and Resolve Trans-Spec
 #------------------------------------------------------------------------------
@@ -302,12 +310,6 @@ echo "✓ Workspace directories created"
 echo ""
 echo "Starting data harmonization pipeline..."
 echo "================================================================"
-
-# Validate working directory exists
-if [[ ! -d "$WORKING_DIR" ]]; then
-  echo "ERROR: Working directory does not exist: $WORKING_DIR"
-  exit 1
-fi
 
 # Run make pipeline with all necessary parameters
 # -C flag changes to the specified working directory before executing make
