@@ -7,6 +7,7 @@ from typing import Annotated, Optional
 import typer
 
 from dm_bip import __version__
+from dm_bip.seven_bridges.cli import app as seven_bridges_app
 
 __all__ = [
     "app",
@@ -15,7 +16,11 @@ __all__ = [
 
 logger = logging.getLogger(__name__)
 
-app = typer.Typer(help="CLI for dm-bip.")
+app = typer.Typer(
+    help="CLI for dm-bip.",
+    epilog="For pipeline orchestration (schema generation, validation, mapping), use `make help`.",
+)
+app.add_typer(seven_bridges_app, name="seven-bridges")
 
 
 def version_callback(value: bool):
