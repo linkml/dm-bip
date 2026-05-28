@@ -85,6 +85,17 @@ def test_bhv_layout_natural_sorts_two_digit_versions(tmp_path):
     assert resolve_trans_spec_dir(tmp_path, "FHS") == base / "v1.10"
 
 
+def test_bhv_layout_handles_mixed_prefix_versions(tmp_path):
+    """Mixed names like '1.0' and 'v1.0' must not crash with TypeError on sort."""
+    base = tmp_path / "trans_specs" / "FHS"
+    (base / "1.0").mkdir(parents=True)
+    (base / "v1.0").mkdir(parents=True)
+    # Just verify it returns *something* without raising — exact winner isn't
+    # what we're guarding; we're guarding against TypeError on tuple compare.
+    result = resolve_trans_spec_dir(tmp_path, "FHS")
+    assert result in {base / "1.0", base / "v1.0"}
+
+
 def test_bhv_layout_single_version(tmp_path):
     """Single version dir is returned as-is."""
     target = tmp_path / "trans_specs" / "COPDGene" / "v1.0"

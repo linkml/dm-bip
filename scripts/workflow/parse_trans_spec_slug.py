@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Parse a --trans-spec slug into Unit-Separator-delimited fields.
+r"""
+Parse a --trans-spec slug into Unit-Separator-delimited fields.
 
 Slug format: OWNER/REPO[@REF][:PATH]
 
@@ -8,11 +9,13 @@ Prints one line on stdout, fields joined by ASCII Unit Separator (0x1F):
 
 REF and EXPLICIT_PATH are empty when absent. Unit Separator avoids two
 pitfalls of more obvious choices: `$()` would strip trailing newlines
-(losing empty trailing fields in a multi-line format), and `IFS=$'\\t'`
+(losing empty trailing fields in a multi-line format), and `IFS=$'\t'`
 would fold consecutive tabs (collapsing empty middle fields).
 
 Errors go to stderr; exits non-zero on invalid input.
 """
+
+# ruff: noqa: B008
 
 import re
 import sys
@@ -21,22 +24,11 @@ import typer
 
 OWNER_REPO_RE = re.compile(r"^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$")
 
-app = typer.Typer(help=(__doc__ or "").splitlines()[0], add_completion=False)
+app = typer.Typer(help=(__doc__ or "").strip().splitlines()[0], add_completion=False)
 
 
 def parse_slug(slug: str) -> dict[str, str]:
-    """Split slug into owner_repo, repo_name, ref, explicit_path.
-
-    Args:
-        slug: A string of the form OWNER/REPO[@REF][:PATH].
-
-    Returns:
-        Dict with keys owner_repo, repo_name, ref, explicit_path.
-        Missing optional fields are empty strings.
-
-    Raises:
-        ValueError: If the slug fails validation.
-    """
+    """Split a slug `OWNER/REPO[@REF][:PATH]` into its four fields (missing optionals as empty strings)."""
     remainder = slug
 
     explicit_path = ""
@@ -48,14 +40,15 @@ def parse_slug(slug: str) -> dict[str, str]:
         remainder, ref = remainder.rsplit("@", 1)
 
     if not OWNER_REPO_RE.match(remainder):
-        raise ValueError(
-            f"Invalid --trans-spec slug '{slug}'\n       Expected OWNER/REPO[@REF][:PATH]"
-        )
+        raise ValueError(f"Invalid --trans-spec slug '{slug}'\n       Expected OWNER/REPO[@REF][:PATH]")
+
+    # bdc-workflow.sh unconditionally appends `.git` when cloning, so accepting
+    # a `.git` suffix here would produce a `.git.git` URL that fails to clone.
+    if remainder.endswith(".git"):
+        raise ValueError(f"Repo segment must not include the '.git' suffix: {slug}")
 
     if explicit_path and (explicit_path.startswith("/") or ".." in explicit_path):
-        raise ValueError(
-            f"Explicit trans-spec path must be relative and not contain '..': {explicit_path}"
-        )
+        raise ValueError(f"Explicit trans-spec path must be relative and not contain '..': {explicit_path}")
 
     # Control characters in ref/explicit_path would corrupt the \x1f-delimited
     # output and let bash mis-split the fields. Forbid them in both.

@@ -63,7 +63,13 @@ def test_with_ref_and_path():
 def test_repo_name_is_last_segment():
     """repo_name is the part after the slash in OWNER/REPO."""
     assert parse_slug("a/b")["repo_name"] == "b"
-    assert parse_slug("nested.org/my-repo.git")["repo_name"] == "my-repo.git"
+    assert parse_slug("nested.org/my-repo")["repo_name"] == "my-repo"
+
+
+def test_git_suffix_rejected():
+    """`.git` suffix is rejected because bash appends `.git` itself when cloning."""
+    with pytest.raises(ValueError, match=r"'\.git' suffix"):
+        parse_slug("owner/my-repo.git")
 
 
 @pytest.mark.parametrize(

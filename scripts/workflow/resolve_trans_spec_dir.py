@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Resolve the trans-spec directory inside a cloned trans-spec repo.
+"""
+Resolve the trans-spec directory inside a cloned trans-spec repo.
 
 Given a repo directory and a schema name, return the absolute path to the
 directory that holds the schema's transformation specs. Two repo layouts are
@@ -17,49 +18,36 @@ Prints the resolved absolute path on stdout. Errors go to stderr;
 exits non-zero on failure.
 """
 
+# ruff: noqa: B008
+
 import re
 import sys
 from pathlib import Path
 
 import typer
 
-app = typer.Typer(help=(__doc__ or "").splitlines()[0], add_completion=False)
+app = typer.Typer(help=(__doc__ or "").strip().splitlines()[0], add_completion=False)
 
 
 def _version_sort_key(name: str) -> tuple:
-    """Natural-sort key that orders '1.10' after '1.2'.
-
-    Splits the name into digit and non-digit chunks; digit chunks are compared
-    as integers. Mirrors `sort -V` closely enough for trans-spec version dirs.
-    """
-    return tuple(int(c) if c.isdigit() else c for c in re.split(r"(\d+)", name) if c)
+    """Natural-sort key that orders '1.10' after '1.2', and stays deterministic on mixed names like '1.0' vs 'v1.0'."""
+    chunks = []
+    for c in re.split(r"(\d+)", name):
+        if not c:
+            continue
+        chunks.append((0, int(c)) if c.isdigit() else (1, c))
+    return tuple(chunks)
 
 
 def resolve_trans_spec_dir(repo_dir: Path, schema_name: str, explicit_path: str = "") -> Path:
-    """Resolve the trans-spec directory for a schema.
-
-    Args:
-        repo_dir: Path to the cloned trans-spec repo.
-        schema_name: Schema name (e.g., "FHS").
-        explicit_path: Optional relative subdirectory within repo_dir that
-            overrides auto-detection. Must be a relative path with no '..'.
-
-    Returns:
-        Absolute path to the resolved trans-spec directory.
-
-    Raises:
-        ValueError: If inputs are invalid or the directory cannot be resolved.
-        FileNotFoundError: If the resolved directory does not exist.
-    """
+    """Resolve the trans-spec directory for a schema; returns an absolute Path or raises on failure."""
     if not repo_dir.is_dir():
         raise ValueError(f"Repo directory does not exist: {repo_dir}")
     repo_dir = repo_dir.resolve()
 
     if explicit_path:
         if explicit_path.startswith("/") or ".." in explicit_path:
-            raise ValueError(
-                f"Explicit trans-spec path must be relative and not contain '..': {explicit_path}"
-            )
+            raise ValueError(f"Explicit trans-spec path must be relative and not contain '..': {explicit_path}")
         resolved = repo_dir / explicit_path
         if not resolved.is_dir():
             raise FileNotFoundError(f"Explicit trans-spec path not found: {resolved}")
