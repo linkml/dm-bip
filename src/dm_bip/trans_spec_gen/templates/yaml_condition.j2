@@ -1,0 +1,29 @@
+- class_derivations:
+    Condition:
+      populated_from: {{pht}}
+      slot_derivations:
+        associated_participant:
+          expr: 'uuid5("https://w3id.org/bdchm/Participant", str({{ '{' }}{{participantidphv}}{{ '}' }}) + ":{{ cohort | upper }}")'
+        associated_visit:
+          expr: 'uuid5("https://w3id.org/bdchm/Visit", str({{ '{' }}{{participantidphv}}{{ '}' }}) + ":{{associatedvisit}}")'
+        condition_concept:
+          value: {{onto_id}}
+          range: string
+        condition_status:
+          populated_from: {{phv}}
+          value_mappings:
+          {% for pair in value_mappings.split(';') %}
+          {% set code, enum = pair.split('=') %}
+            '{{ code }}': {{ enum }}
+          {% endfor %}
+        condition_provenance:
+          value: {{condition_provenance}}
+          range: string
+        relationship_to_participant:
+          value: ONESELF
+          range: string
+        {% if associated_evidence %}
+        associated_evidence:
+          value: "{{associated_evidence}}"
+          range: string
+        {% endif %}

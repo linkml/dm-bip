@@ -57,7 +57,6 @@ def generate_trans_specs(
     output_dir: Annotated[Path, typer.Option("--output", "-o", help="Directory for YAML output files")],
     cohort: Annotated[str, typer.Option("--cohort", "-c", help="Cohort to filter on (e.g. aric, jhs, whi)")],
     entity: Annotated[str, typer.Option("--entity", "-e", help="Entity type to filter on")] = "MeasurementObservation",
-    template: Annotated[str, typer.Option("--template", "-t", help="Jinja2 template filename")] = "yaml_measobs.j2",
 ):
     """Generate trans-spec YAML files from a metadata CSV."""
     from dm_bip.trans_spec_gen.generate_trans_specs import generate_yaml
@@ -67,7 +66,6 @@ def generate_trans_specs(
         output_dir=output_dir,
         entity=entity,
         cohort=cohort,
-        template_name=template,
     )
     if results:
         typer.echo(f"Generated {len(results)} YAML files in {output_dir}")
