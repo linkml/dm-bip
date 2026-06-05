@@ -153,5 +153,6 @@ CLAUDE.local.md
 # Generated pipeline outputs
 output/
 
-# Generated SevenBridges task manifest
-scripts/sevenbridges/batch_tasks.csv
+# Generated Seven Bridges task manifest + log dumps
+/batch_tasks.csv
+/task_logs/

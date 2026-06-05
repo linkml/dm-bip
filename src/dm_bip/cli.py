@@ -7,6 +7,7 @@ from typing import Annotated, Optional
 import typer
 
 from dm_bip import __version__
+from dm_bip.seven_bridges.cli import app as seven_bridges_app
 
 __all__ = [
     "app",
@@ -15,7 +16,11 @@ __all__ = [
 
 logger = logging.getLogger(__name__)
 
-app = typer.Typer(help="CLI for dm-bip.")
+app = typer.Typer(
+    help="CLI for dm-bip.",
+    epilog="For pipeline orchestration (schema generation, validation, mapping), use `make help`.",
+)
+app.add_typer(seven_bridges_app, name="seven-bridges")
 
 
 def version_callback(value: bool):
@@ -85,7 +90,7 @@ def prepare_metadata(
     contextual_vars: Annotated[Path, typer.Option("--contextual-vars", help="Path to contextual_variables_key.csv")],
     unit_key: Annotated[Path, typer.Option("--unit-key", help="Path to unit_key.xlsx")],
     output: Annotated[Path, typer.Option("--output", "-o", help="Output CSV path")],
-    fixes: Annotated[Optional[Path], typer.Option("--fixes", "-f", help="Curator fixes CSV")] = None,
+    cleanup_rules: Annotated[Optional[Path], typer.Option("--cleanup-rules", help="Curator cleanup rules CSV")] = None,
 ):
     """Prepare metadata for trans-spec generation from raw dbGaP exports."""
     from dm_bip.trans_spec_gen.prepare_metadata import prepare_metadata as _prepare
@@ -96,7 +101,7 @@ def prepare_metadata(
         contextual_vars_path=contextual_vars,
         unit_key_path=unit_key,
         output_path=output,
-        fixes_file=fixes,
+        cleanup_rules_path=cleanup_rules,
     )
     if result is None:
         typer.echo("No data loaded from raw files")
@@ -139,6 +144,18 @@ def fetch_digests(
         f"Cached {len(result.data_dicts)} data_dict.xml + {len(result.var_reports)} var_report.xml "
         f"under {result.cache_root}; pairings in {pairs_mk}"
     )
+
+@app.command()
+def apply_overrides(
+    pipeline_csv: Annotated[Path, typer.Option("--input", "-i", help="Pipeline output CSV")],
+    fixes_csv: Annotated[Path, typer.Option("--fixes", "-f", help="Curator fixes CSV")],
+    output: Annotated[Path, typer.Option("--output", "-o", help="Corrected output CSV")],
+):
+    """Apply per-row curator overrides to a prepared-metadata CSV."""
+    from dm_bip.trans_spec_gen.apply_overrides import apply_curator_overrides
+
+    result = apply_curator_overrides(pipeline_csv=pipeline_csv, fixes_csv=fixes_csv, output_csv=output)
+    typer.echo(f"Corrected output written to {result}")
 
 
 if __name__ == "__main__":
