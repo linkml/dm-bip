@@ -758,6 +758,7 @@ dependencies = [
     { name = "linkml-map" },
     { name = "pandas" },
     { name = "schema-automator" },
+    { name = "typer" },
     { name = "typing-extensions" },
 ]
 
@@ -787,6 +788,7 @@ requires-dist = [
     { name = "linkml-map", specifier = "==0.5.2" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
     { name = "schema-automator", specifier = "==0.5.5" },
+    { name = "typer", specifier = ">=0.20.0,<1" },
     { name = "typing-extensions", specifier = ">=4.0,<5" },
 ]
 
