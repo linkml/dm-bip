@@ -25,9 +25,16 @@ nav:
   - Pipeline User Guide: pipeline_user_docs.md
   - LinkML Tools:
     - Schema Automator: schema_automator.md
+  - Design:
+    - Automated Harmonization Orchestration: design/automated-harmonization-orchestration.md
 
 markdown_extensions:
   - tables
   - fenced_code
   - toc:
       permalink: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
