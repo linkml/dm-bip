@@ -54,6 +54,7 @@ sequenceDiagram
     participant S3 as S3 submission bucket
     participant SB as Seven Bridges API
     participant DMB as dm-bip app (on SB)
+    participant FD as Freshdesk
 
     Sub->>DST: Create submission (intake form)
     DST->>JIRA: Create/track ticket (lifecycle mirror)
@@ -66,7 +67,9 @@ sequenceDiagram
     DMB->>S3: Read raw data (via SB volume → RawSource)
     DMB->>DMB: prepare → schema → validate → map (BDCHM)
     DMB->>S3: Write harmonized output
-    DMB-->>JIRA: Completion reflected back (mechanism TBD — §9)
+    DMB->>FD: Notify done/failed (structured ticket — §9.2)
+    FD-->>DST: Surfaced to coordinator
+    Note over FD,JIRA: Coordinator advances the JIRA issue
     JIRA-->>DST: Status updates
     DST-->>Sub: Surfaces progress / completion
 ```
@@ -132,12 +135,29 @@ The end-state is mostly assembly of documented primitives that live *outside* th
 These are the genuine choices, not yet made:
 
 1. **Volume vs. DRS** for the bucket read path. *Recommendation:* SB volume for v1; design the seam to allow DRS later. Accept that DRS may never arrive.
-2. **Close-the-loop mechanism.** SB emits only outbound *email* on task completion — no completion webhook. So "harmonization done → JIRA status advances → DST surfaces it" needs a chosen mechanism:
-   - **(a) Push:** the pipeline calls the JIRA API at the end (the DST's `JiraAgent` is read-only today; this would need write/transition methods).
-   - **(b) Poll:** a poller checks SB task status and transitions the issue.
-   *This is the one true architectural choice — push vs. pull.*
+2. **Close-the-loop mechanism — RESOLVED (see §9a).** ~~push the pipeline → JIRA, vs. poll SB task status~~. Decided: the pipeline emits a structured **notification to Freshdesk** at end-of-run; the DST surfaces it and a coordinator advances the JIRA issue. Rationale and the remaining sub-decision are in §9a.
 3. **Run identity / idempotency key.** *Recommendation:* the **JIRA issue key** as the correlation ID for the run, with **accession + version** as the semantic identity for dedupe. (Open: confirm whether a submission/ticket ID is the more natural unique key.)
 4. **Service identity.** Dedicated SB service *user* + token for v1; true service account later (pending Velsera).
+
+---
+
+## 9a. Close-the-loop design (resolved)
+
+**Decision:** the harmonization run emits a **structured notification to Freshdesk** on completion — success *or* failure. Freshdesk auto-creates a ticket (a documented first-class feature: sender → requester, subject → subject, body → description; creation-time automations can tag/route). The DST already integrates Freshdesk (`tracker/freshdesk_agent.py`) and surfaces it; a coordinator advances the JIRA lifecycle issue, correlating via the **JIRA issue key** carried in the notification.
+
+**Why this over the alternatives:**
+- **No new auth surface in the pipeline** beyond a send path — lighter than granting the pipeline JIRA write credentials (a "push to JIRA" design) or standing up a poller.
+- **Leans on existing single-sources-of-truth** — Freshdesk owns the support domain and the DST already reads it. No duplicated orchestration; consistent with the DST philosophy (§2).
+- **Covers both outcomes and carries the correlation key**, so the coordinator can bridge it to the lifecycle issue.
+- **Keeps a human gate** in the controlled-access path before the JIRA issue advances — acceptable, arguably desirable, for v1.
+
+**Why the pipeline sends — not SB's native email:** SB task-completion emails go only to the *account holder's* address (no documented arbitrary/shared recipient), carry undocumented content (essentially a task-page link), and only the *failure* email is guaranteed. So we control the content ourselves.
+
+**Open sub-decision — send mechanism:** **Freshdesk REST API** (`POST /api/v2/tickets`, structured fields, needs an API key) *(recommended)* vs. **SMTP to a Freshdesk intake mailbox** (simplest, but needs an outbound mail path from the container). Resolve at Stage 2.
+
+**Backstop (optional):** for a hard container crash (OOM/kill) before the pipeline can notify, route the SB service user's account email to the same Freshdesk intake as a catch-all — the one case where SB's native failure email earns its keep.
+
+**Minor domain nuance:** a "harmonization done" notice is a *lifecycle* event entering the *support* system. Pragmatic and intentional for v1; if full automation is later wanted, the Freshdesk ticket (or a poller) could drive the JIRA transition directly.
 
 ---
 
@@ -145,9 +165,9 @@ These are the genuine choices, not yet made:
 
 | Stage | Work | Owner | Blocked on |
 |---|---|---|---|
-| **0** | Pluggable data-source seam + accept params (dm-bip) | dm-bip | nothing — start now |
+| **0** | Pluggable data-source seam (`resolve_source.py` helper + tests, mirroring #324) + accept orchestrator params + log-only notify hook | dm-bip | nothing — start now |
 | **1** | SB S3 volume over bucket; JIRA automation rule (transition → `POST /v2/tasks?action=run`, field mapping); service user + token | You (JIRA side) + BDC/Velsera | decision §9.1, §9.4 |
-| **2** | Close the loop (push vs. poll); output write-back; idempotency guard | dm-bip + JIRA | decision §9.2, §9.3 |
+| **2** | Freshdesk notification (`notify.py` → API per §9a); output write-back; idempotency guard | dm-bip + Freshdesk | §9a send mechanism, §9.3 key |
 | **3** | True service account; DRS-indexed source | BDC/Velsera | external |
 
 ---
