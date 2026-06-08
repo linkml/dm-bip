@@ -14,7 +14,7 @@
           value_mappings:
           {% for pair in value_mappings.split(';') %}
           {% set code, enum = pair.split('=') %}
-            '{{ code }}': {{ enum }}
+            '{{ code | replace("'", "''") }}': {{ enum }}
           {% endfor %}
         condition_provenance:
           value: {{condition_provenance}}

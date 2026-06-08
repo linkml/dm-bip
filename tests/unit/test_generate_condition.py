@@ -24,7 +24,7 @@ class TestFileOutput:
         """Rows with all required slots populated land in good/."""
         _run(tmp_path)
         good_files = sorted(p.stem for p in (tmp_path / "chs" / "good").glob("*.yaml"))
-        assert good_files == ["angina", "copd"]
+        assert good_files == ["angina", "copd", "quoted"]
 
     def test_incomplete_row_routes_to_bad(self, tmp_path):
         """A row missing a required slot (onto_id) lands in bad/."""
@@ -67,6 +67,13 @@ class TestConditionSlots:
         status = self._slots(tmp_path)["slot_derivations"]["condition_status"]
         assert status["populated_from"] == "phv00100497"
         assert status["value_mappings"] == {"0": "ABSENT", "1": "PRESENT"}
+
+    def test_value_mapping_code_with_apostrophe(self, tmp_path):
+        """A mapping code containing a single quote escapes to valid YAML (e.g. "Don't know")."""
+        _run(tmp_path)
+        parsed = _read_yaml(tmp_path, "chs", "good", "quoted")
+        status = parsed[0]["class_derivations"]["Condition"]["slot_derivations"]["condition_status"]
+        assert status["value_mappings"] == {"No": "ABSENT", "Don't know": "UNKNOWN", "Yes": "PRESENT"}
 
     def test_concept_provenance_and_evidence(self, tmp_path):
         """condition_concept, provenance, relationship, and evidence render from the row."""
