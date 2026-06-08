@@ -24,7 +24,7 @@ class TestFileOutput:
         """Rows with all required slots populated land in good/."""
         _run(tmp_path)
         good_files = sorted(p.stem for p in (tmp_path / "chs" / "good").glob("*.yaml"))
-        assert good_files == ["angina", "copd", "quoted"]
+        assert good_files == ["angina", "copd", "fam_stroke", "quoted"]
 
     def test_incomplete_row_routes_to_bad(self, tmp_path):
         """A row missing a required slot (onto_id) lands in bad/."""
@@ -83,3 +83,16 @@ class TestConditionSlots:
         assert slots["condition_provenance"]["value"] == "PATIENT_SELF-REPORTED_CONDITION"
         assert slots["relationship_to_participant"]["value"] == "ONESELF"
         assert slots["associated_evidence"]["value"] == "self-report questionnaire"
+
+    def test_relationship_defaults_to_oneself_when_blank(self, tmp_path):
+        """A blank relationship_to_participant column falls back to ONESELF."""
+        _run(tmp_path)
+        slots = self._slots(tmp_path)["slot_derivations"]
+        assert slots["relationship_to_participant"]["value"] == "ONESELF"
+
+    def test_relationship_uses_explicit_value(self, tmp_path):
+        """A family-history row renders its explicit relationship (e.g. an OMOP relative code)."""
+        _run(tmp_path)
+        parsed = _read_yaml(tmp_path, "chs", "good", "fam_stroke")
+        slots = parsed[0]["class_derivations"]["Condition"]["slot_derivations"]
+        assert slots["relationship_to_participant"]["value"] == "OMOP:4053608"

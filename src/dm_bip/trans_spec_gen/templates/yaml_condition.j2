@@ -20,7 +20,7 @@
           value: {{condition_provenance}}
           range: string
         relationship_to_participant:
-          value: ONESELF
+          value: {{ relationship_to_participant | default('ONESELF', true) }}
           range: string
         {% if associated_evidence %}
         associated_evidence:
