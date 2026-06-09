@@ -69,11 +69,16 @@ def main(
     output: str = typer.Option("", "--output", help="Output / processed directory location"),
 ):
     """Build the completion notification and log it (Stage-0 stub; no delivery yet)."""
-    subject, body = build_notification(status, schema, accession, version, consent, jira_key, output)
-    # Stage 2 will deliver this to Freshdesk; for now, log it so the hook is observable.
-    print("--- harmonization notification (stub; not yet delivered) ---", file=sys.stderr)
-    print(subject, file=sys.stderr)
-    print(body, file=sys.stderr)
+    # A notification problem must never fail an otherwise-successful run, so any
+    # error here (including future Freshdesk delivery) is caught and logged.
+    try:
+        subject, body = build_notification(status, schema, accession, version, consent, jira_key, output)
+        # Stage 2 will deliver this to Freshdesk; for now, log it so the hook is observable.
+        print("--- harmonization notification (stub; not yet delivered) ---", file=sys.stderr)
+        print(subject, file=sys.stderr)
+        print(body, file=sys.stderr)
+    except Exception as e:  # noqa: BLE001 - the Stage-0 contract is to never fail a run
+        print(f"WARNING: notification step errored: {e}", file=sys.stderr)
 
 
 if __name__ == "__main__":

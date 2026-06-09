@@ -297,6 +297,35 @@ PROCESSED_DIR="${HOME}/DMC_${RAW_DIR_NAME}_${DM_SCHEMA_NAME}_Processed_${PROCESS
 DM_OUTPUT_DIR="${PROCESSED_DIR}/${OUTPUT_NAME}"
 DM_INPUT_DIR="${PROCESSED_DIR}/${RAW_DIR_NAME}_CleanedSource"
 
+#------------------------------------------------------------------------------
+# 4b. Completion Notification Hook
+#------------------------------------------------------------------------------
+# Report the run outcome (SUCCESS/FAILURE) so it can be surfaced to users
+# (Freshdesk -> DST) and the JIRA lifecycle issue advanced. Stage 0 logs the
+# notification; Stage 2 delivers it to Freshdesk. See notify.py and design doc §9a.
+#
+# Installed here — right after PROCESSED_DIR is known — so failures in the
+# remaining setup (e.g. trans-spec resolution) and the pipeline itself are
+# reported. An EXIT trap (not ERR) is used so explicit `exit` paths are covered
+# too; it fires once, at the true end, and decides SUCCESS vs FAILURE by exit code.
+notify() {
+  uv run --directory "$WORKING_DIR" scripts/workflow/notify.py \
+    --status "$1" \
+    --schema "$DM_SCHEMA_NAME" \
+    --accession "$DM_ACCESSION" \
+    --version "$DM_VERSION" \
+    --consent "$DM_CONSENT" \
+    --jira-key "$DM_JIRA_KEY" \
+    --output "$PROCESSED_DIR" \
+    || echo "WARNING: completion notification failed" >&2
+}
+notify_on_exit() {
+  local rc=$?
+  trap - EXIT  # fire once
+  if [[ $rc -eq 0 ]]; then notify SUCCESS; else notify FAILURE; fi
+}
+trap notify_on_exit EXIT
+
 # Define paths to external dependencies (within container)
 # Resolve trans-spec directory: use slug-cloned repo if --trans-spec was given,
 # otherwise fall back to the build-time clone of bdc-harmonized-variables.
@@ -340,27 +369,6 @@ mkdir -p "$DM_INPUT_DIR"
 echo "✓ Workspace directories created"
 
 #------------------------------------------------------------------------------
-# 5b. Completion Notification Hook
-#------------------------------------------------------------------------------
-# Report the run outcome (SUCCESS/FAILURE) so it can be surfaced to users
-# (Freshdesk -> DST) and the JIRA lifecycle issue advanced. Stage 0 logs the
-# notification; Stage 2 delivers it to Freshdesk. See notify.py and the design
-# doc (§9a). Defined after PROCESSED_DIR is set so the failure path can report it.
-notify() {
-  trap - ERR  # don't re-enter this handler if the notification itself errors
-  uv run --directory "$WORKING_DIR" scripts/workflow/notify.py \
-    --status "$1" \
-    --schema "$DM_SCHEMA_NAME" \
-    --accession "$DM_ACCESSION" \
-    --version "$DM_VERSION" \
-    --consent "$DM_CONSENT" \
-    --jira-key "$DM_JIRA_KEY" \
-    --output "$PROCESSED_DIR" \
-    || echo "WARNING: completion notification failed" >&2
-}
-trap 'notify FAILURE' ERR
-
-#------------------------------------------------------------------------------
 # 6. Execute Data Harmonization Pipeline
 #------------------------------------------------------------------------------
 echo ""
@@ -400,13 +408,12 @@ echo "================================================================"
 echo "Output Location: $PROCESSED_DIR"
 echo "================================================================"
 
-# Report success. notify() clears the ERR trap, so the log-copy step below
-# cannot trigger a spurious FAILURE notification.
-notify SUCCESS
-
 #------------------------------------------------------------------------------
 # 8. Copy Log Files and Build Artifacts to Processed Directory
-#    NOTE: Must remain last — any echoes after this won't appear in the log
+#    NOTE: Must remain last — any echoes after this won't appear in the log.
+#    Best-effort: a copy failure here must not flip a successful run to FAILURE
+#    (the EXIT trap reports SUCCESS only if the run exits 0).
 #------------------------------------------------------------------------------
-cp /Dockerfile.archived "$PROCESSED_DIR/"
-find "${HOME}" -maxdepth 1 -name "*.log" -exec cp {} "$PROCESSED_DIR/" \;
+cp /Dockerfile.archived "$PROCESSED_DIR/" || echo "WARNING: failed to copy archived Dockerfile" >&2
+find "${HOME}" -maxdepth 1 -name "*.log" -exec cp {} "$PROCESSED_DIR/" \; \
+  || echo "WARNING: failed to copy one or more log files" >&2
