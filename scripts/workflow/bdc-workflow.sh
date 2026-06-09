@@ -59,6 +59,10 @@ Optional Parameters:
   --trans-spec  Alternate trans-spec source (OWNER/REPO[@REF][:PATH])
   --workdir     Working directory for pipeline execution (default: /app)
   --jobs        Number of parallel make jobs (default: 8)
+  --accession   dbGaP accession (phs) — run identity / completion notification
+  --version     Submission version — run identity / completion notification
+  --consent     Consent code — completion notification
+  --jira-key    JIRA issue key — correlation in the completion notification
 
 Examples:
   $0 --schema FHS --source /data/raw/fhs_study
@@ -78,6 +82,13 @@ DM_RAW_SOURCE=""
 TRANS_SPEC_SLUG=""
 WORKING_DIR="/app"  # Default working directory
 MAKE_JOBS=8         # Default parallel jobs
+
+# Optional orchestration parameters supplied by the JIRA/DST trigger. Informational
+# for now: they feed the run identity and the completion notification (notify.py).
+DM_ACCESSION=""
+DM_VERSION=""
+DM_CONSENT=""
+DM_JIRA_KEY=""
 
 #------------------------------------------------------------------------------
 # 1. Parse Named Parameters
@@ -107,6 +118,26 @@ while [[ $# -gt 0 ]]; do
     --trans-spec)
       [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --trans-spec requires a value (OWNER/REPO[@REF][:PATH])"; exit 1; }
       TRANS_SPEC_SLUG="$2"
+      shift 2
+      ;;
+    --accession)
+      [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --accession requires a value"; exit 1; }
+      DM_ACCESSION="$2"
+      shift 2
+      ;;
+    --version)
+      [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --version requires a value"; exit 1; }
+      DM_VERSION="$2"
+      shift 2
+      ;;
+    --consent)
+      [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --consent requires a value"; exit 1; }
+      DM_CONSENT="$2"
+      shift 2
+      ;;
+    --jira-key)
+      [[ -z "${2:-}" || "$2" == --* ]] && { echo "Error: --jira-key requires a value"; exit 1; }
+      DM_JIRA_KEY="$2"
       shift 2
       ;;
     --jobs)
@@ -144,12 +175,6 @@ if [[ -z "$DM_RAW_SOURCE" ]]; then
   exit 1
 fi
 
-# Validate that the source directory exists
-if [[ ! -d "$DM_RAW_SOURCE" ]]; then
-  echo "ERROR: Source directory does not exist: $DM_RAW_SOURCE"
-  exit 1
-fi
-
 # Validate working directory exists — must happen before any `uv run --directory`
 # call below, so a bad --workdir surfaces this script's clearer error message
 # rather than uv's.
@@ -157,6 +182,16 @@ if [[ ! -d "$WORKING_DIR" ]]; then
   echo "ERROR: Working directory does not exist: $WORKING_DIR"
   exit 1
 fi
+
+#------------------------------------------------------------------------------
+# 2b. Resolve the Raw Source to a Local Directory (pluggable acquisition seam)
+#------------------------------------------------------------------------------
+# Downstream stages always consume a local directory. How that directory comes
+# to exist depends on the source scheme (local dir / s3:// / drs://). Today only
+# a local path (incl. a Seven Bridges volume presented as a local path) is
+# supported; s3:// and drs:// are recognized and deferred. See resolve_source.py
+# and docs/design/automated-harmonization-orchestration.md (§7, §8).
+DM_RAW_SOURCE=$(uv run --directory "$WORKING_DIR" scripts/workflow/resolve_source.py --source "$DM_RAW_SOURCE") || exit 1
 
 #------------------------------------------------------------------------------
 # 3. Pull Repos and Resolve Trans-Spec
@@ -262,6 +297,35 @@ PROCESSED_DIR="${HOME}/DMC_${RAW_DIR_NAME}_${DM_SCHEMA_NAME}_Processed_${PROCESS
 DM_OUTPUT_DIR="${PROCESSED_DIR}/${OUTPUT_NAME}"
 DM_INPUT_DIR="${PROCESSED_DIR}/${RAW_DIR_NAME}_CleanedSource"
 
+#------------------------------------------------------------------------------
+# 4b. Completion Notification Hook
+#------------------------------------------------------------------------------
+# Report the run outcome (SUCCESS/FAILURE) so it can be surfaced to users
+# (Freshdesk -> DST) and the JIRA lifecycle issue advanced. Stage 0 logs the
+# notification; Stage 2 delivers it to Freshdesk. See notify.py and design doc §9a.
+#
+# Installed here — right after PROCESSED_DIR is known — so failures in the
+# remaining setup (e.g. trans-spec resolution) and the pipeline itself are
+# reported. An EXIT trap (not ERR) is used so explicit `exit` paths are covered
+# too; it fires once, at the true end, and decides SUCCESS vs FAILURE by exit code.
+notify() {
+  uv run --directory "$WORKING_DIR" scripts/workflow/notify.py \
+    --status "$1" \
+    --schema "$DM_SCHEMA_NAME" \
+    --accession "$DM_ACCESSION" \
+    --version "$DM_VERSION" \
+    --consent "$DM_CONSENT" \
+    --jira-key "$DM_JIRA_KEY" \
+    --output "$PROCESSED_DIR" \
+    || echo "WARNING: completion notification failed" >&2
+}
+notify_on_exit() {
+  local rc=$?
+  trap - EXIT  # fire once
+  if [[ $rc -eq 0 ]]; then notify SUCCESS; else notify FAILURE; fi
+}
+trap notify_on_exit EXIT
+
 # Define paths to external dependencies (within container)
 # Resolve trans-spec directory: use slug-cloned repo if --trans-spec was given,
 # otherwise fall back to the build-time clone of bdc-harmonized-variables.
@@ -346,7 +410,10 @@ echo "================================================================"
 
 #------------------------------------------------------------------------------
 # 8. Copy Log Files and Build Artifacts to Processed Directory
-#    NOTE: Must remain last — any echoes after this won't appear in the log
+#    NOTE: Must remain last — any echoes after this won't appear in the log.
+#    Best-effort: a copy failure here must not flip a successful run to FAILURE
+#    (the EXIT trap reports SUCCESS only if the run exits 0).
 #------------------------------------------------------------------------------
-cp /Dockerfile.archived "$PROCESSED_DIR/"
-find "${HOME}" -maxdepth 1 -name "*.log" -exec cp {} "$PROCESSED_DIR/" \;
+cp /Dockerfile.archived "$PROCESSED_DIR/" || echo "WARNING: failed to copy archived Dockerfile" >&2
+find "${HOME}" -maxdepth 1 -name "*.log" -exec cp {} "$PROCESSED_DIR/" \; \
+  || echo "WARNING: failed to copy one or more log files" >&2
