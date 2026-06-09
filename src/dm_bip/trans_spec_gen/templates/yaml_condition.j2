@@ -11,11 +11,13 @@
           range: string
         condition_status:
           populated_from: {{phv}}
+          {% if value_mappings %}
           value_mappings:
           {% for pair in value_mappings.split(';') %}
           {% set code, enum = pair.split('=') %}
             '{{ code | replace("'", "''") }}': {{ enum }}
           {% endfor %}
+          {% endif %}
         condition_provenance:
           value: {{condition_provenance}}
           range: string

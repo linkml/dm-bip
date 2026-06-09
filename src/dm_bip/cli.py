@@ -66,12 +66,15 @@ def generate_trans_specs(
     """Generate trans-spec YAML files from a metadata CSV."""
     from dm_bip.trans_spec_gen.generate_trans_specs import generate_yaml
 
-    results = generate_yaml(
-        input_csv=input_csv,
-        output_dir=output_dir,
-        entity=entity,
-        cohort=cohort,
-    )
+    try:
+        results = generate_yaml(
+            input_csv=input_csv,
+            output_dir=output_dir,
+            entity=entity,
+            cohort=cohort,
+        )
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc), param_hint="--entity") from exc
     if results:
         typer.echo(f"Generated {len(results)} YAML files in {output_dir}")
         for path in results:

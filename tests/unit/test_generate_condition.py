@@ -27,10 +27,18 @@ class TestFileOutput:
         assert good_files == ["angina", "copd", "fam_stroke", "quoted"]
 
     def test_incomplete_row_routes_to_bad(self, tmp_path):
-        """A row missing a required slot (onto_id) lands in bad/."""
+        """Rows missing a required slot (onto_id, or value_mappings) land in bad/."""
         _run(tmp_path)
         bad_files = sorted(p.stem for p in (tmp_path / "chs" / "bad").glob("*.yaml"))
-        assert bad_files == ["incomplete"]
+        assert bad_files == ["incomplete", "novmap"]
+
+    def test_missing_value_mappings_renders_without_crash(self, tmp_path):
+        """A row lacking value_mappings still renders valid YAML, omitting the value_mappings block."""
+        _run(tmp_path)
+        parsed = _read_yaml(tmp_path, "chs", "bad", "novmap")
+        status = parsed[0]["class_derivations"]["Condition"]["slot_derivations"]["condition_status"]
+        assert "value_mappings" not in status
+        assert status["populated_from"] == "phv00104001"
 
     def test_output_is_valid_yaml(self, tmp_path):
         """All generated Condition files parse as valid YAML."""

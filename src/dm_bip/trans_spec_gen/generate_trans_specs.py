@@ -22,17 +22,28 @@ class EntitySpec:
     """Binds a BDCHM entity to its template and its row-completeness rule."""
 
     template: str
-    is_good: Callable[[dict], bool]
+    is_good: Callable[[pd.Series], bool]
 
 
-def _measobs_is_good(row: dict) -> bool:
+def _measobs_is_good(row: pd.Series) -> bool:
     """MeasurementObservation rows carry a precomputed row_good flag from prepare_metadata."""
     return row.get("row_good") == 1
 
 
-def _condition_is_good(row: dict) -> bool:
-    """Return True when a Condition row has its required slots populated."""
-    return all(row.get(field) not in (None, "", 0) for field in ("pht", "participantidphv", "onto_id", "phv"))
+_CONDITION_REQUIRED = (
+    "pht",
+    "participantidphv",
+    "onto_id",
+    "phv",
+    "associatedvisit",
+    "value_mappings",
+    "condition_provenance",
+)
+
+
+def _condition_is_good(row: pd.Series) -> bool:
+    """Return True when a Condition row has every slot the template renders unconditionally."""
+    return all(row.get(field) not in (None, "", 0) for field in _CONDITION_REQUIRED)
 
 
 ENTITY_REGISTRY: dict[str, EntitySpec] = {
@@ -93,7 +104,7 @@ def generate_yaml(
     env = Environment(loader=FileSystemLoader(str(templates_dir)), trim_blocks=True, lstrip_blocks=True)  # noqa: S701 - generating YAML, not HTML
     template = env.get_template(spec.template)
 
-    good_mask = df_filtered.apply(lambda r: spec.is_good(r.to_dict()), axis=1)
+    good_mask = df_filtered.apply(spec.is_good, axis=1)
 
     written = []
     for quality in ("good", "bad"):
