@@ -110,6 +110,43 @@ def prepare_metadata(
 
 
 @app.command()
+def fetch_digests(
+    cohort_key: Annotated[
+        Optional[str],
+        typer.Argument(help="Cohort key (e.g. jhs, aric). Omit with --list to list cohorts."),
+    ] = None,
+    cache_dir: Annotated[Path, typer.Option("--cache-dir", help="Local cache directory")] = Path(".dbgap-cache"),
+    refresh: Annotated[bool, typer.Option("--refresh", help="Force re-fetch of cached files")] = False,
+    list_cohorts: Annotated[bool, typer.Option("--list", help="List available cohorts and exit")] = False,
+):
+    """Fetch dbGaP variable digest files (data_dict.xml, var_report.xml) for a cohort."""
+    from dm_bip.prepare_study.fetch_digests import fetch_digests as _fetch
+    from dm_bip.prepare_study.fetch_digests import load_cohorts, write_pairs_mk
+
+    cohorts = load_cohorts(cache_dir=cache_dir, refresh=refresh)
+
+    if list_cohorts:
+        for key, cohort in sorted(cohorts.items()):
+            typer.echo(f"  {key:<12} {cohort.study_id}.{cohort.data_version}  {cohort.display_name}")
+        return
+
+    if cohort_key is None:
+        typer.echo("Error: cohort_key is required (use --list to see options)")
+        raise typer.Exit(code=2)
+
+    if cohort_key not in cohorts:
+        typer.echo(f"Unknown cohort '{cohort_key}'. Available: {', '.join(sorted(cohorts))}")
+        raise typer.Exit(code=2)
+
+    result = _fetch(cohorts[cohort_key], cache_root=cache_dir, refresh=refresh)
+    pairs_mk = write_pairs_mk(result, cache_dir / cohort_key / "digest_pairs.mk")
+    typer.echo(
+        f"Cached {len(result.data_dicts)} data_dict.xml + {len(result.var_reports)} var_report.xml "
+        f"under {result.cache_root}; pairings in {pairs_mk}"
+    )
+
+
+@app.command()
 def apply_overrides(
     pipeline_csv: Annotated[Path, typer.Option("--input", "-i", help="Pipeline output CSV")],
     fixes_csv: Annotated[Path, typer.Option("--fixes", "-f", help="Curator fixes CSV")],

@@ -56,6 +56,13 @@ DM_RAW_SOURCE ?=
 # The directory containing the YAML mapping files for the study filtering
 DM_MAPPING_SPEC ?= $(DM_TRANS_SPEC_DIR)
 
+# --- dbGaP digest fetch/adapt Variables ---
+# Cohort key from the upstream cohorts.yaml (e.g. jhs, aric). When set,
+# enables the fetch-digests and adapt-digests targets.
+DM_COHORT ?=
+# Local cache directory for fetched dbGaP digest XMLs (gitignored).
+DM_DBGAP_CACHE_DIR ?= .dbgap-cache
+
 # Schema generation options
 # ============
 # Enum inference is controlled by both DM_ENUM_THRESHOLD and DM_MAX_ENUM_SIZE.
@@ -248,6 +255,44 @@ $(PREPARED_INPUT_MK):
 
 .PHONY: prepare-input
 prepare-input: $(PREPARED_INPUT_MK)
+
+endif
+
+# dbGaP Digest Fetch and Adapt (only when DM_COHORT is set)
+# ============
+# fetch-digests:  populate $(DM_DBGAP_CACHE_DIR)/$(DM_COHORT)/.../*.{data_dict,var_report}.xml
+#                 by calling `dm-bip fetch-digests` (which handles its own caching).
+# adapt-digests:  for each paired data_dict + var_report under the cache, call
+#                 `schemauto adapt-dbgap` to emit a canonical-DD TSV.
+ifneq ($(strip $(DM_COHORT)),)
+
+DM_DD_DIR := output/$(DM_COHORT)/dd
+DBGAP_PAIRS_MK := $(DM_DBGAP_CACHE_DIR)/$(DM_COHORT)/digest_pairs.mk
+
+.PHONY: fetch-digests
+fetch-digests:
+	$(RUN) dm-bip fetch-digests $(DM_COHORT) --cache-dir $(DM_DBGAP_CACHE_DIR)
+
+# Include the pair mapping if it exists. dbGaP's data_dict.xml and var_report.xml
+# filenames don't share a stem (var_report has an extra .p<N> participant-set
+# segment), so the fetcher emits explicit DBGAP_DD_<key> and DBGAP_VR_<key>
+# pair vars keyed by the data_dict basename.
+-include $(DBGAP_PAIRS_MK)
+
+DBGAP_DD_TSVS := $(foreach k,$(DBGAP_DIGEST_KEYS),$(DM_DD_DIR)/$(k).dd.tsv)
+
+.SECONDEXPANSION:
+
+$(DM_DD_DIR)/%.dd.tsv: $$(DBGAP_DD_$$*) $$(DBGAP_VR_$$*)
+	@mkdir -p $(@D)
+	$(RUN) schemauto adapt-dbgap $< --var-report $(word 2,$^) --tsv -o $@
+
+.PHONY: adapt-digests
+adapt-digests: $(DBGAP_DD_TSVS)
+
+.PHONY: adapt-digests-clean
+adapt-digests-clean:
+	rm -rf $(DM_DD_DIR)
 
 endif
 
