@@ -2,8 +2,11 @@
 
 from pathlib import Path
 
+import pytest
 import yaml
+from typer.testing import CliRunner
 
+from dm_bip.cli import app
 from dm_bip.trans_spec_gen.generate_trans_specs import generate_yaml
 
 SAMPLE_CSV = Path(__file__).parents[1] / "input" / "make_yaml" / "condition_sample.csv"
@@ -104,3 +107,21 @@ class TestConditionSlots:
         parsed = _read_yaml(tmp_path, "chs", "good", "fam_stroke")
         slots = parsed[0]["class_derivations"]["Condition"]["slot_derivations"]
         assert slots["relationship_to_participant"]["value"] == "OMOP:4053608"
+
+
+class TestUnknownEntity:
+    """An unregistered entity fails loudly, with a clean CLI error."""
+
+    def test_generate_yaml_raises_for_unknown_entity(self, tmp_path):
+        """generate_yaml raises ValueError when no EntitySpec is registered for the entity."""
+        with pytest.raises(ValueError, match="No registered entity spec"):
+            generate_yaml(input_csv=SAMPLE_CSV, output_dir=tmp_path, entity="Nonexistent", cohort="chs")
+
+    def test_cli_unknown_entity_exits_cleanly(self, tmp_path):
+        """The CLI reports an unknown entity as a parameter error, not a traceback."""
+        result = CliRunner().invoke(
+            app,
+            ["generate-trans-specs", "-i", str(SAMPLE_CSV), "-o", str(tmp_path), "-c", "chs", "-e", "Nonexistent"],
+        )
+        assert result.exit_code != 0
+        assert "No registered entity spec" in result.output

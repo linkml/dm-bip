@@ -85,8 +85,64 @@ uv run dm-bip generate-trans-specs \
 | `--input` | `-i` | Yes | | Path to the metadata CSV |
 | `--output` | `-o` | Yes | | Directory for YAML output files |
 | `--cohort` | `-c` | Yes | | Cohort to filter on |
-| `--entity` | `-e` | No | MeasurementObservation | Entity type to filter on |
-| `--template` | `-t` | No | yaml_measobs.j2 | Jinja2 template filename |
+| `--entity` | `-e` | No | MeasurementObservation | Entity type to generate |
+
+### Entities and templates
+
+`--entity` selects both the Jinja2 template and the row-completeness rule from
+the `ENTITY_REGISTRY` in `generate_trans_specs.py` — there is no separate
+template flag. Registered entities:
+
+| Entity | Template | "Good" when |
+|--------|----------|-------------|
+| `MeasurementObservation` | `templates/yaml_measobs.j2` | `row_good` flag set by prepare-metadata |
+| `Condition` | `templates/yaml_condition.j2` | `pht`, `participantidphv`, `onto_id`, `phv`, `associatedvisit`, `value_mappings`, `condition_provenance` all present |
+
+An unregistered entity exits with a parameter error.
+
+#### Example: Condition
+
+The input is one row per source-to-target mapping. A worked example lives in
+[`tests/input/make_yaml/condition_sample.csv`](../../../tests/input/make_yaml/condition_sample.csv);
+a single row like:
+
+```csv
+bdchm_entity,cohort,bdchm_varname,pht,participantidphv,onto_id,phv,associatedvisit,value_mappings,condition_provenance,associated_evidence,relationship_to_participant
+Condition,chs,copd,pht001452,phv00100285,MONDO:0005002,phv00100497,CHS BASELINE BOTH,0=ABSENT;1=PRESENT,PATIENT_SELF-REPORTED_CONDITION,self-report questionnaire,
+```
+
+renders to:
+
+```yaml
+- class_derivations:
+    Condition:
+      populated_from: pht001452
+      slot_derivations:
+        associated_participant:
+          expr: 'uuid5("https://w3id.org/bdchm/Participant", str({phv00100285}) + ":CHS")'
+        associated_visit:
+          expr: 'uuid5("https://w3id.org/bdchm/Visit", str({phv00100285}) + ":CHS BASELINE BOTH")'
+        condition_concept:
+          value: 'MONDO:0005002'
+          range: string
+        condition_status:
+          populated_from: phv00100497
+          value_mappings:
+            '0': ABSENT
+            '1': PRESENT
+        condition_provenance:
+          value: 'PATIENT_SELF-REPORTED_CONDITION'
+          range: string
+        relationship_to_participant:
+          value: 'ONESELF'
+          range: string
+```
+
+The Condition template targets the common `uuid5` participant/visit idiom. More
+complex hand-authored cases — `case()`-based visits, class-level `joins`, age
+bounds, dynamic concepts — are not yet templated; see the
+[corpus coverage note on #329](https://github.com/linkml/dm-bip/issues/329#issuecomment-4650332503)
+for the current boundary.
 
 ## Cleanup rules CSV
 

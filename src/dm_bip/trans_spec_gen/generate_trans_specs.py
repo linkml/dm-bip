@@ -42,7 +42,7 @@ _CONDITION_REQUIRED = (
 
 
 def _condition_is_good(row: pd.Series) -> bool:
-    """Return True when a Condition row has every slot the template renders unconditionally."""
+    """Return True when a Condition row has every slot the template needs to emit a complete spec."""
     return all(row.get(field) not in (None, "", 0) for field in _CONDITION_REQUIRED)
 
 
