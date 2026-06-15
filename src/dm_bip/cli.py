@@ -64,17 +64,20 @@ def generate_trans_specs(
     entity: Annotated[str, typer.Option("--entity", "-e", help="Entity type to filter on")] = "MeasurementObservation",
 ):
     """Generate trans-spec YAML files from a metadata CSV."""
-    from dm_bip.trans_spec_gen.generate_trans_specs import generate_yaml
+    from dm_bip.trans_spec_gen.generate_trans_specs import ENTITY_REGISTRY, generate_yaml
 
-    try:
-        results = generate_yaml(
-            input_csv=input_csv,
-            output_dir=output_dir,
-            entity=entity,
-            cohort=cohort,
+    if entity not in ENTITY_REGISTRY:
+        raise typer.BadParameter(
+            f"{entity!r} is not a registered entity; choose from {sorted(ENTITY_REGISTRY)}",
+            param_hint="--entity",
         )
-    except ValueError as exc:
-        raise typer.BadParameter(str(exc), param_hint="--entity") from exc
+
+    results = generate_yaml(
+        input_csv=input_csv,
+        output_dir=output_dir,
+        entity=entity,
+        cohort=cohort,
+    )
     if results:
         typer.echo(f"Generated {len(results)} YAML files in {output_dir}")
         for path in results:

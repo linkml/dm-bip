@@ -80,11 +80,18 @@ class TestConditionSlots:
         assert status["value_mappings"] == {"0": "ABSENT", "1": "PRESENT"}
 
     def test_value_mapping_code_with_apostrophe(self, tmp_path):
-        """A mapping code containing a single quote escapes to valid YAML (e.g. "Don't know")."""
+        """A mapping code with a single quote escapes, and a trailing empty pair is skipped."""
         _run(tmp_path)
         parsed = _read_yaml(tmp_path, "chs", "good", "quoted")
         status = parsed[0]["class_derivations"]["Condition"]["slot_derivations"]["condition_status"]
         assert status["value_mappings"] == {"No": "ABSENT", "Don't know": "UNKNOWN", "Yes": "PRESENT"}
+
+    def test_value_field_with_apostrophe_escapes(self, tmp_path):
+        """An apostrophe in a single-quoted value field (associated_evidence) escapes to valid YAML."""
+        _run(tmp_path)
+        parsed = _read_yaml(tmp_path, "chs", "good", "quoted")
+        slots = parsed[0]["class_derivations"]["Condition"]["slot_derivations"]
+        assert slots["associated_evidence"]["value"] == "physician's note"
 
     def test_concept_provenance_and_evidence(self, tmp_path):
         """condition_concept, provenance, relationship, and evidence render from the row."""
@@ -124,4 +131,4 @@ class TestUnknownEntity:
             ["generate-trans-specs", "-i", str(SAMPLE_CSV), "-o", str(tmp_path), "-c", "chs", "-e", "Nonexistent"],
         )
         assert result.exit_code != 0
-        assert "No registered entity spec" in result.output
+        assert "not a registered entity" in result.output

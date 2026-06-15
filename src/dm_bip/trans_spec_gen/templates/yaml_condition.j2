@@ -7,25 +7,25 @@
         associated_visit:
           expr: 'uuid5("https://w3id.org/bdchm/Visit", str({{ '{' }}{{participantidphv}}{{ '}' }}) + ":{{associatedvisit}}")'
         condition_concept:
-          value: '{{onto_id}}'
+          value: '{{ onto_id | replace("'", "''") }}'
           range: string
         condition_status:
           populated_from: {{phv}}
           {% if value_mappings %}
           value_mappings:
-          {% for pair in value_mappings.split(';') %}
+          {% for pair in value_mappings.split(';') if '=' in pair %}
           {% set code, enum = pair.split('=', 1) %}
             '{{ code | replace("'", "''") }}': {{ enum }}
           {% endfor %}
           {% endif %}
         condition_provenance:
-          value: '{{condition_provenance}}'
+          value: '{{ condition_provenance | replace("'", "''") }}'
           range: string
         relationship_to_participant:
-          value: '{{ relationship_to_participant | default('ONESELF', true) }}'
+          value: '{{ relationship_to_participant | default('ONESELF', true) | replace("'", "''") }}'
           range: string
         {% if associated_evidence %}
         associated_evidence:
-          value: '{{associated_evidence}}'
+          value: '{{ associated_evidence | replace("'", "''") }}'
           range: string
         {% endif %}
