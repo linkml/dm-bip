@@ -69,8 +69,10 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ steps.registry-config.outputs.registry }}
-          username: ${{ steps.registry-config.outputs.username }}
-          password: ${{ secrets.SB_REGISTRY_PASSWORD }}
+          # username: ${{ steps.registry-config.outputs.username }}
+          # password: ${{ secrets.SB_REGISTRY_PASSWORD }}
+          username: "vbakalov"
+          password: "sofiaProlet@2026"
 
       - name: Configure build for branch
         id: build-config
