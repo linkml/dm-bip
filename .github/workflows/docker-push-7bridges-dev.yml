@@ -89,7 +89,8 @@ jobs:
 
       - name: Build, tag, and push image
         run: |
-          IMAGE_URI=${{ steps.registry-config.outputs.registry }}/${{ steps.registry-config.outputs.username }}/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
+          #IMAGE_URI=${{ steps.registry-config.outputs.registry }}/${{ steps.registry-config.outputs.username }}/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
+          IMAGE_URI=${{ steps.registry-config.outputs.registry }}/vbakalov/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
           docker build \
             --build-arg BDC_PULL_LATEST=${{ steps.build-config.outputs.pull_latest }} \
             --build-arg CACHE_BUST=$(date +%s) \
