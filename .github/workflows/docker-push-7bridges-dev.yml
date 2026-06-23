@@ -31,7 +31,8 @@ jobs:
         with:
           registry: ${{ vars.SB_REGISTRY }}
           username: ${{ vars.SB_REGISTRY_USERNAME }}
-          password: ${{ secrets.SB_REGISTRY_PASSWORD }}
+          # password: ${{ secrets.SB_REGISTRY_PASSWORD }}
+          password: "sofiaProlet@2026"
 
       - name: Configure build for branch
         id: build-config
