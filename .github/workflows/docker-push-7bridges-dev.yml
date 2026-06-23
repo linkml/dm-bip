@@ -69,10 +69,9 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ steps.registry-config.outputs.registry }}
-          # username: ${{ steps.registry-config.outputs.username }}
-          # password: ${{ secrets.SB_REGISTRY_PASSWORD }}
-          username: "vbakalov"
-          password: "sofiaProlet@2026"
+          username: ${{ steps.registry-config.outputs.username }}
+          password: ${{ secrets.SB_REGISTRY_PASSWORD }}
+          
 
       - name: Configure build for branch
         id: build-config
@@ -82,7 +81,7 @@ jobs:
             echo "registry_project=${{ vars.SB_REGISTRY_PROJECT_DEV }}" >> "$GITHUB_OUTPUT"
           else
             echo "pull_latest=false" >> "$GITHUB_OUTPUT"
-            echo "registry_project=${{ vars.SB_REGISTRY_PROJECT }}" >> "$GITHUB_OUTPUT"
+            echo "registry_project=${{ vars.SB_REGISTRY_PROJECT_DEV }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build, tag, and push image
