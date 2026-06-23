@@ -56,8 +56,11 @@ jobs:
 
           echo "registry=$registry" >> "$GITHUB_OUTPUT"
           echo "username=$username" >> "$GITHUB_OUTPUT"
-          echo "Using registry host: $registry"
-          echo "Using registry username: $username"
+          echo "✓ Using registry host: $registry"
+          echo "✓ Using registry username: $username"
+          echo "✓ Registry length: ${#registry}"
+          echo "✓ Username length: ${#username}"
+          echo "✓ Password is set: $([ -z '${{ secrets.SB_REGISTRY_PASSWORD }}' ] && echo 'NO' || echo 'YES')"
 
       - name: Set up QEMU (optional, for multi-arch)
         uses: docker/setup-qemu-action@v3
