@@ -20,6 +20,45 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate and normalize registry settings
+        id: registry-config
+        shell: bash
+        run: |
+          registry='${{ vars.SB_REGISTRY }}'
+          username='${{ vars.SB_REGISTRY_USERNAME }}'
+
+          if [[ -z "$registry" ]]; then
+            echo "SB_REGISTRY is empty. Set repository variable SB_REGISTRY." >&2
+            exit 1
+          fi
+
+          if [[ -z "$username" ]]; then
+            echo "SB_REGISTRY_USERNAME is empty. Set repository variable SB_REGISTRY_USERNAME." >&2
+            exit 1
+          fi
+
+          # Normalize common input mistakes: protocol prefix, trailing slash, and /v2 suffix.
+          registry="${registry#http://}"
+          registry="${registry#https://}"
+          registry="${registry%/}"
+          registry="${registry%/v2}"
+
+          if [[ "$registry" == */* ]]; then
+            echo "SB_REGISTRY must be host only (example: images.sb.biodatacatalyst.nhlbi.nih.gov)." >&2
+            echo "Current normalized value: $registry" >&2
+            exit 1
+          fi
+
+          if [[ -z "${{ secrets.SB_REGISTRY_PASSWORD }}" ]]; then
+            echo "SB_REGISTRY_PASSWORD is empty. Set repository secret SB_REGISTRY_PASSWORD." >&2
+            exit 1
+          fi
+
+          echo "registry=$registry" >> "$GITHUB_OUTPUT"
+          echo "username=$username" >> "$GITHUB_OUTPUT"
+          echo "Using registry host: $registry"
+          echo "Using registry username: $username"
+
       - name: Set up QEMU (optional, for multi-arch)
         uses: docker/setup-qemu-action@v3
 
@@ -29,8 +68,8 @@ jobs:
       - name: Log in to Seven Bridges registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ vars.SB_REGISTRY }}
-          username: ${{ vars.SB_REGISTRY_USERNAME }}
+          registry: ${{ steps.registry-config.outputs.registry }}
+          username: ${{ steps.registry-config.outputs.username }}
           password: ${{ secrets.SB_REGISTRY_PASSWORD }}
 
       - name: Configure build for branch
@@ -46,7 +85,7 @@ jobs:
 
       - name: Build, tag, and push image
         run: |
-          IMAGE_URI=${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
+          IMAGE_URI=${{ steps.registry-config.outputs.registry }}/${{ steps.registry-config.outputs.username }}/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
           docker build \
             --build-arg BDC_PULL_LATEST=${{ steps.build-config.outputs.pull_latest }} \
             --build-arg CACHE_BUST=$(date +%s) \
