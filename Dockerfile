@@ -33,7 +33,7 @@ COPY Dockerfile /Dockerfile.archived
 
 
 # Force rebuild of this layer to bust the Docker build cache
-ARG CACHE_BUST=5
+ARG CACHE_BUST=6
 
 # Clone external repos (shallow, single layer)
 # When BDC_PULL_LATEST=true (dev builds), clone default branches so git pull works at runtime.
