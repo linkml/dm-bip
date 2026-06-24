@@ -12,46 +12,6 @@ __all__ = [
     "main",
 ]
 
-
-import functools
-
-# =====================================================================
-# PERFORMANCE PATCHES FOR LINKML-MAP 0.5.3-rc1
-# These intercept slow, un-cached functions to prevent CPU deadlocks.
-# =====================================================================
-try:
-    import linkml_map.functions.unit_conversion as uc
-    import linkml_map.utils.lookup_index as li
-
-    # PATCH 1: Cache the expensive UCUM grammar parsing for units
-    uc.normalize_unit = functools.lru_cache(maxsize=1024)(uc.normalize_unit)
-
-    _original_parse_units = uc.pint.UnitRegistry.parse_units
-
-    @functools.lru_cache(maxsize=1024)
-    def _cached_parse_units(self, unit_str):
-        return _original_parse_units(self, unit_str)
-
-    uc.pint.UnitRegistry.parse_units = _cached_parse_units
-
-    # PATCH 2: Cache the DuckDB cross-table join point-queries
-    _original_lookup_row = li.LookupIndex.lookup_row
-
-    @functools.lru_cache(maxsize=50000)
-    def _cached_lookup_row(self, table_name, lookup_key, key_val):
-        # We must ignore the 'self' argument for caching purposes to avoid 
-        # hashing the entire DuckDB connection object on every call.
-        return _original_lookup_row(self, table_name, lookup_key, key_val)
-
-    li.LookupIndex.lookup_row = _cached_lookup_row
-
-except ImportError:
-    # Fails safely if linkml-map isn't installed in the current environment
-    pass
-# =====================================================================
-
-
-
 logger = logging.getLogger(__name__)
 
 app = typer.Typer(help="CLI for dm-bip.")
