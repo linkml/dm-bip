@@ -13,7 +13,8 @@ dependencies = [
     "typer>=0.20.0,<1",
     "typing-extensions>=4.0,<5",
     "httpx>=0.27,<1",
-    "quantulum3[classifier]"
+    "quantulum3[classifier]",
+    "scikit-learn~=1.5.0"
 ]
 
 [project.scripts]
