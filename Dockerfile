@@ -41,7 +41,7 @@ ARG CACHE_BUST=13
 RUN echo "cache-bust=$CACHE_BUST" && \
     git clone --depth 1 --branch v1.2.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
     echo "HM commit:" && git -C NHLBI-BDC-DMC-HM log --oneline -1 && \
-    git clone --depth 1 --branch fix/hv-hchc-20260625 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git && \
+    git clone --depth 1 --branch fix/hv-hchs-20260625 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git && \
     echo "HV commit:" && git -C NHLBI-BDC-DMC-HV log --oneline -1
 
 
