@@ -33,7 +33,7 @@ COPY Dockerfile /Dockerfile.archived
 
 
 # Force rebuild of this layer to bust the Docker build cache
-ARG CACHE_BUST=16
+ARG CACHE_BUST=17
 
 # Clone external repos (shallow, single layer)
 # When BDC_PULL_LATEST=true (dev builds), clone default branches so git pull works at runtime.
@@ -41,7 +41,7 @@ ARG CACHE_BUST=16
 RUN echo "cache-bust=$CACHE_BUST" && \
     git clone --depth 1 --branch v1.2.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
     echo "HM commit:" && git -C NHLBI-BDC-DMC-HM log --oneline -1 && \
-    git clone --depth 1 --branch fix/hv-whi-20260625 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git && \
+    git clone --depth 1 --branch fix/hv-jhs-20260625 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git && \
     echo "HV commit:" && git -C NHLBI-BDC-DMC-HV log --oneline -1
 
 
@@ -49,3 +49,4 @@ CMD ["uv", "run", "dm-bip", "run"]
 
 # fix/hv-hchs-20260625
 # fix/hv-whi-20260625
+# fix/hv-jhs-20260625
