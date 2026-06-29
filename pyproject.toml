@@ -9,7 +9,7 @@ license = "MIT"
 dependencies = [
     "pandas>=2.2.3,<3",
     "schema-automator==0.5.5",
-    "linkml-map==0.5.2",
+    "linkml-map==0.5.3rc1",
     "typing-extensions>=4.0,<5",
 ]
 
