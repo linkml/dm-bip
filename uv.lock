@@ -784,7 +784,7 @@ env = [
 
 [package.metadata]
 requires-dist = [
-    { name = "linkml-map", specifier = "==0.5.0rc3" },
+    { name = "linkml-map", git = "https://github.com/linkml/linkml-map.git?rev=refs%2Fpull%2F273%2Fhead" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
     { name = "schema-automator", specifier = "==0.5.5" },
     { name = "typing-extensions", specifier = ">=4.0,<5" },
@@ -1410,6 +1410,15 @@ wheels = [
 ]
 
 [[package]]
+name = "inflection"
+version = "0.5.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e1/7e/691d061b7329bc8d54edbf0ec22fbfb2afe61facb681f9aaa9bff7a27d04/inflection-0.5.1.tar.gz", hash = "sha256:1a29730d366e996aaacffb2f1f1cb9593dc38e2ddd30c91250c6dde09ea9b417", size = 15091, upload-time = "2020-08-22T08:16:29.139Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/59/91/aa6bde563e0085a02a435aa99b49ef75b0a4b062635e606dab23ce18d720/inflection-0.5.1-py2.py3-none-any.whl", hash = "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2", size = 9454, upload-time = "2020-08-22T08:16:27.816Z" },
+]
+
+[[package]]
 name = "iniconfig"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1936,8 +1945,8 @@ wheels = [
 
 [[package]]
 name = "linkml-map"
-version = "0.5.0rc3"
-source = { registry = "https://pypi.org/simple" }
+version = "0.5.3rc1.post3.dev0+9d62c42"
+source = { git = "https://github.com/linkml/linkml-map.git?rev=refs%2Fpull%2F273%2Fhead#9d62c426062cec5e712333180a23067e1efb02cc" }
 dependencies = [
     { name = "asteval" },
     { name = "click" },
@@ -1946,19 +1955,18 @@ dependencies = [
     { name = "duckdb" },
     { name = "flatten-dict" },
     { name = "graphviz" },
+    { name = "inflection" },
     { name = "jinja2" },
     { name = "lark" },
+    { name = "linkml" },
     { name = "linkml-runtime" },
     { name = "more-itertools" },
     { name = "pint" },
     { name = "pydantic" },
+    { name = "python-slugify" },
     { name = "pyyaml" },
     { name = "simpleeval" },
     { name = "ucumvert" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/a0/7c/5578308c29340b10cf2f7b695b623ddce312179bb105e2f1eb18266fb2ea/linkml_map-0.5.0rc3.tar.gz", hash = "sha256:1e80e9b2b822579e2e7fbaed609026a7bb8dffc15a029274ff0516d591094477", size = 455797, upload-time = "2026-04-01T21:10:23.069Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/2d/ab/dc20a53f5c4fc18a183768ac7a66234a8bb7a04bd4f14a3a50866f6b74a4/linkml_map-0.5.0rc3-py3-none-any.whl", hash = "sha256:f8dc6899a3b4e6bd21374d1cb0dc096ae3dc1f49058e983d91540dc3c10ae549", size = 87039, upload-time = "2026-04-01T21:10:21.662Z" },
 ]
 
 [[package]]
