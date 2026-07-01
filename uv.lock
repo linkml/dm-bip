@@ -1945,8 +1945,8 @@ wheels = [
 
 [[package]]
 name = "linkml-map"
-version = "0.5.3rc1.post16.dev0+d002efa"
-source = { git = "https://github.com/linkml/linkml-map.git?rev=refs%2Fpull%2F276%2Fhead#d002efab064b57a4213592fa3aa7641da487d245" }
+version = "0.5.3rc1.post17.dev0+a26edbc"
+source = { git = "https://github.com/linkml/linkml-map.git?rev=refs%2Fpull%2F276%2Fhead#a26edbc31190a646f7e5acec0dd7a19f94dbcc50" }
 dependencies = [
     { name = "asteval" },
     { name = "click" },
