@@ -11,6 +11,7 @@ dependencies = [
     "schema-automator==0.5.5",
     "linkml-map @ git+https://github.com/linkml/linkml-map.git@refs/pull/278/head",
     "typing-extensions>=4.0,<5",
+    "py-spy>=0.4",
 ]
 
 [project.scripts]
