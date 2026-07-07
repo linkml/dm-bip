@@ -48,7 +48,7 @@ DM_MAPPING_POSTFIX ?=
 DM_MAP_OUTPUT_TYPE ?= yaml
 DM_MAP_CHUNK_SIZE ?= 10000
 DM_MAP_STRICT ?= true
-DM_MAP_PROFILE ?= true
+DM_MAP_PROFILE ?= false
 DM_VALIDATE_STRICT ?=
 
 # --- Raw Data Preparation Variables ---
