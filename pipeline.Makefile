@@ -534,6 +534,8 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(
 		$(DM_INPUT_DIR)/ \
 		2>&1 | tee $(MAPPING_LOG_DIR)/$*.log; \
 	rc=$$?; \
+	echo "===MAP EXIT=== entity=$* rc=$$rc (137=SIGKILL/OOM, 143=SIGTERM)" | tee -a $(MAPPING_LOG_DIR)/$*.log; \
+	{ cat /sys/fs/cgroup/memory.events 2>/dev/null; cat /sys/fs/cgroup/memory/memory.oom_control 2>/dev/null; } | sed "s/^/[cgroup $*] /" | tee -a $(MAPPING_LOG_DIR)/$*.log; \
 	if [ $$rc -ne 0 ] && [ "$(DM_MAP_STRICT)" != "false" ]; then \
 		exit $$rc; \
 	fi
