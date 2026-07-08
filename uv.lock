@@ -785,7 +785,7 @@ env = [
 
 [package.metadata]
 requires-dist = [
-    { name = "linkml-map", git = "https://github.com/linkml/linkml-map.git?rev=5a42c2af" },
+    { name = "linkml-map", git = "https://github.com/linkml/linkml-map.git?rev=a19eb095" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
     { name = "py-spy", specifier = ">=0.4" },
     { name = "schema-automator", specifier = "==0.5.5" },
@@ -1947,8 +1947,8 @@ wheels = [
 
 [[package]]
 name = "linkml-map"
-version = "0.5.2.post34.dev0+5a42c2a"
-source = { git = "https://github.com/linkml/linkml-map.git?rev=5a42c2af#5a42c2af67667f5f0638f844575b8368c8f3e1b8" }
+version = "0.5.2.post35.dev0+a19eb09"
+source = { git = "https://github.com/linkml/linkml-map.git?rev=a19eb095#a19eb0950525fee89000546e463729b00f0bb95e" }
 dependencies = [
     { name = "asteval" },
     { name = "click" },
