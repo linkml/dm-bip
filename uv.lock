@@ -785,7 +785,7 @@ env = [
 
 [package.metadata]
 requires-dist = [
-    { name = "linkml-map", git = "https://github.com/linkml/linkml-map.git?rev=v0.5.3-rc2" },
+    { name = "linkml-map", specifier = "==0.5.3rc1" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
     { name = "py-spy", specifier = ">=0.4" },
     { name = "schema-automator", specifier = "==0.5.5" },
@@ -1947,8 +1947,8 @@ wheels = [
 
 [[package]]
 name = "linkml-map"
-version = "0.5.3rc2"
-source = { git = "https://github.com/linkml/linkml-map.git?rev=v0.5.3-rc2#510b0a50cae9a76d054f80b6dc814292d4c05a80" }
+version = "0.5.3rc1"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asteval" },
     { name = "click" },
@@ -1969,6 +1969,10 @@ dependencies = [
     { name = "pyyaml" },
     { name = "simpleeval" },
     { name = "ucumvert" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/18/f1/3de10694a1196befe2feaae8a560198533970643ccfa67af95ff9a9a933e/linkml_map-0.5.3rc1.tar.gz", hash = "sha256:58fe8f82058884c5052d1c2f68e515d4f60c08840a2719417b06a1a1844fa554", size = 551423, upload-time = "2026-06-17T14:45:22.626Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4c/35/6abfb0ab688bc53ca5ca337385d0dcf426366e55da0a344c5ab24aaf35bf/linkml_map-0.5.3rc1-py3-none-any.whl", hash = "sha256:6b51fa6a7c905978fa62b783cca3760826db302d15698fda4c470499c84c5755", size = 131171, upload-time = "2026-06-17T14:45:21.328Z" },
 ]
 
 [[package]]
