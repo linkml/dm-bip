@@ -562,8 +562,14 @@ _map-all-entities: $(_ENTITY_SENTINELS)
 #
 # In strict mode (default): pipefail propagates linkml-map errors immediately.
 # In non-strict mode: --continue-on-error lets linkml-map produce partial output
-# and exit 1 on errors. We capture the exit code and always touch the sentinel
-# so other entities can proceed. The summary step greps logs for failures.
+# and exit 1 on row errors; we tolerate that so other entities can proceed and the
+# summary step reports it.
+#
+# BUT a signal kill (exit >= 128, e.g. 137 = SIGKILL/OOM) means the process was
+# terminated mid-run and its output is INCOMPLETE. That is never a tolerable
+# "row error" — masking it produced silently-truncated output under a "success"
+# banner. So we always capture and log the child exit code, and always fail on a
+# signal kill regardless of strict mode.
 $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(MAP_TARGET_SCHEMA_FILE)
 	@mkdir -p $(MAPPING_LOG_DIR)
 	set -o pipefail && $(RUN) linkml-map map-data \
@@ -578,7 +584,11 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(
 		$(DM_INPUT_DIR)/ \
 		2>&1 | tee $(MAPPING_LOG_DIR)/$*.log; \
 	rc=$$?; \
-	if [ $$rc -ne 0 ] && [ "$(DM_MAP_STRICT)" != "false" ]; then \
+	echo "map-data '$*' exited with code $$rc" | tee -a $(MAPPING_LOG_DIR)/$*.log; \
+	if [ $$rc -ge 128 ]; then \
+		echo "✗ FATAL: map-data '$*' was killed by signal $$((rc - 128)) (exit $$rc); output is INCOMPLETE and must not be reported as success." | tee -a $(MAPPING_LOG_DIR)/$*.log >&2; \
+		exit $$rc; \
+	elif [ $$rc -ne 0 ] && [ "$(DM_MAP_STRICT)" != "false" ]; then \
 		exit $$rc; \
 	fi
 	@touch $@
