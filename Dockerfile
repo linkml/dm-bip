@@ -41,7 +41,6 @@ ENV DM_BIP_BUILD_DATE=${DM_BIP_BUILD_DATE}
 
 # DEBUG harness for linkml-map #284 investigation (probe-* branches)
 ENV LINKML_MAP_PROBE=1
-ENV LINKML_MAP_NO_COERCE=1
 
 LABEL org.opencontainers.image.version=${DM_BIP_VERSION}
 LABEL org.opencontainers.image.revision=${DM_BIP_GIT_REF}
