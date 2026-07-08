@@ -522,7 +522,7 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(
 	if [ "$(DM_MAP_PROFILE)" = "true" ]; then \
 	  PROFILE="py-spy record --subprocesses --rate 120 -f raw -o $(MAPPING_LOG_DIR)/$*.folded --"; \
 	else PROFILE=""; fi; \
-	set -o pipefail && $(RUN) $$PROFILE linkml-map map-data \
+	set -o pipefail && $(RUN) $$PROFILE linkml-map -vv map-data \
 		-T $< \
 		-s $(SCHEMA_FILE) \
 		--target-schema $(MAP_TARGET_SCHEMA_FILE) \
