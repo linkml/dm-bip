@@ -39,10 +39,6 @@ ENV DM_BIP_VERSION=${DM_BIP_VERSION}
 ENV DM_BIP_GIT_REF=${DM_BIP_GIT_REF}
 ENV DM_BIP_BUILD_DATE=${DM_BIP_BUILD_DATE}
 
-# DEBUG harness for linkml-map #284 investigation (probe-* branches)
-ENV LINKML_MAP_PROBE=1
-# Run H: memory attribution — RSS vs python_traced (gap = native/DuckDB) per block
-ENV LINKML_MAP_MEMPROBE=1
 
 LABEL org.opencontainers.image.version=${DM_BIP_VERSION}
 LABEL org.opencontainers.image.revision=${DM_BIP_GIT_REF}
