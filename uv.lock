@@ -785,7 +785,7 @@ env = [
 
 [package.metadata]
 requires-dist = [
-    { name = "linkml-map", git = "https://github.com/linkml/linkml-map.git?rev=v0.5.3-rc2" },
+    { name = "linkml-map", specifier = "==0.5.0" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
     { name = "py-spy", specifier = ">=0.4" },
     { name = "schema-automator", specifier = "==0.5.5" },
@@ -1412,15 +1412,6 @@ wheels = [
 ]
 
 [[package]]
-name = "inflection"
-version = "0.5.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e1/7e/691d061b7329bc8d54edbf0ec22fbfb2afe61facb681f9aaa9bff7a27d04/inflection-0.5.1.tar.gz", hash = "sha256:1a29730d366e996aaacffb2f1f1cb9593dc38e2ddd30c91250c6dde09ea9b417", size = 15091, upload-time = "2020-08-22T08:16:29.139Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/91/aa6bde563e0085a02a435aa99b49ef75b0a4b062635e606dab23ce18d720/inflection-0.5.1-py2.py3-none-any.whl", hash = "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2", size = 9454, upload-time = "2020-08-22T08:16:27.816Z" },
-]
-
-[[package]]
 name = "iniconfig"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1947,8 +1938,8 @@ wheels = [
 
 [[package]]
 name = "linkml-map"
-version = "0.5.3rc2"
-source = { git = "https://github.com/linkml/linkml-map.git?rev=v0.5.3-rc2#510b0a50cae9a76d054f80b6dc814292d4c05a80" }
+version = "0.5.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asteval" },
     { name = "click" },
@@ -1957,18 +1948,19 @@ dependencies = [
     { name = "duckdb" },
     { name = "flatten-dict" },
     { name = "graphviz" },
-    { name = "inflection" },
     { name = "jinja2" },
     { name = "lark" },
-    { name = "linkml" },
     { name = "linkml-runtime" },
     { name = "more-itertools" },
     { name = "pint" },
     { name = "pydantic" },
-    { name = "python-slugify" },
     { name = "pyyaml" },
     { name = "simpleeval" },
     { name = "ucumvert" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/5f/cd/f3c603986c0f23182e47cddcadaca7c0ad6c38307c1c7bf302c1a5e88972/linkml_map-0.5.0.tar.gz", hash = "sha256:a30cb24f8cc66fd1ec068ed3ee56bf3c12e4bb00a8d722fcc8644df238c7095e", size = 434121, upload-time = "2026-04-06T21:48:03.195Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cf/a6/936bcc2edcb0d18c00344ccb0c5a65a3fd9ad3b1f0eb0d632152e7001b69/linkml_map-0.5.0-py3-none-any.whl", hash = "sha256:99ccdbb20d598e44bed2f24c3849871da8918b6ab85e925b1711c26f564375ec", size = 86312, upload-time = "2026-04-06T21:48:01.751Z" },
 ]
 
 [[package]]
