@@ -9,7 +9,7 @@ license = "MIT"
 dependencies = [
     "pandas>=2.2.3,<3",
     "schema-automator==0.5.5",
-    "linkml-map @ git+https://github.com/linkml/linkml-map.git@a19eb095",
+    "linkml-map @ git+https://github.com/linkml/linkml-map.git@f2363c3e",
     "typing-extensions>=4.0,<5",
     "py-spy>=0.4",  # profiling harness (map step, gated on DM_MAP_PROFILE)
 ]
