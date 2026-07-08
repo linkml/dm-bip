@@ -785,7 +785,7 @@ env = [
 
 [package.metadata]
 requires-dist = [
-    { name = "linkml-map", specifier = "==0.5.1" },
+    { name = "linkml-map", specifier = "==0.5.2" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
     { name = "py-spy", specifier = ">=0.4" },
     { name = "schema-automator", specifier = "==0.5.5" },
@@ -1938,7 +1938,7 @@ wheels = [
 
 [[package]]
 name = "linkml-map"
-version = "0.5.1"
+version = "0.5.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asteval" },
@@ -1950,6 +1950,7 @@ dependencies = [
     { name = "graphviz" },
     { name = "jinja2" },
     { name = "lark" },
+    { name = "linkml" },
     { name = "linkml-runtime" },
     { name = "more-itertools" },
     { name = "pint" },
@@ -1958,9 +1959,9 @@ dependencies = [
     { name = "simpleeval" },
     { name = "ucumvert" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b6/59/0a61c93577a7aeebf79bbca84430936a2e15169abb15723f3e995c1ef6d0/linkml_map-0.5.1.tar.gz", hash = "sha256:92e3a3ce81d5b14b02907375be29b7bff666f604abab29dd5bb3bd15ee569b09", size = 434123, upload-time = "2026-04-07T12:33:48.002Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/77/96/b1edb3f70d76fa2b6b2570ec3c237e408cba16dec3f1195ef3dffe600c2c/linkml_map-0.5.2.tar.gz", hash = "sha256:4baf76f17eebb7e70f1d30be72f71de79cbeee537aa3c5791e7af10b575c6998", size = 434126, upload-time = "2026-04-07T14:37:05.15Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/28/28/a08c5b34ce3f638ad201b1b67e48fb6d9560f9a3361d9b775692382f1a33/linkml_map-0.5.1-py3-none-any.whl", hash = "sha256:4998876cf5de6db12eaf7985e576470b8349ffde3600ff70abcbd91b8b47f373", size = 86312, upload-time = "2026-04-07T12:33:46.409Z" },
+    { url = "https://files.pythonhosted.org/packages/44/f5/f97a5f0ba30a012120cae8bfdfa06ddfbb39a75ff4269d006453aef96bb1/linkml_map-0.5.2-py3-none-any.whl", hash = "sha256:2a2249fa3d82aa859388eb8c55ca03e9679ca0cc5e1bf7ccde8c0fb96522972a", size = 86317, upload-time = "2026-04-07T14:37:03.946Z" },
 ]
 
 [[package]]
