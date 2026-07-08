@@ -41,8 +41,8 @@ ENV DM_BIP_BUILD_DATE=${DM_BIP_BUILD_DATE}
 
 # DEBUG harness for linkml-map #284 investigation (probe-* branches)
 ENV LINKML_MAP_PROBE=1
-# Run G: chunk-size 1 — if OOM is mid-iteration, rows flush before the kill => 0-byte becomes partial
-ENV DM_MAP_CHUNK_SIZE=1
+# Run H: memory attribution — RSS vs python_traced (gap = native/DuckDB) per block
+ENV LINKML_MAP_MEMPROBE=1
 
 LABEL org.opencontainers.image.version=${DM_BIP_VERSION}
 LABEL org.opencontainers.image.revision=${DM_BIP_GIT_REF}
