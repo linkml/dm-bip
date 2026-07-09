@@ -583,7 +583,14 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(
 		$(if $(filter false,$(DM_MAP_STRICT)),--continue-on-error) \
 		$(DM_INPUT_DIR)/ \
 		2>&1 | tee $(MAPPING_LOG_DIR)/$*.log; \
-	scripts/map_exit_guard.sh $$? "$*" "$(DM_MAP_STRICT)" "$(MAPPING_LOG_DIR)/$*.log"
+	rc=$$?; \
+	echo "map-data '$*' exited with code $$rc" | tee -a $(MAPPING_LOG_DIR)/$*.log; \
+	if [ $$rc -ge 128 ]; then \
+		echo "✗ FATAL: map-data '$*' was killed by signal $$((rc - 128)) (exit $$rc); output is INCOMPLETE and must not be reported as success." | tee -a $(MAPPING_LOG_DIR)/$*.log >&2; \
+		exit $$rc; \
+	elif [ $$rc -ne 0 ] && [ "$(DM_MAP_STRICT)" != "false" ]; then \
+		exit $$rc; \
+	fi
 	@touch $@
 
 .PHONY: map-debug
