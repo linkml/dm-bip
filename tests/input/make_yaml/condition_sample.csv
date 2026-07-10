@@ -1,0 +1,7 @@
+bdchm_entity,cohort,bdchm_varname,pht,participantidphv,onto_id,phv,associatedvisit,value_mappings,condition_provenance,associated_evidence,relationship_to_participant
+Condition,chs,copd,pht001452,phv00100285,MONDO:0005002,phv00100497,CHS BASELINE BOTH,0=ABSENT;1=PRESENT,PATIENT_SELF-REPORTED_CONDITION,self-report questionnaire,
+Condition,chs,angina,pht001450,phv00098771,HP:0001681,phv00099021,CHS BASELINE 2,0=ABSENT;1=PRESENT,PATIENT_SELF-REPORTED_CONDITION,self-report questionnaire,
+Condition,chs,incomplete,pht001460,phv00100999,,phv00101001,CHS YEAR 3,0=ABSENT;1=PRESENT,CLINICAL_DIAGNOSIS,self-report questionnaire,
+Condition,chs,quoted,pht001470,phv00102000,MONDO:0005002,phv00102001,CHS YEAR 5,No=ABSENT;Don't know=UNKNOWN;Yes=PRESENT;,CLINICAL_DIAGNOSIS,physician's note,
+Condition,chs,fam_stroke,pht001480,phv00103000,HP:0001297,phv00103001,CHS BASELINE BOTH,0=ABSENT;1=PRESENT,PATIENT_SELF-REPORTED_CONDITION,self-report questionnaire,OMOP:4053608
+Condition,chs,novmap,pht001490,phv00104000,MONDO:0005002,phv00104001,CHS YEAR 6,,CLINICAL_DIAGNOSIS,self-report questionnaire,

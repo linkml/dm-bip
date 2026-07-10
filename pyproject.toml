@@ -7,12 +7,12 @@ requires-python = ">=3.11,<=3.13"
 readme = "README.md"
 license = "MIT"
 dependencies = [
-    "importlib-metadata>=8.2.0",
     "pandas>=2.2.3,<3",
-    "schema-automator==0.5.5rc1",
-    "schemasheets==0.4.0",
-    "linkml-map @ git+https://github.com/linkml/linkml-map.git@refs/pull/210/head",
+    "schema-automator==0.5.5",
+    "linkml-map==0.5.3rc3",
+    "typer>=0.20.0,<1",
     "typing-extensions>=4.0,<5",
+    "httpx>=0.27,<1",
 ]
 
 [project.scripts]

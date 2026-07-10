@@ -1,0 +1,17 @@
+rule_type,match_field,pattern,is_regex,when_label,when_units,except_labels,target_value
+alias,cohort,hchs/sol,,,,,hchs_sol
+alias,bdchm_label,stroke status,,,,,stroke
+alias,bdchm_label,copd status,,,,,copd
+alias,bdchm_label,sleep apnea status,,,,,sleep apnea
+alias,bdchm_label,alcohol consumption,,,,,alcohol servings
+alias,bdchm_label,fruit consumption,,,,,fruit servings
+alias,bdchm_label,vegetable consumption,,,,,vegetable servings
+drop,bdchm_label,medication adherence,,,,,
+clear_label,var_desc,visit type,,,,,
+clear_label,var_desc,^days |days since| date$|^date |visit year|^age|age at|\(days\)|follow up days|\(years\),1,,,death;age at follow-up,
+set_label,var_desc,diastolic,1,blood pressure,,,diastolic blood pressure
+set_label,var_desc,systolic,1,blood pressure,,,systolic blood pressure
+set_units,var_desc,serv/day|daily|per day,1,alcohol servings;fruit servings;vegetable servings,;{servings},,{#}/d
+set_units,var_desc,per week|weekly|serv/week,1,alcohol servings;fruit servings;vegetable servings,;{servings},,{#}/wk
+set_units,var_desc,how many hours|number of hours|hours,1,sleep hours,;,,h
+set_units,var_desc,kg/m2,1,,;,,kg/m2

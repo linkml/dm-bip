@@ -34,6 +34,19 @@ COPY Dockerfile /Dockerfile.archived
 
 # Force rebuild of this layer to bust the Docker build cache
 ARG CACHE_BUST=46
+# Build metadata — set by CI (docker/build-push-action) or manual builds
+ARG DM_BIP_VERSION=unknown
+ARG DM_BIP_GIT_REF=unknown
+ARG DM_BIP_BUILD_DATE=unknown
+
+ENV DM_BIP_VERSION=${DM_BIP_VERSION}
+ENV DM_BIP_GIT_REF=${DM_BIP_GIT_REF}
+ENV DM_BIP_BUILD_DATE=${DM_BIP_BUILD_DATE}
+
+LABEL org.opencontainers.image.version=${DM_BIP_VERSION}
+LABEL org.opencontainers.image.revision=${DM_BIP_GIT_REF}
+LABEL org.opencontainers.image.created=${DM_BIP_BUILD_DATE}
+LABEL org.opencontainers.image.source=https://github.com/linkml/dm-bip
 
 # Clone external repos (shallow, single layer)
 # When BDC_PULL_LATEST=true (dev builds), clone default branches so git pull works at runtime.
@@ -44,6 +57,13 @@ RUN echo "cache-bust=$CACHE_BUST" && \
     git clone --depth 1 --branch fix/hv-whi-20260625 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git && \
     echo "HV commit:" && git -C NHLBI-BDC-DMC-HV log --oneline -1
 
+
+# Capture git metadata for cloned repos so Python never needs to shell out to git
+RUN for repo in NHLBI-BDC-DMC-HM bdc-harmonized-variables; do \
+      echo "${repo}:"; \
+      echo "  commit: $(git -C ${repo} rev-parse HEAD)"; \
+      echo "  ref: $(git -C ${repo} describe --tags --always)"; \
+    done > /app/repo-manifest.yaml
 
 CMD ["uv", "run", "dm-bip", "run"]
 

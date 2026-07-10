@@ -14,12 +14,12 @@ gh issue list --repo linkml/dm-bip --state open --label "Tracking" --json number
 
 # Get all issues (open and closed) with tracking category labels
 # Excludes issues closed as NOT_PLANNED (duplicates, obsolete)
-gh issue list --repo linkml/dm-bip --state all --limit 200 --json number,title,state,stateReason,labels,assignees | jq '[.[] | select(.labels | length > 0) | select(.stateReason != "NOT_PLANNED") | select(.labels[].name | test("Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|AI Integration|Audit Logs|Schema Explorer|Data Delivery"))]'
+gh issue list --repo linkml/dm-bip --state all --limit 300 --json number,title,state,stateReason,labels,assignees | jq '[.[] | select(.labels | length > 0) | select(.stateReason != "NOT_PLANNED") | select(.labels[].name | test("Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|Trans-Spec Authoring|Audit Logs|Data Delivery"))]'
 ```
 
-### 2. Triage Unlabeled Issues
+### 2. Triage Unlabeled and Multi-Labeled Issues
 
-Check for open issues with no labels that would be invisible to the sync:
+**A. Unlabeled issues.** Check for open issues with no labels that would be invisible to the sync:
 
 ```bash
 gh issue list --repo linkml/dm-bip --state open --limit 300 \
@@ -36,9 +36,19 @@ For each unlabeled issue:
    - Test coverage, linting, CI → Quality Control
    - Versioning, releases, packaging → Release Control
    - Data delivery, output QC → Data Delivery
-   - Not ready for current roadmap → Future
+   - Not ready for current roadmap → future
 3. Present suggestions to the user for approval before applying labels
 4. Apply approved labels, then re-run the step 1 query so they're included in the sync
+
+**B. Multi-tracker-labeled issues.** Each issue should have exactly one tracking-category label — it belongs in one lane. Surface any with more than one:
+
+```bash
+gh issue list --repo linkml/dm-bip --state all --limit 300 \
+  --json number,title,labels \
+  --jq '[.[] | {number, title, trackers: [.labels[].name | select(test("^(Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|Trans-Spec Authoring|Audit Logs|Data Delivery)$"))]} | select(.trackers | length > 1)]'
+```
+
+If any results come back, present them to the user and ask which label is correct before continuing — the sync's jq filter will otherwise emit the issue once per matching label, which would double-place it in the roadmap.
 
 ### 3. Parse Current DEVELOPMENT.md
 
@@ -62,9 +72,8 @@ Compare GitHub state to DEVELOPMENT.md and categorize:
   - "Pipeline Improvement" → section 4
   - "Audit Logs" → section 5
   - "DMC Integration" → section 6
-  - "Schema Explorer" → section 7
-  - "BDC Application" → section 8
-  - "AI Integration" → section 9
+  - "BDC Application" → section 7
+  - "Trans-Spec Authoring" → section 8
 
 **Status changes:**
 - Issues marked CLOSED in GitHub but not `done` in GANTT
@@ -121,6 +130,21 @@ After applying changes, summarize:
 - Issues marked complete
 - Date adjustments made
 - Any issues requiring manual attention
+
+### 8. Offer Rendered Preview (after PR is open)
+
+Once the sync PR has been pushed, offer to render the updated `DEVELOPMENT.md` to PDF so the user can visually scan the Mermaid GANTT for layout/overflow issues before review. Don't render proactively — just offer; the user may prefer to look in the GitHub UI directly.
+
+If the user agrees, render the GitHub blob view (which executes the Mermaid JS) via Chrome headless:
+
+```bash
+google-chrome --headless --disable-gpu --no-sandbox --hide-scrollbars \
+  --virtual-time-budget=15000 \
+  --print-to-pdf=/tmp/development-pr<N>.pdf --print-to-pdf-no-header \
+  "https://github.com/linkml/dm-bip/blob/<branch>/DEVELOPMENT.md"
+```
+
+Then `Read` the PDF and look for: bar text overflow, missing/misplaced rows, broken section headers, GANTT label collisions in compact mode.
 
 ## Usage Notes
 
