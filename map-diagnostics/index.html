@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://linkml.io/dm-bip/installation/">
+        <link rel="canonical" href="https://linkml.io/dm-bip/map-diagnostics/">
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../pipeline_user_docs/">
       
       
-        <link rel="next" href="../pipeline_user_docs/">
+        <link rel="next" href="../schema_automator/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Installation - dm-bip</title>
+        <title>Map Diagnostics - dm-bip</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#installation" class="md-skip">
+        <a href="#map-step-diagnostics" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Installation
+              Map Diagnostics
             
           </span>
         </div>
@@ -282,37 +282,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Installation
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
         
   
   
@@ -328,48 +301,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#requirements" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Requirements
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Setup
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -405,10 +336,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../map-diagnostics/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Map Diagnostics
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -424,6 +382,59 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-captures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it captures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-the-flamegraph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the flamegraph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runbook-ad-hoc-internal-tracing-on-real-data-rare" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runbook: ad-hoc internal tracing on real data (rare)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -537,10 +548,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#requirements" class="md-nav__link">
+  <a href="#what-it-captures" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Requirements
+        What it captures
       
     </span>
   </a>
@@ -548,10 +559,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
+  <a href="#reading-the-flamegraph" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Setup
+        Reading the flamegraph
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runbook-ad-hoc-internal-tracing-on-real-data-rare" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runbook: ad-hoc internal tracing on real data (rare)
       
     </span>
   </a>
@@ -578,19 +600,80 @@
   
 
 
-<h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
-<h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Python &gt;= 3.11, &lt;= 3.13</li>
-<li><a href="https://docs.astral.sh/uv/">uv</a></li>
-<li><a href="https://www.gnu.org/software/make/">make</a> (usually pre-installed on Mac/Linux)</li>
-</ul>
-<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permanent link">&para;</a></h2>
-<pre><code class="language-bash">git clone https://github.com/linkml/dm-bip.git
-cd dm-bip
-uv sync
+<h1 id="map-step-diagnostics">Map-step diagnostics<a class="headerlink" href="#map-step-diagnostics" title="Permanent link">&para;</a></h1>
+<p>When the map (LinkML-Map transformation) step is slow, uses too much memory, or
+gets killed on real data, turn on diagnostics mode. It's opt-in and has <strong>zero
+cost when off</strong>.</p>
+<pre><code class="language-bash">make map-data DM_MAP_PROFILE=true DM_INPUT_DIR=... DM_SCHEMA_NAME=... DM_OUTPUT_DIR=...
 </code></pre>
-<p><code>uv sync</code> handles the Python version, virtual environment, and all dependencies.</p>
+<p><code>DM_MAP_PROFILE=true</code> works on any target that runs the map step (<code>map-data</code>,
+<code>pipeline</code>), and can be passed to the BDC workflow the same way.</p>
+<h2 id="what-it-captures">What it captures<a class="headerlink" href="#what-it-captures" title="Permanent link">&para;</a></h2>
+<p>For <strong>each entity</strong>, into <code>&lt;mapped-data&gt;/logs/&lt;Entity&gt;.log</code> and alongside it:</p>
+<ul>
+<li><strong>CPU / wall-clock profile</strong> — a <a href="https://github.com/benfred/py-spy">py-spy</a>
+  sampling profile at <code>&lt;mapped-data&gt;/logs/&lt;Entity&gt;.folded</code>. py-spy is pulled
+  ephemerally via <code>uv run --with py-spy</code>, so there's no project dependency to
+  carry; it's fetched (a prebuilt wheel) only when the flag is on.</li>
+<li><strong>Peak memory + OOM evidence</strong> — the container cgroup's <code>memory.peak</code> (bytes)
+  and <code>memory.events</code> (whose <code>oom_kill</code> counter increments when the <em>container's</em>
+  memory limit — not the instance — kills the process). These land as <code>[diag ...]</code>
+  lines in the entity log.</li>
+</ul>
+<p>The exit-code handling is unchanged: a kill still surfaces as a signal exit
+(137 = SIGKILL/OOM); the cgroup line just confirms <em>why</em>.</p>
+<h2 id="reading-the-flamegraph">Reading the flamegraph<a class="headerlink" href="#reading-the-flamegraph" title="Permanent link">&para;</a></h2>
+<p><code>&lt;Entity&gt;.folded</code> is collapsed/folded stacks. Easiest viewers, no install:</p>
+<ul>
+<li><strong><a href="https://www.speedscope.app">speedscope.app</a></strong> — drag the <code>.folded</code> file in.</li>
+<li><code>flamegraph.pl &lt;Entity&gt;.folded &gt; flame.svg</code> (Brendan Gregg's FlameGraph), or
+  <code>uv run --with inferno-cli inferno-flamegraph &lt; &lt;Entity&gt;.folded &gt; flame.svg</code>.</li>
+</ul>
+<p>Wide plateaus are where wall-clock goes. (In the OOM investigation this is where
+the per-file <code>SchemaView</code> rebuild showed up.)</p>
+<p>Note: with parallel entities (<code>-j</code>), <code>memory.peak</code> is the <strong>whole container's</strong>
+peak, not per-entity — profile one entity at a time when memory attribution
+matters. py-spy output is always per-process.</p>
+<hr />
+<h2 id="runbook-ad-hoc-internal-tracing-on-real-data-rare">Runbook: ad-hoc internal tracing on real data (rare)<a class="headerlink" href="#runbook-ad-hoc-internal-tracing-on-real-data-rare" title="Permanent link">&para;</a></h2>
+<p>The diagnostics above are <strong>external</strong> — they answer "where's the time / memory,
+did it get killed" without touching linkml-map internals, which is why they're
+safe to keep around. They cannot answer "<em>which rows vanished where inside the
+engine</em>." That question needs internal instrumentation, and internal
+instrumentation is <strong>throwaway by nature</strong>: the useful part is <em>where</em> you hook,
+and that's specific to the bug you're chasing — you rebuild it per incident, you
+don't keep a suite (a kept suite goes stale on the probe points <em>and</em> on
+linkml-map's internals, and projects coverage it doesn't have).</p>
+<p>So this is not code we keep — it's the <em>pattern</em>, so a rebuild starts from a
+known-safe starting line instead of scratch:</p>
+<ol>
+<li>
+<p><strong>Reach for it last.</strong> First exhaust the external signals (py-spy, cgroup),
+   the exit code (see the map exit-code guard), and output-size comparisons. Only
+   trace internals when those don't localize it <em>and</em> you can't reproduce off a
+   small synthetic input — i.e. you must run on the real data.</p>
+</li>
+<li>
+<p><strong>Inject from a dm-bip-side wrapper, don't fork.</strong> A short script that imports
+   linkml-map, monkey-patches the seams you care about (the transform loop in
+   <code>linkml_map.transformer.engine</code>, the loaders in <code>linkml_map.loaders</code>), then
+   invokes the CLI. Gate every hook behind an env var so it's inert unless asked.</p>
+</li>
+<li>
+<p><strong>Data safety is non-negotiable on protected data.</strong> Log <strong>only</strong> counts,
+   table/column names, and value <em>types</em> — <strong>never cell values</strong>. This is the
+   rule that makes running on real BDC data acceptable.</p>
+</li>
+<li>
+<p><strong>Capture before the kill.</strong> An OOM <code>SIGKILL</code> cannot be caught, so don't rely
+   on a clean exit: flush counters incrementally and register <code>atexit</code> <strong>plus</strong> a
+   <code>SIGTERM</code>/<code>SIGINT</code> handler that dumps current state, so you still get something
+   when the run dies.</p>
+</li>
+</ol>
+<p>The historical implementation of this pattern lived on the <code>probe-ff846709</code>
+branch of a linkml-map checkout (row-flow counters + RSS-vs-tracemalloc memory
+attribution); it's a reference for the shape, not something to re-adopt wholesale.</p>
 
 
 
