@@ -77,6 +77,7 @@ known-safe starting line instead of scratch:
    `SIGTERM`/`SIGINT` handler that dumps current state, so you still get something
    when the run dies.
 
-The historical implementation of this pattern lived on the `probe-ff846709`
-branch of a linkml-map checkout (row-flow counters + RSS-vs-tracemalloc memory
-attribution); it's a reference for the shape, not something to re-adopt wholesale.
+   The historical implementation of this pattern is archived as the linkml-map tag
+   `archive/probe-ff846709` (row-flow counters + RSS-vs-tracemalloc memory
+   attribution) — excavate with `git checkout tags/archive/probe-ff846709`. It's a
+   reference for the shape, not something to re-adopt wholesale.
