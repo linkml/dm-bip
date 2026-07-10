@@ -48,6 +48,10 @@ DM_MAPPING_POSTFIX ?=
 DM_MAP_OUTPUT_TYPE ?= yaml
 DM_MAP_CHUNK_SIZE ?= 10000
 DM_MAP_STRICT ?= true
+# Opt-in diagnostics for the map step (see docs/map-diagnostics.md). When true,
+# each entity is profiled with py-spy (CPU flamegraph) and the container cgroup's
+# peak memory / OOM counters are logged. Off by default; zero cost when off.
+DM_MAP_PROFILE ?= false
 DM_VALIDATE_STRICT ?=
 
 # --- Raw Data Preparation Variables ---
@@ -572,7 +576,12 @@ _map-all-entities: $(_ENTITY_SENTINELS)
 # signal kill regardless of strict mode.
 $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(MAP_TARGET_SCHEMA_FILE)
 	@mkdir -p $(MAPPING_LOG_DIR)
-	set -o pipefail && $(RUN) linkml-map map-data \
+	if [ "$(DM_MAP_PROFILE)" = "true" ]; then \
+		RUNNER="$(RUN) --with py-spy py-spy record --subprocesses --rate 120 --format raw --output $(MAPPING_LOG_DIR)/$*.folded -- linkml-map"; \
+	else \
+		RUNNER="$(RUN) linkml-map"; \
+	fi; \
+	set -o pipefail && $$RUNNER map-data \
 		-T $< \
 		-s $(SCHEMA_FILE) \
 		--target-schema $(MAP_TARGET_SCHEMA_FILE) \
@@ -585,6 +594,12 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(
 		2>&1 | tee $(MAPPING_LOG_DIR)/$*.log; \
 	rc=$$?; \
 	echo "map-data '$*' exited with code $$rc" | tee -a $(MAPPING_LOG_DIR)/$*.log; \
+	if [ "$(DM_MAP_PROFILE)" = "true" ]; then \
+		{ echo "[diag $*] cgroup memory.peak bytes: $$(cat /sys/fs/cgroup/memory.peak 2>/dev/null || echo n/a)"; \
+		  echo "[diag $*] cgroup memory.events:"; \
+		  sed "s/^/[diag $*]   /" /sys/fs/cgroup/memory.events 2>/dev/null; } \
+		  | tee -a $(MAPPING_LOG_DIR)/$*.log || true; \
+	fi; \
 	if [ $$rc -ge 128 ]; then \
 		echo "✗ FATAL: map-data '$*' was killed by signal $$((rc - 128)) (exit $$rc); output is INCOMPLETE and must not be reported as success." | tee -a $(MAPPING_LOG_DIR)/$*.log >&2; \
 		exit $$rc; \
