@@ -60,6 +60,13 @@ DM_RAW_SOURCE ?=
 # The directory containing the YAML mapping files for the study filtering
 DM_MAPPING_SPEC ?= $(DM_TRANS_SPEC_DIR)
 
+# --- dbGaP digest fetch/adapt Variables ---
+# Cohort key from the upstream cohorts.yaml (e.g. jhs, aric). When set,
+# enables the fetch-digests and adapt-digests targets.
+DM_COHORT ?=
+# Local cache directory for fetched dbGaP digest XMLs (gitignored).
+DM_DBGAP_CACHE_DIR ?= .dbgap-cache
+
 # Schema generation options
 # ============
 # Enum inference is controlled by both DM_ENUM_THRESHOLD and DM_MAX_ENUM_SIZE.
@@ -204,6 +211,9 @@ Examples
 2. Run the pipeline for two files: `StudyA/data.tsv` and `StudyB/data.tsv`, with the default schema name:
 
     make pipeline DM_INPUT_FILES="StudyA/data.tsv StudyB/data.tsv"
+
+For individual operations (Seven Bridges task lifecycle, trans-spec generation, metadata prep),
+see `dm-bip --help`.
 endef
 
 .PHONY: help
@@ -249,6 +259,44 @@ $(PREPARED_INPUT_MK):
 
 .PHONY: prepare-input
 prepare-input: $(PREPARED_INPUT_MK)
+
+endif
+
+# dbGaP Digest Fetch and Adapt (only when DM_COHORT is set)
+# ============
+# fetch-digests:  populate $(DM_DBGAP_CACHE_DIR)/$(DM_COHORT)/.../*.{data_dict,var_report}.xml
+#                 by calling `dm-bip fetch-digests` (which handles its own caching).
+# adapt-digests:  for each paired data_dict + var_report under the cache, call
+#                 `schemauto adapt-dbgap` to emit a canonical-DD TSV.
+ifneq ($(strip $(DM_COHORT)),)
+
+DM_DD_DIR := output/$(DM_COHORT)/dd
+DBGAP_PAIRS_MK := $(DM_DBGAP_CACHE_DIR)/$(DM_COHORT)/digest_pairs.mk
+
+.PHONY: fetch-digests
+fetch-digests:
+	$(RUN) dm-bip fetch-digests $(DM_COHORT) --cache-dir $(DM_DBGAP_CACHE_DIR)
+
+# Include the pair mapping if it exists. dbGaP's data_dict.xml and var_report.xml
+# filenames don't share a stem (var_report has an extra .p<N> participant-set
+# segment), so the fetcher emits explicit DBGAP_DD_<key> and DBGAP_VR_<key>
+# pair vars keyed by the data_dict basename.
+-include $(DBGAP_PAIRS_MK)
+
+DBGAP_DD_TSVS := $(foreach k,$(DBGAP_DIGEST_KEYS),$(DM_DD_DIR)/$(k).dd.tsv)
+
+.SECONDEXPANSION:
+
+$(DM_DD_DIR)/%.dd.tsv: $$(DBGAP_DD_$$*) $$(DBGAP_VR_$$*)
+	@mkdir -p $(@D)
+	$(RUN) schemauto adapt-dbgap $< --var-report $(word 2,$^) --tsv -o $@
+
+.PHONY: adapt-digests
+adapt-digests: $(DBGAP_DD_TSVS)
+
+.PHONY: adapt-digests-clean
+adapt-digests-clean:
+	rm -rf $(DM_DD_DIR)
 
 endif
 
@@ -518,8 +566,14 @@ _map-all-entities: $(_ENTITY_SENTINELS)
 #
 # In strict mode (default): pipefail propagates linkml-map errors immediately.
 # In non-strict mode: --continue-on-error lets linkml-map produce partial output
-# and exit 1 on errors. We capture the exit code and always touch the sentinel
-# so other entities can proceed. The summary step greps logs for failures.
+# and exit 1 on row errors; we tolerate that so other entities can proceed and the
+# summary step reports it.
+#
+# BUT a signal kill (exit >= 128, e.g. 137 = SIGKILL/OOM) means the process was
+# terminated mid-run and its output is INCOMPLETE. That is never a tolerable
+# "row error" — masking it produced silently-truncated output under a "success"
+# banner. So we always capture and log the child exit code, and always fail on a
+# signal kill regardless of strict mode.
 $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(MAP_TARGET_SCHEMA_FILE)
 	@mkdir -p $(MAPPING_LOG_DIR)
 	if [ "$(DM_MAP_PROFILE)" = "true" ]; then \
@@ -539,13 +593,17 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(
 		$(DM_INPUT_DIR)/ \
 		2>&1 | tee $(MAPPING_LOG_DIR)/$*.log; \
 	rc=$$?; \
+	echo "map-data '$*' exited with code $$rc" | tee -a $(MAPPING_LOG_DIR)/$*.log; \
 	if [ "$(DM_MAP_PROFILE)" = "true" ]; then \
 		{ echo "[diag $*] cgroup memory.peak bytes: $$(cat /sys/fs/cgroup/memory.peak 2>/dev/null || echo n/a)"; \
 		  echo "[diag $*] cgroup memory.events:"; \
-		  cat /sys/fs/cgroup/memory.events 2>/dev/null | sed "s/^/[diag $*]   /"; } \
-		  | tee -a $(MAPPING_LOG_DIR)/$*.log; \
+		  sed "s/^/[diag $*]   /" /sys/fs/cgroup/memory.events 2>/dev/null; } \
+		  | tee -a $(MAPPING_LOG_DIR)/$*.log || true; \
 	fi; \
-	if [ $$rc -ne 0 ] && [ "$(DM_MAP_STRICT)" != "false" ]; then \
+	if [ $$rc -ge 128 ]; then \
+		echo "✗ FATAL: map-data '$*' was killed by signal $$((rc - 128)) (exit $$rc); output is INCOMPLETE and must not be reported as success." | tee -a $(MAPPING_LOG_DIR)/$*.log >&2; \
+		exit $$rc; \
+	elif [ $$rc -ne 0 ] && [ "$(DM_MAP_STRICT)" != "false" ]; then \
 		exit $$rc; \
 	fi
 	@touch $@

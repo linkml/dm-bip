@@ -10,7 +10,9 @@ dependencies = [
     "pandas>=2.2.3,<3",
     "schema-automator==0.5.5",
     "linkml-map==0.5.2",
+    "typer>=0.20.0,<1",
     "typing-extensions>=4.0,<5",
+    "httpx>=0.27,<1",
 ]
 
 [project.scripts]
@@ -27,6 +29,7 @@ dev = [
     "docstr-coverage>=2.3.2",
     "ipykernel>=6.29.5,<7",
     "notebook>=7.4.2,<8",
+    "pytest-httpx>=0.30,<1",
 ]
 docs = [
     "mkdocs>=1.6",
