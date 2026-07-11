@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_BASE_URL = "https://api.sb.biodatacatalyst.nhlbi.nih.gov/v2"
 DEFAULT_PROJECT = "rmathur2/dmc-task-4-controlled"
-DEFAULT_APP = "rmathur2/dmc-task-4-controlled/cc-dm-bip-test/4"
+DEFAULT_APP = "rmathur2/dmc-task-4-controlled/cc-dm-bip-test/6"
 DEFAULT_TOKEN_FILE = Path.home() / ".sevenbridges" / "token"
 
 DEFAULT_TIMEOUT_SECONDS = 30.0
