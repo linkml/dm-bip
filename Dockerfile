@@ -33,7 +33,8 @@ COPY Dockerfile /Dockerfile.archived
 
 
 # Force rebuild of this layer to bust the Docker build cache
-ARG CACHE_BUST=46
+ARG CACHE_BUST=47
+
 # Build metadata — set by CI (docker/build-push-action) or manual builds
 ARG DM_BIP_VERSION=unknown
 ARG DM_BIP_GIT_REF=unknown
@@ -54,7 +55,7 @@ LABEL org.opencontainers.image.source=https://github.com/linkml/dm-bip
 RUN echo "cache-bust=$CACHE_BUST" && \
     git clone --depth 1 --branch v1.2.0 https://github.com/RTIInternational/NHLBI-BDC-DMC-HM.git && \
     echo "HM commit:" && git -C NHLBI-BDC-DMC-HM log --oneline -1 && \
-    git clone --depth 1 --branch fix/hv-hchs-20260625 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git && \
+    git clone --depth 1 --branch fix/hv-copdgene-20260709 https://github.com/RTIInternational/NHLBI-BDC-DMC-HV.git && \
     echo "HV commit:" && git -C NHLBI-BDC-DMC-HV log --oneline -1
 
 
@@ -72,4 +73,5 @@ CMD ["uv", "run", "dm-bip", "run"]
 # fix/hv-jhs-20260625
 # fix/hv-mesa-20260628
 # fix/hv-cardia-20260628
+# fix/hv-copdgene-20260709
 # main
