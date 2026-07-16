@@ -33,7 +33,7 @@ COPY Dockerfile /Dockerfile.archived
 
 
 # Force rebuild of this layer to bust the Docker build cache
-ARG CACHE_BUST=67
+ARG CACHE_BUST=68
 
 # Build metadata — set by CI (docker/build-push-action) or manual builds
 ARG DM_BIP_VERSION=unknown
