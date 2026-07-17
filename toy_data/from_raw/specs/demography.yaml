@@ -11,6 +11,8 @@
           value_mappings:
             '1': OMOP:8507
             '2': OMOP:8532
+        sex_derived:
+          populated_from: phv00000006
         race:
           populated_from: phv00000003
           value_mappings:
@@ -34,3 +36,12 @@
             'Former': OMOP:45884037
             'Never': OMOP:45879404
             'Unknown': OMOP:0
+  enum_derivations:
+    target_sex_enum:
+      populated_from: phv00000006_enum
+      mirror_source: false
+      permissible_value_derivations:
+        OMOP:8507:
+          populated_from: 'M'
+        OMOP:8532:
+          populated_from: 'F'
