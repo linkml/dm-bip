@@ -48,6 +48,10 @@ DM_MAPPING_POSTFIX ?=
 DM_MAP_OUTPUT_TYPE ?= yaml
 DM_MAP_CHUNK_SIZE ?= 10000
 DM_MAP_STRICT ?= true
+# Opt-in diagnostics for the map step (see docs/map-diagnostics.md). When true,
+# each entity is profiled with py-spy (CPU flamegraph) and the container cgroup's
+# peak memory / OOM counters are logged. Off by default; zero cost when off.
+DM_MAP_PROFILE ?= false
 DM_VALIDATE_STRICT ?=
 
 # --- Raw Data Preparation Variables ---
@@ -55,6 +59,13 @@ DM_VALIDATE_STRICT ?=
 DM_RAW_SOURCE ?=
 # The directory containing the YAML mapping files for the study filtering
 DM_MAPPING_SPEC ?= $(DM_TRANS_SPEC_DIR)
+
+# --- dbGaP digest fetch/adapt Variables ---
+# Cohort key from the upstream cohorts.yaml (e.g. jhs, aric). When set,
+# enables the fetch-digests and adapt-digests targets.
+DM_COHORT ?=
+# Local cache directory for fetched dbGaP digest XMLs (gitignored).
+DM_DBGAP_CACHE_DIR ?= .dbgap-cache
 
 # Schema generation options
 # ============
@@ -200,6 +211,9 @@ Examples
 2. Run the pipeline for two files: `StudyA/data.tsv` and `StudyB/data.tsv`, with the default schema name:
 
     make pipeline DM_INPUT_FILES="StudyA/data.tsv StudyB/data.tsv"
+
+For individual operations (Seven Bridges task lifecycle, trans-spec generation, metadata prep),
+see `dm-bip --help`.
 endef
 
 .PHONY: help
@@ -245,6 +259,44 @@ $(PREPARED_INPUT_MK):
 
 .PHONY: prepare-input
 prepare-input: $(PREPARED_INPUT_MK)
+
+endif
+
+# dbGaP Digest Fetch and Adapt (only when DM_COHORT is set)
+# ============
+# fetch-digests:  populate $(DM_DBGAP_CACHE_DIR)/$(DM_COHORT)/.../*.{data_dict,var_report}.xml
+#                 by calling `dm-bip fetch-digests` (which handles its own caching).
+# adapt-digests:  for each paired data_dict + var_report under the cache, call
+#                 `schemauto adapt-dbgap` to emit a canonical-DD TSV.
+ifneq ($(strip $(DM_COHORT)),)
+
+DM_DD_DIR := output/$(DM_COHORT)/dd
+DBGAP_PAIRS_MK := $(DM_DBGAP_CACHE_DIR)/$(DM_COHORT)/digest_pairs.mk
+
+.PHONY: fetch-digests
+fetch-digests:
+	$(RUN) dm-bip fetch-digests $(DM_COHORT) --cache-dir $(DM_DBGAP_CACHE_DIR)
+
+# Include the pair mapping if it exists. dbGaP's data_dict.xml and var_report.xml
+# filenames don't share a stem (var_report has an extra .p<N> participant-set
+# segment), so the fetcher emits explicit DBGAP_DD_<key> and DBGAP_VR_<key>
+# pair vars keyed by the data_dict basename.
+-include $(DBGAP_PAIRS_MK)
+
+DBGAP_DD_TSVS := $(foreach k,$(DBGAP_DIGEST_KEYS),$(DM_DD_DIR)/$(k).dd.tsv)
+
+.SECONDEXPANSION:
+
+$(DM_DD_DIR)/%.dd.tsv: $$(DBGAP_DD_$$*) $$(DBGAP_VR_$$*)
+	@mkdir -p $(@D)
+	$(RUN) schemauto adapt-dbgap $< --var-report $(word 2,$^) --tsv -o $@
+
+.PHONY: adapt-digests
+adapt-digests: $(DBGAP_DD_TSVS)
+
+.PHONY: adapt-digests-clean
+adapt-digests-clean:
+	rm -rf $(DM_DD_DIR)
 
 endif
 
@@ -449,15 +501,19 @@ validate-debug:
 # ==============================
 #
 # Two-phase design for -j parallelism:
-#   1. Compositor: merge per-variable specs into per-entity TransformationSpecifications
-#   2. Recursive $(MAKE): discover composed specs, map each entity in parallel
+#   1. Write entity list from trans-spec dir
+#   2. Recursive $(MAKE): discover entities from the list, map each in parallel
+#      via `linkml-map map-data -T <dir>/ --entity <name>`
+#
+# linkml-map handles spec merging at run time, so we no longer materialize
+# composed spec files in dm-bip.
 #
 # DM_MAP_OUTPUT_TYPE is a space-separated list of formats. The first value is the
 # primary format (-f), and any additional values produce extra outputs (-O).
 # Example: DM_MAP_OUTPUT_TYPE := tsv jsonl   →   -f tsv -O ...Entity.jsonl
 
 MAP_TARGET_SCHEMA_FILE := $(DM_MAP_TARGET_SCHEMA)
-COMPOSED_SPEC_DIR      := $(MAPPING_OUTPUT_DIR)/composed-specs
+_ENTITY_LIST_FILE      := $(MAPPING_OUTPUT_DIR)/.entities
 
 MAP_TRANS_SPEC_FILES := $(shell find $(DM_TRANS_SPEC_DIR) -type f \( -name '*.yaml' -o -name '*.yml' \) 2>/dev/null)
 
@@ -473,23 +529,21 @@ _map_base = $(if $(DM_MAPPING_PREFIX),$(DM_MAPPING_PREFIX)-)$1$(if $(DM_MAPPING_
 # Build -O flags for additional output formats
 _map_additional_outputs = $(foreach fmt,$(_MAP_ADDITIONAL_FMTS),-O $(MAPPING_OUTPUT_DIR)/$(call _map_base,$1).$(fmt))
 
-# Discover composed specs (populated on recursive make after compositor runs)
-_COMPOSED_SPECS   := $(wildcard $(COMPOSED_SPEC_DIR)/*.yaml)
-_ENTITIES         := $(basename $(notdir $(_COMPOSED_SPECS)))
+# Discover entities (populated on recursive make after Phase 1 writes the list)
+_ENTITIES         := $(shell cat $(_ENTITY_LIST_FILE) 2>/dev/null)
 _ENTITY_SENTINELS := $(foreach e,$(_ENTITIES),$(MAPPING_OUTPUT_DIR)/.$(e)_complete)
 
 .PHONY: map-data
 map-data: $(MAPPING_SUCCESS_SENTINEL)
 
-# Phase 1: Compose per-variable specs into per-entity TransformationSpecifications
-$(COMPOSED_SPEC_DIR)/.composed: $(MAP_TRANS_SPEC_FILES)
+# Phase 1: Write entity list from the trans-spec directory
+$(_ENTITY_LIST_FILE): $(MAP_TRANS_SPEC_FILES)
 	@$(call check_map_input_files)
 	@mkdir -p $(@D)
-	$(RUN) python -m dm_bip.map_data.compose_specs $(DM_TRANS_SPEC_DIR) $(COMPOSED_SPEC_DIR)
-	@touch $@
+	$(RUN) python -m dm_bip.map_data.list_entities $(DM_TRANS_SPEC_DIR) > $@
 
-# Phase 2: Run compositor, then recursive make to map each entity
-$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(COMPOSED_SPEC_DIR)/.composed
+# Phase 2: Write the entity list, then recursive make to map each entity
+$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(_ENTITY_LIST_FILE)
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
 	$(MAKE) _map-all-entities CONFIG=$(CONFIG)
@@ -514,12 +568,24 @@ _map-all-entities: $(_ENTITY_SENTINELS)
 #
 # In strict mode (default): pipefail propagates linkml-map errors immediately.
 # In non-strict mode: --continue-on-error lets linkml-map produce partial output
-# and exit 1 on errors. We capture the exit code and always touch the sentinel
-# so other entities can proceed. The summary step greps logs for failures.
-$(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(MAP_TARGET_SCHEMA_FILE)
+# and exit 1 on row errors; we tolerate that so other entities can proceed and the
+# summary step reports it.
+#
+# BUT a signal kill (exit >= 128, e.g. 137 = SIGKILL/OOM) means the process was
+# terminated mid-run and its output is INCOMPLETE. That is never a tolerable
+# "row error" — masking it produced silently-truncated output under a "success"
+# banner. So we always capture and log the child exit code, and always fail on a
+# signal kill regardless of strict mode.
+$(MAPPING_OUTPUT_DIR)/.%_complete: $(MAP_TRANS_SPEC_FILES) $(SCHEMA_FILE) $(MAP_TARGET_SCHEMA_FILE)
 	@mkdir -p $(MAPPING_LOG_DIR)
-	set -o pipefail && $(RUN) linkml-map map-data \
-		-T $< \
+	if [ "$(DM_MAP_PROFILE)" = "true" ]; then \
+		RUNNER="$(RUN) --with py-spy py-spy record --subprocesses --rate 120 --format raw --output $(MAPPING_LOG_DIR)/$*.folded -- linkml-map"; \
+	else \
+		RUNNER="$(RUN) linkml-map"; \
+	fi; \
+	set -o pipefail && $$RUNNER map-data \
+		-T $(DM_TRANS_SPEC_DIR)/ \
+		--entity $* \
 		-s $(SCHEMA_FILE) \
 		--target-schema $(MAP_TARGET_SCHEMA_FILE) \
 		-o $(MAPPING_OUTPUT_DIR)/$(call _map_base,$*).$(_MAP_PRIMARY_FMT) \
@@ -530,7 +596,17 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(
 		$(DM_INPUT_DIR)/ \
 		2>&1 | tee $(MAPPING_LOG_DIR)/$*.log; \
 	rc=$$?; \
-	if [ $$rc -ne 0 ] && [ "$(DM_MAP_STRICT)" != "false" ]; then \
+	echo "map-data '$*' exited with code $$rc" | tee -a $(MAPPING_LOG_DIR)/$*.log; \
+	if [ "$(DM_MAP_PROFILE)" = "true" ]; then \
+		{ echo "[diag $*] cgroup memory.peak bytes: $$(cat /sys/fs/cgroup/memory.peak 2>/dev/null || echo n/a)"; \
+		  echo "[diag $*] cgroup memory.events:"; \
+		  sed "s/^/[diag $*]   /" /sys/fs/cgroup/memory.events 2>/dev/null; } \
+		  | tee -a $(MAPPING_LOG_DIR)/$*.log || true; \
+	fi; \
+	if [ $$rc -ge 128 ]; then \
+		echo "✗ FATAL: map-data '$*' was killed by signal $$((rc - 128)) (exit $$rc); output is INCOMPLETE and must not be reported as success." | tee -a $(MAPPING_LOG_DIR)/$*.log >&2; \
+		exit $$rc; \
+	elif [ $$rc -ne 0 ] && [ "$(DM_MAP_STRICT)" != "false" ]; then \
 		exit $$rc; \
 	fi
 	@touch $@
@@ -540,10 +616,10 @@ map-debug:
 	@echo "DM_TRANS_SPEC_DIR: $(DM_TRANS_SPEC_DIR)"
 	@echo "DM_MAP_TARGET_SCHEMA: $(DM_MAP_TARGET_SCHEMA)"
 	@echo "DM_MAP_OUTPUT_TYPE: $(DM_MAP_OUTPUT_TYPE)"
-	@echo "COMPOSED_SPEC_DIR: $(COMPOSED_SPEC_DIR)"
 	@echo "MAPPING_OUTPUT_DIR: $(MAPPING_OUTPUT_DIR)"
 	@echo "MAPPING_LOG_DIR: $(MAPPING_LOG_DIR)"
 	@echo "DM_MAP_STRICT: $(DM_MAP_STRICT)"
+	@echo "_ENTITIES: $(_ENTITIES)"
 
 .PHONY: map-clean
 map-clean:

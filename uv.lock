@@ -460,14 +460,14 @@ wheels = [
 
 [[package]]
 name = "click"
-version = "8.3.3"
+version = "8.4.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bb/63/f9e1ea081ce35720d8b92acde70daaedace594dc93b693c869e0d5910718/click-8.3.3.tar.gz", hash = "sha256:398329ad4837b2ff7cbe1dd166a4c0f8900c3ca3a218de04466f38f6497f18a2", size = 328061, upload-time = "2026-04-22T15:11:27.506Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/76/d4/81420972a676e8ffea40450d8c8c92943e7218a78fe9b64359836cc9876b/click-8.4.2.tar.gz", hash = "sha256:9a6cea6e60b17ebe0a44c5cc636d94f09bd66142c1cd7d8b4cd731c4917a15f6", size = 338000, upload-time = "2026-06-24T17:45:15.148Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ae/44/c1221527f6a71a01ec6fbad7fa78f1d50dfa02217385cf0fa3eec7087d59/click-8.3.3-py3-none-any.whl", hash = "sha256:a2bf429bb3033c89fa4936ffb35d5cb471e3719e1f3c8a7c3fff0b8314305613", size = 110502, upload-time = "2026-04-22T15:11:25.044Z" },
+    { url = "https://files.pythonhosted.org/packages/fb/e2/79c688af8b210d232694e31e59da9f6ec747bae31c3f5946e4e9b98860d5/click-8.4.2-py3-none-any.whl", hash = "sha256:e6f9f66136c816745b9d65817da91d61d957fb16e02e4dcd0552553c5a197b76", size = 119243, upload-time = "2026-06-24T17:45:13.73Z" },
 ]
 
 [[package]]
@@ -755,10 +755,12 @@ name = "dm-bip"
 version = "0.0.0"
 source = { editable = "." }
 dependencies = [
+    { name = "httpx" },
     { name = "linkml" },
     { name = "linkml-map" },
     { name = "pandas" },
     { name = "schema-automator" },
+    { name = "typer" },
     { name = "typing-extensions" },
 ]
 
@@ -772,6 +774,7 @@ dev = [
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-cov" },
+    { name = "pytest-httpx" },
     { name = "ruff" },
 ]
 docs = [
@@ -785,10 +788,12 @@ env = [
 
 [package.metadata]
 requires-dist = [
+    { name = "httpx", specifier = ">=0.27,<1" },
     { name = "linkml", specifier = ">=1.11.0" },
-    { name = "linkml-map", git = "https://github.com/linkml/linkml-map.git?rev=8267d3a" },
+    { name = "linkml-map", specifier = "==0.5.3" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
-    { name = "schema-automator", specifier = ">=0.5.5" },
+    { name = "schema-automator", specifier = "==0.5.5" },
+    { name = "typer", specifier = ">=0.20.0,<1" },
     { name = "typing-extensions", specifier = ">=4.0,<5" },
 ]
 
@@ -802,6 +807,7 @@ dev = [
     { name = "pre-commit", specifier = ">=3.3.3" },
     { name = "pytest", specifier = ">=8.3.2" },
     { name = "pytest-cov", specifier = ">=6.0" },
+    { name = "pytest-httpx", specifier = ">=0.30,<1" },
     { name = "ruff", specifier = ">=0.12.9" },
 ]
 docs = [
@@ -1412,6 +1418,15 @@ wheels = [
 ]
 
 [[package]]
+name = "inflection"
+version = "0.5.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e1/7e/691d061b7329bc8d54edbf0ec22fbfb2afe61facb681f9aaa9bff7a27d04/inflection-0.5.1.tar.gz", hash = "sha256:1a29730d366e996aaacffb2f1f1cb9593dc38e2ddd30c91250c6dde09ea9b417", size = 15091, upload-time = "2020-08-22T08:16:29.139Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/59/91/aa6bde563e0085a02a435aa99b49ef75b0a4b062635e606dab23ce18d720/inflection-0.5.1-py2.py3-none-any.whl", hash = "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2", size = 9454, upload-time = "2020-08-22T08:16:27.816Z" },
+]
+
+[[package]]
 name = "iniconfig"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1902,7 +1917,7 @@ wheels = [
 
 [[package]]
 name = "linkml"
-version = "1.11.0"
+version = "1.11.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "antlr4-python3-runtime" },
@@ -1931,15 +1946,15 @@ dependencies = [
     { name = "typing-extensions", marker = "python_full_version < '3.12'" },
     { name = "watchdog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/02/4a/5c8c6a962b8623e7009ce3a334f0c81dac4a63b11f003e617614dd50c336/linkml-1.11.0.tar.gz", hash = "sha256:bbe7f31dbfaac10047feb951b56520e9467a763d7ae08cf5d38783b70965ad53", size = 379569, upload-time = "2026-05-13T20:34:24.414Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b4/26/38e7340959cd4a87bfe5403cfcf5311d9fe2ff4382fa00e96008a1342760/linkml-1.11.1.tar.gz", hash = "sha256:2f6774e13628270cadaeecda3313db0437ecc15cd44ee35c6c2655dbe31c8524", size = 374853, upload-time = "2026-05-20T17:05:42.359Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/14/5d/e147d30b54b999c006dc86e8119d4c3bca2c4f4a49a8b4a50d37b26abfcd/linkml-1.11.0-py3-none-any.whl", hash = "sha256:8145e5ae2d90d304d135e26aac5ddff4d752d89a80e476f65a14588dfb43e7b2", size = 489194, upload-time = "2026-05-13T20:34:20.075Z" },
+    { url = "https://files.pythonhosted.org/packages/1f/fb/3068f649cc436be915f51b2f5ac0656c83dc9bcc6d4f8940633e295042c0/linkml-1.11.1-py3-none-any.whl", hash = "sha256:d1bbb97a8b1ea4a99b145007875733a5e5e89b3acfe3e9d1e369fa4a582990ed", size = 483751, upload-time = "2026-05-20T17:05:38.663Z" },
 ]
 
 [[package]]
 name = "linkml-map"
-version = "0.5.2.post22.dev0+8267d3a"
-source = { git = "https://github.com/linkml/linkml-map.git?rev=8267d3a#8267d3a6ae32490dde416a02219f16b336674207" }
+version = "0.5.3"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asteval" },
     { name = "click" },
@@ -1948,6 +1963,7 @@ dependencies = [
     { name = "duckdb" },
     { name = "flatten-dict" },
     { name = "graphviz" },
+    { name = "inflection" },
     { name = "jinja2" },
     { name = "lark" },
     { name = "linkml" },
@@ -1955,9 +1971,14 @@ dependencies = [
     { name = "more-itertools" },
     { name = "pint" },
     { name = "pydantic" },
+    { name = "python-slugify" },
     { name = "pyyaml" },
     { name = "simpleeval" },
     { name = "ucumvert" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/21/65/92e03bbaa3f70c215b44729e1adc37795a01ace438f44a99f30af84f4e8b/linkml_map-0.5.3.tar.gz", hash = "sha256:2bdb16bc9546280cf03bbe9476ed3460795d612004b61e810d4206d7830093b4", size = 585678, upload-time = "2026-07-16T19:18:50.466Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/11/01/1d8e9f0c1e51475275d9393154a69e86170e7d4a7ab17fa568935d1c24ed/linkml_map-0.5.3-py3-none-any.whl", hash = "sha256:937beba0e2ce54f669e873f80166dda9e198068eed2338e032d5a1309251556c", size = 151142, upload-time = "2026-07-16T19:18:48.621Z" },
 ]
 
 [[package]]
@@ -1977,7 +1998,7 @@ wheels = [
 
 [[package]]
 name = "linkml-runtime"
-version = "1.11.0"
+version = "1.11.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -1994,9 +2015,9 @@ dependencies = [
     { name = "rdflib" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/fc/c9/a31c30d5ff7979e01182a6c2d1c7d19d1bd2ae8cb10e2f0368cc274aae14/linkml_runtime-1.11.0.tar.gz", hash = "sha256:f06ed1f4fbb9192283333f23dd427e2019c04aad297234c1a48111f88a97b516", size = 556686, upload-time = "2026-05-13T20:34:26.445Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d0/7c/36332b49226f37d05d0dbfa4fb1c8017963d62ae722102c9c11c1f530696/linkml_runtime-1.11.1.tar.gz", hash = "sha256:e71300b596c4f35aeccd9dca096806678402213dbdb2c5e8e68f507e21320754", size = 556549, upload-time = "2026-05-20T17:05:43.633Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1e/1d/88aac7cac40721e12cdbbe0364ff80afc6f2620be96002bc50d11ee38621/linkml_runtime-1.11.0-py3-none-any.whl", hash = "sha256:5ccaee2763b92feb273f56f316d23a80b1d9231c5aba3cf6ad1eec5a0f8269b2", size = 654770, upload-time = "2026-05-13T20:34:22.475Z" },
+    { url = "https://files.pythonhosted.org/packages/63/1d/600b0dd24aa61f03d35293a2e9a4695add1e94c03d8701436fb52d5daf4f/linkml_runtime-1.11.1-py3-none-any.whl", hash = "sha256:b22c77d8fd920d0f4f43a6ece31393dc0b28bb47790f3e1c114210318c36b3da", size = 654566, upload-time = "2026-05-20T17:05:40.526Z" },
 ]
 
 [[package]]
@@ -3225,6 +3246,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/5e/f7/c933acc76f5208b3b00089573cf6a2bc26dc80a8aece8f52bb7d6b1855ca/pytest_cov-7.0.0.tar.gz", hash = "sha256:33c97eda2e049a0c5298e91f519302a1334c26ac65c1a483d6206fd458361af1", size = 54328, upload-time = "2025-09-09T10:57:02.113Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ee/49/1377b49de7d0c1ce41292161ea0f721913fa8722c19fb9c1e3aa0367eecb/pytest_cov-7.0.0-py3-none-any.whl", hash = "sha256:3b8e9558b16cc1479da72058bdecf8073661c7f57f7d3c5f22a1c23507f2d861", size = 22424, upload-time = "2025-09-09T10:57:00.695Z" },
+]
+
+[[package]]
+name = "pytest-httpx"
+version = "0.35.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1f/89/5b12b7b29e3d0af3a4b9c071ee92fa25a9017453731a38f08ba01c280f4c/pytest_httpx-0.35.0.tar.gz", hash = "sha256:d619ad5d2e67734abfbb224c3d9025d64795d4b8711116b1a13f72a251ae511f", size = 54146, upload-time = "2024-11-28T19:16:54.237Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b0/ed/026d467c1853dd83102411a78126b4842618e86c895f93528b0528c7a620/pytest_httpx-0.35.0-py3-none-any.whl", hash = "sha256:ee11a00ffcea94a5cbff47af2114d34c5b231c326902458deed73f9c459fd744", size = 19442, upload-time = "2024-11-28T19:16:52.787Z" },
 ]
 
 [[package]]
