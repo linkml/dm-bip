@@ -595,10 +595,13 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(
 	rc=$$?; \
 	echo "map-data '$*' exited with code $$rc" | tee -a $(MAPPING_LOG_DIR)/$*.log; \
 	if [ "$(DM_MAP_PROFILE)" = "true" ]; then \
-		{ echo "[diag $*] cgroup memory.peak bytes: $$(cat /sys/fs/cgroup/memory.peak 2>/dev/null || echo n/a)"; \
-		  echo "[diag $*] cgroup memory.events:"; \
-		  sed "s/^/[diag $*]   /" /sys/fs/cgroup/memory.events 2>/dev/null; } \
-		  | tee -a $(MAPPING_LOG_DIR)/$*.log || true; \
+		{ echo "[diag $*] peak: v2=$$(cat /sys/fs/cgroup/memory.peak 2>/dev/null || echo -) v1=$$(cat /sys/fs/cgroup/memory/memory.max_usage_in_bytes 2>/dev/null || echo -)"; \
+		  echo "[diag $*] limit: v2=$$(cat /sys/fs/cgroup/memory.max 2>/dev/null || echo -) v1=$$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes 2>/dev/null || echo -)"; \
+		  echo "[diag $*] current: v2=$$(cat /sys/fs/cgroup/memory.current 2>/dev/null || echo -) v1=$$(cat /sys/fs/cgroup/memory/memory.usage_in_bytes 2>/dev/null || echo -)"; \
+		  echo "[diag $*] cgroup:"; sed "s/^/[diag $*]   /" /proc/self/cgroup 2>/dev/null; \
+		  echo "[diag $*] events:"; sed "s/^/[diag $*]   /" /sys/fs/cgroup/memory.events 2>/dev/null; \
+		  sed "s/^/[diag $*]   /" /sys/fs/cgroup/memory/memory.oom_control 2>/dev/null; } \
+		  2>/dev/null | tee -a $(MAPPING_LOG_DIR)/$*.log || true; \
 	fi; \
 	if [ $$rc -ge 128 ]; then \
 		echo "✗ FATAL: map-data '$*' was killed by signal $$((rc - 128)) (exit $$rc); output is INCOMPLETE and must not be reported as success." | tee -a $(MAPPING_LOG_DIR)/$*.log >&2; \
