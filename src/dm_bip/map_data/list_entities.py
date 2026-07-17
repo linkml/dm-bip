@@ -1,5 +1,5 @@
 """
-List class_derivation entity names from a TransformationSpecification dir/files.
+List class_derivations entity names from a TransformationSpecification dir/files.
 
 Used by `pipeline.Makefile` to discover entities for per-entity `make -j`
 parallelism without first materializing composed spec files. Reuses
@@ -22,7 +22,7 @@ from linkml_map.utils.spec_merge import load_and_merge_specs
 
 def list_entities(paths: list[str | Path]) -> list[str]:
     """
-    Return sorted unique class_derivation entity names from spec paths.
+    Return sorted unique class_derivations entity names from spec paths.
 
     Tolerates empty/missing inputs (returns ``[]``) so this is safe to call at
     Make parse time before the trans-spec directory exists.
@@ -31,7 +31,7 @@ def list_entities(paths: list[str | Path]) -> list[str]:
         paths: One or more spec file or directory paths.
 
     Returns:
-        Sorted list of unique class_derivation names.
+        Sorted list of unique class_derivations names.
 
     """
     try:
