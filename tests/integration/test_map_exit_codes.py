@@ -40,13 +40,13 @@ def _run_recipe(tmp: Path, stub_rc: int, strict: str) -> subprocess.CompletedPro
 
     """
     mapped = tmp / "mapped"
-    composed = mapped / "composed-specs"
+    trans_specs = tmp / "trans-specs"
     logs = mapped / "logs"
     inp = tmp / "input"
     schema = tmp / "schema.yaml"
     target = tmp / "target.yaml"
-    spec = composed / f"{ENTITY}.yaml"
-    for d in (composed, logs, inp):
+    spec = trans_specs / f"{ENTITY}.yaml"
+    for d in (trans_specs, logs, inp):
         d.mkdir(parents=True, exist_ok=True)
     # Prereqs — dummy files; the stub ignores their contents.
     for f in (spec, schema, target):
@@ -67,7 +67,8 @@ def _run_recipe(tmp: Path, stub_rc: int, strict: str) -> subprocess.CompletedPro
             str(mapped / f".{ENTITY}_complete"),
             f"RUN=bash {stub}",
             f"MAPPING_OUTPUT_DIR={mapped}",
-            f"COMPOSED_SPEC_DIR={composed}",
+            f"DM_TRANS_SPEC_DIR={trans_specs}",
+            f"MAP_TRANS_SPEC_FILES={spec}",
             f"MAPPING_LOG_DIR={logs}",
             f"SCHEMA_FILE={schema}",
             f"MAP_TARGET_SCHEMA_FILE={target}",
