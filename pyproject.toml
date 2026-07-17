@@ -57,6 +57,7 @@ line-length = 120
 include = [
     "src/**/*.py",
     "tests/**/*.py",
+    "scripts/**/*.py",
 ]
 
 [tool.ruff.lint]
