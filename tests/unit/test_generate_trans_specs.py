@@ -2,9 +2,10 @@
 
 from pathlib import Path
 
+import pytest
 import yaml
 
-from dm_bip.trans_spec_gen.generate_trans_specs import generate_yaml
+from dm_bip.trans_spec_gen.generate_trans_specs import _safe_output_path, generate_yaml
 
 SAMPLE_CSV = Path(__file__).parents[1] / "input" / "make_yaml" / "shortdata_sample.csv"
 
@@ -173,3 +174,22 @@ class TestCommonFields:
         _, parsed = _read_yaml(tmp_path, "aric", "good", "albumin_bld")
         slots = parsed[0]["class_derivations"]["MeasurementObservation"]["slot_derivations"]
         assert slots["associated_participant"]["populated_from"] == "phv00000101"
+
+
+class TestSafeOutputPath:
+    """Validation of layout-formatted paths under output_dir."""
+
+    def test_rejects_absolute_path(self, tmp_path):
+        """Absolute layout output is rejected."""
+        with pytest.raises(ValueError, match="absolute"):
+            _safe_output_path(tmp_path, "/etc/passwd")
+
+    def test_rejects_traversal(self, tmp_path):
+        """Path traversal escaping output_dir is rejected."""
+        with pytest.raises(ValueError, match="outside"):
+            _safe_output_path(tmp_path, "../../../etc/passwd")
+
+    def test_accepts_relative_path(self, tmp_path):
+        """Plain relative paths under output_dir are accepted."""
+        result = _safe_output_path(tmp_path, "aric/good/albumin.yaml")
+        assert result == (tmp_path / "aric/good/albumin.yaml").resolve()
