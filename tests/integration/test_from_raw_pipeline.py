@@ -153,7 +153,9 @@ def test_enum_derivation_twin_matches_value_mapping(from_raw_pipeline_output):
     """
     mapped_dir = from_raw_pipeline_output["output_dir"] / "mapped-data"
     demography_files = list(mapped_dir.glob("*Demography*.yaml"))
+    assert demography_files, f"No Demography output found in {mapped_dir}"
     records = [r for r in yaml.safe_load_all(demography_files[0].read_text()) if r]
+    assert records, f"No records in {demography_files[0]}"
 
     mismatches = [
         (r.get("associated_participant"), r.get("sex"), r.get("sex_derived"))

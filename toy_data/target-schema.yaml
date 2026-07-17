@@ -24,7 +24,6 @@ classes:
       id:
         identifier: true
       gender:
-        range: target_sex_enum
       race:
       ethnicity:
       age:
