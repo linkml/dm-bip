@@ -295,49 +295,18 @@ DM_OUTPUT_DIR="${PROCESSED_DIR}/${OUTPUT_NAME}"
 DM_INPUT_DIR="${PROCESSED_DIR}/${RAW_DIR_NAME}_CleanedSource"
 
 # Define paths to external dependencies (within container)
-# Resolve trans-spec directory based on --trans-spec slug or default
-if [[ -n "$TRANS_SPEC_EXPLICIT_PATH" ]]; then
-  # Explicit path from slug
-  DM_TRANS_SPEC_DIR="${TRANS_SPEC_REPO_DIR}/${TRANS_SPEC_EXPLICIT_PATH}"
-  if [[ ! -d "$DM_TRANS_SPEC_DIR" ]]; then
-    echo "ERROR: Explicit trans-spec path not found: $DM_TRANS_SPEC_DIR"
-    exit 1
-  fi
-elif [[ -n "$TRANS_SPEC_REPO_DIR" ]]; then
-  # Auto-detect layout from repo contents
-  if [[ -d "${TRANS_SPEC_REPO_DIR}/priority_variables_transform" ]]; then
-    # NHLBI-BDC-DMC-HV layout
-    DM_TRANS_SPEC_DIR="${TRANS_SPEC_REPO_DIR}/priority_variables_transform/${DM_SCHEMA_NAME}-ingest"
-  elif [[ -d "${TRANS_SPEC_REPO_DIR}/trans_specs" ]]; then
-    # bdc-harmonized-variables layout (versioned subdirectories)
-    TRANS_SPEC_BASE="${TRANS_SPEC_REPO_DIR}/trans_specs/${DM_SCHEMA_NAME}"
-    latest_version_dir=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V | tail -1)
-    if [[ -z "${latest_version_dir:-}" ]]; then
-      echo "ERROR: No trans-spec version directory found under $TRANS_SPEC_BASE"
-      exit 1
-    fi
-    DM_TRANS_SPEC_DIR="${TRANS_SPEC_BASE}/${latest_version_dir}"
-  else
-    echo "ERROR: Cannot auto-detect trans-spec layout in ${TRANS_SPEC_REPO_DIR}"
-    echo "       Use OWNER/REPO@REF:PATH to specify the path explicitly"
-    exit 1
-  fi
-  if [[ ! -d "$DM_TRANS_SPEC_DIR" ]]; then
-    echo "ERROR: Auto-detected trans-spec directory not found: $DM_TRANS_SPEC_DIR"
-    echo "       Use OWNER/REPO@REF:PATH to specify the path explicitly"
-    exit 1
-  fi
-else
-  # Default: bdc-harmonized-variables (build-time clone)
-  TRANS_SPEC_BASE="/app/bdc-harmonized-variables/trans_specs/${DM_SCHEMA_NAME}"
-  latest_version_dir=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V | tail -1)
-  if [[ -z "${latest_version_dir:-}" ]]; then
-    echo "ERROR: No trans-spec version directory found under $TRANS_SPEC_BASE"
-    exit 1
-  fi
-  DM_TRANS_SPEC_DIR="${TRANS_SPEC_BASE}/${latest_version_dir}"
-fi
-echo "  Trans-spec version:   ${DM_TRANS_SPEC_DIR}"
+# Find the latest version directory for this study's trans-specs
+# TRANS_SPEC_BASE="/app/bdc-harmonized-variables/trans_specs/${DM_SCHEMA_NAME}"
+# latest_version_dir=$(find "$TRANS_SPEC_BASE" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' 2>/dev/null | sort -V | tail -1)
+# if [[ -z "${latest_version_dir:-}" ]]; then
+#   echo "ERROR: No trans-spec version directory found under $TRANS_SPEC_BASE"
+#   exit 1
+# fi
+# DM_TRANS_SPEC_DIR="${TRANS_SPEC_BASE}/${latest_version_dir}"
+
+DM_TRANS_SPEC_DIR="/app/NHLBI-BDC-DMC-HV/priority_variables_transform/${DM_SCHEMA_NAME}-ingest"
+
+echo "  Trans-spec version:   $(basename "$DM_TRANS_SPEC_DIR")"
 DM_MAP_TARGET_SCHEMA="/app/NHLBI-BDC-DMC-HM/src/bdchm/schema/bdchm.yaml"
 
 echo ""
@@ -403,6 +372,8 @@ make -j "$MAKE_JOBS" pipeline \
   DM_INPUT_DIR="$DM_INPUT_DIR" \
   DM_TRANS_SPEC_DIR="$DM_TRANS_SPEC_DIR" \
   DM_MAP_TARGET_SCHEMA="$DM_MAP_TARGET_SCHEMA" \
+  DM_MAP_OUTPUT_TYPE="tsv" \
+  DM_MAP_STRICT=true \
   DM_REPO_MANIFEST="/app/repo-manifest.yaml" \
   DM_MAP_PROFILE="$DM_MAP_PROFILE" \
   $DM_MAP_STRICT_ARG
@@ -421,5 +392,6 @@ echo "================================================================"
 # 8. Copy Log Files and Build Artifacts to Processed Directory
 #    NOTE: Must remain last — any echoes after this won't appear in the log
 #------------------------------------------------------------------------------
+cp -R ${DM_TRANS_SPEC_DIR} "$PROCESSED_DIR/"
 cp /Dockerfile.archived "$PROCESSED_DIR/"
 find "${HOME}" -maxdepth 1 -name "*.log" -exec cp {} "$PROCESSED_DIR/" \;
