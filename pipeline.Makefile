@@ -501,15 +501,19 @@ validate-debug:
 # ==============================
 #
 # Two-phase design for -j parallelism:
-#   1. Compositor: merge per-variable specs into per-entity TransformationSpecifications
-#   2. Recursive $(MAKE): discover composed specs, map each entity in parallel
+#   1. Write entity list from trans-spec dir
+#   2. Recursive $(MAKE): discover entities from the list, map each in parallel
+#      via `linkml-map map-data -T <dir>/ --entity <name>`
+#
+# linkml-map handles spec merging at run time, so we no longer materialize
+# composed spec files in dm-bip.
 #
 # DM_MAP_OUTPUT_TYPE is a space-separated list of formats. The first value is the
 # primary format (-f), and any additional values produce extra outputs (-O).
 # Example: DM_MAP_OUTPUT_TYPE := tsv jsonl   →   -f tsv -O ...Entity.jsonl
 
 MAP_TARGET_SCHEMA_FILE := $(DM_MAP_TARGET_SCHEMA)
-COMPOSED_SPEC_DIR      := $(MAPPING_OUTPUT_DIR)/composed-specs
+_ENTITY_LIST_FILE      := $(MAPPING_OUTPUT_DIR)/.entities
 
 MAP_TRANS_SPEC_FILES := $(shell find $(DM_TRANS_SPEC_DIR) -type f \( -name '*.yaml' -o -name '*.yml' \) 2>/dev/null)
 
@@ -525,23 +529,21 @@ _map_base = $(if $(DM_MAPPING_PREFIX),$(DM_MAPPING_PREFIX)-)$1$(if $(DM_MAPPING_
 # Build -O flags for additional output formats
 _map_additional_outputs = $(foreach fmt,$(_MAP_ADDITIONAL_FMTS),-O $(MAPPING_OUTPUT_DIR)/$(call _map_base,$1).$(fmt))
 
-# Discover composed specs (populated on recursive make after compositor runs)
-_COMPOSED_SPECS   := $(wildcard $(COMPOSED_SPEC_DIR)/*.yaml)
-_ENTITIES         := $(basename $(notdir $(_COMPOSED_SPECS)))
+# Discover entities (populated on recursive make after Phase 1 writes the list)
+_ENTITIES         := $(shell cat $(_ENTITY_LIST_FILE) 2>/dev/null)
 _ENTITY_SENTINELS := $(foreach e,$(_ENTITIES),$(MAPPING_OUTPUT_DIR)/.$(e)_complete)
 
 .PHONY: map-data
 map-data: $(MAPPING_SUCCESS_SENTINEL)
 
-# Phase 1: Compose per-variable specs into per-entity TransformationSpecifications
-$(COMPOSED_SPEC_DIR)/.composed: $(MAP_TRANS_SPEC_FILES)
+# Phase 1: Write entity list from the trans-spec directory
+$(_ENTITY_LIST_FILE): $(MAP_TRANS_SPEC_FILES)
 	@$(call check_map_input_files)
 	@mkdir -p $(@D)
-	$(RUN) python -m dm_bip.map_data.compose_specs $(DM_TRANS_SPEC_DIR) $(COMPOSED_SPEC_DIR)
-	@touch $@
+	$(RUN) python -m dm_bip.map_data.list_entities $(DM_TRANS_SPEC_DIR) > $@
 
-# Phase 2: Run compositor, then recursive make to map each entity
-$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(COMPOSED_SPEC_DIR)/.composed
+# Phase 2: Write the entity list, then recursive make to map each entity
+$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(_ENTITY_LIST_FILE)
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
 	$(MAKE) _map-all-entities CONFIG=$(CONFIG)
@@ -574,7 +576,7 @@ _map-all-entities: $(_ENTITY_SENTINELS)
 # "row error" — masking it produced silently-truncated output under a "success"
 # banner. So we always capture and log the child exit code, and always fail on a
 # signal kill regardless of strict mode.
-$(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(MAP_TARGET_SCHEMA_FILE)
+$(MAPPING_OUTPUT_DIR)/.%_complete: $(MAP_TRANS_SPEC_FILES) $(SCHEMA_FILE) $(MAP_TARGET_SCHEMA_FILE)
 	@mkdir -p $(MAPPING_LOG_DIR)
 	if [ "$(DM_MAP_PROFILE)" = "true" ]; then \
 		RUNNER="$(RUN) --with py-spy py-spy record --subprocesses --rate 120 --format raw --output $(MAPPING_LOG_DIR)/$*.folded -- linkml-map"; \
@@ -582,7 +584,8 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(
 		RUNNER="$(RUN) linkml-map"; \
 	fi; \
 	set -o pipefail && $$RUNNER map-data \
-		-T $< \
+		-T $(DM_TRANS_SPEC_DIR)/ \
+		--entity $* \
 		-s $(SCHEMA_FILE) \
 		--target-schema $(MAP_TARGET_SCHEMA_FILE) \
 		-o $(MAPPING_OUTPUT_DIR)/$(call _map_base,$*).$(_MAP_PRIMARY_FMT) \
@@ -613,10 +616,10 @@ map-debug:
 	@echo "DM_TRANS_SPEC_DIR: $(DM_TRANS_SPEC_DIR)"
 	@echo "DM_MAP_TARGET_SCHEMA: $(DM_MAP_TARGET_SCHEMA)"
 	@echo "DM_MAP_OUTPUT_TYPE: $(DM_MAP_OUTPUT_TYPE)"
-	@echo "COMPOSED_SPEC_DIR: $(COMPOSED_SPEC_DIR)"
 	@echo "MAPPING_OUTPUT_DIR: $(MAPPING_OUTPUT_DIR)"
 	@echo "MAPPING_LOG_DIR: $(MAPPING_LOG_DIR)"
 	@echo "DM_MAP_STRICT: $(DM_MAP_STRICT)"
+	@echo "_ENTITIES: $(_ENTITIES)"
 
 .PHONY: map-clean
 map-clean:

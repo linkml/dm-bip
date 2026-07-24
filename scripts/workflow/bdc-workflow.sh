@@ -59,6 +59,8 @@ Optional Parameters:
   --trans-spec  Alternate trans-spec source (OWNER/REPO[@REF][:PATH])
   --workdir     Working directory for pipeline execution (default: /app)
   --jobs        Number of parallel make jobs (default: 8)
+  --profile     Enable map-step diagnostics (py-spy CPU profile + cgroup
+                memory/OOM); see docs/map-diagnostics.md
 
 Examples:
   $0 --schema FHS --source /data/raw/fhs_study
@@ -78,6 +80,10 @@ DM_RAW_SOURCE=""
 TRANS_SPEC_SLUG=""
 WORKING_DIR="/app"  # Default working directory
 MAKE_JOBS=8         # Default parallel jobs
+# Map-step diagnostics (py-spy CPU profile + cgroup memory/OOM); see
+# docs/map-diagnostics.md. Off by default; set via --profile or the
+# DM_MAP_PROFILE environment variable.
+DM_MAP_PROFILE="${DM_MAP_PROFILE:-false}"
 
 #------------------------------------------------------------------------------
 # 1. Parse Named Parameters
@@ -117,6 +123,10 @@ while [[ $# -gt 0 ]]; do
       fi
       MAKE_JOBS="$2"
       shift 2
+      ;;
+    --profile)
+      DM_MAP_PROFILE="true"
+      shift
       ;;
     -h|--help)
       usage 0
@@ -365,6 +375,7 @@ make -j "$MAKE_JOBS" pipeline \
   DM_MAP_OUTPUT_TYPE="tsv" \
   DM_MAP_STRICT=true \
   DM_REPO_MANIFEST="/app/repo-manifest.yaml" \
+  DM_MAP_PROFILE="$DM_MAP_PROFILE" \
   $DM_MAP_STRICT_ARG
 
 #------------------------------------------------------------------------------

@@ -4,6 +4,7 @@
 
 # IDE
 .vscode/
+.idea/
 
 # dbGaP digest cache populated by `dm-bip fetch-digests`
 .dbgap-cache/
