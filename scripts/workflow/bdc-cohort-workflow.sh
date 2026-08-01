@@ -445,7 +445,7 @@ process_one_cg() {
   [[ -n "$PREBUILT_YAML_DIR" ]] && worker_env+=("DM_TRANS_SPEC_DIR_PREBUILT=$PREBUILT_YAML_DIR")
 
   local -a workflow_cmd
-  workflow_cmd=("${worker_env[@]}" bdc-workflow.sh
+  workflow_cmd=("${worker_env[@]}" /app/scripts/workflow/bdc-workflow.sh
     --schema "$SCHEMA"
     --source "$cg_source"
     --jobs "$JOBS"
