@@ -495,24 +495,19 @@ def plan(
         Optional[str],
         typer.Option(
             "--cohort-app",
-            help="App ID for the Parallel Multi-Consent Execution Mode workflow "
-            "(defaults to SBG_DEFAULT_APP).",
+            help="App ID for the Parallel Multi-Consent Execution Mode workflow (defaults to SBG_DEFAULT_APP).",
         ),
     ] = None,
     study_root: Annotated[
         str, typer.Option("--study-root", help="Root folder containing cohorts.")
     ] = DEFAULT_STUDY_ROOT,
-    manifest_path: Annotated[
-        Path, typer.Option("--manifest", help="Task manifest CSV.")
-    ] = DEFAULT_MANIFEST_PATH,
+    manifest_path: Annotated[Path, typer.Option("--manifest", help="Task manifest CSV.")] = DEFAULT_MANIFEST_PATH,
     trans_spec: Annotated[str, typer.Option("--trans-spec", help="Trans-spec slug (OWNER/REPO@REF:PATH).")] = "",
     dbgap_cache: Annotated[Optional[str], typer.Option("--dbgap-cache", help="dbGaP cache folder path.")] = None,
     allow_fail: Annotated[
         Optional[list[str]], typer.Option("--allow-fail", help="Repeatable. <schema>:<cg-name>.")
     ] = None,
-    strict_consent_groups: Annotated[
-        bool, typer.Option("--strict-consent-groups/--no-strict-consent-groups")
-    ] = True,
+    strict_consent_groups: Annotated[bool, typer.Option("--strict-consent-groups/--no-strict-consent-groups")] = True,
     strict_hv_dataqc: Annotated[bool, typer.Option("--strict-hv-dataqc/--no-strict-hv-dataqc")] = True,
     hv_dataqc_branch: Annotated[Optional[str], typer.Option("--hv-dataqc-branch")] = None,
     jobs: Annotated[int, typer.Option("--jobs", min=1)] = 4,
@@ -521,8 +516,7 @@ def plan(
         bool,
         typer.Option(
             "--resolve-folders/--no-resolve-folders",
-            help="When true, contact SBG API to resolve consent-group folder IDs. "
-            "Off by default so plan runs offline.",
+            help="When true, contact SBG API to resolve consent-group folder IDs. Off by default so plan runs offline.",
         ),
     ] = False,
 ) -> None:
