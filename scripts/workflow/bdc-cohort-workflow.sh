@@ -287,9 +287,14 @@ checkout_hv_dataqc_branch() {
     echo "ERROR: git fetch --depth 1 origin $branch failed in $HV_DATAQC_CLONE" >&2
     return 1
   fi
-  if ! git -C "$HV_DATAQC_CLONE" checkout "$branch" 2>&1; then
-    echo "ERROR: git checkout $branch failed in $HV_DATAQC_CLONE" >&2
-    return 1
+  # Create a local branch at FETCH_HEAD so the branch name is resolvable.
+  # If the local branch already exists (re-run), just check it out directly.
+  if ! git -C "$HV_DATAQC_CLONE" checkout -b "$branch" FETCH_HEAD 2>&1; then
+    if ! git -C "$HV_DATAQC_CLONE" checkout "$branch" 2>&1; then
+      echo "ERROR: git checkout $branch failed in $HV_DATAQC_CLONE" >&2
+      return 1
+    fi
+    git -C "$HV_DATAQC_CLONE" reset --hard FETCH_HEAD 2>&1
   fi
   echo "hv-dataqc-branch now at $(git -C "$HV_DATAQC_CLONE" rev-parse --short HEAD)"
   return 0
