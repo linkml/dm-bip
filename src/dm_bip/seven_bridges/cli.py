@@ -202,7 +202,7 @@ def submit(
     jobs: Annotated[
         int,
         typer.Option("--jobs", min=1, help="Cohort mode: per-consent make -j."),
-    ] = 4,
+    ] = 8,
     consent_parallelism: Annotated[
         Optional[int],
         typer.Option(
@@ -561,7 +561,7 @@ def plan(
     strict_consent_groups: Annotated[bool, typer.Option("--strict-consent-groups/--no-strict-consent-groups")] = True,
     strict_hv_dataqc: Annotated[bool, typer.Option("--strict-hv-dataqc/--no-strict-hv-dataqc")] = True,
     hv_dataqc_branch: Annotated[Optional[str], typer.Option("--hv-dataqc-branch")] = None,
-    jobs: Annotated[int, typer.Option("--jobs", min=1)] = 4,
+    jobs: Annotated[int, typer.Option("--jobs", min=1)] = 8,
     consent_parallelism: Annotated[Optional[int], typer.Option("--consent-parallelism")] = None,
     resolve_folders: Annotated[
         bool,

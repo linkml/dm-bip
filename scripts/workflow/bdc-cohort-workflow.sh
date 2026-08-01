@@ -50,7 +50,7 @@ DBGAP_CACHE=""
 STRICT_CONSENT_GROUPS="true"
 STRICT_HV_DATAQC="true"
 CONSENT_PARALLELISM=""
-JOBS="4"
+JOBS="8"
 OUTPUT_ROOT="${HOME}"
 HV_DATAQC_BRANCH=""
 STRICT_HV_DATAQC_BRANCH="true"
@@ -77,7 +77,7 @@ Usage: bdc-cohort-workflow.sh
   [--strict-hv-dataqc <bool>]       Default true (skip hv_dataqc on unauth. failure)
   [--strict-hv-dataqc-branch <bool>] Default true (fail if hv_dataqc branch fetch fails)
   [--consent-parallelism <N>]       Default: computed from vCPU.
-  [--jobs <N>]                      per-consent make -j; default 4
+  [--jobs <N>]                      per-consent make -j; default 8
   [--output-root <DIR>]             Default $HOME
   [--hv-dataqc-branch <name>]       Override hv_dataqc clone branch (hv_dataqc code only)
   [--trans-spec OWNER/REPO[@REF][:PATH]]  Alternate YAML source. Resolved to a SHA at cohort-workflow

@@ -340,7 +340,7 @@ starts and `hv_dataqc/` appears under `DMC_COPDGene_<ts>/`.
 --strict-hv-dataqc-branch true|false  Default: true (fail at startup if --hv-dataqc-branch
                                       fetch/checkout fails).
 --consent-parallelism N             Default: computed from vCPU count (typically 2 on 8 vCPU).
---jobs N                            Default: 4. Per-consent make -j (validate step parallelism).
+--jobs N                            Default: 8. Per-consent make -j (validate step parallelism).
 --output-root <DIR>                 Default: $HOME.
 --hv-dataqc-branch <name>           Override hv_dataqc code branch (separate from YAML branch).
 --trans-spec OWNER/REPO[@REF][:PATH]  Alternate YAML source. SHA-pinned at startup; pre-checked
@@ -421,7 +421,7 @@ Create a new SBG app pointing at the same Docker image with these settings:
 | `StrictHvDataqc` | boolean | Default: true |
 | `HvDataqcBranch` | string | hv_dataqc code branch override (optional) |
 | `TransSpec` | string | YAML source slug (optional, e.g. `RTIInternational/NHLBI-BDC-DMC-HV@main`) |
-| `Jobs` | integer | Default: 4 |
+| `Jobs` | integer | Default: 8 |
 | `ConsentParallelism` | integer | Default: computed from vCPU |
 
 Entry point command:
@@ -459,12 +459,13 @@ Default thread budget on a typical 8-vCPU SBG instance:
 | Setting | Default | Rationale |
 |---|---|---|
 | `--consent-parallelism` | 2 | 2 workers × 4 threads = 8 = vCPU during peak validate step |
-| `--jobs` (per consent) | 4 | Peak validate concurrency = parallelism × jobs |
+| `--jobs` (per consent) | 8 | Peak validate concurrency = parallelism × jobs |
+| Single Consent `--jobs` | 8 | Single worker has all vCPUs |
 | Single Consent `--jobs` | 8 | Single worker has all vCPUs |
 
 For a larger instance (e.g. 16 vCPU with 6 consent groups):
 ```bash
---consent-parallelism 4 --jobs 4   # 4×4 = 16 threads peak
+--consent-parallelism 4 --jobs 8   # 4×8 = 32 threads peak
 ```
 
 ---
