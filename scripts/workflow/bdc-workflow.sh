@@ -295,8 +295,22 @@ DM_OUTPUT_DIR="${PROCESSED_DIR}/${OUTPUT_NAME}"
 DM_INPUT_DIR="${PROCESSED_DIR}/${RAW_DIR_NAME}_CleanedSource"
 
 # Define paths to external dependencies (within container)
+# When an orchestrator (e.g. bdc-cohort-workflow.sh for parallel multi-consent execution) has already set up the
+# trans-spec directory, skip discovery/clone/checkout and use it directly.
+# Otherwise, use the existing behavior of auto-detecting the trans-spec directory
+# See linkml/dm-bip#350.
+#
+if [[ -n "${DM_TRANS_SPEC_DIR_PREBUILT:-}" ]]; then
+  DM_TRANS_SPEC_DIR="$DM_TRANS_SPEC_DIR_PREBUILT"
+  if [[ ! -d "$DM_TRANS_SPEC_DIR" ]]; then
+    echo "ERROR: DM_TRANS_SPEC_DIR_PREBUILT points at non-existent dir: $DM_TRANS_SPEC_DIR"
+    exit 1
+  fi
+  echo "  Trans-spec version:   ${DM_TRANS_SPEC_DIR} (pre-built)"
+#
 # Resolve trans-spec directory based on --trans-spec slug or default
-if [[ -n "$TRANS_SPEC_EXPLICIT_PATH" ]]; then
+#
+elif [[ -n "$TRANS_SPEC_EXPLICIT_PATH" ]]; then
   # Explicit path from slug
   DM_TRANS_SPEC_DIR="${TRANS_SPEC_REPO_DIR}/${TRANS_SPEC_EXPLICIT_PATH}"
   if [[ ! -d "$DM_TRANS_SPEC_DIR" ]]; then
