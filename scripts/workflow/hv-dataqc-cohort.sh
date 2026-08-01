@@ -63,6 +63,14 @@ Usage: hv-dataqc-cohort.sh
   --source-root <DIR>              Raw dbGaP root for the cohort
   --mapped-data-dir <DIR>          Repeatable. One per consent group.
   --yaml-dir <DIR>                 HV transform YAML dir for the cohort
+  --hv-dataqc-root <DIR>           cwd for `python -m hv_dataqc.…`
+  [--dbgap-cache <DIR>]            Cohort-specific dbGaP cache dir
+                                   (contains pheno_variable_summaries/*.data_dict.xml).
+                                   Passed directly — no cohort subdir is appended.
+  --output-dir <DIR>               Where JSONs + compare report go
+EOF
+  exit "${1:-1}"
+}
   --hv-dataqc-root <DIR>           HV clone whose hv_dataqc module to run
   [--dbgap-cache <DIR>]            Cache root containing <cohort>/pheno_variable_summaries/
   --output-dir <DIR>               Where JSONs + compare report go
@@ -109,19 +117,14 @@ exec > >(tee -a "$LOG") 2>&1
 #------------------------------------------------------------------------------
 SCHEMA_LOWER=$(echo "$SCHEMA" | tr '[:upper:]' '[:lower:]')
 
-# HCHS's canonical cache dir name is hchs_sol (mirrors sb_scripts/run_extracts.sh).
-case "$SCHEMA_LOWER" in
-  hchs) CACHE_COHORT="hchs_sol" ;;
-  *)    CACHE_COHORT="$SCHEMA_LOWER" ;;
-esac
-
+# --dbgap-cache is the cohort-specific directory, not the cache root.
+# No cohort subdir is appended — the caller already provides the right path.
 CACHE_DIR=""
 if [[ -n "$DBGAP_CACHE" ]]; then
-  candidate="${DBGAP_CACHE%/}/${CACHE_COHORT}"
-  if [[ -d "$candidate" ]]; then
-    CACHE_DIR="$candidate"
+  if [[ -d "$DBGAP_CACHE" ]]; then
+    CACHE_DIR="$DBGAP_CACHE"
   else
-    echo "WARN: dbGaP cache subdir not found: $candidate (compare will be skipped)"
+    echo "WARN: dbGaP cache dir not found: $DBGAP_CACHE (compare will be skipped)"
   fi
 fi
 
