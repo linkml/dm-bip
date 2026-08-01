@@ -438,8 +438,8 @@ def _build_cohort_task_bodies(
         inputs: dict = {
             "Schema": schema,
             "ConsentGroups": consent_group_refs,
-            "StrictConsentGroups": strict_consent_groups,
-            "StrictHvDataqc": strict_hv_dataqc,
+            "StrictConsentGroups": str(strict_consent_groups).lower(),
+            "StrictHvDataqc": str(strict_hv_dataqc).lower(),
             "Jobs": jobs,
         }
         if cache_ref is not None:
