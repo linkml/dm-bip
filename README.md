@@ -83,6 +83,18 @@ Validation supports parallel execution: `make -j 4 validate-data`.
 
 For detailed usage and writing transformation specifications, see the [pipeline user documentation](./docs/pipeline_user_docs.md) and the [hosted documentation](https://linkml.io/dm-bip/).
 
+## BDC Cohort Harmonization
+
+dm-bip is used by the BioData Catalyst (BDC) Data Management Core to harmonize
+cohort data. Two execution modes are supported:
+
+- **Single Consent Execution** (`bdc-workflow.sh`) — one consent group per SBG task
+- **Parallel Multi-Consent Execution** (`bdc-cohort-workflow.sh`) — all consent groups
+  for one cohort in a single task, with integrated hv_dataqc comparison at the end
+
+See [docs/cohort-workflow.md](docs/cohort-workflow.md) for a complete walkthrough
+with COPDGene examples, all CLI options, output layout, and SBG app configuration.
+
 ## Development
 
 ### Testing
