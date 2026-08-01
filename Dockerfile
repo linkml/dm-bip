@@ -29,6 +29,9 @@ RUN uv sync --frozen
 # Copy the rest (scripts, tests, configs, etc.)
 COPY . ./
 
+# Ensure all workflow scripts are executable.
+RUN chmod +x scripts/workflow/*.sh
+
 # Archive the Dockerfile used to build this image at a known root-level path
 COPY Dockerfile /Dockerfile.archived
 
