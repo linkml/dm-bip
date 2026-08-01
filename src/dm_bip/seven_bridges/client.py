@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_BASE_URL = "https://api.sb.biodatacatalyst.nhlbi.nih.gov/v2"
 DEFAULT_PROJECT = "rmathur2/dmc-task-4-controlled"
 DEFAULT_APP = "rmathur2/dmc-task-4-controlled/cc-dm-bip-test/4"
+DEFAULT_COHORT_APP = "rmathur2/dmc-task-4-controlled/dmc-harmonization-multiconsent-app"
 DEFAULT_TOKEN_FILE = Path.home() / ".sevenbridges" / "token"
 
 DEFAULT_TIMEOUT_SECONDS = 30.0
@@ -41,6 +42,7 @@ class Config:
     base_url: str
     project: str
     app: str
+    cohort_app: str
     token_file: Path
 
 
@@ -50,6 +52,7 @@ def load_config() -> Config:
         base_url=os.environ.get("SBG_BASE_URL", DEFAULT_BASE_URL).rstrip("/"),
         project=os.environ.get("SBG_DEFAULT_PROJECT", DEFAULT_PROJECT),
         app=os.environ.get("SBG_DEFAULT_APP", DEFAULT_APP),
+        cohort_app=os.environ.get("SBG_DEFAULT_COHORT_APP", DEFAULT_COHORT_APP),
         token_file=Path(os.environ.get("SBG_TOKEN_FILE") or DEFAULT_TOKEN_FILE),
     )
 

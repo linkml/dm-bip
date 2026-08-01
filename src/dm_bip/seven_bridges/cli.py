@@ -425,10 +425,10 @@ def _submit_cohort_mode(
 ) -> None:
     client = _make_client()
     project_id = project or client.config.project
-    app_id = cohort_app or client.config.app
+    app_id = cohort_app or client.config.cohort_app or client.config.app
     if not app_id:
         typer.echo(
-            "ERROR: --cohort-mode requires --cohort-app (or SBG_DEFAULT_APP configured for the cohort workflow).",
+            "ERROR: --cohort-mode requires --cohort-app or SBG_DEFAULT_COHORT_APP to be set.",
             err=True,
         )
         raise typer.Exit(code=2)
