@@ -78,7 +78,7 @@ FHS-c1,FHS
 
 ```powershell
 "Filename,Schema" | Set-Content copdgene_tasks.csv
-Get-Content batch_tasks.csv | Where-Object { $_ -match '^COPDGene-' } |
+Get-Content batch_tasks.csv | Where-Object { $_ -match 'COPDGene$' } |
   Add-Content copdgene_tasks.csv
 Get-Content copdgene_tasks.csv
 # Expected output:
@@ -283,6 +283,44 @@ $HOME/DMC_COPDGene_<YYYYMMDD_HHMMSS>/
     ├── COPDGene-c1/pipeline.log
     └── COPDGene-c2/pipeline.log
 ```
+
+### While a consent group is running
+
+`bdc-workflow.sh` writes to `$HOME`, which is redirected to
+`logs/<cg>/HOME/`. Live output appears there while the consent group is
+in progress:
+
+```
+DMC_COPDGene_<ts>/
+└── logs/
+    └── copdgene_phs000179_v7_r1_c1/
+        └── HOME/
+            └── DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_<ts>/
+                ├── copdgene_phs000179_v7_r1_c1_CleanedSource/   ← input being prepared
+                ├── copdgene_phs000179_v7_r1_c1_BDCHM/
+                │   ├── mapped-data/                             ← entity TSVs appear as entities complete
+                │   └── validation-logs/
+                └── pipeline.log                                 ← live progress
+```
+
+### When a consent group finishes
+
+`bdc-cohort-workflow.sh` moves the completed output from the `HOME/`
+isolation area into the stable `consent_groups/` location:
+
+```
+DMC_COPDGene_<ts>/
+└── consent_groups/
+    └── copdgene_phs000179_v7_r1_c1/         ← moved here on consent-group completion
+        ├── copdgene_phs000179_v7_r1_c1_CleanedSource/
+        ├── copdgene_phs000179_v7_r1_c1_BDCHM/
+        │   └── mapped-data/
+        └── pipeline.log
+```
+
+A row is also appended to `consent_group_status.tsv` (`PASS` or `FAIL`).
+Once all consent groups are in `consent_groups/`, the hv_dataqc fan-in
+starts and `hv_dataqc/` appears under `DMC_COPDGene_<ts>/`.
 
 ---
 
