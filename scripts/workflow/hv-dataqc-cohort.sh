@@ -71,12 +71,6 @@ Usage: hv-dataqc-cohort.sh
 EOF
   exit "${1:-1}"
 }
-  --hv-dataqc-root <DIR>           HV clone whose hv_dataqc module to run
-  [--dbgap-cache <DIR>]            Cache root containing <cohort>/pheno_variable_summaries/
-  --output-dir <DIR>               Where JSONs + compare report go
-EOF
-  exit "${1:-1}"
-}
 
 [[ $# -eq 0 ]] && usage
 
