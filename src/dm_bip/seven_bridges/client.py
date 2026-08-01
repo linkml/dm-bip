@@ -145,6 +145,28 @@ class Client:
             raise ValueError("Must provide project or parent")
         return [item for item in resp.get("items", []) if item.get("type") == "folder"]
 
+    def resolve_folder_path(self, project: str, path: str) -> str:
+        """
+        Walk a slash-separated path and return the deepest folder's ID.
+
+        Path should be relative to the project root, e.g.
+        ``_QC_STAGING/_dbGaP_cache/copdgene`` (leading/trailing slashes ignored).
+        Raises SevenBridgesError if any component is not found.
+        """
+        parts = [p for p in path.strip("/").split("/") if p]
+        if not parts:
+            raise SevenBridgesError(f"Empty folder path: {path!r}")
+        parent_id: str | None = None
+        current_path = ""
+        for part in parts:
+            folders = self.get_folders(project=project if parent_id is None else None, parent=parent_id)
+            match = next((f for f in folders if f.get("name") == part), None)
+            current_path = f"{current_path}/{part}"
+            if match is None:
+                raise SevenBridgesError(f"Folder not found: {current_path!r} in project {project!r}")
+            parent_id = match["id"]
+        return parent_id  # type: ignore[return-value]
+
     def download(self, url: str, *, timeout: float = 60.0) -> str:
         """Fetch raw text content from a URL (used for SBG log download URLs); no auth header."""
         response = self.http.get(url, timeout=timeout)

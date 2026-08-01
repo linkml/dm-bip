@@ -165,9 +165,15 @@ def submit(
         Optional[str],
         typer.Option(
             "--dbgap-cache",
-            help="SBG folder ID or path for the mounted dbGaP cache (cohort-mode input).",
+            help=(
+                "dbGaP cache root: either an SBG folder ID or an absolute path from "
+                "the project root (e.g. /_QC_STAGING/_dbGaP_cache). "
+                "When a path is given, the cohort-specific subdirectory is appended "
+                "automatically (e.g. copdgene, hchs_sol) and resolved to a folder ID. "
+                "Defaults to /_QC_STAGING/_dbGaP_cache."
+            ),
         ),
-    ] = None,
+    ] = "/_QC_STAGING/_dbGaP_cache",
     allow_fail: Annotated[
         Optional[list[str]],
         typer.Option(
@@ -301,6 +307,17 @@ def submit(
 
 # --- cohort-mode helpers ----------------------------------------------------
 
+# Mirrors the mapping in scripts/workflow/hv-dataqc-cohort.sh.
+_COHORT_CACHE_SUBDIR: dict[str, str] = {
+    "hchs": "hchs_sol",
+    "hchs-sol": "hchs_sol",
+}
+
+
+def _cohort_cache_subdir(schema: str) -> str:
+    """Return the dbGaP cache subdirectory name for a cohort schema string."""
+    return _COHORT_CACHE_SUBDIR.get(schema.lower(), schema.lower())
+
 
 def _parse_allow_fail(items: list[str]) -> dict[str, list[str]]:
     """
@@ -393,6 +410,31 @@ def _build_cohort_task_bodies(
         else:
             consent_group_refs = [{"class": "Directory", "path": f"<{schema}/{n}>"} for n in cg_names]
 
+        # Resolve dbGaP cache folder for this cohort.
+        # When dbgap_cache is a path (starts with /), append the cohort-specific
+        # subdirectory (mirrors the mapping in hv-dataqc-cohort.sh) and resolve
+        # to a folder ID via the SBG API. When it's already a folder ID, pass
+        # it through unchanged — the container handles subdirectory routing internally.
+        cache_ref: dict | None = None
+        if dbgap_cache:
+            if dbgap_cache.startswith("/"):
+                cache_subdir = _cohort_cache_subdir(schema)
+                cache_path = f"{dbgap_cache.rstrip('/')}/{cache_subdir}"
+                if resolve_folders:
+                    try:
+                        cache_folder_id = client.resolve_folder_path(project_id, cache_path)
+                        cache_ref = {"class": "Directory", "path": cache_folder_id}
+                    except SevenBridgesError as exc:
+                        typer.echo(
+                            f"WARN: dbGaP cache path not found for {schema} ({cache_path!r}): {exc}. "
+                            "hv_dataqc compare step may degrade.",
+                            err=True,
+                        )
+                else:
+                    cache_ref = {"class": "Directory", "path": f"<resolve:{cache_path}>"}
+            else:
+                cache_ref = {"class": "Directory", "path": dbgap_cache}
+
         inputs: dict = {
             "Schema": schema,
             "ConsentGroups": consent_group_refs,
@@ -400,8 +442,8 @@ def _build_cohort_task_bodies(
             "StrictHvDataqc": strict_hv_dataqc,
             "Jobs": jobs,
         }
-        if dbgap_cache:
-            inputs["DbgapCache"] = {"class": "Directory", "path": dbgap_cache}
+        if cache_ref is not None:
+            inputs["DbgapCache"] = cache_ref
         cohort_allow = allow_fail_by_cohort.get(schema, [])
         if cohort_allow:
             inputs["AllowFail"] = cohort_allow
@@ -503,7 +545,16 @@ def plan(
     ] = DEFAULT_STUDY_ROOT,
     manifest_path: Annotated[Path, typer.Option("--manifest", help="Task manifest CSV.")] = DEFAULT_MANIFEST_PATH,
     trans_spec: Annotated[str, typer.Option("--trans-spec", help="Trans-spec slug (OWNER/REPO@REF:PATH).")] = "",
-    dbgap_cache: Annotated[Optional[str], typer.Option("--dbgap-cache", help="dbGaP cache folder path.")] = None,
+    dbgap_cache: Annotated[
+        Optional[str],
+        typer.Option(
+            "--dbgap-cache",
+            help=(
+                "dbGaP cache root: folder ID or absolute path from project root "
+                "(e.g. /_QC_STAGING/_dbGaP_cache). Defaults to /_QC_STAGING/_dbGaP_cache."
+            ),
+        ),
+    ] = "/_QC_STAGING/_dbGaP_cache",
     allow_fail: Annotated[
         Optional[list[str]], typer.Option("--allow-fail", help="Repeatable. <schema>:<cg-name>.")
     ] = None,
