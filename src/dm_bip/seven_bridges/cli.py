@@ -176,24 +176,37 @@ def submit(
         ),
     ] = None,
     strict_consent_groups: Annotated[
-        bool, typer.Option("--strict-consent-groups/--no-strict-consent-groups", help="Cohort mode: fail-fast on unauthorized consent-group failure.")
+        bool,
+        typer.Option(
+            "--strict-consent-groups/--no-strict-consent-groups",
+            help="Cohort mode: fail-fast on unauthorized consent-group failure.",
+        ),
     ] = True,
     strict_hv_dataqc: Annotated[
-        bool, typer.Option("--strict-hv-dataqc/--no-strict-hv-dataqc", help="Cohort mode: skip hv_dataqc if any unauthorized failure.")
+        bool,
+        typer.Option(
+            "--strict-hv-dataqc/--no-strict-hv-dataqc",
+            help="Cohort mode: skip hv_dataqc if any unauthorized failure.",
+        ),
     ] = True,
     hv_dataqc_branch: Annotated[
         Optional[str],
         typer.Option("--hv-dataqc-branch", help="Cohort mode: override hv_dataqc code branch."),
     ] = None,
     jobs: Annotated[
-        int, typer.Option("--jobs", min=1, help="Cohort mode: per-consent make -j.")
+        int,
+        typer.Option("--jobs", min=1, help="Cohort mode: per-consent make -j."),
     ] = 4,
     consent_parallelism: Annotated[
         Optional[int],
-        typer.Option("--consent-parallelism", help="Cohort mode: consent groups run concurrently. Default computed from vCPU."),
+        typer.Option(
+            "--consent-parallelism",
+            help="Cohort mode: consent groups run concurrently. Default computed from vCPU.",
+        ),
     ] = None,
 ) -> None:
-    """Submit tasks from the manifest. Default: one task per row (per consent group).
+    """
+    Submit tasks from the manifest. Default: one task per row (per consent group).
 
     With `--cohort-mode`, groups rows by Schema and submits one Parallel Multi-Consent
     Execution task per cohort.
@@ -290,7 +303,8 @@ def submit(
 
 
 def _parse_allow_fail(items: list[str]) -> dict[str, list[str]]:
-    """Parse `--allow-fail <schema>:<cg>` entries into {schema: [cg, ...]}.
+    """
+    Parse `--allow-fail <schema>:<cg>` entries into {schema: [cg, ...]}.
 
     Rows without a schema prefix are rejected — global allow-fail across cohorts
     is not a useful semantic since consent-group names collide across cohorts.
@@ -328,7 +342,8 @@ def _build_cohort_task_bodies(
     consent_parallelism: Optional[int],
     resolve_folders: bool,
 ) -> list[dict]:
-    """Return one task body per cohort, ready for SBG task-create.
+    """
+    Return one task body per cohort, ready for SBG task-create.
 
     When `resolve_folders` is True, SBG API is used to translate consent-group
     folder names to folder IDs. When False (dry-run / plan), the raw folder
@@ -511,7 +526,8 @@ def plan(
         ),
     ] = False,
 ) -> None:
-    """Dry-run: emit the JSON task bodies that `submit --cohort-mode` would post.
+    """
+    Dry-run: emit the JSON task bodies that `submit --cohort-mode` would post.
 
     Use `--resolve-folders` to hit the SBG API for real folder IDs, or leave off
     for a pure offline preview (folder IDs shown as `<schema/cg-name>`).
