@@ -532,12 +532,16 @@ if [[ "$STRICT_CONSENT_GROUPS" == "true" ]]; then
   halt_flag=(--halt now,fail=1)
 fi
 
-set +e
+# The whole script runs without errexit by design (see `set -uo pipefail` at the
+# top): status is tracked explicitly and the script must reach its final `exit 0`
+# so run_manifest.yaml / consent_group_status.tsv are always finalized. Do NOT
+# re-enable `set -e` here — an errexit in the aggregation / hv_dataqc / manifest
+# section (e.g. a grep with no match or a SIGPIPE from a `| head`) would abort
+# before the manifest is written.
 printf '%s\n' "${CONSENT_GROUPS[@]}" | \
   parallel --line-buffer --jobs "$CONSENT_PARALLELISM" "${halt_flag[@]}" \
            process_one_cg {}
 PARALLEL_RC=$?
-set -e
 
 echo
 echo "Parallel batch finished (rc=$PARALLEL_RC)."

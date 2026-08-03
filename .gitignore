@@ -157,3 +157,8 @@ output/
 # Generated Seven Bridges task manifest + log dumps
 /batch_tasks.csv
 /task_logs/
+copdgene_tasks.csv
+spiromics_tasks.csv
+jhs_tasks.csv
+aric_tasks.csv
+mesa_tasks.csv

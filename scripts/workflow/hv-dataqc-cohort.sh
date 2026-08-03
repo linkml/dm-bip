@@ -146,6 +146,10 @@ COMPARE_STATUS="SKIPPED"
 OVERALL_STATUS="PASS"
 
 # Wraps an internal command so its failure records but does not exit the script.
+# NOTE: every call site runs this inside a subshell — `(cd ... && run_step ...)` —
+# so any variable assignment made here would NOT propagate to the parent shell.
+# OVERALL_STATUS is therefore aggregated by the caller from the per-step
+# SOURCE_STATUS / HARMONIZED_STATUS / COMPARE_STATUS results, not set here.
 run_step() {
   local name="$1"; shift
   echo
@@ -156,7 +160,6 @@ run_step() {
   else
     local rc=$?
     echo "--- $name: FAIL (exit $rc) ---" >&2
-    OVERALL_STATUS="FAIL"
     return $rc
   fi
 }
@@ -179,6 +182,7 @@ if (cd "$HV_DATAQC_ROOT" && run_step "extract_source" "${extract_source_cmd[@]}"
   SOURCE_STATUS="PASS"
 else
   SOURCE_STATUS="FAIL"
+  OVERALL_STATUS="FAIL"
 fi
 
 #------------------------------------------------------------------------------
@@ -195,6 +199,7 @@ if (cd "$HV_DATAQC_ROOT" && run_step "extract_harmonized" "${extract_harmonized_
   HARMONIZED_STATUS="PASS"
 else
   HARMONIZED_STATUS="FAIL"
+  OVERALL_STATUS="FAIL"
 fi
 
 #------------------------------------------------------------------------------
@@ -238,6 +243,7 @@ else
     COMPARE_STATUS="PASS"
   else
     COMPARE_STATUS="FAIL"
+    OVERALL_STATUS="FAIL"
   fi
 fi
 

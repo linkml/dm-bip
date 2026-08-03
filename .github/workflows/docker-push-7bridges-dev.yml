@@ -93,11 +93,40 @@ jobs:
 
       - name: Build, tag, and push image
         run: |
+          # ============================================================================
+          # TEMPORARY: the registry namespace segment is intentionally HARD-CODED to
+          # `vbakalov` instead of using ${{ steps.registry-config.outputs.username }}.
+          # This is a deliberate, TEMPORARY override for the current 7 Bridges push
+          # target and MUST be reverted to the resolved `username` output before this
+          # workflow is considered production-ready. The correct line is kept
+          # commented-out directly below for the eventual revert.
+          # ============================================================================
           #IMAGE_URI=${{ steps.registry-config.outputs.registry }}/${{ steps.registry-config.outputs.username }}/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
           IMAGE_URI=${{ steps.registry-config.outputs.registry }}/vbakalov/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
+
+          # Immutable, traceable tag (12-char commit SHA) pushed alongside :latest.
+          SHA_TAG="sha-${GITHUB_SHA::12}"
+          # On a bdc-v* release tag push, also publish that version tag.
+          VERSION_TAG=""
+          if [[ "${GITHUB_REF}" == refs/tags/bdc-v* ]]; then
+            VERSION_TAG="${GITHUB_REF_NAME}"
+          fi
+
+          # Pass build metadata so the image LABELs / provenance are populated
+          # (previously supplied by docker/metadata-action).
           docker build \
             --build-arg BDC_PULL_LATEST=${{ steps.build-config.outputs.pull_latest }} \
-            --build-arg CACHE_BUST=$(date +%s) \
+            --build-arg DM_BIP_VERSION=${{ github.ref_name }} \
+            --build-arg DM_BIP_GIT_REF=${{ github.sha }} \
+            --build-arg DM_BIP_BUILD_DATE=${{ steps.build-config.outputs.build_date }} \
             -t $IMAGE_NAME .
+
           docker tag $IMAGE_NAME $IMAGE_URI:latest
+          docker tag $IMAGE_NAME "$IMAGE_URI:$SHA_TAG"
           docker push $IMAGE_URI:latest
+          docker push "$IMAGE_URI:$SHA_TAG"
+
+          if [[ -n "$VERSION_TAG" ]]; then
+            docker tag $IMAGE_NAME "$IMAGE_URI:$VERSION_TAG"
+            docker push "$IMAGE_URI:$VERSION_TAG"
+          fi

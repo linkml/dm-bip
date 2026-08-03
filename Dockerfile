@@ -35,11 +35,7 @@ RUN chmod +x scripts/workflow/*.sh
 # Archive the Dockerfile used to build this image at a known root-level path
 COPY Dockerfile /Dockerfile.archived
 
-
-# Force rebuild of this layer to bust the Docker build cache
-ARG CACHE_BUST=4
-
-# Build metadata — set by CI (docker/build-push-action) or manual builds
+# Build metadata — set by CI or manual builds
 ARG DM_BIP_VERSION=unknown
 ARG DM_BIP_GIT_REF=unknown
 ARG DM_BIP_BUILD_DATE=unknown
