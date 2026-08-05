@@ -9,6 +9,14 @@ imports:
 default_prefix: target
 default_range: string
 
+enums:
+  target_sex_enum:
+    permissible_values:
+      OMOP:8507:
+        description: Male
+      OMOP:8532:
+        description: Female
+
 classes:
   Person:
     description: A person in the study with demographic information
@@ -39,6 +47,8 @@ classes:
       associated_participant:
       associated_visit:
       sex:
+      sex_derived:
+        range: target_sex_enum
       race:
       ethnicity:
       age_at_observation:

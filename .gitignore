@@ -4,6 +4,10 @@
 
 # IDE
 .vscode/
+.idea/
+
+# dbGaP digest cache populated by `dm-bip fetch-digests`
+.dbgap-cache/
 
 # MkDocs build output
 site/
@@ -151,5 +155,7 @@ CLAUDE.local.md
 output/
 
 # Generated Seven Bridges task manifest + log dumps
+# --output-dir is routinely set to a per-run name (task_logs_c1_rc2, task_logs_control),
+# so match the suffixed variants too, not just the CLI default.
 /batch_tasks.csv
-/task_logs/
+/task_logs*/

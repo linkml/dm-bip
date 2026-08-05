@@ -142,6 +142,32 @@ def test_mapping_demography_values(from_raw_pipeline_output):
     assert sex_values & {"OMOP:8507", "OMOP:8532"}, f"Expected OMOP sex codes, got {sex_values}"
 
 
+def test_enum_derivation_twin_matches_value_mapping(from_raw_pipeline_output):
+    """
+    Enum-derived sex_derived must equal value-mapped sex on every row.
+
+    SEX_CODE is a string column ("M"/"F") added to pht000001 as a twin of SEX
+    (integer "1"/"2"). They encode the same information and should resolve to
+    the same target enum value (OMOP:8507/OMOP:8532) regardless of which
+    mapping mechanism produced them.
+    """
+    mapped_dir = from_raw_pipeline_output["output_dir"] / "mapped-data"
+    demography_files = list(mapped_dir.glob("*Demography*.yaml"))
+    assert demography_files, f"No Demography output found in {mapped_dir}"
+    records = [r for r in yaml.safe_load_all(demography_files[0].read_text()) if r]
+    assert records, f"No records in {demography_files[0]}"
+
+    mismatches = [
+        (r.get("associated_participant"), r.get("sex"), r.get("sex_derived"))
+        for r in records
+        if r.get("sex") != r.get("sex_derived")
+    ]
+    assert not mismatches, f"sex vs sex_derived mismatches: {mismatches[:5]}"
+
+    derived_values = {r.get("sex_derived") for r in records if r.get("sex_derived")}
+    assert derived_values <= {"OMOP:8507", "OMOP:8532"}, f"Unexpected sex_derived values: {derived_values}"
+
+
 def test_mapping_cross_table_age(from_raw_pipeline_output):
     """MeasurementObservation should have age_at_observation from cross-table join."""
     mapped_dir = from_raw_pipeline_output["output_dir"] / "mapped-data"
@@ -263,6 +289,6 @@ def test_mapping_continue_on_error(from_raw_pipeline_output, tmp_path_factory):
     assert any("division by zero" in v for v in log_contents.values()), (
         "Demography division-by-zero error should appear in logs"
     )
-    assert any("not in safe subset" in v or "not defined" in v for v in log_contents.values()), (
+    assert any("Import expressions are not supported" in v for v in log_contents.values()), (
         "Participant unsafe-expression error should appear in logs"
     )
