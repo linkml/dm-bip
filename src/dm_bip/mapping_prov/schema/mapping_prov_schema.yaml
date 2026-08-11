@@ -1,0 +1,77 @@
+id: https://w3id.org/dm-bip/mapping-prov-schema
+name: mapping_prov_schema
+title: DM-BIP Mapping Provenance Schema
+description: >-
+  Extension of the PROV LinkML schema (https://github.com/diatomsRcool/prov-schema)
+  adding the dbGaP data granularity called for in https://github.com/linkml/dm-bip/issues/352:
+  studies, datasets (pht accessions), and variables (phv accessions), with
+  containment expressed structurally (variables within datasets, datasets within
+  studies) so that study/dataset/variable alignment survives downstream.
+license: MIT
+see_also:
+  - https://github.com/linkml/dm-bip/issues/352
+  - https://www.w3.org/TR/prov-o/
+
+prefixes:
+  mapping_prov_schema: https://w3id.org/dm-bip/mapping-prov-schema/
+  dmcprov: https://w3id.org/dm-bip/mapping-prov/
+  dbgap: https://identifiers.org/dbgap/
+  bdchm: https://w3id.org/bdchm/
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+
+default_prefix: mapping_prov_schema
+default_range: string
+
+imports:
+  - linkml:types
+  # The upstream PROV schema is imported by URL rather than vendored so that
+  # additions to it are picked up when the datamodel is regenerated
+  # (`make datamodel`; requires network access).
+  - https://raw.githubusercontent.com/diatomsRcool/prov-schema/main/src/prov_schema/schema/prov_schema
+
+slots:
+  variables:
+    description: The dbGaP variables (phv accessions) contained in this dataset
+    range: Variable
+    multivalued: true
+    inlined_as_list: true
+  datasets:
+    description: The dbGaP datasets (pht accessions) that contributed data to this study's mappings
+    range: Dataset
+    multivalued: true
+    inlined_as_list: true
+  transformation_specs:
+    description: The transformation specs defining this study's mappings
+    range: TransformationSpec
+    multivalued: true
+    inlined_as_list: true
+  derived_entities:
+    description: Entities produced by applying this study's transformation specs
+    range: Entity
+    multivalued: true
+    inlined_as_list: true
+
+classes:
+  Variable:
+    is_a: Entity
+    description: >-
+      A dbGaP variable (phv accession): a single column within a dbGaP dataset
+  Dataset:
+    is_a: Entity
+    description: >-
+      A dbGaP dataset (pht accession): a table of variables collected for a
+      study
+    slots:
+      - variables
+  Study:
+    is_a: Entity
+    tree_root: true
+    description: >-
+      A research study (e.g. a dbGaP phs accession): the root grouping for
+      mapping provenance, containing the datasets, transformation specs, and
+      derived entities that belong to it
+    slots:
+      - datasets
+      - transformation_specs
+      - derived_entities
