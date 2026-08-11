@@ -125,6 +125,17 @@ def iter_class_derivations(spec: Any) -> Iterator[DerivationSources]:
         yield from block
 
 
+def collect_spec_paths(paths: list[Path]) -> list[Path]:
+    """Expand any directories in ``paths`` into the transformation spec files they contain."""
+    spec_paths = []
+    for path in paths:
+        if path.is_dir():
+            spec_paths.extend(sorted(path.rglob("*.yaml")))
+        else:
+            spec_paths.append(path)
+    return spec_paths
+
+
 def default_base_dir(paths: list[Path]) -> Path:
     """
     Return the deepest common directory of the given spec files or directories.
