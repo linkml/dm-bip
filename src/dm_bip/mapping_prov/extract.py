@@ -29,6 +29,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+import git
 from linkml_map.datamodel.transformer_model import ClassDerivation
 from linkml_map.transformer.object_transformer import ObjectTransformer
 from linkml_map.utils.expression_locations import iter_expressions
@@ -60,6 +61,60 @@ class DerivationSources:
     dataset: str | None
     variables: list[tuple[str, str]] = field(default_factory=list)
     expr_variables: list[tuple[str, str]] = field(default_factory=list)
+
+
+@dataclass
+class _RepoInfo:
+    """A spec directory's git context: the repository, its GitHub base URL, and HEAD commit."""
+
+    repo: git.Repo
+    url_base: str
+    commit: str
+
+
+_repo_info_cache: dict[Path, "_RepoInfo | None"] = {}
+
+
+def _github_base(remote: str) -> str | None:
+    """Return the https://github.com/owner/repo base for a git remote URL, or None."""
+    match = re.fullmatch(r"(?:git@github\.com:|https://github\.com/)([^/]+/[^/]+?)(?:\.git)?/?", remote)
+    return f"https://github.com/{match.group(1)}" if match else None
+
+
+def _repo_info(directory: Path) -> _RepoInfo | None:
+    """Return (and cache) the git context for a spec directory, or None if unavailable."""
+    if directory not in _repo_info_cache:
+        try:
+            repo = git.Repo(directory, search_parent_directories=True)
+            remote_url = next((remote.url for remote in repo.remotes if remote.name == "origin"), None)
+            url_base = _github_base(remote_url) if remote_url else None
+            info = _RepoInfo(repo=repo, url_base=url_base, commit=repo.head.commit.hexsha) if url_base else None
+        except (git.InvalidGitRepositoryError, git.NoSuchPathError, ValueError):
+            info = None
+        if info is None:
+            logger.info("No usable git context for %s; spec ids fall back to local paths", directory)
+        _repo_info_cache[directory] = info
+    return _repo_info_cache[directory]
+
+
+def spec_url(spec_path: Path) -> tuple[str, str] | None:
+    """
+    Return a commit-pinned GitHub URL identifying a spec file, with its repo-relative path.
+
+    The URL is built from the enclosing checkout's origin remote, HEAD commit, and the
+    file's path within the repository — an immutable permalink naming the spec exactly as
+    it was read. Returns None (caller falls back to a local path id) when the file is not
+    in a git repository with a GitHub remote, or when it is untracked or locally modified —
+    a commit URL would misrepresent the content actually extracted.
+    """
+    info = _repo_info(spec_path.parent)
+    if info is None or info.repo.working_tree_dir is None:
+        return None
+    relpath = spec_path.resolve().relative_to(Path(info.repo.working_tree_dir).resolve())
+    if info.repo.is_dirty(path=str(relpath), untracked_files=True):
+        logger.warning("%s is untracked or locally modified; using local path id instead of a commit URL", spec_path)
+        return None
+    return f"{info.url_base}/blob/{info.commit}/{relpath}", str(relpath)
 
 
 def _braced_names(expression: str) -> list[str]:
@@ -232,9 +287,13 @@ def _placeholder_study(directory: Path) -> Study:
     return Study(id=f"{DMCPROV_PREFIX}:{directory.name}", name=directory.name)
 
 
-def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None) -> list[Study]:
+def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None, resolve_urls: bool = True) -> list[Study]:
     """
     Extract mapping provenance from transformation spec files as study documents.
+
+    Specs are identified by commit-pinned GitHub URLs derived from their enclosing git
+    checkout (see :func:`spec_url`), falling back to ``dmcprov:`` local-path ids; pass
+    ``resolve_urls=False`` to skip URL derivation and always use path ids.
 
     Spec files are grouped by parent directory; each directory's ``researchstudy.yaml``
     provides the study identity (falling back to a placeholder named after the directory).
@@ -257,8 +316,9 @@ def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None) -> 
 
         for spec_path in sorted(path for path in spec_paths if path.parent == directory):
             relpath = spec_path.relative_to(base_dir) if spec_path.is_relative_to(base_dir) else Path(spec_path.name)
-            spec_id = f"{DMCPROV_PREFIX}:{relpath}"
-            specs.setdefault(spec_id, TransformationSpec(id=spec_id, name=str(relpath)))
+            url_ref = spec_url(spec_path) if resolve_urls else None
+            spec_id, spec_name = url_ref if url_ref else (f"{DMCPROV_PREFIX}:{relpath}", str(relpath))
+            specs.setdefault(spec_id, TransformationSpec(id=spec_id, name=spec_name))
             spec = yaml_loader.load_as_dict(str(spec_path))
 
             for block in iter_spec_blocks(spec):

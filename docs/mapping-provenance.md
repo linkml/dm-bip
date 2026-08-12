@@ -68,10 +68,16 @@ Variables referenced only inside `expr` expressions (e.g. join keys such as
 `{phv00204812}`) are also captured as sources; their `description` is marked
 `(via expression)`.
 
-## Known limitations
+## Spec identifiers
 
-- The `dmcprov:` identifiers for specs and derived entities are derived from local
-  paths; linking them to canonical locations (e.g. GitHub URLs) is planned.
+When a spec file is read from a clean git checkout with a GitHub `origin` remote, it is
+identified by a commit-pinned permalink — e.g.
+`https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/blob/<commit>/priority_variables_transform/ARIC-ingest/bmi.yaml`
+— an immutable URL naming the spec exactly as it was read. Specs that are untracked or
+locally modified (where a commit URL would misrepresent their content), or not in a
+GitHub checkout at all, fall back to local-path `dmcprov:` identifiers with a warning.
+Derived-entity identifiers always use the `dmcprov:` form: they are this tool's records,
+not repository artifacts.
 
 ## Regenerating the datamodel
 

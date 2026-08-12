@@ -1,8 +1,10 @@
 """Tests for mapping-provenance extraction from transformation specs."""
 
 import logging
+import shutil
 from pathlib import Path
 
+import git
 import yaml
 
 from dm_bip.mapping_prov.extract import extract_provenance, iter_class_derivations, read_study
@@ -10,6 +12,20 @@ from dm_bip.mapping_prov.extract import extract_provenance, iter_class_derivatio
 INPUT_DIR = Path(__file__).parents[2] / "input" / "mapping_prov"
 ARIC_DIR = INPUT_DIR / "ARIC-ingest"
 MESA_DIR = INPUT_DIR / "MESA-ingest"
+
+TEST_COMMITTER = git.Actor("Test", "test@example.org")
+
+
+def _make_spec_repo(tmp_path: Path) -> tuple[Path, str]:
+    """Create a git repo containing the ARIC bmi spec, returning its path and commit sha."""
+    repo_dir = tmp_path / "specs"
+    (repo_dir / "ARIC-ingest").mkdir(parents=True)
+    shutil.copy(ARIC_DIR / "bmi.yaml", repo_dir / "ARIC-ingest" / "bmi.yaml")
+    repo = git.Repo.init(repo_dir)
+    repo.create_remote("origin", "git@github.com:example/specs.git")
+    repo.index.add(["ARIC-ingest/bmi.yaml"])
+    commit = repo.index.commit("Add spec", author=TEST_COMMITTER, committer=TEST_COMMITTER)
+    return repo_dir, commit.hexsha
 
 
 def test_iter_class_derivations_walks_nested_blocks():
@@ -54,7 +70,9 @@ def test_read_study_missing_file():
 
 def test_extract_provenance_builds_study_document():
     """A study document nests datasets, variables, specs, and derived entities under the study."""
-    [study] = extract_provenance([ARIC_DIR / "bmi.yaml", ARIC_DIR / "researchstudy.yaml"], base_dir=INPUT_DIR)
+    [study] = extract_provenance(
+        [ARIC_DIR / "bmi.yaml", ARIC_DIR / "researchstudy.yaml"], base_dir=INPUT_DIR, resolve_urls=False
+    )
 
     assert study.id == "bdchm:Study/phs000280"
 
@@ -83,7 +101,7 @@ def test_extract_provenance_builds_study_document():
 def test_placeholder_study_when_no_researchstudy(caplog):
     """Spec directories without researchstudy.yaml fall back to a placeholder study, with a warning."""
     with caplog.at_level(logging.WARNING):
-        [study] = extract_provenance([MESA_DIR / "bmi.yaml"], base_dir=INPUT_DIR)
+        [study] = extract_provenance([MESA_DIR / "bmi.yaml"], base_dir=INPUT_DIR, resolve_urls=False)
     assert study.id == "dmcprov:MESA-ingest"
     assert study.name == "MESA-ingest"
     assert any("researchstudy.yaml" in record.message for record in caplog.records)
@@ -91,13 +109,41 @@ def test_placeholder_study_when_no_researchstudy(caplog):
 
 def test_multiple_studies_sorted_by_directory():
     """Specs from several directories produce one study document each, in directory order."""
-    studies = extract_provenance([ARIC_DIR / "bmi.yaml", MESA_DIR / "bmi.yaml"], base_dir=INPUT_DIR)
+    studies = extract_provenance([ARIC_DIR / "bmi.yaml", MESA_DIR / "bmi.yaml"], base_dir=INPUT_DIR, resolve_urls=False)
     assert [s.id for s in studies] == ["bdchm:Study/phs000280", "dmcprov:MESA-ingest"]
 
 
 def test_fragments_deriving_same_class_and_dataset_merge():
     """Two fragments deriving the same class from the same dataset merge into one derived entity."""
-    [study] = extract_provenance([ARIC_DIR / "hypertension.yaml"], base_dir=INPUT_DIR)
+    [study] = extract_provenance([ARIC_DIR / "hypertension.yaml"], base_dir=INPUT_DIR, resolve_urls=False)
     [entity] = study.derived_entities
     assert "dbgap:phv00204800" in entity.derived_from
     assert "dbgap:phv00204801" in entity.derived_from
+
+
+def test_spec_ids_are_commit_pinned_urls_in_git_checkouts(tmp_path):
+    """Specs read from a clean git checkout with a GitHub remote are identified by permalink URLs."""
+    repo, sha = _make_spec_repo(tmp_path)
+
+    [study] = extract_provenance([repo / "ARIC-ingest" / "bmi.yaml"], base_dir=repo)
+
+    url = f"https://github.com/example/specs/blob/{sha}/ARIC-ingest/bmi.yaml"
+    [spec] = study.transformation_specs
+    assert spec.id == url
+    assert spec.name == "ARIC-ingest/bmi.yaml"  # repo-relative, matching the URL's path
+    assert url in study.derived_entities[0].derived_from
+    # derived-entity ids stay local: they are this tool's records, not repo artifacts
+    assert study.derived_entities[0].id == "dmcprov:ARIC-ingest/bmi/MeasurementObservation/pht004063"
+
+
+def test_locally_modified_specs_fall_back_to_path_ids(tmp_path, caplog):
+    """A spec with uncommitted changes gets a local path id, since a commit URL would misstate its content."""
+    repo, _ = _make_spec_repo(tmp_path)
+    spec = repo / "ARIC-ingest" / "bmi.yaml"
+    spec.write_text(spec.read_text() + "\n# local edit\n")
+
+    with caplog.at_level(logging.WARNING):
+        [study] = extract_provenance([spec], base_dir=repo)
+
+    assert [s.id for s in study.transformation_specs] == ["dmcprov:ARIC-ingest/bmi.yaml"]
+    assert any("untracked or locally modified" in record.message for record in caplog.records)

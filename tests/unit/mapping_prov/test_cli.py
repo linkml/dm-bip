@@ -1,5 +1,6 @@
 """Tests for the extract-mapping-provenance CLI command."""
 
+import shutil
 from pathlib import Path
 
 import yaml
@@ -24,8 +25,11 @@ def test_cli_extracts_directory_to_stdout():
 
 def test_cli_writes_output_file(tmp_path):
     """The -o option writes the YAML to a file, covering multiple study directories."""
+    # copy the fixtures outside any git checkout so spec ids deterministically use path form
+    specs = tmp_path / "specs"
+    shutil.copytree(INPUT_DIR, specs)
     out = tmp_path / "mapping-prov.yaml"
-    result = runner.invoke(app, ["extract-mapping-provenance", str(INPUT_DIR), "-o", str(out)])
+    result = runner.invoke(app, ["extract-mapping-provenance", str(specs), "-o", str(out)])
     assert result.exit_code == 0, result.output
 
     studies = yaml.safe_load(out.read_text())
