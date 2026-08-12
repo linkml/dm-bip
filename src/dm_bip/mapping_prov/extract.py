@@ -13,11 +13,13 @@ because ``class_derivations`` is keyed by class name, and one file may derive th
 class from several datasets.
 
 This module walks those specs and expresses what it finds as study-rooted documents in the
-mapping-provenance schema (see ``schema/mapping_prov_schema.yaml``): each spec directory's
-``researchstudy.yaml`` identifies the study; datasets nest under the study and variables
-nest under their dataset, so study/dataset/variable alignment is carried by structure; and
-each derivation fragment becomes an ``Entity`` that is ``derived_from`` its source dataset,
-source variables, and the spec itself.
+mapping-provenance schema (see ``schema/mapping_prov_schema.yaml``). Following
+prov-schema#10, everything is a generic ``Entity`` typed by a controlled vocabulary
+(``entity_type``): each spec directory's ``researchstudy.yaml`` identifies the study;
+datasets sit in the study's ``has_part`` and variables in their dataset's, so
+study/dataset/variable alignment is carried by structure; and each derivation fragment
+becomes an ``Entity`` that is ``derived_from`` its source dataset, source variables, and
+the spec itself.
 """
 
 import ast
@@ -36,7 +38,7 @@ from linkml_map.utils.expression_locations import iter_expressions
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import yaml_loader
 
-from dm_bip.mapping_prov.datamodel.prov import Dataset, Entity, Study, TransformationSpec, Variable
+from dm_bip.mapping_prov.datamodel.prov import Entity, EntityTypeEnum, TransformationSpec
 
 logger = logging.getLogger(__name__)
 
@@ -243,7 +245,7 @@ def default_base_dir(paths: list[Path]) -> Path:
     return Path(os.path.commonpath([str(c) for c in candidates]))
 
 
-def read_study(directory: Path) -> Study | None:
+def read_study(directory: Path) -> Entity | None:
     """
     Read study identity from a directory's researchstudy.yaml, if present.
 
@@ -269,25 +271,26 @@ def read_study(directory: Path) -> Study | None:
 
             accession = constant("accession_number")
             if accession is not None:
-                return Study(
+                return Entity(
                     id=f"{STUDY_ID_PREFIX}{accession}",
+                    entity_type=EntityTypeEnum.study,
                     name=constant("name"),
                     description=constant("description"),
                 )
     return None
 
 
-def _placeholder_study(directory: Path) -> Study:
+def _placeholder_study(directory: Path) -> Entity:
     """Return a placeholder study for a spec directory with no usable researchstudy.yaml."""
     logger.warning(
         "No %s with an accession number in %s; using placeholder study id",
         RESEARCHSTUDY_FILENAME,
         directory,
     )
-    return Study(id=f"{DMCPROV_PREFIX}:{directory.name}", name=directory.name)
+    return Entity(id=f"{DMCPROV_PREFIX}:{directory.name}", entity_type=EntityTypeEnum.study, name=directory.name)
 
 
-def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None, resolve_urls: bool = True) -> list[Study]:
+def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None, resolve_urls: bool = True) -> list[Entity]:
     """
     Extract mapping provenance from transformation spec files as study documents.
 
@@ -297,12 +300,15 @@ def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None, res
 
     Spec files are grouped by parent directory; each directory's ``researchstudy.yaml``
     provides the study identity (falling back to a placeholder named after the directory).
-    Every dbGaP accession found in a ``populated_from`` or referenced as ``{phv...}``
-    in an expression contributes a ``Dataset`` or
-    ``Variable`` nested under the study, each spec file a ``TransformationSpec``, and each
-    derivation fragment a derived ``Entity`` linking them all via ``derived_from``.
-    Fragments deriving the same class from the same dataset merge their sources into one
-    derived entity. Variables with no enclosing dataset are skipped with a warning.
+    Following prov-schema#10, everything is a generic ``Entity`` typed by the
+    ``entity_type`` vocabulary, with containment expressed by ``has_part``: each study
+    contains its datasets (every dbGaP accession found in a ``populated_from`` or
+    referenced as ``{phv...}`` in an expression), each dataset its variables, and the
+    study also contains its transformation specs and derived entities. Each derivation
+    fragment becomes a derived ``Entity`` linking dataset, variables, and spec via
+    ``derived_from``. Fragments deriving the same class from the same dataset merge
+    their sources into one derived entity. Variables with no enclosing dataset are
+    skipped with a warning.
     """
     if base_dir is None:
         base_dir = default_base_dir(spec_paths)
@@ -310,7 +316,7 @@ def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None, res
     studies = []
     for directory in sorted({path.parent for path in spec_paths}):
         study = read_study(directory) or _placeholder_study(directory)
-        datasets: dict[str, Dataset] = {}
+        datasets: dict[str, Entity] = {}
         specs: dict[str, TransformationSpec] = {}
         derived: dict[str, Entity] = {}
 
@@ -318,7 +324,10 @@ def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None, res
             relpath = spec_path.relative_to(base_dir) if spec_path.is_relative_to(base_dir) else Path(spec_path.name)
             url_ref = spec_url(spec_path) if resolve_urls else None
             spec_id, spec_name = url_ref if url_ref else (f"{DMCPROV_PREFIX}:{relpath}", str(relpath))
-            specs.setdefault(spec_id, TransformationSpec(id=spec_id, name=spec_name))
+            specs.setdefault(
+                spec_id,
+                TransformationSpec(id=spec_id, name=spec_name, entity_type=EntityTypeEnum.transformation_spec),
+            )
             spec = yaml_loader.load_as_dict(str(spec_path))
 
             for block in iter_spec_blocks(spec):
@@ -328,7 +337,15 @@ def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None, res
                 for derivation in block:
                     if derivation.dataset is not None:
                         dataset_id = f"{DBGAP_PREFIX}:{derivation.dataset}"
-                        datasets.setdefault(dataset_id, Dataset(id=dataset_id, name=derivation.dataset, variables=[]))
+                        datasets.setdefault(
+                            dataset_id,
+                            Entity(
+                                id=dataset_id,
+                                entity_type=EntityTypeEnum.dataset,
+                                name=derivation.dataset,
+                                has_part=[],
+                            ),
+                        )
                         if dataset_id not in derived_from:
                             derived_from.append(dataset_id)
                     dataset_acc = derivation.dataset or top.dataset
@@ -341,10 +358,11 @@ def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None, res
                             continue
                         variable_id = f"{DBGAP_PREFIX}:{accession}"
                         dataset = datasets[f"{DBGAP_PREFIX}:{dataset_acc}"]
-                        if all(v.id != variable_id for v in dataset.variables):
-                            dataset.variables.append(
-                                Variable(
+                        if all(v.id != variable_id for v in dataset.has_part):
+                            dataset.has_part.append(
+                                Entity(
                                     id=variable_id,
+                                    entity_type=EntityTypeEnum.variable,
                                     name=accession,
                                     description=f"Source for {derivation.target_class}.{slot_name}{via}",
                                 )
@@ -365,15 +383,17 @@ def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None, res
                     )
 
         for dataset in datasets.values():
-            dataset.variables.sort(key=lambda v: str(v.id))
-        study.datasets = sorted(datasets.values(), key=lambda d: str(d.id))
-        study.transformation_specs = sorted(specs.values(), key=lambda s: str(s.id))
-        study.derived_entities = sorted(derived.values(), key=lambda e: str(e.id))
+            dataset.has_part.sort(key=lambda v: str(v.id))
+        study.has_part = (
+            sorted(datasets.values(), key=lambda d: str(d.id))
+            + sorted(specs.values(), key=lambda s: str(s.id))
+            + sorted(derived.values(), key=lambda e: str(e.id))
+        )
         studies.append(study)
 
     return studies
 
 
-def to_yaml(studies: list[Study]) -> str:
+def to_yaml(studies: list[Entity]) -> str:
     """Serialize study documents as a YAML list."""
     return yaml_dumper.dumps([study.model_dump() for study in studies])

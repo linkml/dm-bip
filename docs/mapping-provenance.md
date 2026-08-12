@@ -26,23 +26,28 @@ inputs.
 A YAML list of study documents conforming to the
 [mapping-provenance schema](https://github.com/linkml/dm-bip/blob/main/src/dm_bip/mapping_prov/schema/mapping_prov_schema.yaml),
 an extension of the [PROV LinkML schema](https://github.com/diatomsRcool/prov-schema)
-that adds the dbGaP granularity issue #352 calls for. Containment carries the
-study → dataset → variable alignment:
+expressing the dbGaP granularity issue #352 calls for. Following the direction of
+[prov-schema#10](https://github.com/diatomsRcool/prov-schema/issues/10), everything is a
+generic PROV `Entity` typed by a controlled vocabulary (`entity_type`) rather than
+dedicated classes, and containment — which carries the study → dataset → variable
+alignment — uses a `dcterms:hasPart` relation, rendered nested:
 
 ```yaml
 - id: bdchm:Study/phs000280
+  entity_type: study
   name: Atherosclerosis Risk in Communities (ARIC)
-  datasets:
+  has_part:
   - id: dbgap:pht004063
+    entity_type: dataset
     name: pht004063
-    variables:
+    has_part:
     - id: dbgap:phv00204719
+      entity_type: variable
       name: phv00204719
       description: Source for Quantity.value_decimal
-  transformation_specs:
   - id: dmcprov:ARIC-ingest/bmi.yaml
+    entity_type: transformation_spec
     name: ARIC-ingest/bmi.yaml
-  derived_entities:
   - id: dmcprov:ARIC-ingest/bmi/MeasurementObservation/pht004063
     name: MeasurementObservation derived from pht004063 (ARIC-ingest/bmi.yaml)
     derived_from:
@@ -51,11 +56,13 @@ study → dataset → variable alignment:
     - dmcprov:ARIC-ingest/bmi.yaml
 ```
 
-Each derivation fragment in a spec becomes one entry in `derived_entities`, keeping the
-pairing between a dataset and the variables drawn from it (one fragment per contributing
-dataset/exam). The `derived_from` list names the source dataset, the source variables,
-and the transformation spec itself — value-level mapping detail (e.g. `0 → ABSENT`)
-intentionally lives only in the spec, which the provenance points back to.
+A study's `has_part` holds its datasets (each nesting its variables), its transformation
+specs, and its derived entities, in that order. Each derivation fragment in a spec
+becomes one derived entity, keeping the pairing between a dataset and the variables
+drawn from it (one fragment per contributing dataset/exam). The `derived_from` list
+names the source dataset, the source variables, and the transformation spec itself —
+value-level mapping detail (e.g. `0 → ABSENT`) intentionally lives only in the spec,
+which the provenance points back to.
 
 ## Study identity
 

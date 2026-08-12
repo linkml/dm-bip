@@ -20,7 +20,8 @@ def test_cli_extracts_directory_to_stdout():
 
     [study] = yaml.safe_load(result.output)
     assert study["id"] == "bdchm:Study/phs000280"
-    assert any(d["id"] == "dbgap:pht004063" for d in study["datasets"])
+    assert study["entity_type"] == "study"
+    assert any(e["id"] == "dbgap:pht004063" for e in study["has_part"])
 
 
 def test_cli_writes_output_file(tmp_path):
@@ -34,9 +35,9 @@ def test_cli_writes_output_file(tmp_path):
 
     studies = yaml.safe_load(out.read_text())
     assert [s["id"] for s in studies] == ["bdchm:Study/phs000280", "dmcprov:MESA-ingest"]
-    aric = studies[0]
+    aric_specs = [e for e in studies[0]["has_part"] if e.get("entity_type") == "transformation_spec"]
     # spec ids are relative to the common base directory, so they keep the study-dir prefix
-    assert any(s["id"] == "dmcprov:ARIC-ingest/bmi.yaml" for s in aric["transformation_specs"])
+    assert any(s["id"] == "dmcprov:ARIC-ingest/bmi.yaml" for s in aric_specs)
 
 
 def test_cli_errors_when_no_specs_found(tmp_path):

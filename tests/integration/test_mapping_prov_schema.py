@@ -19,11 +19,11 @@ INPUT_DIR = ROOT / "tests" / "input" / "mapping_prov"
 
 
 def test_extractor_output_validates_against_schema():
-    """Every study document the extractor emits validates as a Study instance of the schema."""
+    """Every study document the extractor emits validates as an Entity instance of the schema."""
     studies = extract_provenance(collect_spec_paths([INPUT_DIR]))
     documents = yaml.safe_load(to_yaml(studies))
     assert documents, "expected at least one study document"
 
     for document in documents:
-        report = validate(document, str(SCHEMA_PATH), target_class="Study")
+        report = validate(document, str(SCHEMA_PATH), target_class="Entity")
         assert report.results == [], f"{document['id']}: {[r.message for r in report.results]}"

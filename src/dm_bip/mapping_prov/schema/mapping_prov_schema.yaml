@@ -2,15 +2,19 @@ id: https://w3id.org/dm-bip/mapping-prov-schema
 name: mapping_prov_schema
 title: DM-BIP Mapping Provenance Schema
 description: >-
-  Extension of the PROV LinkML schema (https://github.com/diatomsRcool/prov-schema)
-  adding the dbGaP data granularity called for in https://github.com/linkml/dm-bip/issues/352:
-  studies, datasets (pht accessions), and variables (phv accessions), with
-  containment expressed structurally (variables within datasets, datasets within
-  studies) so that study/dataset/variable alignment survives downstream.
+  Extension of the PROV LinkML schema for expressing dbGaP data granularity in
+  mapping provenance. Entities are typed by a controlled vocabulary rather than
+  dedicated classes, and containment (variables within datasets, datasets within
+  studies) uses a dcterms part-of relation, so that study/dataset/variable
+  alignment survives downstream. The slots added here are candidates for
+  upstreaming into the imported PROV schema.
 license: MIT
 see_also:
-  - https://github.com/linkml/dm-bip/issues/352
+  - https://github.com/diatomsRcool/prov-schema
   - https://www.w3.org/TR/prov-o/
+
+# Design context: linkml/dm-bip#352 (mapping provenance for harmonization) and
+# diatomsRcool/prov-schema#10 (vocabulary-based typing over minted classes).
 
 prefixes:
   mapping_prov_schema: https://w3id.org/dm-bip/mapping-prov-schema/
@@ -19,6 +23,9 @@ prefixes:
   bdchm: https://w3id.org/bdchm/
   linkml: https://w3id.org/linkml/
   prov: http://www.w3.org/ns/prov#
+  dcterms: http://purl.org/dc/terms/
+  dcat: http://www.w3.org/ns/dcat#
+  cdi: https://ddialliance.org/Specification/DDI-CDI/1.0/RDF/
 
 default_prefix: mapping_prov_schema
 default_range: string
@@ -30,48 +37,54 @@ imports:
   # (`make datamodel`; requires network access).
   - https://raw.githubusercontent.com/diatomsRcool/prov-schema/main/src/prov_schema/schema/prov_schema
 
+enums:
+  EntityTypeEnum:
+    description: >-
+      What kind of thing an entity is, expressed as a controlled value rather than a
+      dedicated class. Ontology bindings are best-effort proposals, to be settled in
+      upstream review.
+    permissible_values:
+      study:
+        description: A research study (e.g. a dbGaP phs accession)
+        meaning: dcat:Catalog
+      dataset:
+        description: A dbGaP dataset (pht accession); a table of variables collected for a study
+        meaning: dcat:Dataset
+      variable:
+        description: A dbGaP variable (phv accession); a single column within a dbGaP dataset
+        meaning: cdi:InstanceVariable
+      transformation_spec:
+        description: A specification defining how data is transformed from one form to another
+        meaning: prov:Plan
+
 slots:
-  variables:
-    description: The dbGaP variables (phv accessions) contained in this dataset
-    range: Variable
-    multivalued: true
-    inlined_as_list: true
-  datasets:
-    description: The dbGaP datasets (pht accessions) that contributed data to this study's mappings
-    range: Dataset
-    multivalued: true
-    inlined_as_list: true
-  transformation_specs:
-    description: The transformation specs defining this study's mappings
-    range: TransformationSpec
-    multivalued: true
-    inlined_as_list: true
-  derived_entities:
-    description: Entities produced by applying this study's transformation specs
+  entity_type:
+    description: The kind of thing this entity is, from a controlled vocabulary
+    range: EntityTypeEnum
+    slot_uri: dcterms:type
+  has_part:
+    description: >-
+      Entities logically included in this one, in the loose dcterms sense: datasets
+      within a study, variables within a dataset, and a study's transformation specs
+      and derived entities
     range: Entity
     multivalued: true
     inlined_as_list: true
+    slot_uri: dcterms:hasPart
 
 classes:
-  Variable:
-    is_a: Entity
+  # Redeclares the imported Entity to add the typing and containment slots above.
+  # These additions are proposed for upstreaming (see prov-schema#10); when they
+  # land there, this redeclaration disappears.
+  Entity:
+    is_a: NamedThing
     description: >-
-      A dbGaP variable (phv accession): a single column within a dbGaP dataset
-  Dataset:
-    is_a: Entity
-    description: >-
-      A dbGaP dataset (pht accession): a table of variables collected for a
-      study
+      An entity is a physical, digital, conceptual, or other kind of thing with
+      some fixed aspects; entities may be real or imaginary.
+    class_uri: prov:Entity
     slots:
-      - variables
-  Study:
-    is_a: Entity
-    tree_root: true
-    description: >-
-      A research study (e.g. a dbGaP phs accession): the root grouping for
-      mapping provenance, containing the datasets, transformation specs, and
-      derived entities that belong to it
-    slots:
-      - datasets
-      - transformation_specs
-      - derived_entities
+      - attributed_to
+      - derived_from
+      - generated_by
+      - entity_type
+      - has_part

@@ -60,6 +60,7 @@ def test_read_study_from_researchstudy_yaml():
     study = read_study(ARIC_DIR)
     assert study is not None
     assert study.id == "bdchm:Study/phs000280"
+    assert study.entity_type == "study"
     assert study.name == "Atherosclerosis Risk in Communities (ARIC)"
 
 
@@ -76,19 +77,22 @@ def test_extract_provenance_builds_study_document():
 
     assert study.id == "bdchm:Study/phs000280"
 
-    datasets = {d.id: d for d in study.datasets}
-    variables = {v.id: v for v in datasets["dbgap:pht004063"].variables}
+    parts = {e.id: e for e in study.has_part}
+    dataset = parts["dbgap:pht004063"]
+    assert dataset.entity_type == "dataset"
+    variables = {v.id: v for v in dataset.has_part}
     assert set(variables) == {"dbgap:phv00204719", "dbgap:phv00204812"}
+    assert all(v.entity_type == "variable" for v in variables.values())
     assert variables["dbgap:phv00204719"].description == "Source for Quantity.value_decimal"
     assert (
         variables["dbgap:phv00204812"].description
         == "Source for MeasurementObservation.associated_participant (via expression)"
     )
 
-    spec_ids = [s.id for s in study.transformation_specs]
+    spec_ids = [e.id for e in study.has_part if e.entity_type == "transformation_spec"]
     assert spec_ids == ["dmcprov:ARIC-ingest/bmi.yaml", "dmcprov:ARIC-ingest/researchstudy.yaml"]
 
-    derived = {e.id: e for e in study.derived_entities}
+    derived = {e.id: e for e in study.has_part if e.derived_from}
     target = derived["dmcprov:ARIC-ingest/bmi/MeasurementObservation/pht004063"]
     assert "dbgap:pht004063" in target.derived_from
     assert "dbgap:phv00204719" in target.derived_from
@@ -116,7 +120,7 @@ def test_multiple_studies_sorted_by_directory():
 def test_fragments_deriving_same_class_and_dataset_merge():
     """Two fragments deriving the same class from the same dataset merge into one derived entity."""
     [study] = extract_provenance([ARIC_DIR / "hypertension.yaml"], base_dir=INPUT_DIR, resolve_urls=False)
-    [entity] = study.derived_entities
+    [entity] = [e for e in study.has_part if e.derived_from]
     assert "dbgap:phv00204800" in entity.derived_from
     assert "dbgap:phv00204801" in entity.derived_from
 
@@ -128,12 +132,13 @@ def test_spec_ids_are_commit_pinned_urls_in_git_checkouts(tmp_path):
     [study] = extract_provenance([repo / "ARIC-ingest" / "bmi.yaml"], base_dir=repo)
 
     url = f"https://github.com/example/specs/blob/{sha}/ARIC-ingest/bmi.yaml"
-    [spec] = study.transformation_specs
+    [spec] = [e for e in study.has_part if e.entity_type == "transformation_spec"]
     assert spec.id == url
     assert spec.name == "ARIC-ingest/bmi.yaml"  # repo-relative, matching the URL's path
-    assert url in study.derived_entities[0].derived_from
+    derived = [e for e in study.has_part if e.derived_from]
+    assert url in derived[0].derived_from
     # derived-entity ids stay local: they are this tool's records, not repo artifacts
-    assert study.derived_entities[0].id == "dmcprov:ARIC-ingest/bmi/MeasurementObservation/pht004063"
+    assert derived[0].id == "dmcprov:ARIC-ingest/bmi/MeasurementObservation/pht004063"
 
 
 def test_locally_modified_specs_fall_back_to_path_ids(tmp_path, caplog):
@@ -145,5 +150,6 @@ def test_locally_modified_specs_fall_back_to_path_ids(tmp_path, caplog):
     with caplog.at_level(logging.WARNING):
         [study] = extract_provenance([spec], base_dir=repo)
 
-    assert [s.id for s in study.transformation_specs] == ["dmcprov:ARIC-ingest/bmi.yaml"]
+    spec_ids = [e.id for e in study.has_part if e.entity_type == "transformation_spec"]
+    assert spec_ids == ["dmcprov:ARIC-ingest/bmi.yaml"]
     assert any("untracked or locally modified" in record.message for record in caplog.records)
