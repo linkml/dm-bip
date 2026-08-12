@@ -18,7 +18,9 @@ def test_cli_extracts_directory_to_stdout():
     result = runner.invoke(app, ["extract-mapping-provenance", str(INPUT_DIR / "ARIC-ingest")])
     assert result.exit_code == 0, result.output
 
-    [study] = yaml.safe_load(result.output)
+    activity, [study] = yaml.safe_load(result.output)[0], yaml.safe_load(result.output)[1:]
+    assert activity["id"].startswith("dmcprov:run/")
+    assert "started_at_time" in activity
     assert study["id"] == "bdchm:Study/phs000280"
     assert study["entity_type"] == "study"
     assert any(e["id"] == "dbgap:pht004063" for e in study["has_part"])
@@ -33,7 +35,9 @@ def test_cli_writes_output_file(tmp_path):
     result = runner.invoke(app, ["extract-mapping-provenance", str(specs), "-o", str(out)])
     assert result.exit_code == 0, result.output
 
-    studies = yaml.safe_load(out.read_text())
+    activity, *studies = yaml.safe_load(out.read_text())
+    assert "ended_at_time" in activity
+    assert "dmcprov:ARIC-ingest/bmi.yaml" in activity["has_input"]
     assert [s["id"] for s in studies] == ["bdchm:Study/phs000280", "dmcprov:MESA-ingest"]
     aric_specs = [e for e in studies[0]["has_part"] if e.get("entity_type") == "transformation_spec"]
     # spec ids are relative to the common base directory, so they keep the study-dir prefix

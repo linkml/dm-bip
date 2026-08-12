@@ -533,8 +533,21 @@ _map_additional_outputs = $(foreach fmt,$(_MAP_ADDITIONAL_FMTS),-O $(MAPPING_OUT
 _ENTITIES         := $(shell cat $(_ENTITY_LIST_FILE) 2>/dev/null)
 _ENTITY_SENTINELS := $(foreach e,$(_ENTITIES),$(MAPPING_OUTPUT_DIR)/.$(e)_complete)
 
+MAPPING_PROVENANCE_FILE := $(DM_OUTPUT_DIR)/mapping-provenance.yaml
+
 .PHONY: map-data
 map-data: $(MAPPING_SUCCESS_SENTINEL)
+
+# Mapping provenance: which studies, datasets, and variables feed each harmonized
+# concept, extracted from the same trans-spec directory the mapping consumes, plus
+# a run activity recording when and by what agent. See docs/mapping-provenance.md.
+.PHONY: mapping-provenance
+mapping-provenance: $(MAPPING_PROVENANCE_FILE)
+
+$(MAPPING_PROVENANCE_FILE): $(MAP_TRANS_SPEC_FILES)
+	@$(call check_trans_spec_files)
+	@mkdir -p $(@D)
+	$(RUN) dm-bip extract-mapping-provenance $(DM_TRANS_SPEC_DIR) -o $@
 
 # Phase 1: Write entity list from the trans-spec directory
 $(_ENTITY_LIST_FILE): $(MAP_TRANS_SPEC_FILES)
@@ -542,8 +555,10 @@ $(_ENTITY_LIST_FILE): $(MAP_TRANS_SPEC_FILES)
 	@mkdir -p $(@D)
 	$(RUN) python -m dm_bip.map_data.list_entities $(DM_TRANS_SPEC_DIR) > $@
 
-# Phase 2: Write the entity list, then recursive make to map each entity
-$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(_ENTITY_LIST_FILE)
+# Phase 2: Write the entity list, then recursive make to map each entity.
+# The sentinel is the single success marker for the mapping stage; mapping
+# provenance is a prerequisite so completion implies it was emitted.
+$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(_ENTITY_LIST_FILE) $(MAPPING_PROVENANCE_FILE)
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
 	$(MAKE) _map-all-entities CONFIG=$(CONFIG)

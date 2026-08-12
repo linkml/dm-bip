@@ -214,7 +214,7 @@ class Activity(NamedThing):
     ended_at_time: Optional[datetime ] = Field(default=None, description="""The time at which the activity ended""", json_schema_extra = { "linkml_meta": {'domain_of': ['Activity'], 'slot_uri': 'prov:endedAtTime'} })
     has_input: Optional[list[str]] = Field(default=None, description="""An entity that is used as input to an activity""", json_schema_extra = { "linkml_meta": {'domain_of': ['Activity'], 'slot_uri': 'prov:used'} })
     has_output: Optional[list[str]] = Field(default=None, description="""An entity that is generated as output by an activity""", json_schema_extra = { "linkml_meta": {'domain_of': ['Activity']} })
-    associated_with: Optional[str] = Field(default=None, description="""An agent that is associated with an activity""", json_schema_extra = { "linkml_meta": {'domain_of': ['Activity'], 'slot_uri': 'prov:wasAssociatedWith'} })
+    associated_with: Optional[Agent] = Field(default=None, description="""An agent that is associated with an activity""", json_schema_extra = { "linkml_meta": {'domain_of': ['Activity'], 'slot_uri': 'prov:wasAssociatedWith'} })
     id: str = Field(default=..., description="""A unique identifier for a thing""", json_schema_extra = { "linkml_meta": {'domain_of': ['NamedThing']} })
     name: Optional[str] = Field(default=None, description="""A human-readable name for a thing""", json_schema_extra = { "linkml_meta": {'domain_of': ['NamedThing']} })
     description: Optional[str] = Field(default=None, description="""A human-readable description for a thing""", json_schema_extra = { "linkml_meta": {'domain_of': ['NamedThing']} })

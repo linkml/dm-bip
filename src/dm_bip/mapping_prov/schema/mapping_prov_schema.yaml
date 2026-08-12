@@ -58,6 +58,13 @@ enums:
         meaning: prov:Plan
 
 slots:
+  # Redeclares the imported slot so the agent serializes inside the activity,
+  # keeping run documents self-contained. Semantics are unchanged.
+  associated_with:
+    description: An agent that is associated with an activity
+    range: Agent
+    slot_uri: prov:wasAssociatedWith
+    inlined: true
   entity_type:
     description: The kind of thing this entity is, from a controlled vocabulary
     range: EntityTypeEnum

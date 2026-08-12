@@ -26,8 +26,10 @@ import ast
 import logging
 import os
 import re
+import uuid
 from collections.abc import Iterator
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -38,7 +40,8 @@ from linkml_map.utils.expression_locations import iter_expressions
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import yaml_loader
 
-from dm_bip.mapping_prov.datamodel.prov import Entity, EntityTypeEnum, TransformationSpec
+from dm_bip.mapping_prov.datamodel.prov import Activity, Agent, Entity, EntityTypeEnum, TransformationSpec
+from dm_bip.provenance import _get_package_versions, get_build_info
 
 logger = logging.getLogger(__name__)
 
@@ -394,6 +397,37 @@ def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None, res
     return studies
 
 
-def to_yaml(studies: list[Entity]) -> str:
-    """Serialize study documents as a YAML list."""
-    return yaml_dumper.dumps([study.model_dump() for study in studies])
+def run_activity(studies: list[Entity], started_at: datetime, ended_at: datetime) -> Activity:
+    """
+    Return an Activity documenting this extraction run.
+
+    The execution-provenance layer: when extraction ran, the agent that performed it
+    (dm-bip and the versions of its key dependencies, via the same machinery as
+    ``dm_bip.provenance``), and which transformation specs it read (``has_input``,
+    referencing the spec entities described within the study documents).
+    """
+    spec_ids = sorted(
+        str(part.id)
+        for study in studies
+        for part in study.has_part or []
+        if part.entity_type == EntityTypeEnum.transformation_spec
+    )
+    build = get_build_info()
+    versions = ", ".join(f"{name} {version}" for name, version in _get_package_versions().items())
+    return Activity(
+        id=f"{DMCPROV_PREFIX}:run/{uuid.uuid4()}",
+        name="dm-bip extract-mapping-provenance",
+        started_at_time=started_at,
+        ended_at_time=ended_at,
+        associated_with=Agent(
+            id="https://github.com/linkml/dm-bip",
+            name=f"dm-bip {build['version']}",
+            description=versions,
+        ),
+        has_input=spec_ids,
+    )
+
+
+def to_yaml(records: list[Activity | Entity]) -> str:
+    """Serialize provenance records (a run activity and/or study documents) as a YAML list."""
+    return yaml_dumper.dumps([record.model_dump(mode="json") for record in records])

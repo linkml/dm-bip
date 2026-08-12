@@ -15,6 +15,10 @@ dm-bip extract-mapping-provenance path/to/priority_variables_transform/ARIC-inge
 
 # Several studies at once, written to a file
 dm-bip extract-mapping-provenance path/to/priority_variables_transform -o mapping-prov.yaml
+
+# As part of the pipeline (reads the same DM_TRANS_SPEC_DIR the mapping consumes;
+# also produced automatically by `make map-data`)
+make mapping-provenance
 ```
 
 Directories are searched recursively for `*.yaml` spec files. Identifiers for specs and
@@ -23,16 +27,30 @@ inputs.
 
 ## Output
 
-A YAML list of study documents conforming to the
+A YAML list conforming to the
 [mapping-provenance schema](https://github.com/linkml/dm-bip/blob/main/src/dm_bip/mapping_prov/schema/mapping_prov_schema.yaml),
 an extension of the [PROV LinkML schema](https://github.com/diatomsRcool/prov-schema)
 expressing the dbGaP granularity issue #352 calls for. Following the direction of
 [prov-schema#10](https://github.com/diatomsRcool/prov-schema/issues/10), everything is a
 generic PROV `Entity` typed by a controlled vocabulary (`entity_type`) rather than
 dedicated classes, and containment — which carries the study → dataset → variable
-alignment — uses a `dcterms:hasPart` relation, rendered nested:
+alignment — uses a `dcterms:hasPart` relation, rendered nested.
+
+The first record is a run `Activity` — the execution-provenance layer — documenting
+when extraction ran, the dm-bip agent (with the versions of its key dependencies)
+that performed it, and the specs it read:
 
 ```yaml
+- id: dmcprov:run/9ef32acd-5c08-467f-9cde-2ac945fed0cd
+  name: dm-bip extract-mapping-provenance
+  started_at_time: '2026-08-12T18:54:26Z'
+  ended_at_time: '2026-08-12T18:54:27Z'
+  has_input:
+  - https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/blob/<commit>/priority_variables_transform/ARIC-ingest/bmi.yaml
+  associated_with:
+    id: https://github.com/linkml/dm-bip
+    name: dm-bip 0.1.0
+    description: dm_bip 0.1.0, linkml_map 0.5.3, schema_automator 0.5.6, linkml 1.11.1
 - id: bdchm:Study/phs000280
   entity_type: study
   name: Atherosclerosis Risk in Communities (ARIC)

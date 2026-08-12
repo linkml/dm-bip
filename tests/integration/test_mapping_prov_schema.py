@@ -19,11 +19,17 @@ INPUT_DIR = ROOT / "tests" / "input" / "mapping_prov"
 
 
 def test_extractor_output_validates_against_schema():
-    """Every study document the extractor emits validates as an Entity instance of the schema."""
+    """The run activity and every study document validate against their schema classes."""
+    from datetime import datetime, timezone
+
+    from dm_bip.mapping_prov.extract import run_activity
+
     studies = extract_provenance(collect_spec_paths([INPUT_DIR]))
-    documents = yaml.safe_load(to_yaml(studies))
-    assert documents, "expected at least one study document"
+    now = datetime.now(timezone.utc)
+    documents = yaml.safe_load(to_yaml([run_activity(studies, now, now), *studies]))
+    assert documents, "expected at least one document"
 
     for document in documents:
-        report = validate(document, str(SCHEMA_PATH), target_class="Entity")
+        target_class = "Activity" if "started_at_time" in document else "Entity"
+        report = validate(document, str(SCHEMA_PATH), target_class=target_class)
         assert report.results == [], f"{document['id']}: {[r.message for r in report.results]}"

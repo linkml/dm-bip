@@ -156,14 +156,19 @@ def extract_mapping_provenance(
     output: Annotated[Optional[Path], typer.Option("--output", "-o", help="Output YAML file (default: stdout)")] = None,
 ):
     """Extract mapping provenance (study, dataset, and variable sources) from transformation specs."""
-    from dm_bip.mapping_prov.extract import collect_spec_paths, extract_provenance, to_yaml
+    from datetime import datetime, timezone
+
+    from dm_bip.mapping_prov.extract import collect_spec_paths, extract_provenance, run_activity, to_yaml
 
     spec_paths = collect_spec_paths(paths)
     if not spec_paths:
         typer.echo("No transformation spec files found", err=True)
         raise typer.Exit(code=1)
 
-    serialized = to_yaml(extract_provenance(spec_paths))
+    started_at = datetime.now(timezone.utc)
+    studies = extract_provenance(spec_paths)
+    activity = run_activity(studies, started_at, datetime.now(timezone.utc))
+    serialized = to_yaml([activity, *studies])
     if output is None:
         typer.echo(serialized)
     else:

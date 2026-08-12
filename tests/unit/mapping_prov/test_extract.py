@@ -2,12 +2,13 @@
 
 import logging
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 import git
 import yaml
 
-from dm_bip.mapping_prov.extract import extract_provenance, iter_class_derivations, read_study
+from dm_bip.mapping_prov.extract import extract_provenance, iter_class_derivations, read_study, run_activity
 
 INPUT_DIR = Path(__file__).parents[2] / "input" / "mapping_prov"
 ARIC_DIR = INPUT_DIR / "ARIC-ingest"
@@ -123,6 +124,22 @@ def test_fragments_deriving_same_class_and_dataset_merge():
     [entity] = [e for e in study.has_part if e.derived_from]
     assert "dbgap:phv00204800" in entity.derived_from
     assert "dbgap:phv00204801" in entity.derived_from
+
+
+def test_run_activity_documents_the_extraction():
+    """The run activity records timing, the dm-bip agent, and the specs read as inputs."""
+    studies = extract_provenance([ARIC_DIR / "bmi.yaml", MESA_DIR / "bmi.yaml"], base_dir=INPUT_DIR, resolve_urls=False)
+    started = datetime(2026, 8, 12, 15, 0, 0, tzinfo=timezone.utc)
+    ended = datetime(2026, 8, 12, 15, 0, 5, tzinfo=timezone.utc)
+
+    activity = run_activity(studies, started, ended)
+
+    assert activity.id.startswith("dmcprov:run/")
+    assert activity.started_at_time == started
+    assert activity.ended_at_time == ended
+    assert activity.associated_with.name.startswith("dm-bip ")
+    assert "linkml_map" in activity.associated_with.description
+    assert activity.has_input == ["dmcprov:ARIC-ingest/bmi.yaml", "dmcprov:MESA-ingest/bmi.yaml"]
 
 
 def test_spec_ids_are_commit_pinned_urls_in_git_checkouts(tmp_path):
