@@ -5,7 +5,8 @@ A transformation spec (as produced for the DMC pipeline) is a YAML document cont
 list of ``class_derivations`` fragments. Each fragment derives a target class from a dbGaP
 dataset (a ``pht`` accession, given by a class-level ``populated_from``) and populates its
 slots from dbGaP variables (``phv`` accessions, given by slot-level ``populated_from``
-values). Fragments are loaded through linkml-map's own datamodel
+values or referenced as ``{phv...}`` inside ``expr`` strings). Fragments are loaded
+through linkml-map's own datamodel
 (``TransformationSpecification``), which normalizes the compact key-as-name YAML syntax the
 specs are written in. A file is a *list* of fragments rather than a single specification
 because ``class_derivations`` is keyed by class name, and one file may derive the same
@@ -19,8 +20,10 @@ each derivation fragment becomes an ``Entity`` that is ``derived_from`` its sour
 source variables, and the spec itself.
 """
 
+import ast
 import logging
 import os
+import re
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -28,6 +31,7 @@ from typing import Any
 
 from linkml_map.datamodel.transformer_model import ClassDerivation
 from linkml_map.transformer.object_transformer import ObjectTransformer
+from linkml_map.utils.expression_locations import iter_expressions
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import yaml_loader
 
@@ -39,6 +43,8 @@ DBGAP_PREFIX = "dbgap"
 DMCPROV_PREFIX = "dmcprov"
 STUDY_ID_PREFIX = "bdchm:Study/"
 RESEARCHSTUDY_FILENAME = "researchstudy.yaml"
+
+_PHV_PATTERN = re.compile(r"phv\d+")
 
 
 @dataclass
@@ -53,6 +59,31 @@ class DerivationSources:
     target_class: str
     dataset: str | None
     variables: list[tuple[str, str]] = field(default_factory=list)
+    expr_variables: list[tuple[str, str]] = field(default_factory=list)
+
+
+def _braced_names(expression: str) -> list[str]:
+    """
+    Return the bare names referenced as ``{name}`` in a LinkML expression.
+
+    linkml-map parses a braced reference as a single-element set display (see
+    ``eval_utils._eval_set``); its ``extract_braced_reference_roots`` helper covers only
+    the dotted ``{Table.col}`` form, so the bare ``{col}`` form the DMC specs use is
+    collected here with the same parse. Unparseable expressions are skipped with a
+    warning, since specs are external input.
+    """
+    try:
+        tree = ast.parse(expression, mode="eval")
+    except SyntaxError:
+        logger.warning("Could not parse expression %r; skipping its references", expression)
+        return []
+    return sorted(
+        {
+            node.elts[0].id
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Set) and len(node.elts) == 1 and isinstance(node.elts[0], ast.Name)
+        }
+    )
 
 
 def _as_derivation_list(class_derivations: Any) -> list[ClassDerivation]:
@@ -67,11 +98,19 @@ def _walk_derivations(class_derivations: list[ClassDerivation]) -> Iterator[Deri
     for derivation in class_derivations:
         slot_derivations = (derivation.slot_derivations or {}).values()
         variables = [(sd.name, str(sd.populated_from)) for sd in slot_derivations if sd.populated_from is not None]
+        expr_variables = [
+            (sd.name, name)
+            for sd in slot_derivations
+            for expression in iter_expressions(sd)
+            for name in _braced_names(expression)
+            if _PHV_PATTERN.fullmatch(name)
+        ]
         dataset = derivation.populated_from
         yield DerivationSources(
             target_class=str(derivation.name),
             dataset=None if dataset is None else str(dataset),
             variables=variables,
+            expr_variables=expr_variables,
         )
         for sd in slot_derivations:
             if sd.class_derivations:
@@ -199,7 +238,8 @@ def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None) -> 
 
     Spec files are grouped by parent directory; each directory's ``researchstudy.yaml``
     provides the study identity (falling back to a placeholder named after the directory).
-    Every dbGaP accession found in a ``populated_from`` contributes a ``Dataset`` or
+    Every dbGaP accession found in a ``populated_from`` or referenced as ``{phv...}``
+    in an expression contributes a ``Dataset`` or
     ``Variable`` nested under the study, each spec file a ``TransformationSpec``, and each
     derivation fragment a derived ``Entity`` linking them all via ``derived_from``.
     Fragments deriving the same class from the same dataset merge their sources into one
@@ -232,7 +272,10 @@ def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None) -> 
                         if dataset_id not in derived_from:
                             derived_from.append(dataset_id)
                     dataset_acc = derivation.dataset or top.dataset
-                    for slot_name, accession in derivation.variables:
+                    sources = [(slot, accession, "") for slot, accession in derivation.variables] + [
+                        (slot, accession, " (via expression)") for slot, accession in derivation.expr_variables
+                    ]
+                    for slot_name, accession, via in sources:
                         if dataset_acc is None:
                             logger.warning("Variable %s in %s has no enclosing dataset; skipping", accession, relpath)
                             continue
@@ -243,7 +286,7 @@ def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None) -> 
                                 Variable(
                                     id=variable_id,
                                     name=accession,
-                                    description=f"Source for {derivation.target_class}.{slot_name}",
+                                    description=f"Source for {derivation.target_class}.{slot_name}{via}",
                                 )
                             )
                         if variable_id not in derived_from:

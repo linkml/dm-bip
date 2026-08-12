@@ -64,10 +64,12 @@ The study rooting each document comes from the spec directory's `researchstudy.y
 Directories without one fall back to a placeholder study named after the directory, with
 a warning.
 
+Variables referenced only inside `expr` expressions (e.g. join keys such as
+`{phv00204812}`) are also captured as sources; their `description` is marked
+`(via expression)`.
+
 ## Known limitations
 
-- Variables referenced only inside `expr` expressions (e.g. join keys such as
-  `{phv00204812}`) are not yet captured as sources.
 - The `dmcprov:` identifiers for specs and derived entities are derived from local
   paths; linking them to canonical locations (e.g. GitHub URLs) is planned.
 

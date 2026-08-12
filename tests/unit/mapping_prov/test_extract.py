@@ -23,12 +23,20 @@ def test_iter_class_derivations_walks_nested_blocks():
     assert derivations[0].dataset == "pht004063"
 
 
-def test_variables_come_from_populated_from_only():
-    """Slot-level populated_from values are collected; expr references are not (yet)."""
+def test_populated_from_variables_collected():
+    """Slot-level populated_from values are collected as variables."""
     spec = yaml.safe_load((ARIC_DIR / "bmi.yaml").read_text())
     variables = {var for d in iter_class_derivations(spec) for _, var in d.variables}
-    assert "phv00204719" in variables  # a slot-level populated_from
+    assert "phv00204719" in variables
     assert "phv00204812" not in variables  # appears only inside expr strings
+
+
+def test_expr_variables_collected_separately():
+    """Variables referenced in braced expr strings are collected, per referencing slot."""
+    spec = yaml.safe_load((ARIC_DIR / "bmi.yaml").read_text())
+    first = next(iter_class_derivations(spec))
+    assert ("associated_participant", "phv00204812") in first.expr_variables
+    assert ("associated_visit", "phv00204812") in first.expr_variables
 
 
 def test_read_study_from_researchstudy_yaml():
@@ -51,7 +59,13 @@ def test_extract_provenance_builds_study_document():
     assert study.id == "bdchm:Study/phs000280"
 
     datasets = {d.id: d for d in study.datasets}
-    assert {v.id for v in datasets["dbgap:pht004063"].variables} == {"dbgap:phv00204719"}
+    variables = {v.id: v for v in datasets["dbgap:pht004063"].variables}
+    assert set(variables) == {"dbgap:phv00204719", "dbgap:phv00204812"}
+    assert variables["dbgap:phv00204719"].description == "Source for Quantity.value_decimal"
+    assert (
+        variables["dbgap:phv00204812"].description
+        == "Source for MeasurementObservation.associated_participant (via expression)"
+    )
 
     spec_ids = [s.id for s in study.transformation_specs]
     assert spec_ids == ["dmcprov:ARIC-ingest/bmi.yaml", "dmcprov:ARIC-ingest/researchstudy.yaml"]
@@ -60,6 +74,7 @@ def test_extract_provenance_builds_study_document():
     target = derived["dmcprov:ARIC-ingest/bmi/MeasurementObservation/pht004063"]
     assert "dbgap:pht004063" in target.derived_from
     assert "dbgap:phv00204719" in target.derived_from
+    assert "dbgap:phv00204812" in target.derived_from  # referenced via expression
     assert "dmcprov:ARIC-ingest/bmi.yaml" in target.derived_from
     # researchstudy.yaml is also an ordinary spec with its own derived entity
     assert "dmcprov:ARIC-ingest/researchstudy/ResearchStudy/pht001440" in derived
