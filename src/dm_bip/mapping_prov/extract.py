@@ -129,7 +129,7 @@ def _braced_names(expression: str) -> list[str]:
     linkml-map parses a braced reference as a single-element set display (see
     ``eval_utils._eval_set``); its ``extract_braced_reference_roots`` helper covers only
     the dotted ``{Table.col}`` form, so the bare ``{col}`` form the DMC specs use is
-    collected here with the same parse. Unparseable expressions are skipped with a
+    collected here with the same parse. Unparsable expressions are skipped with a
     warning, since specs are external input.
     """
     try:
