@@ -178,6 +178,45 @@ def extract_mapping_provenance(
 
 
 @app.command()
+def extract_variable_library(
+    paths: Annotated[list[Path], typer.Argument(exists=True, help="Transformation spec files or directories")],
+    source_schema: Annotated[
+        Optional[Path],
+        typer.Option("--source-schema", "-s", exists=True, help="schema-automator output, used to type each variable"),
+    ] = None,
+    output: Annotated[Optional[Path], typer.Option("--output", "-o", help="Output YAML file (default: stdout)")] = None,
+):
+    """Emit BDC variable library entries for the source variables named in transformation specs."""
+    from dm_bip.mapping_prov.extract import collect_spec_paths
+    from dm_bip.variable_lib.classify import classifier_for
+    from dm_bip.variable_lib.emit import to_entries, to_yaml
+    from dm_bip.variable_lib.extract import collect_variables
+
+    spec_paths = collect_spec_paths(paths)
+    if not spec_paths:
+        typer.echo("No transformation spec files found", err=True)
+        raise typer.Exit(code=1)
+
+    records = collect_variables(spec_paths)
+    entries = to_entries(records, classifier_for(source_schema))
+    serialized = to_yaml(entries)
+    if output is None:
+        typer.echo(serialized)
+    else:
+        output.write_text(serialized)
+        typer.echo(f"Variable library written to {output}")
+
+    typer.echo(
+        f"{len(entries)} entries from {len(records)} source variables "
+        f"({len(entries.continuous)} continuous, {len(entries.categorical)} categorical)",
+        err=True,
+    )
+    if entries.unclassified:
+        hint = "" if source_schema else " (no --source-schema supplied)"
+        typer.echo(f"{len(entries.unclassified)} variables could not be typed and were skipped{hint}", err=True)
+
+
+@app.command()
 def apply_overrides(
     pipeline_csv: Annotated[Path, typer.Option("--input", "-i", help="Pipeline output CSV")],
     fixes_csv: Annotated[Path, typer.Option("--fixes", "-f", help="Curator fixes CSV")],
