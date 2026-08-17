@@ -1,0 +1,33 @@
+id: https://w3id.org/dm-bip/variable-lib-schema
+name: variable_lib_schema
+title: DM-BIP Variable Library Schema
+description: >-
+  Generation shim for the BDC variable library datamodel. dm-bip emits
+  SingleContinuousVariable and SingleCategoricalVariable instances defined
+  upstream; this schema adds nothing of its own, it exists only because
+  gen-pydantic takes a local file rather than a URL. Any dm-bip-specific
+  additions belong here rather than in a vendored copy of the upstream schema.
+license: MIT
+see_also:
+  - https://github.com/linkml/bdc-variable-library
+
+# Design context: tis-lab/BDC-Add-On-Tracker#93 (variable creator script from
+# transformation specs) and linkml/dm-bip#352 (study/dataset/variable alignment
+# must survive).
+
+prefixes:
+  variable_lib_schema: https://w3id.org/dm-bip/variable-lib-schema/
+  dbgap: https://identifiers.org/dbgap/
+  bdchm: https://w3id.org/bdchm/
+  linkml: https://w3id.org/linkml/
+
+default_prefix: variable_lib_schema
+default_range: string
+
+imports:
+  - linkml:types
+  # Imported by URL rather than vendored so upstream fixes are picked up when the
+  # datamodel is regenerated (`make variable-lib-datamodel`; requires network
+  # access). Tracks main deliberately: there are open defects filed against this
+  # schema upstream, and pinning would hide their resolution.
+  - https://raw.githubusercontent.com/linkml/bdc-variable-library/main/src/bdc_variable_library/schema/bdc_variable_library
