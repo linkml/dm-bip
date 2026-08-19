@@ -536,18 +536,24 @@ _ENTITY_SENTINELS := $(foreach e,$(_ENTITIES),$(MAPPING_OUTPUT_DIR)/.$(e)_comple
 MAPPING_PROVENANCE_FILE := $(DM_OUTPUT_DIR)/mapping-provenance.yaml
 
 .PHONY: map-data
-map-data: $(MAPPING_SUCCESS_SENTINEL)
+map-data: $(MAPPING_SUCCESS_SENTINEL) mapping-provenance
 
 # Mapping provenance: which studies, datasets, and variables feed each harmonized
 # concept, extracted from the same trans-spec directory the mapping consumes, plus
 # a run activity recording when and by what agent. See docs/mapping-provenance.md.
+#
+# Extraction runs on every map-data but cannot fail the mapping stage: the recipe
+# is error-ignoring and the success sentinel does not depend on the output. This is
+# a deliberate probation period for a new step — once it has proven itself on real
+# BDC runs, drop the leading `-` and restore the sentinel prerequisite so mapping
+# completion implies provenance was emitted.
 .PHONY: mapping-provenance
 mapping-provenance: $(MAPPING_PROVENANCE_FILE)
 
 $(MAPPING_PROVENANCE_FILE): $(MAP_TRANS_SPEC_FILES)
 	@$(call check_trans_spec_files)
 	@mkdir -p $(@D)
-	$(RUN) dm-bip extract-mapping-provenance $(DM_TRANS_SPEC_DIR) -o $@
+	-$(RUN) dm-bip extract-mapping-provenance $(DM_TRANS_SPEC_DIR) -o $@
 
 # Phase 1: Write entity list from the trans-spec directory
 $(_ENTITY_LIST_FILE): $(MAP_TRANS_SPEC_FILES)
@@ -556,9 +562,10 @@ $(_ENTITY_LIST_FILE): $(MAP_TRANS_SPEC_FILES)
 	$(RUN) python -m dm_bip.map_data.list_entities $(DM_TRANS_SPEC_DIR) > $@
 
 # Phase 2: Write the entity list, then recursive make to map each entity.
-# The sentinel is the single success marker for the mapping stage; mapping
-# provenance is a prerequisite so completion implies it was emitted.
-$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(_ENTITY_LIST_FILE) $(MAPPING_PROVENANCE_FILE)
+# The sentinel is the single success marker for the mapping stage. Mapping
+# provenance is deliberately not a prerequisite: a missing provenance file would
+# leave the sentinel permanently out of date and re-map every entity on each run.
+$(MAPPING_SUCCESS_SENTINEL): $(SCHEMA_FILE) $(VALIDATION_SUCCESS_SENTINEL) $(_ENTITY_LIST_FILE)
 	@echo "Running LinkML-Map transformation..."
 	@mkdir -p $(MAPPING_OUTPUT_DIR)
 	$(MAKE) _map-all-entities CONFIG=$(CONFIG)
