@@ -41,7 +41,7 @@ from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import yaml_loader
 
 from dm_bip.mapping_prov.datamodel.prov import Activity, Agent, Entity, EntityTypeEnum, TransformationSpec
-from dm_bip.provenance import _get_package_versions, get_build_info
+from dm_bip.provenance import get_build_info, get_package_versions
 
 logger = logging.getLogger(__name__)
 
@@ -399,14 +399,18 @@ def extract_provenance(spec_paths: list[Path], base_dir: Path | None = None, res
                             derived_from.append(variable_id)
 
                 derived_from.append(spec_id)
-                entity_id = f"{DMCPROV_PREFIX}:{relpath.with_suffix('')}/{top.target_class}/{top.dataset}"
+                # A fragment whose outermost derivation has no populated_from carries no
+                # dataset; leave that segment off rather than writing "None" into the id.
+                stem = f"{DMCPROV_PREFIX}:{relpath.with_suffix('')}/{top.target_class}"
+                entity_id = f"{stem}/{top.dataset}" if top.dataset is not None else stem
+                source = f" derived from {top.dataset}" if top.dataset is not None else ""
                 if entity_id in derived:
                     existing = derived[entity_id].derived_from
                     existing.extend(ref for ref in derived_from if ref not in existing)
                 else:
                     derived[entity_id] = Entity(
                         id=entity_id,
-                        name=f"{top.target_class} derived from {top.dataset} ({relpath})",
+                        name=f"{top.target_class}{source} ({relpath})",
                         derived_from=derived_from,
                     )
 
@@ -438,7 +442,7 @@ def run_activity(studies: list[Entity], started_at: datetime, ended_at: datetime
         if part.entity_type == EntityTypeEnum.transformation_spec
     )
     build = get_build_info()
-    versions = ", ".join(f"{name} {version}" for name, version in _get_package_versions().items())
+    versions = ", ".join(f"{name} {version}" for name, version in get_package_versions().items())
     return Activity(
         id=f"{DMCPROV_PREFIX}:run/{uuid.uuid4()}",
         name="dm-bip extract-mapping-provenance",

@@ -112,6 +112,26 @@ def test_placeholder_study_when_no_researchstudy(caplog):
     assert any("researchstudy.yaml" in record.message for record in caplog.records)
 
 
+def test_derivation_without_a_dataset_omits_the_id_segment(tmp_path):
+    """A fragment whose outermost derivation has no populated_from keeps "None" out of its id."""
+    spec_dir = tmp_path / "NODATASET-ingest"
+    spec_dir.mkdir()
+    (spec_dir / "orphan.yaml").write_text(
+        "- class_derivations:\n"
+        "    Condition:\n"
+        "      slot_derivations:\n"
+        "        condition_status:\n"
+        "          populated_from: phv00204800\n"
+    )
+
+    [study] = extract_provenance([spec_dir / "orphan.yaml"], base_dir=tmp_path, resolve_urls=False)
+
+    [entity] = [e for e in study.has_part if e.derived_from]
+    assert entity.id == "dmcprov:NODATASET-ingest/orphan/Condition"
+    assert "None" not in entity.id
+    assert "None" not in entity.name
+
+
 def test_multiple_studies_sorted_by_directory():
     """Specs from several directories produce one study document each, in directory order."""
     studies = extract_provenance([ARIC_DIR / "bmi.yaml", MESA_DIR / "bmi.yaml"], base_dir=INPUT_DIR, resolve_urls=False)
