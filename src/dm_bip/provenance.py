@@ -26,7 +26,7 @@ def get_build_info() -> dict:
     }
 
 
-def _get_package_versions() -> dict:
+def get_package_versions() -> dict:
     """Get installed versions of tracked packages."""
     versions = {}
     for pkg in TRACKED_PACKAGES:
@@ -60,7 +60,7 @@ def generate_provenance(
     provenance = {
         "dm_bip": get_build_info(),
         "python": sys.version.split()[0],
-        "dependencies": _get_package_versions(),
+        "dependencies": get_package_versions(),
     }
 
     if no_external_repos:

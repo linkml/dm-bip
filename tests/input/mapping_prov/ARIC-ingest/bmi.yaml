@@ -1,0 +1,63 @@
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht004063
+      slot_derivations:
+        associated_participant:
+          expr: 'uuid5("https://w3id.org/bdchm/Participant", str({phv00204812}) + ":ARIC")'
+        associated_visit:
+          expr: 'uuid5("https://w3id.org/bdchm/Visit", str({phv00204812}) + ":ARIC EXAM 1")'
+        observation_type:
+          value: OBA:2045455
+        method_type:
+          value: "calculated"
+        value_quantity:
+          class_derivations:
+          - Quantity:
+              populated_from: pht004063
+              slot_derivations:
+                value_decimal:
+                  populated_from: phv00204719
+                unit:
+                  value: "kg/m2"
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht012502
+      slot_derivations:
+        associated_participant:
+          expr: 'uuid5("https://w3id.org/bdchm/Participant", str({phv00506823}) + ":ARIC")'
+        associated_visit:
+          expr: 'uuid5("https://w3id.org/bdchm/Visit", str({phv00506823}) + ":ARIC EXAM 7")'
+        observation_type:
+          value: OBA:2045455
+        method_type:
+          value: "calculated"
+        value_quantity:
+          class_derivations:
+          - Quantity:
+              populated_from: pht012502
+              slot_derivations:
+                value_decimal:
+                  populated_from: phv00506861
+                unit:
+                  value: "kg/m2"
+- class_derivations:
+    MeasurementObservation:
+      populated_from: pht012811
+      slot_derivations:
+        associated_participant:
+          expr: 'uuid5("https://w3id.org/bdchm/Participant", str({phv00511637}) + ":ARIC")'
+        associated_visit:
+          expr: 'uuid5("https://w3id.org/bdchm/Visit", str({phv00511637}) + ":ARIC EXAM 6")'
+        observation_type:
+          value: OBA:2045455
+        method_type:
+          value: "calculated"
+        value_quantity:
+          class_derivations:
+          - Quantity:
+              populated_from: pht012811
+              slot_derivations:
+                value_decimal:
+                  populated_from: phv00511714
+                unit:
+                  value: "kg/m2"

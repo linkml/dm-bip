@@ -24,6 +24,7 @@ nav:
   - Installation: installation.md
   - Pipeline User Guide: pipeline_user_docs.md
   - Map Diagnostics: map-diagnostics.md
+  - Mapping Provenance: mapping-provenance.md
   - LinkML Tools:
     - Schema Automator: schema_automator.md
 

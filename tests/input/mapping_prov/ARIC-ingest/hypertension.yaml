@@ -1,0 +1,12 @@
+- class_derivations:
+    Condition:
+      populated_from: pht004063
+      slot_derivations:
+        condition_status:
+          populated_from: phv00204800
+- class_derivations:
+    Condition:
+      populated_from: pht004063
+      slot_derivations:
+        condition_status:
+          populated_from: phv00204801

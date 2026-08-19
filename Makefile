@@ -84,6 +84,15 @@ docs: $(INSTALL_SENTINEL)
 	$(RUN) mkdocs build
 
 
+### Code generation ###
+
+# Regenerate the mapping-provenance datamodel from its LinkML schema.
+# Needs network access: the schema imports the upstream PROV schema by URL.
+.PHONY: datamodel
+datamodel: $(PYTHON)
+	$(RUN) gen-pydantic src/dm_bip/mapping_prov/schema/mapping_prov_schema.yaml > src/dm_bip/mapping_prov/datamodel/prov.py
+
+
 ### Testing ###
 
 .PHONY: test
