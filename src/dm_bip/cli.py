@@ -172,6 +172,7 @@ def extract_mapping_provenance(
     if output is None:
         typer.echo(serialized)
     else:
+        output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(serialized)
         typer.echo(f"Mapping provenance written to {output}")
 
