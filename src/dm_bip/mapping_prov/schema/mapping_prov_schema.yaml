@@ -32,10 +32,11 @@ default_range: string
 
 imports:
   - linkml:types
-  # The upstream PROV schema is imported by URL rather than vendored so that
-  # additions to it are picked up when the datamodel is regenerated
-  # (`make datamodel`; requires network access).
-  - https://raw.githubusercontent.com/diatomsRcool/prov-schema/main/src/prov_schema/schema/prov_schema
+  # The upstream PROV schema is imported by URL rather than vendored, pinned to a
+  # commit so that regeneration (`make datamodel`; requires network access) and the
+  # schema-validation test are reproducible and cannot be broken by a push to
+  # another repository. Bump this deliberately to pick up upstream additions.
+  - https://raw.githubusercontent.com/diatomsRcool/prov-schema/be5e1b9131e863049a847ba66eba8334b4dd1917/src/prov_schema/schema/prov_schema
 
 enums:
   EntityTypeEnum:
