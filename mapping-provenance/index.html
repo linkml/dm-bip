@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://linkml.io/dm-bip/map-diagnostics/">
+        <link rel="canonical" href="https://linkml.io/dm-bip/mapping-provenance/">
       
       
-        <link rel="prev" href="../pipeline_user_docs/">
+        <link rel="prev" href="../map-diagnostics/">
       
       
-        <link rel="next" href="../mapping-provenance/">
+        <link rel="next" href="../schema_automator/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Map Diagnostics - dm-bip</title>
+        <title>Mapping Provenance - dm-bip</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#map-step-diagnostics" class="md-skip">
+        <a href="#mapping-provenance" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Map Diagnostics
+              Mapping Provenance
             
           </span>
         </div>
@@ -336,6 +336,33 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../map-diagnostics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Map Diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -355,7 +382,7 @@
   <span class="md-ellipsis">
     
   
-    Map Diagnostics
+    Mapping Provenance
   
 
     
@@ -373,7 +400,7 @@
   <span class="md-ellipsis">
     
   
-    Map Diagnostics
+    Mapping Provenance
   
 
     
@@ -399,10 +426,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-it-captures" class="md-nav__link">
+  <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What it captures
+        Usage
       
     </span>
   </a>
@@ -410,10 +437,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reading-the-flamegraph" class="md-nav__link">
+  <a href="#output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reading the flamegraph
+        Output
       
     </span>
   </a>
@@ -421,10 +448,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#runbook-ad-hoc-internal-tracing-on-real-data-rare" class="md-nav__link">
+  <a href="#study-identity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Runbook: ad-hoc internal tracing on real data (rare)
+        Study identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spec-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spec identifiers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regenerating-the-datamodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regenerating the datamodel
       
     </span>
   </a>
@@ -435,33 +484,6 @@
   
 </nav>
       
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../mapping-provenance/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Mapping Provenance
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -575,10 +597,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-it-captures" class="md-nav__link">
+  <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What it captures
+        Usage
       
     </span>
   </a>
@@ -586,10 +608,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reading-the-flamegraph" class="md-nav__link">
+  <a href="#output" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reading the flamegraph
+        Output
       
     </span>
   </a>
@@ -597,10 +619,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#runbook-ad-hoc-internal-tracing-on-real-data-rare" class="md-nav__link">
+  <a href="#study-identity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Runbook: ad-hoc internal tracing on real data (rare)
+        Study identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spec-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spec identifiers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regenerating-the-datamodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regenerating the datamodel
       
     </span>
   </a>
@@ -627,81 +671,99 @@
   
 
 
-<h1 id="map-step-diagnostics">Map-step diagnostics<a class="headerlink" href="#map-step-diagnostics" title="Permanent link">&para;</a></h1>
-<p>When the map (LinkML-Map transformation) step is slow, uses too much memory, or
-gets killed on real data, turn on diagnostics mode. It's opt-in and has <strong>zero
-cost when off</strong>.</p>
-<pre><code class="language-bash">make map-data DM_MAP_PROFILE=true DM_INPUT_DIR=... DM_SCHEMA_NAME=... DM_OUTPUT_DIR=...
+<h1 id="mapping-provenance">Mapping Provenance<a class="headerlink" href="#mapping-provenance" title="Permanent link">&para;</a></h1>
+<p><code>dm-bip extract-mapping-provenance</code> reads linkml-map transformation specs and reports
+which dbGaP studies, datasets (<code>pht</code> accessions), and variables (<code>phv</code> accessions)
+contribute to each harmonized concept, by extracting the specs' <code>populated_from</code> values.
+This is the <em>mapping</em> provenance layer of
+<a href="https://github.com/linkml/dm-bip/issues/352">linkml/dm-bip#352</a> — available from the
+specs alone, as opposed to the <em>execution</em> provenance recorded at pipeline runtime.</p>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<pre><code class="language-sh"># One directory of specs (one study), YAML to stdout
+dm-bip extract-mapping-provenance path/to/priority_variables_transform/ARIC-ingest
+
+# Several studies at once, written to a file
+dm-bip extract-mapping-provenance path/to/priority_variables_transform -o mapping-prov.yaml
+
+# As part of the pipeline (reads the same DM_TRANS_SPEC_DIR the mapping consumes;
+# also produced automatically by `make map-data`)
+make mapping-provenance
 </code></pre>
-<p><code>DM_MAP_PROFILE=true</code> works on any target that runs the map step (<code>map-data</code>,
-<code>pipeline</code>), and can be passed to the BDC workflow the same way.</p>
-<h2 id="what-it-captures">What it captures<a class="headerlink" href="#what-it-captures" title="Permanent link">&para;</a></h2>
-<p>For <strong>each entity</strong>, into <code>&lt;mapped-data&gt;/logs/&lt;Entity&gt;.log</code> and alongside it:</p>
-<ul>
-<li><strong>CPU / wall-clock profile</strong> — a <a href="https://github.com/benfred/py-spy">py-spy</a>
-  sampling profile at <code>&lt;mapped-data&gt;/logs/&lt;Entity&gt;.folded</code>. py-spy is pulled
-  ephemerally via <code>uv run --with py-spy</code>, so there's no project dependency to
-  carry; it's fetched (a prebuilt wheel) only when the flag is on.</li>
-<li><strong>Peak memory + OOM evidence</strong> — the container cgroup's <code>memory.peak</code> (bytes)
-  and <code>memory.events</code> (whose <code>oom_kill</code> counter increments when the <em>container's</em>
-  memory limit — not the instance — kills the process). These land as <code>[diag ...]</code>
-  lines in the entity log.</li>
-</ul>
-<p>The exit-code handling is unchanged: a kill still surfaces as a signal exit
-(137 = SIGKILL/OOM); the cgroup line just confirms <em>why</em>.</p>
-<h2 id="reading-the-flamegraph">Reading the flamegraph<a class="headerlink" href="#reading-the-flamegraph" title="Permanent link">&para;</a></h2>
-<p><code>&lt;Entity&gt;.folded</code> is collapsed/folded stacks. Easiest viewers, no install:</p>
-<ul>
-<li><strong><a href="https://www.speedscope.app">speedscope.app</a></strong> — drag the <code>.folded</code> file in.</li>
-<li><code>flamegraph.pl &lt;Entity&gt;.folded &gt; flame.svg</code> (Brendan Gregg's FlameGraph), or
-  <code>uv run --with inferno-cli inferno-flamegraph &lt; &lt;Entity&gt;.folded &gt; flame.svg</code>.</li>
-</ul>
-<p>Wide plateaus are where wall-clock goes. (In the OOM investigation this is where
-the per-file <code>SchemaView</code> rebuild showed up.)</p>
-<p>Note: with parallel entities (<code>-j</code>), <code>memory.peak</code> is the <strong>whole container's</strong>
-peak, not per-entity — profile one entity at a time when memory attribution
-matters. py-spy output is always per-process.</p>
-<hr />
-<h2 id="runbook-ad-hoc-internal-tracing-on-real-data-rare">Runbook: ad-hoc internal tracing on real data (rare)<a class="headerlink" href="#runbook-ad-hoc-internal-tracing-on-real-data-rare" title="Permanent link">&para;</a></h2>
-<p>The diagnostics above are <strong>external</strong> — they answer "where's the time / memory,
-did it get killed" without touching linkml-map internals, which is why they're
-safe to keep around. They cannot answer "<em>which rows vanished where inside the
-engine</em>." That question needs internal instrumentation, and internal
-instrumentation is <strong>throwaway by nature</strong>: the useful part is <em>where</em> you hook,
-and that's specific to the bug you're chasing — you rebuild it per incident, you
-don't keep a suite (a kept suite goes stale on the probe points <em>and</em> on
-linkml-map's internals, and projects coverage it doesn't have).</p>
-<p>So this is not code we keep — it's the <em>pattern</em>, so a rebuild starts from a
-known-safe starting line instead of scratch:</p>
-<ol>
-<li>
-<p><strong>Reach for it last.</strong> First exhaust the external signals (py-spy, cgroup),
-   the exit code (see the map exit-code guard), and output-size comparisons. Only
-   trace internals when those don't localize it <em>and</em> you can't reproduce off a
-   small synthetic input — i.e. you must run on the real data.</p>
-</li>
-<li>
-<p><strong>Inject from a dm-bip-side wrapper, don't fork.</strong> A short script that imports
-   linkml-map, monkey-patches the seams you care about (the transform loop in
-   <code>linkml_map.transformer.engine</code>, the loaders in <code>linkml_map.loaders</code>), then
-   invokes the CLI. Gate every hook behind an env var so it's inert unless asked.</p>
-</li>
-<li>
-<p><strong>Data safety is non-negotiable on protected data.</strong> Log <strong>only</strong> counts,
-   table/column names, and value <em>types</em> — <strong>never cell values</strong>. This is the
-   rule that makes running on real BDC data acceptable.</p>
-</li>
-<li>
-<p><strong>Capture before the kill.</strong> An OOM <code>SIGKILL</code> cannot be caught, so don't rely
-   on a clean exit: flush counters incrementally and register <code>atexit</code> <strong>plus</strong> a
-   <code>SIGTERM</code>/<code>SIGINT</code> handler that dumps current state, so you still get something
-   when the run dies.</p>
-</li>
-</ol>
-<p>The historical implementation of this pattern is archived as the linkml-map tag
-   <code>archive/probe-ff846709</code> (row-flow counters + RSS-vs-tracemalloc memory
-   attribution) — excavate with <code>git checkout tags/archive/probe-ff846709</code>. It's a
-   reference for the shape, not something to re-adopt wholesale.</p>
+<p>Directories are searched recursively for <code>*.yaml</code> spec files. Identifiers for specs and
+derived entities are formed from paths relative to the deepest common directory of the
+inputs.</p>
+<h2 id="output">Output<a class="headerlink" href="#output" title="Permanent link">&para;</a></h2>
+<p>A YAML list conforming to the
+<a href="https://github.com/linkml/dm-bip/blob/main/src/dm_bip/mapping_prov/schema/mapping_prov_schema.yaml">mapping-provenance schema</a>,
+an extension of the <a href="https://github.com/diatomsRcool/prov-schema">PROV LinkML schema</a>
+expressing the dbGaP granularity issue #352 calls for. Following the direction of
+<a href="https://github.com/diatomsRcool/prov-schema/issues/10">prov-schema#10</a>, everything is a
+generic PROV <code>Entity</code> typed by a controlled vocabulary (<code>entity_type</code>) rather than
+dedicated classes, and containment — which carries the study → dataset → variable
+alignment — uses a <code>dcterms:hasPart</code> relation, rendered nested.</p>
+<p>The first record is a run <code>Activity</code> — the execution-provenance layer — documenting
+when extraction ran, the dm-bip agent (with the versions of its key dependencies)
+that performed it, and the specs it read:</p>
+<pre><code class="language-yaml">- id: dmcprov:run/9ef32acd-5c08-467f-9cde-2ac945fed0cd
+  name: dm-bip extract-mapping-provenance
+  started_at_time: '2026-08-12T18:54:26Z'
+  ended_at_time: '2026-08-12T18:54:27Z'
+  has_input:
+  - https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/blob/&lt;commit&gt;/priority_variables_transform/ARIC-ingest/bmi.yaml
+  associated_with:
+    id: https://github.com/linkml/dm-bip
+    name: dm-bip 0.1.0
+    description: dm_bip 0.1.0, linkml_map 0.5.3, schema_automator 0.5.6, linkml 1.11.1
+- id: bdchm:Study/phs000280
+  entity_type: study
+  name: Atherosclerosis Risk in Communities (ARIC)
+  has_part:
+  - id: dbgap:pht004063
+    entity_type: dataset
+    name: pht004063
+    has_part:
+    - id: dbgap:phv00204719
+      entity_type: variable
+      name: phv00204719
+      description: Source for Quantity.value_decimal
+  - id: dmcprov:ARIC-ingest/bmi.yaml
+    entity_type: transformation_spec
+    name: ARIC-ingest/bmi.yaml
+  - id: dmcprov:ARIC-ingest/bmi/MeasurementObservation/pht004063
+    name: MeasurementObservation derived from pht004063 (ARIC-ingest/bmi.yaml)
+    derived_from:
+    - dbgap:pht004063
+    - dbgap:phv00204719
+    - dmcprov:ARIC-ingest/bmi.yaml
+</code></pre>
+<p>A study's <code>has_part</code> holds its datasets (each nesting its variables), its transformation
+specs, and its derived entities, in that order. Each derivation fragment in a spec
+becomes one derived entity, keeping the pairing between a dataset and the variables
+drawn from it (one fragment per contributing dataset/exam). The <code>derived_from</code> list
+names the source dataset, the source variables, and the transformation spec itself —
+value-level mapping detail (e.g. <code>0 → ABSENT</code>) intentionally lives only in the spec,
+which the provenance points back to.</p>
+<h2 id="study-identity">Study identity<a class="headerlink" href="#study-identity" title="Permanent link">&para;</a></h2>
+<p>The study rooting each document comes from the spec directory's <code>researchstudy.yaml</code>
+(its <code>accession_number</code> constant, e.g. <code>phs000280</code>, becomes <code>bdchm:Study/phs000280</code>).
+Directories without one fall back to a placeholder study named after the directory, with
+a warning.</p>
+<p>Variables referenced only inside <code>expr</code> expressions (e.g. join keys such as
+<code>{phv00204812}</code>) are also captured as sources; their <code>description</code> is marked
+<code>(via expression)</code>.</p>
+<h2 id="spec-identifiers">Spec identifiers<a class="headerlink" href="#spec-identifiers" title="Permanent link">&para;</a></h2>
+<p>When a spec file is read from a clean git checkout with a GitHub <code>origin</code> remote, it is
+identified by a commit-pinned permalink — e.g.
+<code>https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/blob/&lt;commit&gt;/priority_variables_transform/ARIC-ingest/bmi.yaml</code>
+— an immutable URL naming the spec exactly as it was read. Specs that are untracked or
+locally modified (where a commit URL would misrepresent their content), or not in a
+GitHub checkout at all, fall back to local-path <code>dmcprov:</code> identifiers with a warning.
+Derived-entity identifiers always use the <code>dmcprov:</code> form: they are this tool's records,
+not repository artifacts.</p>
+<h2 id="regenerating-the-datamodel">Regenerating the datamodel<a class="headerlink" href="#regenerating-the-datamodel" title="Permanent link">&para;</a></h2>
+<p>The extractor constructs classes generated from the LinkML schema. After editing
+<code>mapping_prov_schema.yaml</code>, regenerate with <code>make datamodel</code> (requires network access:
+the schema imports the upstream PROV schema by URL).</p>
 
 
 
