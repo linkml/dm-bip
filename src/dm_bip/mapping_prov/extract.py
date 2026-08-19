@@ -70,11 +70,12 @@ class DerivationSources:
 
 @dataclass
 class _RepoInfo:
-    """A spec directory's git context: the repository, its GitHub base URL, and HEAD commit."""
+    """A spec directory's git context: the repository, its GitHub base URL, HEAD commit, and dirty paths."""
 
     repo: git.Repo
     url_base: str
     commit: str
+    dirty: frozenset[str]
 
 
 _repo_info_cache: dict[Path, "_RepoInfo | None"] = {}
@@ -86,6 +87,21 @@ def _github_base(remote: str) -> str | None:
     return f"https://github.com/{match.group(1)}" if match else None
 
 
+def _dirty_paths(repo: git.Repo) -> frozenset[str]:
+    """
+    Return the repo-relative paths that are untracked or differ from HEAD.
+
+    Collected once per repository rather than per spec file: a per-file dirty check costs
+    several git subprocesses each, which is significant for trans-spec directories holding
+    hundreds of specs.
+    """
+    paths = set(repo.untracked_files)
+    for diff in (repo.index.diff(None), repo.index.diff(repo.head.commit)):
+        paths.update(entry.a_path for entry in diff if entry.a_path)
+        paths.update(entry.b_path for entry in diff if entry.b_path)
+    return frozenset(paths)
+
+
 def _repo_info(directory: Path) -> _RepoInfo | None:
     """Return (and cache) the git context for a spec directory, or None if unavailable."""
     if directory not in _repo_info_cache:
@@ -93,7 +109,16 @@ def _repo_info(directory: Path) -> _RepoInfo | None:
             repo = git.Repo(directory, search_parent_directories=True)
             remote_url = next((remote.url for remote in repo.remotes if remote.name == "origin"), None)
             url_base = _github_base(remote_url) if remote_url else None
-            info = _RepoInfo(repo=repo, url_base=url_base, commit=repo.head.commit.hexsha) if url_base else None
+            info = (
+                _RepoInfo(
+                    repo=repo,
+                    url_base=url_base,
+                    commit=repo.head.commit.hexsha,
+                    dirty=_dirty_paths(repo),
+                )
+                if url_base
+                else None
+            )
         except (git.InvalidGitRepositoryError, git.NoSuchPathError, ValueError):
             info = None
         if info is None:
@@ -116,7 +141,7 @@ def spec_url(spec_path: Path) -> tuple[str, str] | None:
     if info is None or info.repo.working_tree_dir is None:
         return None
     relpath = spec_path.resolve().relative_to(Path(info.repo.working_tree_dir).resolve())
-    if info.repo.is_dirty(path=str(relpath), untracked_files=True):
+    if str(relpath) in info.dirty:
         logger.warning("%s is untracked or locally modified; using local path id instead of a commit URL", spec_path)
         return None
     return f"{info.url_base}/blob/{info.commit}/{relpath}", str(relpath)
