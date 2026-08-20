@@ -1,6 +1,6 @@
 # Variable Library Extractor
 
-Design notes and build record for `src/dm_bip/variable_lib/` — a deterministic script that
+Design notes for `src/dm_bip/variable_lib/` — a deterministic script that
 takes a transformation spec and emits variable library entries (`SingleContinuousVariable`
 and `SingleCategoricalVariable` instances).
 
@@ -8,34 +8,33 @@ Deliverable.4.5.Task.2,
 [tis-lab/BDC-Add-On-Tracker#93](https://github.com/tis-lab/BDC-Add-On-Tracker/issues/93).
 Modeled on the dm-bip mapping-provenance tool, whose spec-reading layer it reuses.
 
-## Why the join matters
+## Why the study/dataset/variable join matters
+
+dbGaP identifies phenotype data at three nested levels, each with its own accession prefix:
+a **study** (`phs`) holds **datasets** (`pht`), which hold **variables** (`phv`).
+
+```
+phs000101              study      the study as registered in dbGaP
+└── pht000113          dataset    one table within it
+    └── phv10111300    variable   one column in that table
+```
+
+Only all three together identify a measurement. `phv10111300` on its own does not say which
+table it came from, and equivalent variables recur across studies under different
+accessions. **That three-level linkage is what this page calls the join**, and what the
+`phv/pht/phs` triple below records.
 
 [linkml/dm-bip#352](https://github.com/linkml/dm-bip/issues/352) is the governing
-requirement: **study → dataset → variable alignment must survive.** The variable library
-flattens contributing sources into parallel comma-delimited lists — 7 studies, 11 datasets,
-33 variables for a single harmonized concept — which loses the join between them. You can
-no longer say which variable came from which dataset in which study.
+requirement: **the join must survive harmonization.** The BDC variable library's own
+representation flattens contributing sources into parallel comma-delimited lists — 7
+studies, 11 datasets, 33 variables for a single harmonized concept — which breaks it. You
+can no longer say which variable came from which dataset in which study.
 
 dm-bip is where that join still exists losslessly, because a transformation spec states it
 directly: the dataset is a class-level `populated_from`, the variables are the slot-level
 ones beneath it, and the study is the directory they sit in. Preserving that structure is
 the point of this script, and it is why each entry carries the full phv/pht/phs triple
 rather than a variable id alone.
-
-## The steps
-
-| # | Step | State |
-|---|---|---|
-| 1 | **IR + `collect_variables`** — `VariableUsage` / `VariableRecord` index the specs by `phv` accession, accumulating every use | done |
-| 2 | **`emit.py` + `classify.py`** — records become typed BDC instances, typed from schema-automator output | done |
-| 3 | **CLI + make target** — `dm-bip extract-variable-library`, `make variable-library` | done |
-| 4 | **Classification rule beyond declared range** | open — typing |
-| 5 | **Real study accession** for `associated_study` | open — study identity |
-| 6 | **`MetadataSource` implementation** filling descriptive slots | out of scope for #93 |
-
-Steps 1–3 are built and passing: 11 files added, 4 modified, 22 tests. On the synthetic
-study, 35 of 35 source variables are typed and emitted, byte-identical across runs.
-Details in [What got built](#what-got-built-steps-13); the open questions are named below.
 
 ## Scope, and what it settles
 
@@ -48,15 +47,9 @@ otherwise be judgement calls.
   field. A data dictionary is a different input, so an entry carries the phv/pht/phs join
   and a description of what the variable feeds, and nothing else. `MetadataSource` exists as
   the seam if that ever widens.
-
-  Worth knowing before anyone reaches for the obvious source: the toy dictionary at
-  `toy_data/data_dictionary/toy_data_dictionary.tsv` carries only
-  `table / Column Name / Description / Data Type / Example Value(s)`. It has no
-  MIN/MAX/RESOLUTION/VALUES columns, so it cannot model these slots even as a stand-in.
 - **No values are read from data.** Nothing computes an observed minimum or maximum, so
   there is no observed-versus-declared tension to resolve.
-- **Deterministic means no model in the runtime path.** Per the Aug 11 note on #93, Claude
-  wrote this script; it does not run inside it. Extraction is `ast`, `SchemaView`, and
+- **Deterministic.** No model runs in the extraction path — it is `ast`, `SchemaView`, and
   dataclasses.
 
 ## Open questions
@@ -67,7 +60,7 @@ Two remain.
   two *typed* BDC classes, and a transformation spec does not say which a variable is. So
   the script takes `-s <schema-automator output>` — an input #93 does not mention.
   `source_id` and `file_id` are defined only on the typed classes, so emitting untyped is
-  not available either. Worth confirming in the briefing.
+  not available either.
 - **Study identity.** `associated_study` needs a real `phs` accession. It comes from each
   spec directory's `researchstudy.yaml`, which the release repos do not carry, so runs
   against them yield placeholder ids.
@@ -102,11 +95,11 @@ study-aware instead.
 
 ---
 
-## Two findings about the inputs
+## What the generated schema looks like
 
-**1. The join to schema-automator output is exact, not fuzzy.** In the generated schema
-(`$SYNTH/output/study_one/ExampleStudyOne.yaml`), classes are named by `pht` accession and
-slots by `phv` accession:
+**1. The join to schema-automator output is exact, not fuzzy.** In the generated
+`$(DM_SCHEMA_NAME).yaml`, classes are named by `pht` accession and slots by `phv`
+accession — for example, from the synthetic corpus:
 
 ```yaml
 classes:
@@ -162,7 +155,7 @@ The hard part already exists. `extract.py` imports `iter_spec_blocks`, `spec_url
 `variable_lib` parses YAML itself.
 
 If a third consumer appears, those should be lifted into a shared module rather than
-imported sideways. Worth raising on the PR rather than deciding alone.
+imported sideways.
 
 ### The IR accumulates, it doesn't overwrite
 
@@ -178,6 +171,13 @@ feeds:
 `via_expression` is kept because an identifier woven into a `uuid5()` call is a materially
 weaker claim about a variable's role than a value copied straight across, and a library
 entry shouldn't flatten the two.
+
+### The generation shim
+
+`src/dm_bip/variable_lib/schema/variable_lib_schema.yaml` exists only because `gen-pydantic`
+takes a local file and will not accept a URL. It adds nothing of its own, importing the
+upstream `bdc-variable-library` schema by URL and tracking `main` deliberately so upstream
+fixes are picked up when the datamodel is regenerated.
 
 ### `datasets` is a set
 
@@ -247,66 +247,6 @@ string — no name, no accession authority — which sharpens the study-identity
 
 ---
 
-## What got built (steps 1–3)
-
-11 files added, 4 modified.
-
-### Step 1 — IR + `collect_variables` + unit tests
-
-**Added**
-
-| File | Contents |
-|---|---|
-| `src/dm_bip/variable_lib/__init__.py` | package marker |
-| `src/dm_bip/variable_lib/extract.py` | `VariableUsage`, `VariableRecord`, `collect_variables` |
-| `tests/unit/variable_lib/__init__.py` | package marker |
-| `tests/unit/variable_lib/test_extract.py` | 10 tests |
-
-Depends on nothing but the specs. Reuses the existing fixtures under
-`tests/input/mapping_prov/ARIC-ingest/`, so no new spec fixtures were needed.
-
-### Step 2 — `emit.py` (+ `classify.py`)
-
-**Added**
-
-| File | Contents |
-|---|---|
-| `src/dm_bip/variable_lib/emit.py` | `describe`, `to_entries`, `to_yaml`, `MetadataSource` |
-| `src/dm_bip/variable_lib/classify.py` | `VariableKind`, `classify_from_source_schema`, `classifier_for` |
-| `src/dm_bip/variable_lib/schema/variable_lib_schema.yaml` | gen-pydantic shim importing bdc-variable-library |
-| `src/dm_bip/variable_lib/datamodel/__init__.py` | package marker |
-| `src/dm_bip/variable_lib/datamodel/variable_lib.py` | generated, 3075 lines, lint-excluded |
-| `tests/input/variable_lib/source_schema.yaml` | stand-in for schema-automator output |
-| `tests/unit/variable_lib/test_emit.py` | 12 tests |
-
-**Modified**
-
-| File | Change |
-|---|---|
-| `Makefile` | split `datamodel` into `mapping-prov-datamodel` + `variable-lib-datamodel` |
-| `pyproject.toml` | added the generated file to ruff's `extend-exclude` |
-
-The schema shim exists only because `gen-pydantic` takes a local file and will not accept a
-URL; it adds nothing of its own and imports the upstream schema by URL, tracking `main`
-deliberately so open-question-4 fixes are picked up.
-
-`classify.py` was step 4 in the original plan. It was pulled forward because a stub
-classifier returning `unknown` would have emitted an empty file and proved nothing, whereas
-the declared-range rule is defensible on its own.
-
-### Step 3 — CLI + make target
-
-**Modified**
-
-| File | Change |
-|---|---|
-| `src/dm_bip/cli.py` | `extract-variable-library` command (+39 lines) |
-| `pipeline.Makefile` | `VARIABLE_LIBRARY_FILE` variable and `variable-library` target (+14 lines) |
-
-The make target takes `$(SCHEMA_FILE)` as a prerequisite alongside the specs — that
-dependency is the typing question expressed in make: the specs say which variables exist,
-the schema says what each one is. It is not wired into `make pipeline`.
-
 ---
 
 ## Running it
@@ -331,47 +271,39 @@ them. The output directory is created by `schema-create`.
 
 ### Commands
 
-Run from the dm-bip checkout, since `uv run` resolves against that project. `SYNTH` points
-at the `synthetic/` directory of a study-palette checkout.
+```sh
+# One directory of specs (one study), typed against that study's inferred schema
+dm-bip extract-variable-library path/to/specs/<study> \
+  -s path/to/output/<study>/<DM_SCHEMA_NAME>.yaml \
+  -o variable-library.yaml
 
-```bash
-SYNTH=/path/to/study-palette/synthetic
-
-# 1. Build the schema that types each variable (seconds)
-make schema-create CONFIG=$SYNTH/pipeline/example_study_one.mk \
-     SYNTH_DIR=$SYNTH SYNTH_OUTPUT_DIR=$SYNTH/output/study_one
-
-# 2. Extract the variable library
-uv run dm-bip extract-variable-library \
-  $SYNTH/specs/example_study_one \
-  -s $SYNTH/output/study_one/ExampleStudyOne.yaml \
-  -o $SYNTH/output/study_one/variable-library.yaml
+# As part of the pipeline, with every path resolved from the pipeline config
+make schema-create      CONFIG=path/to/study.mk    # builds the -s schema
+make variable-library   CONFIG=path/to/study.mk
 ```
 
-Where each argument comes from, for other studies:
+Directories are searched recursively for `*.yaml` spec files, as in
+[mapping provenance](mapping-provenance.md).
 
-| Argument | Value | Source |
-|---|---|---|
-| spec dir | `$SYNTH/specs/example_study_one` | `DM_TRANS_SPEC_DIR` in the config `.mk` |
-| `-s` | `$SYNTH/output/study_one/ExampleStudyOne.yaml` | `$(DM_OUTPUT_DIR)/$(DM_SCHEMA_NAME).yaml` |
-| `-o` | `$SYNTH/output/study_one/variable-library.yaml` | your choice; the make target uses this |
+Where each argument comes from, for any study:
 
-The make target wraps step 2 with those paths resolved from the config:
+| Argument | Pipeline variable |
+|---|---|
+| spec dir | `DM_TRANS_SPEC_DIR` |
+| `-s` | `SCHEMA_FILE`, i.e. `$(DM_OUTPUT_DIR)/$(DM_SCHEMA_NAME).yaml` |
+| `-o` | `VARIABLE_LIBRARY_FILE`, i.e. `$(DM_OUTPUT_DIR)/variable-library.yaml` |
 
-```bash
-make variable-library CONFIG=$SYNTH/pipeline/example_study_one.mk \
-     SYNTH_DIR=$SYNTH SYNTH_OUTPUT_DIR=$SYNTH/output/study_one
-```
+Unlike `mapping-provenance`, `variable-library` is **not** wired into `make pipeline` and is
+**not** produced as a side effect of `make map-data` — it has to be asked for by name.
 
 Being a file target, it prints **"Nothing to be done"** when the output is newer than its
 inputs. Delete just that file to force a rebuild — not the output directory, which holds the
-`-s` schema:
+`-s` schema. The direct `dm-bip extract-variable-library` form always regenerates, which
+makes it the better loop while iterating.
 
-```bash
-rm $SYNTH/output/study_one/variable-library.yaml
-```
-
-The direct `uv run` form always regenerates, which makes it the better loop while iterating.
+For a worked end-to-end invocation with real paths, see `synthetic/README.md` in
+[tis-lab/study-palette](https://github.com/tis-lab/study-palette), which runs this against
+its synthetic cohorts.
 
 To regenerate the checked-in datamodel after an upstream schema change (needs network):
 
@@ -379,42 +311,18 @@ To regenerate the checked-in datamodel after an upstream schema change (needs ne
 make variable-lib-datamodel
 ```
 
-Result on the synthetic study — 35 of 35 source variables typed and emitted, byte-identical
-across runs.
-
 ## Running the tests
 
 ```bash
-uv run pytest tests/unit/variable_lib -q     # the 22 new tests, ~3s
-make test                                    # full suite, 318 tests, ~52s
+uv run pytest tests/unit/variable_lib -q
 ```
 
-Useful variants:
-
-```bash
-uv run pytest tests/unit/variable_lib/test_emit.py -v          # one file, with test names
-uv run pytest tests/unit/variable_lib -k classify              # match by name
-uv run pytest tests/unit/variable_lib -q -x                    # stop at first failure
-uv run pytest tests/unit/variable_lib --cov=dm_bip.variable_lib --cov-report=term-missing
-```
-
-The `variable_lib` unit tests are fully offline — the classifier fixture is a local schema.
-But `tests/integration/test_mapping_prov_schema.py`, which `make test` includes, **needs
-network**: it validates against the upstream PROV schema imported by URL. Use
-`uv run pytest tests/unit -q` to skip it.
+These are offline — the classifier fixture is a local schema. The full `make test` also runs
+`tests/integration/test_mapping_prov_schema.py`, which needs network: it validates against
+the upstream PROV schema imported by URL.
 
 The pydantic `UserWarning` about `FieldInfo(annotation=NoneType...)` is pre-existing noise
 from the generated datamodel, not a failure.
-
-Before pushing:
-
-```bash
-uv run ruff check && uv run ruff format --check   # both pass clean
-make lint                                         # also runs the notebook checks
-```
-
-`make lint` currently exits non-zero on 16 pre-existing errors in `notebooks/*.ipynb`,
-unrelated to this work.
 
 ---
 
@@ -425,8 +333,7 @@ the generated schema is `integer`, so the current rule types it **continuous** �
 wrong: it is a label that happens to be numeric. Its `num_distinct_values` is `500` out of
 500 rows, exactly the signal that would catch it.
 
-That single variable is the whole typing question in one case. Worth putting in front of
-Daniel as-is rather than describing it abstractly.
+That single variable is the whole typing question in one case.
 
 ---
 
@@ -435,16 +342,7 @@ Daniel as-is rather than describing it abstractly.
 - **Classification rule beyond declared range** — needs the typing question answered.
 - **Real study accession** — needs the study-identity question answered.
 - **`MetadataSource` implementation** — out of scope for #93; build only if scope widens.
-
-Also not done:
-
-- **Integration test** validating emitted entries against the upstream schema (the
-  `tests/integration/test_mapping_prov_schema.py` equivalent). Needs a decision on whether
-  to validate against the generation shim or the upstream URL.
-- **Pipeline wiring** — #93 asks for a script, not a stage, so this is optional.
-- **`docs/` page.** `docs/mapping-provenance.md` has no counterpart yet.
-- **Upstream schema defects** are unfiled. Note that `data_type` and `unit`
-  *do* resolve — `gen-pydantic` succeeds and `data_type` comes through as `DataTypeEnum`
-  from the imported microschema profiles — so that half of the concern is resolved. The
-  `alert_value`/`alert_values` duplication stands. Upstream `main` is at `535f837`, ahead of
-  the local checkout at `fd49e7f`.
+- **Integration test** validating emitted entries against the upstream schema. Needs a
+  decision on whether to validate against the generation shim or the upstream URL.
+- **Upstream schema defect**: the `alert_value`/`alert_values` duplication in
+  bdc-variable-library is unfiled.
