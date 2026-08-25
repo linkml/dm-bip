@@ -157,14 +157,7 @@ output/
 # Generated Seven Bridges task manifest + log dumps
 /batch_tasks.csv
 /task_logs/
-copdgene_tasks.csv
-spiromics_tasks.csv
-jhs_tasks.csv
-aric_tasks.csv
-mesa_tasks.csv
+# Per-cohort / ad-hoc Seven Bridges task manifests (aric_tasks.csv, whi_tasks.csv,
+# testing_tasks.csv, ...). Covers /batch_tasks.csv above as well.
+*_tasks.csv
 cardia.csv
-chs_tasks.csv
-whi_tasks.csv
-hchs_tasks.csv
-cardia_tasks.csv
-fhs_tasks.csv
