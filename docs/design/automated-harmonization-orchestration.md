@@ -80,7 +80,7 @@ The pivotal substitution is simple: **the JIRA automation rule replaces the huma
 
 ## 5. The parameter contract (JIRA fields → SB task inputs)
 
-The JIRA ticket already carries every parameter a harmonization run needs, as structured custom fields (see `tracker/jira_agent.py` in the DST). This mapping is the **interface contract** between the orchestrator and dm-bip:
+The JIRA ticket already carries every parameter a harmonization run needs, as structured custom fields (see `api/tracker/jira_agent.py` in the DST). This mapping is the **interface contract** between the orchestrator and dm-bip:
 
 | JIRA field | ID | → SB task input | Notes |
 |---|---|---|---|
@@ -89,7 +89,8 @@ The JIRA ticket already carries every parameter a harmonization run needs, as st
 | Consent Code | (intake `consent_code`) | consent suffix | Consent group |
 | Accession Number | `customfield_15206` | run identity | dbGaP `phs` accession |
 | Version Update | `customfield_15205` | run identity | Submission version |
-| Gen3 Project Name | `customfield_15208/9` | (downstream) | For Gen3 indexing |
+| Gen(3) Project Name(s) | `customfield_15208` | (downstream) | For Gen3 indexing |
+| Gen(3) Project Name | `customfield_15209` | (downstream) | For Gen3 indexing |
 
 Keeping this table accurate as fields evolve is part of owning the deliverable, even though the fields are defined in the DST.
 
