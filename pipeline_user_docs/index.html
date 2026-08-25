@@ -737,6 +737,88 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/automated-harmonization-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automated Harmonization Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -1015,62 +1097,62 @@
 </ul>
 <h2 id="quick-start-with-toy-data">Quick Start with Toy Data<a class="headerlink" href="#quick-start-with-toy-data" title="Permanent link">&para;</a></h2>
 <p>The fastest way to understand the pipeline is to run it on the included toy data:</p>
-<pre><code class="language-bash"># Simple run — clean TSVs with human-readable columns
-make pipeline CONFIG=toy_data/pre_cleaned/config.mk
+<div class="highlight"><pre><span></span><code><span class="c1"># Simple run — clean TSVs with human-readable columns</span>
+make<span class="w"> </span>pipeline<span class="w"> </span><span class="nv">CONFIG</span><span class="o">=</span>toy_data/pre_cleaned/config.mk
 
-# Full run — starts from raw dbGaP-format files, exercises all stages
-make pipeline CONFIG=toy_data/from_raw/config.mk
-</code></pre>
+<span class="c1"># Full run — starts from raw dbGaP-format files, exercises all stages</span>
+make<span class="w"> </span>pipeline<span class="w"> </span><span class="nv">CONFIG</span><span class="o">=</span>toy_data/from_raw/config.mk
+</code></pre></div>
 <p>See <code>toy_data/README.md</code> for details on the toy dataset.</p>
 <h2 id="pipeline-overview">Pipeline Overview<a class="headerlink" href="#pipeline-overview" title="Permanent link">&para;</a></h2>
 <p>The pipeline has four stages, orchestrated by <code>make</code>. Running <code>make pipeline</code> executes all applicable stages in order. The manual commands below use the toy data as examples.</p>
 <h3 id="1-prepare-make-prepare-input">1. Prepare (<code>make prepare-input</code>)<a class="headerlink" href="#1-prepare-make-prepare-input" title="Permanent link">&para;</a></h3>
 <p>Clean raw input files: strip dbGaP metadata headers, filter tables by ID, output clean TSVs. Only runs when <code>DM_RAW_SOURCE</code> is set. <em>Skip this if your data is already clean TSV/CSV.</em></p>
-<pre><code class="language-bash">uv run python src/dm_bip/cleaners/prepare_input.py --source toy_data/data/raw --mapping toy_data/from_raw/specs --output output/ToyRaw/prepared
-</code></pre>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>src/dm_bip/cleaners/prepare_input.py<span class="w"> </span>--source<span class="w"> </span>toy_data/data/raw<span class="w"> </span>--mapping<span class="w"> </span>toy_data/from_raw/specs<span class="w"> </span>--output<span class="w"> </span>output/ToyRaw/prepared
+</code></pre></div>
 <h3 id="2-schema-make-schema-create">2. Schema (<code>make schema-create</code>)<a class="headerlink" href="#2-schema-make-schema-create" title="Permanent link">&para;</a></h3>
 <p>Infer a source LinkML schema from the data using <a href="https://linkml.io/schema-automator/">schema-automator</a>. Produces one class per file, one slot per column.</p>
-<pre><code class="language-bash">uv run schemauto generalize-tsvs -n ToyPreCleaned toy_data/data/pre_cleaned/*.tsv -o output/ToyPreCleaned/ToyPreCleaned.yaml
-</code></pre>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>schemauto<span class="w"> </span>generalize-tsvs<span class="w"> </span>-n<span class="w"> </span>ToyPreCleaned<span class="w"> </span>toy_data/data/pre_cleaned/*.tsv<span class="w"> </span>-o<span class="w"> </span>output/ToyPreCleaned/ToyPreCleaned.yaml
+</code></pre></div>
 <h3 id="3-validate-make-validate-data">3. Validate (<code>make validate-data</code>)<a class="headerlink" href="#3-validate-make-validate-data" title="Permanent link">&para;</a></h3>
 <p>Validate each input file against the generated schema using <a href="https://linkml.io/linkml/">linkml validate</a>. Supports parallel execution (<code>make -j 4 validate-data</code>).</p>
-<pre><code class="language-bash">uv run linkml validate --schema output/ToyPreCleaned/ToyPreCleaned.yaml --target-class subject toy_data/data/pre_cleaned/subject.tsv
-</code></pre>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>linkml<span class="w"> </span>validate<span class="w"> </span>--schema<span class="w"> </span>output/ToyPreCleaned/ToyPreCleaned.yaml<span class="w"> </span>--target-class<span class="w"> </span>subject<span class="w"> </span>toy_data/data/pre_cleaned/subject.tsv
+</code></pre></div>
 <h3 id="4-map-make-map-data">4. Map (<code>make map-data</code>)<a class="headerlink" href="#4-map-make-map-data" title="Permanent link">&para;</a></h3>
 <p>Transform data to a target schema using <a href="https://linkml.io/linkml-map/">linkml-map</a> transformation specifications.</p>
-<pre><code class="language-bash">uv run linkml-map map-data \
-  -T output/ToyPreCleaned/mapped-data/composed-specs/Participant.yaml \
-  -s output/ToyPreCleaned/ToyPreCleaned.yaml \
-  --target-schema toy_data/target-schema.yaml \
-  -o output/ToyPreCleaned/mapped-data/TOY-Participant-data.yaml \
-  -f yaml \
-  toy_data/data/pre_cleaned/
-</code></pre>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>linkml-map<span class="w"> </span>map-data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-T<span class="w"> </span>output/ToyPreCleaned/mapped-data/composed-specs/Participant.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-s<span class="w"> </span>output/ToyPreCleaned/ToyPreCleaned.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--target-schema<span class="w"> </span>toy_data/target-schema.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-o<span class="w"> </span>output/ToyPreCleaned/mapped-data/TOY-Participant-data.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-f<span class="w"> </span>yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>toy_data/data/pre_cleaned/
+</code></pre></div>
 <h2 id="preparing-your-data">Preparing Your Data<a class="headerlink" href="#preparing-your-data" title="Permanent link">&para;</a></h2>
 <p>Input files must meet these requirements:
 - <strong>Format</strong>: TSV (tab-separated) or CSV
 - <strong>Filenames</strong>: lowercase, no spaces or special characters
 - One file per source table</p>
-<p>To convert a CSV to TSV:</p>
-<pre><code class="language-bash">uv run python -c &quot;import pandas as pd; pd.read_csv('file.csv').to_csv('file.tsv', sep='\t', index=False)&quot;
-</code></pre>
+<p>To convert a CSV to TSV:
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import pandas as pd; pd.read_csv(&#39;file.csv&#39;).to_csv(&#39;file.tsv&#39;, sep=&#39;\t&#39;, index=False)&quot;</span>
+</code></pre></div></p>
 <h3 id="raw-dbgap-data">Raw dbGaP Data<a class="headerlink" href="#raw-dbgap-data" title="Permanent link">&para;</a></h3>
 <p>If you're working with raw dbGaP <code>.txt.gz</code> archives, the prepare step handles extraction and cleaning automatically. Set <code>DM_RAW_SOURCE</code> to the directory containing the archives.</p>
 <h2 id="running-the-pipeline">Running the Pipeline<a class="headerlink" href="#running-the-pipeline" title="Permanent link">&para;</a></h2>
 <h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
-<pre><code class="language-bash">make pipeline DM_INPUT_DIR=path/to/your/tsvs DM_SCHEMA_NAME=MyStudy
-</code></pre>
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>pipeline<span class="w"> </span><span class="nv">DM_INPUT_DIR</span><span class="o">=</span>path/to/your/tsvs<span class="w"> </span><span class="nv">DM_SCHEMA_NAME</span><span class="o">=</span>MyStudy
+</code></pre></div>
 <p>This runs schema creation and validation. To also run data transformation, provide transformation specs and a target schema:</p>
-<pre><code class="language-bash">make pipeline \
-  DM_INPUT_DIR=path/to/your/tsvs \
-  DM_SCHEMA_NAME=MyStudy \
-  DM_TRANS_SPEC_DIR=path/to/specs \
-  DM_MAP_TARGET_SCHEMA=path/to/target-schema.yaml
-</code></pre>
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>pipeline<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="nv">DM_INPUT_DIR</span><span class="o">=</span>path/to/your/tsvs<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="nv">DM_SCHEMA_NAME</span><span class="o">=</span>MyStudy<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="nv">DM_TRANS_SPEC_DIR</span><span class="o">=</span>path/to/specs<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="nv">DM_MAP_TARGET_SCHEMA</span><span class="o">=</span>path/to/target-schema.yaml
+</code></pre></div>
 <h3 id="using-a-config-file">Using a Config File<a class="headerlink" href="#using-a-config-file" title="Permanent link">&para;</a></h3>
 <p>For reproducibility, put your variables in a <code>.mk</code> file and pass it with <code>CONFIG=</code>:</p>
-<pre><code class="language-bash">make pipeline CONFIG=my-study/config.mk
-</code></pre>
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>pipeline<span class="w"> </span><span class="nv">CONFIG</span><span class="o">=</span>my-study/config.mk
+</code></pre></div>
 <p>See <code>toy_data/pre_cleaned/config.mk</code> for an example.</p>
 <h3 id="key-variables">Key Variables<a class="headerlink" href="#key-variables" title="Permanent link">&para;</a></h3>
 <table>
@@ -1127,53 +1209,53 @@ make pipeline CONFIG=toy_data/from_raw/config.mk
 <p>Run <code>make help</code> to see the full list of targets and variables.</p>
 <h3 id="output-structure">Output Structure<a class="headerlink" href="#output-structure" title="Permanent link">&para;</a></h3>
 <p>All output goes to <code>DM_OUTPUT_DIR</code> (default: <code>output/&lt;schema_name&gt;/</code>):</p>
-<pre><code>output/MyStudy/
+<div class="highlight"><pre><span></span><code>output/MyStudy/
 ├── MyStudy.yaml                    # Generated source schema
 ├── prepared/                       # Clean TSVs (if prepare step ran)
 ├── validation-logs/                # Schema and data validation logs
 │   ├── data-validation/            # Per-file validation results
 │   └── data-validation-errors/     # Symlinks to files with errors
 └── mapped-data/                    # Transformed output files
-</code></pre>
+</code></pre></div>
 <h2 id="writing-transformation-specifications">Writing Transformation Specifications<a class="headerlink" href="#writing-transformation-specifications" title="Permanent link">&para;</a></h2>
 <p>Transformation specs are YAML files that tell <a href="https://linkml.io/linkml-map/">linkml-map</a> how to map source data to a target schema. Create one spec file per target class.</p>
 <h3 id="basic-structure">Basic Structure<a class="headerlink" href="#basic-structure" title="Permanent link">&para;</a></h3>
-<pre><code class="language-yaml">- class_derivations:
-    Participant:
-      populated_from: subject        # source filename (without extension)
-      slot_derivations:
-        id:
-          populated_from: subject_id  # source column name
-        external_id:
-          populated_from: participant_external_id
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">class_derivations</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">Participant</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">populated_from</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject</span><span class="w">        </span><span class="c1"># source filename (without extension)</span>
+<span class="w">      </span><span class="nt">slot_derivations</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">populated_from</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">subject_id</span><span class="w">  </span><span class="c1"># source column name</span>
+<span class="w">        </span><span class="nt">external_id</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">populated_from</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">participant_external_id</span>
+</code></pre></div>
 <ul>
 <li><code>populated_from</code> under the class name identifies which input file provides the data</li>
 <li>Each <code>slot_derivation</code> maps a target slot to a source column</li>
 </ul>
 <h3 id="slot-value-options">Slot Value Options<a class="headerlink" href="#slot-value-options" title="Permanent link">&para;</a></h3>
 <p>Slots can be populated in several ways:</p>
-<pre><code class="language-yaml">slot_derivations:
-    # Direct column mapping
-    age:
-      populated_from: age_at_enrollment
+<div class="highlight"><pre><span></span><code><span class="nt">slot_derivations</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># Direct column mapping</span>
+<span class="w">    </span><span class="nt">age</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">populated_from</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">age_at_enrollment</span>
 
-    # Constant value
-    study_name:
-      value: &quot;My Study&quot;
+<span class="w">    </span><span class="c1"># Constant value</span>
+<span class="w">    </span><span class="nt">study_name</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;My</span><span class="nv"> </span><span class="s">Study&quot;</span>
 
-    # Value mappings (categorical recoding)
-    sex:
-      populated_from: gender
-      value_mappings:
-        '1': male
-        '2': female
+<span class="w">    </span><span class="c1"># Value mappings (categorical recoding)</span>
+<span class="w">    </span><span class="nt">sex</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">populated_from</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gender</span>
+<span class="w">      </span><span class="nt">value_mappings</span><span class="p">:</span>
+<span class="w">        </span><span class="s">&#39;1&#39;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">male</span>
+<span class="w">        </span><span class="s">&#39;2&#39;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">female</span>
 
-    # Expression (Python expression using column values)
-    age_in_days:
-      populated_from: age_years
-      expr: &quot;{age_years} * 365&quot;
-</code></pre>
+<span class="w">    </span><span class="c1"># Expression (Python expression using column values)</span>
+<span class="w">    </span><span class="nt">age_in_days</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">populated_from</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">age_years</span>
+<span class="w">      </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{age_years}</span><span class="nv"> </span><span class="s">*</span><span class="nv"> </span><span class="s">365&quot;</span>
+</code></pre></div>
 <p>For the full specification format, including <code>enum_derivations</code> and <code>object_derivations</code>, see the <a href="https://linkml.io/linkml-map/">LinkML-Map documentation</a>.</p>
 <h3 id="data-requirements">Data Requirements<a class="headerlink" href="#data-requirements" title="Permanent link">&para;</a></h3>
 <p>For each target class, all source slots must exist in a single input file. If your data spans multiple files, preprocess them into combined files before running the pipeline. You can use any tool for this (pandas, R, dbt, etc.).</p>

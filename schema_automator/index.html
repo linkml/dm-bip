@@ -14,6 +14,8 @@
         <link rel="prev" href="../mapping-provenance/">
       
       
+        <link rel="next" href="../design/automated-harmonization-orchestration/">
+      
       
         
       
@@ -559,6 +561,88 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/automated-harmonization-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automated Harmonization Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -656,15 +740,15 @@
 <p>The <code>pyproject.toml</code> file includes Schema Automator as a dependency. If you have already followed the <a href="https://github.com/linkml/dm-bip#getting-started">Getting Started</a> instructions, it is already installed.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>To test Schema Automator as a stand-alone tool on a file in the <code>toy_data</code> directory:</p>
-<pre><code class="language-bash">uv run schemauto generalize-tsv toy_data/initial/study.tsv -n StudyInfo -o study_toy_data_schema.yaml
-</code></pre>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>schemauto<span class="w"> </span>generalize-tsv<span class="w"> </span>toy_data/initial/study.tsv<span class="w"> </span>-n<span class="w"> </span>StudyInfo<span class="w"> </span>-o<span class="w"> </span>study_toy_data_schema.yaml
+</code></pre></div>
 <h2 id="help">Help<a class="headerlink" href="#help" title="Permanent link">&para;</a></h2>
 <p>To see a full list of commands:</p>
-<pre><code class="language-bash">uv run schemauto --help
-</code></pre>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>schemauto<span class="w"> </span>--help
+</code></pre></div>
 <p>To see arguments for the <code>generalize-tsv</code> command:</p>
-<pre><code class="language-bash">uv run schemauto generalize-tsv --help
-</code></pre>
+<div class="highlight"><pre><span></span><code>uv<span class="w"> </span>run<span class="w"> </span>schemauto<span class="w"> </span>generalize-tsv<span class="w"> </span>--help
+</code></pre></div>
 <p>Issues for Schema Automator can be submitted via the <a href="https://github.com/linkml/schema-automator">GitHub issue tracker</a>.</p>
 
 

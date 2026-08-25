@@ -1,0 +1,1250 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://linkml.io/dm-bip/design/automated-harmonization-orchestration/">
+      
+      
+        <link rel="prev" href="../../schema_automator/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Automated Harmonization Orchestration - dm-bip</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#automated-harmonization-orchestration-design" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="dm-bip" class="md-header__button md-logo" aria-label="dm-bip" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            dm-bip
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Automated Harmonization Orchestration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/linkml/dm-bip" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    linkml/dm-bip
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="dm-bip" class="md-nav__button md-logo" aria-label="dm-bip" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    dm-bip
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/linkml/dm-bip" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    linkml/dm-bip
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../pipeline_user_docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../map-diagnostics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Map Diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mapping-provenance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapping Provenance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LinkML Tools
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LinkML Tools
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../schema_automator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Automator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automated Harmonization Orchestration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automated Harmonization Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-design-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Design philosophy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-actors-and-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Actors and responsibilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-end-to-end-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. End-to-end flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-parameter-contract-jira-fields-sb-task-inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The parameter contract (JIRA fields → SB task inputs)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-authentication-credentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Authentication &amp; credentials
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-data-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Data access
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-dm-bips-deliverable-what-we-own-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. dm-bip's deliverable (what we own here)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-open-design-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Open design decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9a-close-the-loop-design-resolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9a. Close-the-loop design (resolved)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-implementation-staging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Implementation staging
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-open-questions-for-bdc-nhlbi-velsera" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Open questions for BDC / NHLBI / Velsera
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-purpose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Purpose
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-design-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Design philosophy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-actors-and-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Actors and responsibilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-end-to-end-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. End-to-end flow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-the-parameter-contract-jira-fields-sb-task-inputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. The parameter contract (JIRA fields → SB task inputs)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-authentication-credentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Authentication &amp; credentials
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-data-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Data access
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-dm-bips-deliverable-what-we-own-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. dm-bip's deliverable (what we own here)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-open-design-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Open design decisions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9a-close-the-loop-design-resolved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9a. Close-the-loop design (resolved)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-implementation-staging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Implementation staging
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-open-questions-for-bdc-nhlbi-velsera" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Open questions for BDC / NHLBI / Velsera
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="automated-harmonization-orchestration-design">Automated Harmonization Orchestration — Design<a class="headerlink" href="#automated-harmonization-orchestration-design" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> Draft · <strong>Last updated:</strong> 2026-06-08 · <strong>Tracking issue:</strong> <a href="https://github.com/linkml/dm-bip/issues/267">#267</a></p>
+<blockquote>
+<p><strong>Where this document lives.</strong> This is the single design of record for the <em>end-to-end</em> automated harmonization pathway, not just the dm-bip slice. It lives in dm-bip for now because that is where the active engineering is. Over time it should migrate to the <strong>Data Submission Tool (DST)</strong> repo, as dm-bip settles into being a <em>tool the orchestrator consumes</em> rather than a place orchestration is reasoned about.</p>
+</blockquote>
+<hr />
+<h2 id="1-purpose">1. Purpose<a class="headerlink" href="#1-purpose" title="Permanent link">&para;</a></h2>
+<p>Today the dm-bip harmonization pipeline runs <strong>user-triggered</strong> on BioData Catalyst (BDC) / Seven Bridges (SB): a person runs <code>dm-bip seven-bridges submit</code>, which creates and runs an SB task against data staged into an SB project.</p>
+<p>The target is <strong>automatic</strong>: once a data submission has landed in its S3 store and the submission's conditions are met, the harmonization pipeline runs <strong>without a human in the loop</strong>, with the whole flow organized by the DST and actuated by JIRA.</p>
+<p>This document describes that pathway whole, names what each system is responsible for, and states the concrete deliverable dm-bip owns.</p>
+<hr />
+<h2 id="2-design-philosophy">2. Design philosophy<a class="headerlink" href="#2-design-philosophy" title="Permanent link">&para;</a></h2>
+<p>The DST is the <strong>orchestrator by virtue of being the organizing principle</strong>, not by being the code that does the organizing. It is intentionally a thin layer:</p>
+<ul>
+<li><strong>No duplicated effort.</strong> The DST does not re-implement work that more central systems already own. It coordinates and <em>surfaces</em>.</li>
+<li><strong>Single sources of truth, per domain.</strong> <strong>JIRA</strong> is the source of truth for the <em>submission lifecycle</em>; <strong>Freshdesk</strong> is the source of truth for the <em>support domain</em>. The DST reads from these and presents a unified, understandable view to users.</li>
+<li><strong>"Orchestration" includes the setup in other resources.</strong> The DST's remit covers the configuration and coordination that lives in JIRA, Freshdesk, SB, and AWS to make the flow work — even though that machinery does not run <em>inside</em> the DST codebase.</li>
+</ul>
+<p>The consequence for dm-bip: <strong>dm-bip is a consumed tool.</strong> Its job is to be cleanly invokable by the orchestrator and to do the harmonization work well. It should not accrete orchestration logic of its own. The deliverable we own is <em>"the DST/JIRA can fire off the workflow automatically"</em> — and we own that outcome even though most of the machinery (the JIRA rule, the SB volume, the service identity) does not live in this repo.</p>
+<hr />
+<h2 id="3-actors-and-responsibilities">3. Actors and responsibilities<a class="headerlink" href="#3-actors-and-responsibilities" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Actor</th>
+<th>Role</th>
+<th>Source of truth for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>DST</strong> (Django app, <code>NHLBI-BDC-DMC-DST</code>)</td>
+<td>Self-service intake + lifecycle dashboard; organizing principle</td>
+<td>Nothing of its own — it <em>mirrors</em> JIRA/Freshdesk</td>
+</tr>
+<tr>
+<td><strong>JIRA</strong></td>
+<td>Submission lifecycle state machine; the <strong>actuator</strong> of the trigger</td>
+<td>Submission lifecycle, run parameters (custom fields)</td>
+</tr>
+<tr>
+<td><strong>Freshdesk</strong></td>
+<td>Support/ticketing</td>
+<td>Support domain</td>
+</tr>
+<tr>
+<td><strong>NIH RAS / NIH SSO</strong></td>
+<td>Human <strong>login</strong> (OIDC) to BDC/SB/DST</td>
+<td>User identity at login time only</td>
+</tr>
+<tr>
+<td><strong>Seven Bridges (Velsera)</strong></td>
+<td>Runs the harmonization app; exposes the REST API that starts tasks</td>
+<td>Task/app execution</td>
+</tr>
+<tr>
+<td><strong>S3 submission bucket</strong></td>
+<td>Where submitted data lands; DMC-created per submission</td>
+<td>The raw submitted data</td>
+</tr>
+<tr>
+<td><strong>dm-bip</strong></td>
+<td>The harmonization pipeline app (this repo)</td>
+<td>The harmonization transform itself</td>
+</tr>
+</tbody>
+</table>
+<p>A correction to an earlier assumption worth stating plainly: <strong>RAS is not a workflow credential.</strong> It is a login-focused authenticator. The automated pipeline never performs a RAS login; RAS only governs <em>human</em> access to the surrounding systems. Workflow credentials are SB tokens (see §6).</p>
+<hr />
+<h2 id="4-end-to-end-flow">4. End-to-end flow<a class="headerlink" href="#4-end-to-end-flow" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>sequenceDiagram
+    participant Sub as Data submitter
+    participant DST as DST (dashboard)
+    participant JIRA as JIRA (lifecycle + actuator)
+    participant S3 as S3 submission bucket
+    participant SB as Seven Bridges API
+    participant DMB as dm-bip app (on SB)
+    participant FD as Freshdesk
+
+    Sub-&gt;&gt;DST: Create submission (intake form)
+    DST-&gt;&gt;JIRA: Create/track ticket (lifecycle mirror)
+    Note over JIRA,S3: DMC creates bucket; submitter granted write via their AWS IAM ARN
+    Sub-&gt;&gt;S3: Upload data
+    JIRA-&gt;&gt;JIRA: Status transitions as conditions are met
+    Note over JIRA: On transition into "ready for pipeline"
+    JIRA-&gt;&gt;SB: Automation rule "Send web request"&lt;br/&gt;POST /v2/tasks?action=run (X-SBG-Auth-Token)
+    SB-&gt;&gt;DMB: Create + run task with inputs from JIRA fields
+    DMB-&gt;&gt;S3: Read raw data (via SB volume → RawSource)
+    DMB-&gt;&gt;DMB: prepare → schema → validate → map (BDCHM)
+    DMB-&gt;&gt;S3: Write harmonized output
+    DMB-&gt;&gt;FD: Notify done/failed (structured ticket — §9.2)
+    FD--&gt;&gt;DST: Surfaced to coordinator
+    Note over FD,JIRA: Coordinator advances the JIRA issue
+    JIRA--&gt;&gt;DST: Status updates
+    DST--&gt;&gt;Sub: Surfaces progress / completion</code></pre>
+<p>The pivotal substitution is simple: <strong>the JIRA automation rule replaces the human who runs <code>seven-bridges submit</code> today.</strong> The task body it POSTs is the same shape dm-bip already constructs.</p>
+<hr />
+<h2 id="5-the-parameter-contract-jira-fields-sb-task-inputs">5. The parameter contract (JIRA fields → SB task inputs)<a class="headerlink" href="#5-the-parameter-contract-jira-fields-sb-task-inputs" title="Permanent link">&para;</a></h2>
+<p>The JIRA ticket already carries every parameter a harmonization run needs, as structured custom fields (see <code>api/tracker/jira_agent.py</code> in the DST). This mapping is the <strong>interface contract</strong> between the orchestrator and dm-bip:</p>
+<table>
+<thead>
+<tr>
+<th>JIRA field</th>
+<th>ID</th>
+<th>→ SB task input</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bucket URL</td>
+<td><code>customfield_15207</code></td>
+<td><code>RawSource</code> (via SB volume)</td>
+<td>The S3 location of the submitted data</td>
+</tr>
+<tr>
+<td>Study Name</td>
+<td><code>customfield_15203</code></td>
+<td><code>Schema</code></td>
+<td>Cohort/study identifier</td>
+</tr>
+<tr>
+<td>Consent Code</td>
+<td>(intake <code>consent_code</code>)</td>
+<td>consent suffix</td>
+<td>Consent group</td>
+</tr>
+<tr>
+<td>Accession Number</td>
+<td><code>customfield_15206</code></td>
+<td>run identity</td>
+<td>dbGaP <code>phs</code> accession</td>
+</tr>
+<tr>
+<td>Version Update</td>
+<td><code>customfield_15205</code></td>
+<td>run identity</td>
+<td>Submission version</td>
+</tr>
+<tr>
+<td>Gen(3) Project Name(s)</td>
+<td><code>customfield_15208</code></td>
+<td>(downstream)</td>
+<td>For Gen3 indexing</td>
+</tr>
+<tr>
+<td>Gen(3) Project Name</td>
+<td><code>customfield_15209</code></td>
+<td>(downstream)</td>
+<td>For Gen3 indexing</td>
+</tr>
+</tbody>
+</table>
+<p>Keeping this table accurate as fields evolve is part of owning the deliverable, even though the fields are defined in the DST.</p>
+<hr />
+<h2 id="6-authentication-credentials">6. Authentication &amp; credentials<a class="headerlink" href="#6-authentication-credentials" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Human access</strong> to BDC/SB/DST is via <strong>NIH RAS/SSO</strong> (OIDC). Not used by the workflow.</li>
+<li><strong>Workflow credential</strong> is a Seven Bridges <strong>auth token</strong> (<code>X-SBG-Auth-Token</code>). The automated <code>POST</code> runs <em>as the identity that owns the token</em>.</li>
+<li><strong>v1:</strong> a developer creates a token for a dedicated <strong>service user</strong>. Stored as a <strong>hidden header</strong> in the JIRA automation rule.</li>
+<li><strong>Later:</strong> a true SB <strong>service account</strong>, if/when Velsera supports one (undocumented today — see §10).</li>
+<li><strong>S3 access</strong> for reading the bucket is the DMC's own AWS concern, attached to SB as a <strong>volume</strong> using static IAM keys — <strong>decoupled from RAS</strong>. The submitter's <code>aws_iam</code> ARN governs <em>their write</em> to the bucket, not the pipeline's read.</li>
+</ul>
+<p><strong>Operational note:</strong> SB does not document a token expiry/rotation policy. Treat the token as long-lived-until-regenerated; rotation requires updating the stored value in the JIRA rule.</p>
+<hr />
+<h2 id="7-data-access">7. Data access<a class="headerlink" href="#7-data-access" title="Permanent link">&para;</a></h2>
+<p>The submission bucket is <strong>created and owned by the DMC</strong> (the DST <code>Ticket</code> lifecycle includes a "bucket created" stage; the submitter is granted write via their IAM ARN). Therefore the pipeline's <em>read</em> path is ours to provision.</p>
+<ul>
+<li><strong>v1 (realistic):</strong> Attach the submission bucket as a <strong>Seven Bridges S3 volume</strong>. A volume presents S3 objects as stage-able platform files — i.e. the same <code>Directory</code>/file shape dm-bip already consumes as <code>RawSource</code>. <strong>This means little-to-no new data-fetch code in dm-bip.</strong> Do <strong>not</strong> bake static AWS keys into the container (the discarded early sketch) — the volume is the sanctioned, audited mechanism.</li>
+<li><strong>Aspirational:</strong> A <strong>DRS-indexed</strong> store (GA4GH DRS API, <code>X-SBG-Auth-Token</code>-scoped). The data-source seam (§8) should be designed to allow DRS later, but v1 does not depend on it. This system has competing interests; the DRS target may never be reached, and the design must not block on it.</li>
+</ul>
+<hr />
+<h2 id="8-dm-bips-deliverable-what-we-own-here">8. dm-bip's deliverable (what we own here)<a class="headerlink" href="#8-dm-bips-deliverable-what-we-own-here" title="Permanent link">&para;</a></h2>
+<p>The end-state is mostly assembly of documented primitives that live <em>outside</em> this repo. dm-bip's concrete, ownable slice:</p>
+<ol>
+<li><strong>Pluggable data-source seam.</strong> Today there is exactly one seam where data arrives on local disk (<code>bdc-workflow.sh</code> validates a local <code>--source</code> dir; <code>prepare_input.py</code> globs it). Generalize <em>behind that seam</em> so the source can be: a mounted directory (today) · an SB volume path (v1) · DRS object IDs (later). Everything downstream is unchanged.</li>
+<li><strong>Accept orchestrator-supplied parameters.</strong> Ensure the app inputs accept the parameters the JIRA payload sends (bucket → <code>RawSource</code>, study → <code>Schema</code>, consent, accession, version).</li>
+<li><strong>Output write-back.</strong> Write harmonized BDCHM output back to the designated bucket/location.</li>
+<li><strong>Idempotency guard.</strong> A re-fired trigger (JIRA "Send web request" can double-fire) must not launch duplicate harmonizations. Guard on a stable run identity (see §9).</li>
+<li><strong>A clean "start a run" surface.</strong> The existing <code>seven-bridges</code> verb-group already builds the task body for a human. Keep that path the single, parameterized entrypoint an external actuator (JIRA, or later the DST) calls — do not fork orchestration logic into the pipeline.</li>
+</ol>
+<p><strong>Stage 0</strong> (no external dependencies, safe to start now) = items <strong>1</strong> and <strong>2</strong>.</p>
+<hr />
+<h2 id="9-open-design-decisions">9. Open design decisions<a class="headerlink" href="#9-open-design-decisions" title="Permanent link">&para;</a></h2>
+<p>These are the genuine choices, not yet made:</p>
+<ol>
+<li><strong>Volume vs. DRS</strong> for the bucket read path. <em>Recommendation:</em> SB volume for v1; design the seam to allow DRS later. Accept that DRS may never arrive.</li>
+<li><strong>Close-the-loop mechanism — RESOLVED (see §9a).</strong> ~~push the pipeline → JIRA, vs. poll SB task status~~. Decided: the pipeline emits a structured <strong>notification to Freshdesk</strong> at end-of-run; the DST surfaces it and a coordinator advances the JIRA issue. Rationale and the remaining sub-decision are in §9a.</li>
+<li><strong>Run identity / idempotency key.</strong> <em>Recommendation:</em> the <strong>JIRA issue key</strong> as the correlation ID for the run, with <strong>accession + version</strong> as the semantic identity for dedupe. (Open: confirm whether a submission/ticket ID is the more natural unique key.)</li>
+<li><strong>Service identity.</strong> Dedicated SB service <em>user</em> + token for v1; true service account later (pending Velsera).</li>
+</ol>
+<hr />
+<h2 id="9a-close-the-loop-design-resolved">9a. Close-the-loop design (resolved)<a class="headerlink" href="#9a-close-the-loop-design-resolved" title="Permanent link">&para;</a></h2>
+<p><strong>Decision:</strong> the harmonization run emits a <strong>structured notification to Freshdesk</strong> on completion — success <em>or</em> failure. Freshdesk auto-creates a ticket (a documented first-class feature: sender → requester, subject → subject, body → description; creation-time automations can tag/route). The DST already integrates Freshdesk (<code>tracker/freshdesk_agent.py</code>) and surfaces it; a coordinator advances the JIRA lifecycle issue, correlating via the <strong>JIRA issue key</strong> carried in the notification.</p>
+<p><strong>Why this over the alternatives:</strong>
+- <strong>No new auth surface in the pipeline</strong> beyond a send path — lighter than granting the pipeline JIRA write credentials (a "push to JIRA" design) or standing up a poller.
+- <strong>Leans on existing single-sources-of-truth</strong> — Freshdesk owns the support domain and the DST already reads it. No duplicated orchestration; consistent with the DST philosophy (§2).
+- <strong>Covers both outcomes and carries the correlation key</strong>, so the coordinator can bridge it to the lifecycle issue.
+- <strong>Keeps a human gate</strong> in the controlled-access path before the JIRA issue advances — acceptable, arguably desirable, for v1.</p>
+<p><strong>Why the pipeline sends — not SB's native email:</strong> SB task-completion emails go only to the <em>account holder's</em> address (no documented arbitrary/shared recipient), carry undocumented content (essentially a task-page link), and only the <em>failure</em> email is guaranteed. So we control the content ourselves.</p>
+<p><strong>Open sub-decision — send mechanism:</strong> <strong>Freshdesk REST API</strong> (<code>POST /api/v2/tickets</code>, structured fields, needs an API key) <em>(recommended)</em> vs. <strong>SMTP to a Freshdesk intake mailbox</strong> (simplest, but needs an outbound mail path from the container). Resolve at Stage 2.</p>
+<p><strong>Backstop (optional):</strong> for a hard container crash (OOM/kill) before the pipeline can notify, route the SB service user's account email to the same Freshdesk intake as a catch-all — the one case where SB's native failure email earns its keep.</p>
+<p><strong>Minor domain nuance:</strong> a "harmonization done" notice is a <em>lifecycle</em> event entering the <em>support</em> system. Pragmatic and intentional for v1; if full automation is later wanted, the Freshdesk ticket (or a poller) could drive the JIRA transition directly.</p>
+<hr />
+<h2 id="10-implementation-staging">10. Implementation staging<a class="headerlink" href="#10-implementation-staging" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Work</th>
+<th>Owner</th>
+<th>Blocked on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>0</strong></td>
+<td>Pluggable data-source seam (<code>resolve_source.py</code> helper + tests, mirroring #324) + accept orchestrator params + log-only notify hook</td>
+<td>dm-bip</td>
+<td>nothing — start now</td>
+</tr>
+<tr>
+<td><strong>1</strong></td>
+<td>SB S3 volume over bucket; JIRA automation rule (transition → <code>POST /v2/tasks?action=run</code>, field mapping); service user + token</td>
+<td>You (JIRA side) + BDC/Velsera</td>
+<td>decision §9.1, §9.4</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td>Freshdesk notification (<code>notify.py</code> → API per §9a); output write-back; idempotency guard</td>
+<td>dm-bip + Freshdesk</td>
+<td>§9a send mechanism, §9.3 key</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td>True service account; DRS-indexed source</td>
+<td>BDC/Velsera</td>
+<td>external</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-open-questions-for-bdc-nhlbi-velsera">11. Open questions for BDC / NHLBI / Velsera<a class="headerlink" href="#11-open-questions-for-bdc-nhlbi-velsera" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Service account:</strong> does SB/BDC support a non-user service account, or is a dedicated service <em>user</em> the only option? What is the token expiry/rotation policy on the BDC instance?</li>
+<li><strong>Data path sanction:</strong> is an SB <strong>volume</strong> over the submission bucket the sanctioned path for automated controlled-access processing, or is DRS required?</li>
+<li><strong>DRS timeline:</strong> is a DRS-indexed submission store realistically on the roadmap, or should we assume volume-over-S3 indefinitely?</li>
+<li><strong>Trigger surface:</strong> confirmed there is no inbound SB webhook/event surface beyond the REST API (so JIRA must be the active caller). Confirm no undocumented RHEO/automation trigger exists.</li>
+</ol>
+<hr />
+<h2 id="12-references">12. References<a class="headerlink" href="#12-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>dm-bip pipeline data seam: <code>scripts/workflow/bdc-workflow.sh</code>, <code>src/dm_bip/cleaners/prepare_input.py</code>, <code>src/dm_bip/seven_bridges/</code></li>
+<li>DST: <code>RTIInternational/NHLBI-BDC-DMC-DST</code> — <code>api/tracker/jira_agent.py</code> (field map), <code>api/tracker/models.py</code> (<code>Ticket</code> lifecycle), <code>api/nihsso/</code> (RAS/SSO login)</li>
+<li>SB API — create task: <a href="https://docs.sevenbridges.com/reference/create-a-new-task">https://docs.sevenbridges.com/reference/create-a-new-task</a> (supports <code>?action=run</code>)</li>
+<li>SB API — run task: <a href="https://docs.sevenbridges.com/reference/perform-an-action-on-a-specific-task">https://docs.sevenbridges.com/reference/perform-an-action-on-a-specific-task</a></li>
+<li>BDC API overview/auth: <a href="https://sb-biodatacatalyst.readme.io/docs/the-api">https://sb-biodatacatalyst.readme.io/docs/the-api</a></li>
+<li>SB S3 volumes (IAM keys): <a href="https://sb-biodatacatalyst.readme.io/docs/amazon-web-services-simple-storage-service-aws-s3-volumes">https://sb-biodatacatalyst.readme.io/docs/amazon-web-services-simple-storage-service-aws-s3-volumes</a></li>
+<li>BDC DRS API: <a href="https://sb-biodatacatalyst.readme.io/reference/drs-api">https://sb-biodatacatalyst.readme.io/reference/drs-api</a></li>
+<li>JIRA Automation — Send web request: <a href="https://support.atlassian.com/cloud-automation/docs/jira-automation-actions/">https://support.atlassian.com/cloud-automation/docs/jira-automation-actions/</a></li>
+<li>NIH RAS service offerings: <a href="https://auth.nih.gov/docs/RAS/serviceofferings.html">https://auth.nih.gov/docs/RAS/serviceofferings.html</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

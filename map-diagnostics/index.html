@@ -548,6 +548,88 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/automated-harmonization-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automated Harmonization Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -631,8 +713,8 @@
 <p>When the map (LinkML-Map transformation) step is slow, uses too much memory, or
 gets killed on real data, turn on diagnostics mode. It's opt-in and has <strong>zero
 cost when off</strong>.</p>
-<pre><code class="language-bash">make map-data DM_MAP_PROFILE=true DM_INPUT_DIR=... DM_SCHEMA_NAME=... DM_OUTPUT_DIR=...
-</code></pre>
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>map-data<span class="w"> </span><span class="nv">DM_MAP_PROFILE</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="nv">DM_INPUT_DIR</span><span class="o">=</span>...<span class="w"> </span><span class="nv">DM_SCHEMA_NAME</span><span class="o">=</span>...<span class="w"> </span><span class="nv">DM_OUTPUT_DIR</span><span class="o">=</span>...
+</code></pre></div>
 <p><code>DM_MAP_PROFILE=true</code> works on any target that runs the map step (<code>map-data</code>,
 <code>pipeline</code>), and can be passed to the BDC workflow the same way.</p>
 <h2 id="what-it-captures">What it captures<a class="headerlink" href="#what-it-captures" title="Permanent link">&para;</a></h2>

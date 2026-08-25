@@ -570,6 +570,88 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/automated-harmonization-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automated Harmonization Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -679,16 +761,16 @@ This is the <em>mapping</em> provenance layer of
 <a href="https://github.com/linkml/dm-bip/issues/352">linkml/dm-bip#352</a> — available from the
 specs alone, as opposed to the <em>execution</em> provenance recorded at pipeline runtime.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
-<pre><code class="language-sh"># One directory of specs (one study), YAML to stdout
-dm-bip extract-mapping-provenance path/to/priority_variables_transform/ARIC-ingest
+<div class="highlight"><pre><span></span><code><span class="c1"># One directory of specs (one study), YAML to stdout</span>
+dm-bip<span class="w"> </span>extract-mapping-provenance<span class="w"> </span>path/to/priority_variables_transform/ARIC-ingest
 
-# Several studies at once, written to a file
-dm-bip extract-mapping-provenance path/to/priority_variables_transform -o mapping-prov.yaml
+<span class="c1"># Several studies at once, written to a file</span>
+dm-bip<span class="w"> </span>extract-mapping-provenance<span class="w"> </span>path/to/priority_variables_transform<span class="w"> </span>-o<span class="w"> </span>mapping-prov.yaml
 
-# As part of the pipeline (reads the same DM_TRANS_SPEC_DIR the mapping consumes;
-# also produced automatically by `make map-data`)
-make mapping-provenance
-</code></pre>
+<span class="c1"># As part of the pipeline (reads the same DM_TRANS_SPEC_DIR the mapping consumes;</span>
+<span class="c1"># also produced automatically by `make map-data`)</span>
+make<span class="w"> </span>mapping-provenance
+</code></pre></div>
 <p>Directories are searched recursively for <code>*.yaml</code> spec files. Identifiers for specs and
 derived entities are formed from paths relative to the deepest common directory of the
 inputs.</p>
@@ -704,38 +786,38 @@ alignment — uses a <code>dcterms:hasPart</code> relation, rendered nested.</p>
 <p>The first record is a run <code>Activity</code> — the execution-provenance layer — documenting
 when extraction ran, the dm-bip agent (with the versions of its key dependencies)
 that performed it, and the specs it read:</p>
-<pre><code class="language-yaml">- id: dmcprov:run/9ef32acd-5c08-467f-9cde-2ac945fed0cd
-  name: dm-bip extract-mapping-provenance
-  started_at_time: '2026-08-12T18:54:26Z'
-  ended_at_time: '2026-08-12T18:54:27Z'
-  has_input:
-  - https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/blob/&lt;commit&gt;/priority_variables_transform/ARIC-ingest/bmi.yaml
-  associated_with:
-    id: https://github.com/linkml/dm-bip
-    name: dm-bip 0.1.0
-    description: dm_bip 0.1.0, linkml_map 0.5.3, schema_automator 0.5.6, linkml 1.11.1
-- id: bdchm:Study/phs000280
-  entity_type: study
-  name: Atherosclerosis Risk in Communities (ARIC)
-  has_part:
-  - id: dbgap:pht004063
-    entity_type: dataset
-    name: pht004063
-    has_part:
-    - id: dbgap:phv00204719
-      entity_type: variable
-      name: phv00204719
-      description: Source for Quantity.value_decimal
-  - id: dmcprov:ARIC-ingest/bmi.yaml
-    entity_type: transformation_spec
-    name: ARIC-ingest/bmi.yaml
-  - id: dmcprov:ARIC-ingest/bmi/MeasurementObservation/pht004063
-    name: MeasurementObservation derived from pht004063 (ARIC-ingest/bmi.yaml)
-    derived_from:
-    - dbgap:pht004063
-    - dbgap:phv00204719
-    - dmcprov:ARIC-ingest/bmi.yaml
-</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dmcprov:run/9ef32acd-5c08-467f-9cde-2ac945fed0cd</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dm-bip extract-mapping-provenance</span>
+<span class="w">  </span><span class="nt">started_at_time</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2026-08-12T18:54:26Z&#39;</span>
+<span class="w">  </span><span class="nt">ended_at_time</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;2026-08-12T18:54:27Z&#39;</span>
+<span class="w">  </span><span class="nt">has_input</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/RTIInternational/NHLBI-BDC-DMC-HV/blob/&lt;commit&gt;/priority_variables_transform/ARIC-ingest/bmi.yaml</span>
+<span class="w">  </span><span class="nt">associated_with</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://github.com/linkml/dm-bip</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dm-bip 0.1.0</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dm_bip 0.1.0, linkml_map 0.5.3, schema_automator 0.5.6, linkml 1.11.1</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bdchm:Study/phs000280</span>
+<span class="w">  </span><span class="nt">entity_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">study</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Atherosclerosis Risk in Communities (ARIC)</span>
+<span class="w">  </span><span class="nt">has_part</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbgap:pht004063</span>
+<span class="w">    </span><span class="nt">entity_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dataset</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pht004063</span>
+<span class="w">    </span><span class="nt">has_part</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbgap:phv00204719</span>
+<span class="w">      </span><span class="nt">entity_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">variable</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">phv00204719</span>
+<span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Source for Quantity.value_decimal</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dmcprov:ARIC-ingest/bmi.yaml</span>
+<span class="w">    </span><span class="nt">entity_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">transformation_spec</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ARIC-ingest/bmi.yaml</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dmcprov:ARIC-ingest/bmi/MeasurementObservation/pht004063</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MeasurementObservation derived from pht004063 (ARIC-ingest/bmi.yaml)</span>
+<span class="w">    </span><span class="nt">derived_from</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbgap:pht004063</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dbgap:phv00204719</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dmcprov:ARIC-ingest/bmi.yaml</span>
+</code></pre></div>
 <p>A study's <code>has_part</code> holds its datasets (each nesting its variables), its transformation
 specs, and its derived entities, in that order. Each derivation fragment in a spec
 becomes one derived entity, keeping the pairing between a dataset and the variables
