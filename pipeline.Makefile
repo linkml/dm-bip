@@ -598,9 +598,9 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(COMPOSED_SPEC_DIR)/%.yaml $(SCHEMA_FILE) $(
 		{ echo "[diag $*] peak: v2=$$(cat /sys/fs/cgroup/memory.peak 2>/dev/null || echo -) v1=$$(cat /sys/fs/cgroup/memory/memory.max_usage_in_bytes 2>/dev/null || echo -)"; \
 		  echo "[diag $*] limit: v2=$$(cat /sys/fs/cgroup/memory.max 2>/dev/null || echo -) v1=$$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes 2>/dev/null || echo -)"; \
 		  echo "[diag $*] current: v2=$$(cat /sys/fs/cgroup/memory.current 2>/dev/null || echo -) v1=$$(cat /sys/fs/cgroup/memory/memory.usage_in_bytes 2>/dev/null || echo -)"; \
-		  echo "[diag $*] cgroup:"; sed "s/^/[diag $*]   /" /proc/self/cgroup 2>/dev/null; \
-		  echo "[diag $*] events:"; sed "s/^/[diag $*]   /" /sys/fs/cgroup/memory.events 2>/dev/null; \
-		  sed "s/^/[diag $*]   /" /sys/fs/cgroup/memory/memory.oom_control 2>/dev/null; } \
+		  echo "[diag $*] cgroup:"; sed "s/^/[diag $*]   /" /proc/self/cgroup 2>/dev/null || echo "[diag $*]   -"; \
+		  echo "[diag $*] events (v2):"; sed "s/^/[diag $*]   /" /sys/fs/cgroup/memory.events 2>/dev/null || echo "[diag $*]   -"; \
+		  echo "[diag $*] oom_control (v1):"; sed "s/^/[diag $*]   /" /sys/fs/cgroup/memory/memory.oom_control 2>/dev/null || echo "[diag $*]   -"; } \
 		  2>/dev/null | tee -a $(MAPPING_LOG_DIR)/$*.log || true; \
 	fi; \
 	if [ $$rc -ge 128 ]; then \
