@@ -74,35 +74,58 @@ jobs:
           registry: ${{ steps.registry-config.outputs.registry }}
           username: ${{ steps.registry-config.outputs.username }}
           password: ${{ secrets.SB_REGISTRY_PASSWORD }}
-          
 
+      # Deployment tier is selected here, and ONLY here. This is the single
+      # branch/tag -> Seven Bridges image repository mapping in the repo:
+      #   docker-dev branch      -> SB_REGISTRY_PROJECT_DEV  (dm-bip-docker-dev)
+      #   bdc-v* tag             -> SB_REGISTRY_PROJECT_PROD (dm-bip-prod)
+      #   anything else (test)   -> SB_REGISTRY_PROJECT_DEV  (dm-bip-docker-dev)
+      #
+      # KNOWN ISSUE: the dev and test tiers share dm-bip-docker-dev, so :latest
+      # is last-writer-wins between the docker-dev and docker-push-7bridges
+      # branches. The sha-<commit> tags still identify each build uniquely.
+      # Fix pending: point the test tier at SB_REGISTRY_PROJECT_DEVELOP
+      # (dm-bip-develop), which exists in SBG but no trigger currently uses.
       - name: Configure build for branch
         id: build-config
         run: |
           echo "build_date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
           if [[ "${{ github.ref }}" == "refs/heads/docker-dev" ]]; then
-            echo "pull_latest=true" >> "$GITHUB_OUTPUT"
-            echo "registry_project=${{ vars.SB_REGISTRY_PROJECT_DEV }}" >> "$GITHUB_OUTPUT"
+            tier="dev"
+            pull_latest="true"
+            project='${{ vars.SB_REGISTRY_PROJECT_DEV }}'
+            project_var="SB_REGISTRY_PROJECT_DEV"
           elif [[ "${{ github.ref }}" == refs/tags/bdc-v* ]]; then
-            echo "pull_latest=false" >> "$GITHUB_OUTPUT"
-            echo "registry_project=${{ vars.SB_REGISTRY_PROJECT_PROD }}" >> "$GITHUB_OUTPUT"
+            tier="prod"
+            pull_latest="false"
+            project='${{ vars.SB_REGISTRY_PROJECT_PROD }}'
+            project_var="SB_REGISTRY_PROJECT_PROD"
           else
-            echo "pull_latest=false" >> "$GITHUB_OUTPUT"
-            echo "registry_project=${{ vars.SB_REGISTRY_PROJECT_DEV }}" >> "$GITHUB_OUTPUT"
+            tier="test"
+            pull_latest="false"
+            project='${{ vars.SB_REGISTRY_PROJECT_DEV }}'
+            project_var="SB_REGISTRY_PROJECT_DEV"
           fi
+
+          # Fail loudly rather than pushing to a malformed path with an empty segment.
+          if [[ -z "$project" ]]; then
+            echo "$project_var is empty. Set repository variable $project_var (see RELEASING.md)." >&2
+            exit 1
+          fi
+
+          echo "pull_latest=$pull_latest" >> "$GITHUB_OUTPUT"
+          echo "registry_project=$project" >> "$GITHUB_OUTPUT"
+          echo "OK Tier: $tier ($project_var = $project), BDC_PULL_LATEST=$pull_latest"
 
       - name: Build, tag, and push image
         run: |
-          # ============================================================================
-          # TEMPORARY: the registry namespace segment is intentionally HARD-CODED to
-          # `vbakalov` instead of using ${{ steps.registry-config.outputs.username }}.
-          # This is a deliberate, TEMPORARY override for the current 7 Bridges push
-          # target and MUST be reverted to the resolved `username` output before this
-          # workflow is considered production-ready. The correct line is kept
-          # commented-out directly below for the eventual revert.
-          # ============================================================================
-          #IMAGE_URI=${{ steps.registry-config.outputs.registry }}/${{ steps.registry-config.outputs.username }}/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
-          IMAGE_URI=${{ steps.registry-config.outputs.registry }}/vbakalov/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
+          # Full image path. Every segment is resolved from GitHub Actions config --
+          # nothing about the push target is hard-coded in this workflow:
+          #   registry        <- vars.SB_REGISTRY
+          #   namespace       <- vars.SB_REGISTRY_USERNAME
+          #   registry_project <- branch/tag, see "Configure build for branch" above
+          #   IMAGE_NAME      <- env.IMAGE_NAME
+          IMAGE_URI=${{ steps.registry-config.outputs.registry }}/${{ steps.registry-config.outputs.username }}/${{ steps.build-config.outputs.registry_project }}/$IMAGE_NAME
 
           # Immutable, traceable tag (12-char commit SHA) pushed alongside :latest.
           SHA_TAG="sha-${GITHUB_SHA::12}"
