@@ -53,9 +53,13 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ vars.SB_REGISTRY }}/${{ vars.SB_REGISTRY_USERNAME }}/${{ steps.build-config.outputs.registry_project }}/${{ env.IMAGE_NAME }}
+          # The :prod tag is a promotion pointer — the prod app pulls it permanently, so
+          # a release deploys by moving the tag rather than by hand-editing the app. It is
+          # guarded against pre-release tags so an rc can never become prod.
           tags: |
             type=raw,value=latest
             type=match,pattern=bdc-v.*,enable=${{ startsWith(github.ref, 'refs/tags/bdc-v') }}
+            type=raw,value=prod,enable=${{ startsWith(github.ref, 'refs/tags/bdc-v') && !contains(github.ref, '-rc') }}
 
       - name: Build and push
         uses: docker/build-push-action@v6

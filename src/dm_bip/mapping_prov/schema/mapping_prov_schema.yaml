@@ -1,0 +1,98 @@
+id: https://w3id.org/dm-bip/mapping-prov-schema
+name: mapping_prov_schema
+title: DM-BIP Mapping Provenance Schema
+description: >-
+  Extension of the PROV LinkML schema for expressing dbGaP data granularity in
+  mapping provenance. Entities are typed by a controlled vocabulary rather than
+  dedicated classes, and containment (variables within datasets, datasets within
+  studies) uses a dcterms part-of relation, so that study/dataset/variable
+  alignment survives downstream. The slots added here are candidates for
+  upstreaming into the imported PROV schema.
+license: MIT
+see_also:
+  - https://github.com/diatomsRcool/prov-schema
+  - https://www.w3.org/TR/prov-o/
+
+# Design context: linkml/dm-bip#352 (mapping provenance for harmonization) and
+# diatomsRcool/prov-schema#10 (vocabulary-based typing over minted classes).
+
+prefixes:
+  mapping_prov_schema: https://w3id.org/dm-bip/mapping-prov-schema/
+  dmcprov: https://w3id.org/dm-bip/mapping-prov/
+  dbgap: https://identifiers.org/dbgap/
+  bdchm: https://w3id.org/bdchm/
+  linkml: https://w3id.org/linkml/
+  prov: http://www.w3.org/ns/prov#
+  dcterms: http://purl.org/dc/terms/
+  dcat: http://www.w3.org/ns/dcat#
+  cdi: https://ddialliance.org/Specification/DDI-CDI/1.0/RDF/
+
+default_prefix: mapping_prov_schema
+default_range: string
+
+imports:
+  - linkml:types
+  # The upstream PROV schema is imported by URL rather than vendored, pinned to a
+  # commit so that regeneration (`make datamodel`; requires network access) and the
+  # schema-validation test are reproducible and cannot be broken by a push to
+  # another repository. Bump this deliberately to pick up upstream additions.
+  - https://raw.githubusercontent.com/diatomsRcool/prov-schema/be5e1b9131e863049a847ba66eba8334b4dd1917/src/prov_schema/schema/prov_schema
+
+enums:
+  EntityTypeEnum:
+    description: >-
+      What kind of thing an entity is, expressed as a controlled value rather than a
+      dedicated class. Ontology bindings are best-effort proposals, to be settled in
+      upstream review.
+    permissible_values:
+      study:
+        description: A research study (e.g. a dbGaP phs accession)
+        meaning: dcat:Catalog
+      dataset:
+        description: A dbGaP dataset (pht accession); a table of variables collected for a study
+        meaning: dcat:Dataset
+      variable:
+        description: A dbGaP variable (phv accession); a single column within a dbGaP dataset
+        meaning: cdi:InstanceVariable
+      transformation_spec:
+        description: A specification defining how data is transformed from one form to another
+        meaning: prov:Plan
+
+slots:
+  # Redeclares the imported slot so the agent serializes inside the activity,
+  # keeping run documents self-contained. Semantics are unchanged.
+  associated_with:
+    description: An agent that is associated with an activity
+    range: Agent
+    slot_uri: prov:wasAssociatedWith
+    inlined: true
+  entity_type:
+    description: The kind of thing this entity is, from a controlled vocabulary
+    range: EntityTypeEnum
+    slot_uri: dcterms:type
+  has_part:
+    description: >-
+      Entities logically included in this one, in the loose dcterms sense: datasets
+      within a study, variables within a dataset, and a study's transformation specs
+      and derived entities
+    range: Entity
+    multivalued: true
+    inlined_as_list: true
+    slot_uri: dcterms:hasPart
+
+classes:
+  # Redeclares the imported Entity to add the typing and containment slots above.
+  # These additions are proposed for upstreaming (see prov-schema#10); when they
+  # land there, this redeclaration disappears.
+  Entity:
+    is_a: NamedThing
+    description: >-
+      An entity is a physical, digital, conceptual, or other kind of thing with
+      some fixed aspects; entities may be real or imaginary.
+    class_uri: prov:Entity
+    slots:
+      - attributed_to
+      - derived_from
+      - generated_by
+      - entity_type
+      - has_part
