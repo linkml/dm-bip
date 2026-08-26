@@ -1,5 +1,28 @@
 # Release Process
 
+## Choosing a Version Number
+
+A version protects a *contract*. Each number answers "what happens if someone pulls this?"
+
+dm-bip's contract is not a code API — nobody imports it. It is two things:
+
+1. **Operating interface** — how you invoke and deploy: Make targets, `DM_*` config variables, CLI verbs, container inputs. Operators depend on this.
+2. **Output** — the shape of the harmonized data and its BDCHM conformance. Downstream data consumers depend on this.
+
+Work through these in order:
+
+| | Test | Result |
+|---|---|---|
+| 1 | Must an operator change how they invoke or deploy, or a consumer change how they read output? | **Major** — bump 1st, zero the rest |
+| 2 | Else, is there anything new they *can* use? | **Minor** — bump 2nd, zero the 3rd |
+| 3 | Else — fixes, safer dependencies, performance, docs? | **Patch** — bump 3rd |
+
+A bug fix that *changes* output for the broken cases is still a patch: the contract was always "be correct," and the code just met it. Only escalate if you are changing what correct means.
+
+**Tempo.** Patches are low-ceremony and frequent, with no RC cycle — adopting one should be a no-brainer. Minors are batched and deliberate, and earn an RC cycle because there is new behavior worth exercising. Majors are rare, announced, and always get an RC.
+
+Cut patches eagerly. The anti-pattern is letting fixes and behavior-neutral dependency bumps pile up until they ride into the next minor, which wastes the third number's signal.
+
 ## GitHub Releases
 
 1. Create release candidate tags (`v<X.Y.Z>-rc<N>`) for testing.
@@ -51,10 +74,19 @@ git push origin bdc-v1.2.0
 
 ## Seven Bridges App Setup
 
-Each deployment tier should have a corresponding app on the Seven Bridges platform. The app's Docker Repository field should point to the appropriate registry path:
+Each deployment tier has a corresponding app on the Seven Bridges platform, whose Docker Repository field points at a registry path:
 
 ```
-<SB_REGISTRY>/<SB_REGISTRY_USERNAME>/<REGISTRY_PROJECT>/dm-bip-env
+<SB_REGISTRY>/<SB_REGISTRY_USERNAME>/<REGISTRY_PROJECT>/dm-bip-env:<TAG>
 ```
 
-When a new image is pushed, update the app revision to pick up the change.
+| App | Pulls | Moves when |
+|-----|-------|------------|
+| `cc-dm-bip-test` (dev) | `dm-bip-docker-dev/dm-bip-env:latest` | every push to `docker-dev` |
+| `bdc-dm-bip-prod` (prod) | `dm-bip-prod/dm-bip-env:prod` | a non-rc `bdc-v*` tag is pushed |
+
+**Prod deploys by moving a tag, not by editing the app.** The `:prod` tag is a promotion pointer: pushing `bdc-v<X.Y.Z>` builds the image, tags it both `bdc-v<X.Y.Z>` and `prod`, and the app picks it up on its next run. Pre-release tags containing `-rc` are excluded from `:prod`, so a release candidate can never become production.
+
+This means the app definition does not record which version prod is running. That is recoverable: every run writes `version`, `git_ref`, and `build_date` into its provenance output. To roll back, re-push `:prod` pointing at the older image rather than editing the app.
+
+Referencing an app without a trailing revision number resolves to its latest revision, so app revisions can change without breaking clients. `dm-bip seven-bridges submit --app <id>/<N>` still pins an explicit revision when you need one for testing.
