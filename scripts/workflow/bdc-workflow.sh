@@ -410,6 +410,13 @@ if [ "${BDC_PULL_LATEST:-false}" = "true" ]; then
   DM_MAP_STRICT_ARG="DM_MAP_STRICT=false"
 fi
 
+# tsv is required by the hv_dataqc fan-in step, which reads mapped output by
+# filename (Demography.tsv, Visit.tsv, ... -- see hv_dataqc/extract_harmonized).
+# Overridable rather than hard-coded: DM_MAP_OUTPUT_TYPE is a space-separated
+# list whose first value is the primary format, so "tsv jsonl" keeps hv_dataqc
+# working and emits jsonl alongside it. Do not drop tsv from the list.
+DM_MAP_OUTPUT_TYPE="${DM_MAP_OUTPUT_TYPE:-tsv}"
+
 make -j "$MAKE_JOBS" pipeline \
   -C "$WORKING_DIR" \
   DM_SCHEMA_NAME="$DM_SCHEMA_NAME" \
@@ -418,8 +425,7 @@ make -j "$MAKE_JOBS" pipeline \
   DM_INPUT_DIR="$DM_INPUT_DIR" \
   DM_TRANS_SPEC_DIR="$DM_TRANS_SPEC_DIR" \
   DM_MAP_TARGET_SCHEMA="$DM_MAP_TARGET_SCHEMA" \
-  DM_MAP_OUTPUT_TYPE="tsv" \
-  DM_MAP_STRICT=true \
+  DM_MAP_OUTPUT_TYPE="$DM_MAP_OUTPUT_TYPE" \
   DM_REPO_MANIFEST="/app/repo-manifest.yaml" \
   DM_MAP_PROFILE="$DM_MAP_PROFILE" \
   $DM_MAP_STRICT_ARG

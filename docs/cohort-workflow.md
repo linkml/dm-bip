@@ -87,6 +87,28 @@ error rather than logging every error in one pass. Combined with the default
 Note that `--strict-hv-dataqc-branch` defaults to `true` inside the container and
 is not exposed by the CLI, so a failed `--hv-dataqc-branch` fetch is fatal.
 
+### Output format (`DM_MAP_OUTPUT_TYPE`)
+
+`bdc-workflow.sh` runs the pipeline with `DM_MAP_OUTPUT_TYPE` defaulting to
+`tsv`, not the repo-wide default of `yaml`.
+
+**This is a hard requirement of cohort mode, not a preference.** The hv_dataqc
+fan-in step reads mapped output by filename -- `Demography.tsv`, `Person.tsv`,
+`Visit.tsv`, `MeasurementObservation.tsv`, and so on (see
+`hv_dataqc/extract_harmonized/extract_harmonized_summaries.py` in the HV repo).
+Emit anything else and the compare step finds no input.
+
+The value is a space-separated list whose **first** entry is the primary format
+and the rest are written alongside it. To add a format without breaking
+hv_dataqc, keep `tsv` first:
+
+```bash
+DM_MAP_OUTPUT_TYPE="tsv jsonl"
+```
+
+Set it in the SBG app environment; it is not exposed as a CLI flag. Do not drop
+`tsv` from the list.
+
 ### Working directory
 
 All `uv run dm-bip` commands must be run from the dm-bip repository root:
