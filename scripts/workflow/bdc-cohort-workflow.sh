@@ -13,7 +13,13 @@
 #   bdc-workflow.sh once per consent group under GNU parallel.
 #
 #   Parallelism: per-consent workers run under GNU parallel, bounded by
-#   --consent-parallelism (default: min(#consent-groups, max(1, floor(vCPU/4)))).
+#   --consent-parallelism. Default:
+#       min(#consent-groups, max(1, floor(vCPU / JOBS)))
+#   where JOBS is --jobs (default 8). This holds peak validate-step concurrency
+#   (CONSENT_PARALLELISM * JOBS) at roughly vCPU. Note the consequence: on an
+#   8-vCPU instance with the default --jobs 8 the computed default is 1, i.e.
+#   exactly serial. To overlap consent groups on a small instance, lower --jobs
+#   rather than raising --consent-parallelism.
 #   Each per-consent worker runs `bdc-workflow.sh` unchanged, with per-consent
 #   HOME= and UV_CACHE_DIR= for filesystem isolation. --consent-parallelism 1
 #   is exactly serial.

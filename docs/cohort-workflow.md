@@ -463,12 +463,20 @@ Create a new SBG app pointing at the same Docker image with these settings:
 | `ConsentGroups` | Directory[] | One per consent group |
 | `DbgapCache` | Directory | Shared dbGaP cache directory |
 | `AllowFail` | string[] | Consent groups allowed to fail (optional) |
-| `StrictConsentGroups` | boolean | Default: true |
-| `StrictHvDataqc` | boolean | Default: true |
+| `StrictConsentGroups` | string | `"true"` / `"false"`, default `"true"` -- see note below |
+| `StrictHvDataqc` | string | `"true"` / `"false"`, default `"true"` -- see note below |
 | `HvDataqcBranch` | string | hv_dataqc code branch override (optional) |
 | `TransSpec` | string | YAML source slug (optional, e.g. `RTIInternational/NHLBI-BDC-DMC-HV@main`) |
 | `Jobs` | integer | Default: 8 |
-| `ConsentParallelism` | integer | Default: computed from vCPU |
+| `ConsentParallelism` | integer | Optional. Only sent when `--consent-parallelism` is passed; otherwise the script computes its own default -- see [Sizing guidance](#sizing-guidance) |
+
+**`StrictConsentGroups` and `StrictHvDataqc` are strings, not booleans.** The CLI
+posts them as the lowercase strings `"true"` / `"false"`, because the SBG API
+rejected native JSON booleans for these inputs (`str(x).lower()` in
+`_build_cohort_task_bodies`). Declaring them as `boolean` in the app will not
+match what the CLI sends. When wiring a new app, confirm the input types against
+the existing `dmc-harmonization-multiconsent-app`, which is the working
+reference.
 
 Entry point command:
 ```bash
@@ -500,19 +508,41 @@ report. This means SBG will always mark the task as "Completed" — check the
 
 ## Sizing guidance
 
-Default thread budget on a typical 8-vCPU SBG instance:
+When `--consent-parallelism` is not passed, `bdc-cohort-workflow.sh` computes:
 
-| Setting | Default | Rationale |
-|---|---|---|
-| `--consent-parallelism` | 2 | 2 workers × 4 threads = 8 = vCPU during peak validate step |
-| `--jobs` (per consent) | 8 | Peak validate concurrency = parallelism × jobs |
-| Single Consent `--jobs` | 8 | Single worker has all vCPUs |
-| Single Consent `--jobs` | 8 | Single worker has all vCPUs |
-
-For a larger instance (e.g. 16 vCPU with 6 consent groups):
-```bash
---consent-parallelism 4 --jobs 8   # 4×8 = 32 threads peak
 ```
+min(#consent-groups, max(1, floor(vCPU / --jobs)))
+```
+
+The intent is to hold peak validate-step concurrency
+(`consent-parallelism x jobs`) at roughly vCPU. Because the default `--jobs` is
+8, the computed default depends on `--jobs`:
+
+| vCPU | `--jobs` | Computed `--consent-parallelism` | Peak threads |
+|---|---|---|---|
+| 8 | 8 (default) | 1 -- **serial** | 8 |
+| 8 | 4 | 2 | 8 |
+| 16 | 8 | 2 | 16 |
+| 16 | 4 | 4 | 16 |
+
+The result is also capped by the number of consent groups, so a cohort with 2
+consent groups never exceeds 2 regardless of vCPU.
+
+**On a typical 8-vCPU SBG instance the default `--jobs 8` means consent groups
+run serially.** To overlap them, lower `--jobs` rather than raising
+`--consent-parallelism`:
+
+```bash
+--consent-parallelism 2 --jobs 4   # 2 x 4 = 8 threads peak, fits 8 vCPU
+--consent-parallelism 4 --jobs 4   # 4 x 4 = 16 threads peak, fits 16 vCPU
+```
+
+Raising `--consent-parallelism` without lowering `--jobs` oversubscribes the
+instance: `--consent-parallelism 4 --jobs 8` peaks at 32 threads, 4x an 8-vCPU
+instance.
+
+Single Consent Execution Mode runs one worker, so `--jobs 8` gives that worker
+the whole instance.
 
 ---
 
