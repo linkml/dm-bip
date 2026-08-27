@@ -570,13 +570,22 @@ $(MAPPING_PROVENANCE_FILE): $(MAP_TRANS_SPEC_FILES)
 # say which variables exist while the schema says whether each is continuous or
 # categorical. Not yet wired into `pipeline` — where this belongs in the stage order is
 # still open (see OPEN-QUESTIONS-354.md, question 5).
+#
+# When DM_COHORT is set the entries also carry dbGaP metadata — variable name, units,
+# bounds, coded values — fetched for exactly the datasets the specs name. The cache is
+# deliberately not a prerequisite: it is network-populated and managed by the command
+# itself, so listing it would leave this target perpetually out of date.
 .PHONY: variable-library
 variable-library: $(VARIABLE_LIBRARY_FILE)
+
+ifneq ($(strip $(DM_COHORT)),)
+VARIABLE_LIBRARY_ARGS := --cohort $(DM_COHORT) --dbgap-cache $(DM_DBGAP_CACHE_DIR)
+endif
 
 $(VARIABLE_LIBRARY_FILE): $(MAP_TRANS_SPEC_FILES) $(SCHEMA_FILE)
 	@$(call check_trans_spec_files)
 	@mkdir -p $(@D)
-	$(RUN) dm-bip extract-variable-library $(DM_TRANS_SPEC_DIR) -s $(SCHEMA_FILE) -o $@
+	$(RUN) dm-bip extract-variable-library $(DM_TRANS_SPEC_DIR) -s $(SCHEMA_FILE) $(VARIABLE_LIBRARY_ARGS) -o $@
 
 # Phase 1: Write entity list from the trans-spec directory
 $(_ENTITY_LIST_FILE): $(MAP_TRANS_SPEC_FILES)

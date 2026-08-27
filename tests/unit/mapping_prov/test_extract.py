@@ -1,14 +1,22 @@
 """Tests for mapping-provenance extraction from transformation specs."""
 
+import copy
 import logging
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
 import git
+import pytest
 import yaml
 
-from dm_bip.mapping_prov.extract import extract_provenance, iter_class_derivations, read_study, run_activity
+from dm_bip.mapping_prov.extract import (
+    _canonicalize,
+    extract_provenance,
+    iter_class_derivations,
+    read_study,
+    run_activity,
+)
 
 INPUT_DIR = Path(__file__).parents[2] / "input" / "mapping_prov"
 ARIC_DIR = INPUT_DIR / "ARIC-ingest"
@@ -190,3 +198,139 @@ def test_locally_modified_specs_fall_back_to_path_ids(tmp_path, caplog):
     spec_ids = [e.id for e in study.has_part if e.entity_type == "transformation_spec"]
     assert spec_ids == ["dmcprov:ARIC-ingest/bmi.yaml"]
     assert any("untracked or locally modified" in record.message for record in caplog.records)
+
+
+def _sources(spec: dict | list) -> list[tuple]:
+    """Return every derivation's sources as comparable tuples."""
+    return [
+        (d.target_class, d.dataset, tuple(d.variables), tuple(d.expr_variables)) for d in iter_class_derivations(spec)
+    ]
+
+
+def _sources_via_linkml_map(spec: dict | list) -> list[tuple]:
+    """Return the same, with fragments shaped by linkml-map's own ReferenceValidator pass."""
+    from linkml_map.transformer.object_transformer import ObjectTransformer
+
+    from dm_bip.mapping_prov.extract import _as_derivation_list, _walk_derivations
+
+    sources = []
+    for fragment in spec if isinstance(spec, list) else [spec]:
+        if not isinstance(fragment, dict) or "class_derivations" not in fragment:
+            continue
+        transformer = ObjectTransformer()
+        transformer.create_transformer_specification(copy.deepcopy(fragment))
+        sources.extend(
+            (d.target_class, d.dataset, tuple(d.variables), tuple(d.expr_variables))
+            for d in _walk_derivations(_as_derivation_list(transformer.specification.class_derivations))
+        )
+    return sources
+
+
+@pytest.mark.parametrize("spec_path", sorted(INPUT_DIR.rglob("*.yaml")), ids=lambda p: p.name)
+def test_canonicalize_matches_linkml_map(spec_path: Path):
+    """Shaping fragments locally yields the same sources as linkml-map's ReferenceValidator."""
+    spec = yaml.safe_load(spec_path.read_text())
+    assert _sources(spec) == _sources_via_linkml_map(spec)
+
+
+def test_canonicalize_injects_names_from_compact_keys():
+    """Class and slot names come from the mapping keys, in both dict and compact-list form."""
+    spec = {
+        "class_derivations": {
+            "Obs": {
+                "populated_from": "pht1",
+                "slot_derivations": {
+                    "quantity": {"class_derivations": [{"Quantity": {"slot_derivations": {"value": {}}}}]},
+                },
+            }
+        }
+    }
+    canonical = _canonicalize(spec)
+    (obs,) = canonical["class_derivations"]
+    assert obs["name"] == "Obs"
+    assert obs["slot_derivations"]["quantity"]["name"] == "quantity"
+    (quantity,) = obs["slot_derivations"]["quantity"]["class_derivations"]
+    assert quantity["name"] == "Quantity"
+
+
+def test_canonicalize_inherits_populated_from_into_nested_derivations():
+    """A nested derivation with no populated_from takes the enclosing class's dataset."""
+    spec = {
+        "class_derivations": {
+            "Obs": {
+                "populated_from": "pht1",
+                "slot_derivations": {
+                    "quantity": {"class_derivations": [{"Quantity": {"slot_derivations": {"v": {}}}}]},
+                },
+            }
+        }
+    }
+    nested = _canonicalize(spec)["class_derivations"][0]["slot_derivations"]["quantity"]["class_derivations"][0]
+    assert nested["populated_from"] == "pht1"
+
+
+def test_canonicalize_flattens_object_derivations():
+    """object_derivations are hoisted into class_derivations so their variables stay visible."""
+    spec = {
+        "class_derivations": {
+            "Obs": {
+                "populated_from": "pht1",
+                "slot_derivations": {
+                    "quantity": {
+                        "object_derivations": [
+                            {
+                                "class_derivations": [
+                                    {"Quantity": {"slot_derivations": {"v": {"populated_from": "phv9"}}}}
+                                ]
+                            }
+                        ]
+                    },
+                },
+            }
+        }
+    }
+    quantity = _canonicalize(spec)["class_derivations"][0]["slot_derivations"]["quantity"]
+    assert "object_derivations" not in quantity
+    assert quantity["class_derivations"][0]["name"] == "Quantity"
+    assert ("v", "phv9") in dict(enumerate(iter_class_derivations(spec))).get(1).variables
+
+
+def test_canonicalize_expands_value_mapping_shorthand():
+    """The ``{key: value}`` mapping shorthand becomes KeyVal bodies rather than bare strings."""
+    spec = {
+        "class_derivations": {
+            "Obs": {"populated_from": "pht1", "slot_derivations": {"status": {"value_mappings": {"N": "ABSENT"}}}}
+        }
+    }
+    mappings = _canonicalize(spec)["class_derivations"][0]["slot_derivations"]["status"]["value_mappings"]
+    assert mappings == {"N": {"value": "ABSENT", "key": "N"}}
+
+
+def test_canonicalize_gives_joins_their_alias():
+    """A joins mapping keyed by alias gets that alias written into the body."""
+    spec = {
+        "class_derivations": {
+            "Obs": {"populated_from": "pht1", "joins": {"pht2": {"source_key": "phv1", "lookup_key": "phv2"}}}
+        }
+    }
+    joins = _canonicalize(spec)["class_derivations"][0]["joins"]
+    assert joins["pht2"]["alias"] == "pht2"
+
+
+CORPUS = Path.home() / "Developer" / "NHLBI-BDC-DMC-HV" / "priority_variables_transform"
+
+
+@pytest.mark.skipif(not CORPUS.is_dir(), reason="priority_variables_transform checkout not present")
+@pytest.mark.parametrize(
+    "ingest_dir",
+    sorted(p for p in CORPUS.glob("*-ingest") if p.is_dir()) if CORPUS.is_dir() else [],
+    ids=lambda p: p.name,
+)
+def test_canonicalize_matches_linkml_map_across_the_corpus(ingest_dir: Path):
+    """Every real transformation spec shapes identically through both paths."""
+    for spec_path in sorted(ingest_dir.rglob("*.yaml")):
+        try:
+            spec = yaml.safe_load(spec_path.read_text())
+        except yaml.YAMLError:
+            continue  # malformed spec; both paths fail identically at load time
+        assert _sources(spec) == _sources_via_linkml_map(spec), spec_path

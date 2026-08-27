@@ -1,16 +1,20 @@
 """
 Fetch dbGaP variable digest files (data_dict.xml, var_report.xml).
 
-Cohort version pins (cohorts.yaml) are sourced from upstream
-NHLBI-BDC-DMC-HV/hv-lint/cohorts.yaml — we do not maintain a local copy.
+Cohort version pins are sourced from the upstream NHLBI-BDC-DMC-HV
+cache-fetcher manifests (``hv_dataqc/cache_fetcher/manifests/_manifest-<key>.yaml``)
+— we do not maintain a local copy. That manifest set is the single source of
+truth for dbGaP study versions across the upstream tools, so pinning to it keeps
+us from drifting away from them.
 
-Parsing and translation of digest XML into canonical-DD format is handled by
-schema-automator's `adapt-dbgap` adapter; this module is only responsible for
-populating a local cache the adapter can read from.
+This module only populates a local cache; it does not read the XML. Two consumers do:
+schema-automator's `adapt-dbgap` adapter, which translates a pair into canonical-DD format,
+and `dm_bip.variable_lib.dbgap`, which indexes them for variable library entries.
 """
 
 from __future__ import annotations
 
+import json
 import logging
 import re
 import time
@@ -22,14 +26,42 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
-UPSTREAM_COHORTS_YAML_URL = (
-    "https://raw.githubusercontent.com/RTIInternational/NHLBI-BDC-DMC-HV/main/hv-lint/cohorts.yaml"
+UPSTREAM_MANIFESTS_API_URL = (
+    "https://api.github.com/repos/RTIInternational/NHLBI-BDC-DMC-HV/contents/hv_dataqc/cache_fetcher/manifests"
 )
 DBGAP_FTP_BASE = "https://ftp.ncbi.nlm.nih.gov/dbgap/studies"
 NCBI_DELAY_SECONDS = 0.5
 DEFAULT_CACHE_DIR = Path(".dbgap-cache")
 
 _DIGEST_FILENAME_RE = re.compile(r'href="([^"/]+\.(?:data_dict|var_report)\.xml)"')
+_MANIFEST_FILENAME_RE = re.compile(r"^_manifest-([a-z0-9_]+)\.yaml$")
+_FILENAME_PHT_RE = re.compile(r"\.(pht\d+)\.")
+
+DIGEST_KINDS = frozenset({"data_dict", "var_report"})
+
+
+def pht_from_filename(filename: str) -> str | None:
+    """
+    Pull the bare ``pht`` accession out of a digest filename.
+
+    Both digest kinds embed it — ``phs000280.v8.pht004027.v3.ABI04.data_dict.xml`` — so a
+    caller that knows which datasets it wants can select files without opening any of them.
+
+    >>> pht_from_filename("phs000280.v8.pht004027.v3.ABI04.data_dict.xml")
+    'pht004027'
+    >>> pht_from_filename("cohorts.yaml") is None
+    True
+    """
+    match = _FILENAME_PHT_RE.search(filename)
+    return match.group(1) if match else None
+
+
+# --- HTTP --------------------------------------------------------------------
+
+
+def _http_get(url: str) -> bytes:
+    with urllib.request.urlopen(url, timeout=60) as resp:  # noqa: S310
+        return resp.read()
 
 
 # --- Cohort registry ---------------------------------------------------------
@@ -37,7 +69,7 @@ _DIGEST_FILENAME_RE = re.compile(r'href="([^"/]+\.(?:data_dict|var_report)\.xml)
 
 @dataclass
 class Cohort:
-    """A dbGaP cohort entry from cohorts.yaml: study identifier and pinned version."""
+    """A dbGaP cohort entry from an upstream manifest: study identifier and pinned version."""
 
     key: str
     study_id: str
@@ -45,28 +77,69 @@ class Cohort:
     display_name: str
 
 
-def load_cohorts(cache_dir: Path = DEFAULT_CACHE_DIR, refresh: bool = False) -> dict[str, Cohort]:
-    """Load the cohort registry from upstream NHLBI-BDC-DMC-HV/hv-lint/cohorts.yaml; cached locally."""
-    cache_path = cache_dir / "cohorts.yaml"
-    if refresh or not cache_path.exists():
-        logger.info("Fetching cohorts.yaml from %s", UPSTREAM_COHORTS_YAML_URL)
-        with urllib.request.urlopen(UPSTREAM_COHORTS_YAML_URL, timeout=30) as resp:  # noqa: S310
-            raw = resp.read()
-        cache_path.parent.mkdir(parents=True, exist_ok=True)
-        cache_path.write_bytes(raw)
-    else:
-        raw = cache_path.read_bytes()
+def _fetch_manifests(manifest_dir: Path) -> None:
+    """Download every upstream ``_manifest-<key>.yaml`` into the local cache directory."""
+    logger.info("Fetching cohort manifests from %s", UPSTREAM_MANIFESTS_API_URL)
+    entries = json.loads(_http_get(UPSTREAM_MANIFESTS_API_URL).decode("utf-8"))
+    manifest_dir.mkdir(parents=True, exist_ok=True)
+    for entry in entries:
+        name = entry.get("name", "")
+        if not _MANIFEST_FILENAME_RE.fullmatch(name):
+            continue
+        logger.debug("Fetching %s", name)
+        time.sleep(NCBI_DELAY_SECONDS)
+        (manifest_dir / name).write_bytes(_http_get(entry["download_url"]))
 
-    parsed = yaml.safe_load(raw) or {}
-    return {
-        key: Cohort(
-            key=key,
-            study_id=entry["study_id"],
-            data_version=entry["data_version"],
-            display_name=entry.get("display_name", key),
-        )
-        for key, entry in (parsed.get("cohorts") or {}).items()
-    }
+
+def _parse_manifest(path: Path) -> Cohort | None:
+    """Read one manifest's ``current_version`` block into a Cohort; None if the block is unusable."""
+    key = _MANIFEST_FILENAME_RE.fullmatch(path.name).group(1)
+    current = (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get("current_version")
+    if not isinstance(current, dict):
+        logger.warning("%s has no 'current_version' mapping; skipping", path.name)
+        return None
+    study_id, data_version = current.get("study_id"), current.get("data_version")
+    if not study_id or not data_version:
+        logger.warning("%s 'current_version' is missing study_id/data_version; skipping", path.name)
+        return None
+    return Cohort(
+        key=key,
+        study_id=study_id,
+        data_version=data_version,
+        display_name=current.get("study_name", key),
+    )
+
+
+def load_cohorts(cache_dir: Path = DEFAULT_CACHE_DIR, refresh: bool = False) -> dict[str, Cohort]:
+    """Load the cohort registry from the upstream cache-fetcher manifests; cached locally."""
+    manifest_dir = cache_dir / "manifests"
+    cached = sorted(manifest_dir.glob("_manifest-*.yaml"))
+    if refresh or not cached:
+        _fetch_manifests(manifest_dir)
+        cached = sorted(manifest_dir.glob("_manifest-*.yaml"))
+
+    cohorts = {}
+    for path in cached:
+        cohort = _parse_manifest(path)
+        if cohort is not None:
+            cohorts[cohort.key] = cohort
+    return cohorts
+
+
+def cohort_for_study(study_id: str, cohorts: dict[str, Cohort]) -> Cohort | None:
+    """
+    Find the cohort pinned to a study accession, or None.
+
+    Lets a caller that already knows the study — a transformation spec directory carries it
+    in ``researchstudy.yaml`` — skip naming the cohort key. The accession is compared bare
+    because a study identifier may arrive prefixed (``bdchm:Study/phs000280``) or versioned
+    (``phs000280.v8``) while the manifests pin it plain.
+    """
+    wanted = study_id.rsplit("/", 1)[-1].split(".", 1)[0]
+    for _, cohort in sorted(cohorts.items()):
+        if cohort.study_id.split(".", 1)[0] == wanted:
+            return cohort
+    return None
 
 
 # --- Fetch -------------------------------------------------------------------
@@ -90,28 +163,48 @@ def _study_cache_path(cache_root: Path, cohort: Cohort) -> Path:
     return cache_root / cohort.key / f"{cohort.study_id}.{cohort.data_version}" / "pheno_variable_summaries"
 
 
-def _http_get(url: str) -> bytes:
-    with urllib.request.urlopen(url, timeout=60) as resp:  # noqa: S310
-        return resp.read()
-
-
 def list_digest_files(cohort: Cohort) -> list[str]:
     """Scrape the dbGaP FTP directory listing for *.data_dict.xml and *.var_report.xml filenames."""
     html = _http_get(_study_url(cohort)).decode("utf-8", errors="replace")
     return sorted(set(_DIGEST_FILENAME_RE.findall(html)))
 
 
+def _wanted(filename: str, datasets: set[str] | None, kinds: frozenset[str] | None) -> bool:
+    """Decide whether a listed digest filename is in scope for this fetch."""
+    if kinds is not None and not any(filename.endswith(f".{kind}.xml") for kind in kinds):
+        return False
+    if datasets is None:
+        return True
+    pht = pht_from_filename(filename)
+    if pht is None:
+        logger.warning("No pht accession in %s; excluding it from a filtered fetch", filename)
+        return False
+    return pht in datasets
+
+
 def fetch_digests(
     cohort: Cohort,
     cache_root: Path = DEFAULT_CACHE_DIR,
     refresh: bool = False,
+    *,
+    datasets: set[str] | None = None,
+    kinds: frozenset[str] | None = None,
 ) -> CohortDigests:
-    """Fetch all digest files for a cohort into a local cache; skips cached unless refresh=True."""
+    """
+    Fetch a cohort's digest files into a local cache; skips cached unless refresh=True.
+
+    ``datasets`` limits the fetch to the given bare ``pht`` accessions and ``kinds`` to the
+    given digest kinds (``data_dict``, ``var_report``); both default to fetching everything.
+    Filtering costs no extra requests because the pht is in the filename — for ARIC, a caller
+    that only wants the datasets its transformation specs name pulls 326 files, not 736.
+    """
     out_dir = _study_cache_path(cache_root, cohort)
     out_dir.mkdir(parents=True, exist_ok=True)
     result = CohortDigests(cohort=cohort, cache_root=cache_root)
 
     filenames = list_digest_files(cohort)
+    if datasets is not None or kinds is not None:
+        filenames = [name for name in filenames if _wanted(name, datasets, kinds)]
     if not filenames:
         logger.warning("No digest files found at %s", _study_url(cohort))
         return result
@@ -133,6 +226,36 @@ def fetch_digests(
 
     result.data_dicts.sort()
     result.var_reports.sort()
+    return result
+
+
+def cached_digests(
+    cohort: Cohort,
+    cache_root: Path = DEFAULT_CACHE_DIR,
+    *,
+    datasets: set[str] | None = None,
+    kinds: frozenset[str] | None = None,
+) -> CohortDigests:
+    """
+    Collect a cohort's already-fetched digest files without touching the network.
+
+    The offline counterpart to ``fetch_digests``, for repeat runs and CI. Applies the same
+    filters so a caller gets the same view either way.
+    """
+    out_dir = _study_cache_path(cache_root, cohort)
+    result = CohortDigests(cohort=cohort, cache_root=cache_root)
+    if not out_dir.is_dir():
+        logger.warning("No cached digests at %s", out_dir)
+        return result
+
+    for path in sorted(out_dir.iterdir()):
+        if not _wanted(path.name, datasets, kinds):
+            continue
+        if path.name.endswith(".data_dict.xml"):
+            result.data_dicts.append(path)
+        elif path.name.endswith(".var_report.xml"):
+            result.var_reports.append(path)
+
     return result
 
 

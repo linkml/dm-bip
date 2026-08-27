@@ -5,12 +5,11 @@ A transformation spec (as produced for the DMC pipeline) is a YAML document cont
 list of ``class_derivations`` fragments. Each fragment derives a target class from a dbGaP
 dataset (a ``pht`` accession, given by a class-level ``populated_from``) and populates its
 slots from dbGaP variables (``phv`` accessions, given by slot-level ``populated_from``
-values or referenced as ``{phv...}`` inside ``expr`` strings). Fragments are loaded
-through linkml-map's own datamodel
-(``TransformationSpecification``), which normalizes the compact key-as-name YAML syntax the
-specs are written in. A file is a *list* of fragments rather than a single specification
-because ``class_derivations`` is keyed by class name, and one file may derive the same
-class from several datasets.
+values or referenced as ``{phv...}`` inside ``expr`` strings). Fragments are loaded through
+linkml-map's own datamodel (``TransformationSpecification``), with :func:`_canonicalize`
+first expanding the compact key-as-name YAML syntax the specs are written in. A file is a
+*list* of fragments rather than a single specification because ``class_derivations`` is
+keyed by class name, and one file may derive the same class from several datasets.
 
 This module walks those specs and expresses what it finds as study-rooted documents in the
 mapping-provenance schema (see ``schema/mapping_prov_schema.yaml``). Following
@@ -34,8 +33,7 @@ from pathlib import Path
 from typing import Any
 
 import git
-from linkml_map.datamodel.transformer_model import ClassDerivation
-from linkml_map.transformer.object_transformer import ObjectTransformer
+from linkml_map.datamodel.transformer_model import ClassDerivation, TransformationSpecification
 from linkml_map.utils.expression_locations import iter_expressions
 from linkml_runtime.dumpers import yaml_dumper
 from linkml_runtime.loaders import yaml_loader
@@ -171,6 +169,100 @@ def _braced_names(expression: str) -> list[str]:
     )
 
 
+_MAPPING_FIELDS = (
+    "value_mappings",
+    "expression_mappings",
+    "expression_to_value_mappings",
+    "expression_to_expression_mappings",
+)
+
+
+def _named_list(node: Any) -> list[dict]:
+    """
+    Return a derivation section as a list of bodies each carrying an explicit ``name``.
+
+    Accepts the three shapes the specs use: a dict keyed by name, the compact-key list form
+    (``[{Name: {body}}]``), and an already-explicit list.
+    """
+    if isinstance(node, dict):
+        return [{**body, "name": name} for name, body in node.items() if isinstance(body, dict)]
+    derivations = []
+    for item in node or []:
+        if isinstance(item, dict) and "name" not in item and len(item) == 1:
+            ((key, body),) = item.items()
+            if isinstance(body, dict):
+                derivations.append({**body, "name": key})
+                continue
+        if isinstance(item, dict):
+            derivations.append(dict(item))
+    return derivations
+
+
+def _keyvals(mapping: dict) -> dict:
+    """Expand the ``{key: value}`` shorthand the mapping fields accept into ``KeyVal`` bodies."""
+    keyvals = {}
+    for key, value in mapping.items():
+        body = dict(value) if isinstance(value, dict) else {"value": value}
+        body.setdefault("key", key)
+        keyvals[key] = body
+    return keyvals
+
+
+def _canonicalize(fragment: dict) -> dict:
+    """
+    Return a fragment in the shape ``TransformationSpecification`` accepts.
+
+    linkml-map's own loader reaches this shape by way of ``ReferenceValidator``, which
+    derives it generically from the transformer metamodel — correct, but it re-materializes
+    that metamodel on every fragment (millions of ``deepcopy`` calls, ~32ms each) and the
+    specs hold thousands of fragments. Since this module reads specs rather than executing
+    them, it applies the handful of rules that matter here instead: ``name`` injection,
+    keeping ``slot_derivations`` a dict, the ``KeyVal`` shorthand, ``joins`` aliases, and
+    the two migrations that change what gets extracted (``object_derivations`` flattening
+    and ``populated_from`` inheritance by nested derivations).
+
+    A shape not covered here surfaces as a pydantic ``ValidationError`` from the caller, not
+    as silently dropped variables. What is skipped is linkml-map's deprecated-field scan,
+    which lints specs rather than shaping them.
+
+    >>> spec = _canonicalize({"class_derivations": {"Obs": {"populated_from": "pht1"}}})
+    >>> spec["class_derivations"]
+    [{'populated_from': 'pht1', 'name': 'Obs'}]
+    """
+
+    def walk(node: Any, inherited: Any = None) -> list[dict]:
+        derivations = _named_list(node)
+        for derivation in derivations:
+            joins = derivation.get("joins")
+            if isinstance(joins, dict):
+                derivation["joins"] = {
+                    alias: {**body, "alias": alias} if isinstance(body, dict) else body for alias, body in joins.items()
+                }
+            if derivation.get("populated_from") is None and inherited is not None:
+                derivation["populated_from"] = inherited
+            slots = {slot["name"]: slot for slot in _named_list(derivation.get("slot_derivations"))}
+            for slot in slots.values():
+                for name in _MAPPING_FIELDS:
+                    if isinstance(slot.get(name), dict):
+                        slot[name] = _keyvals(slot[name])
+                nested = slot.pop("object_derivations", None)
+                if nested is not None and not slot.get("class_derivations"):
+                    slot["class_derivations"] = [
+                        inner
+                        for od in (nested if isinstance(nested, list) else [nested])
+                        for inner in (
+                            od["class_derivations"] if isinstance(od, dict) and "class_derivations" in od else [od]
+                        )
+                    ]
+                if slot.get("class_derivations"):
+                    slot["class_derivations"] = walk(slot["class_derivations"], derivation.get("populated_from"))
+            if slots:
+                derivation["slot_derivations"] = slots
+        return derivations
+
+    return {**fragment, "class_derivations": walk(fragment.get("class_derivations"))}
+
+
 def _as_derivation_list(class_derivations: Any) -> list[ClassDerivation]:
     """Return class derivations as a list, whether given as a dict keyed by class name or a list."""
     if isinstance(class_derivations, dict):
@@ -226,9 +318,8 @@ def iter_spec_blocks(spec: Any) -> Iterator[list[DerivationSources]]:
     for fragment in fragments:
         if not isinstance(fragment, dict) or "class_derivations" not in fragment:
             continue
-        transformer = ObjectTransformer()
-        transformer.create_transformer_specification(fragment)
-        derivations = list(_walk_derivations(_as_derivation_list(transformer.specification.class_derivations)))
+        specification = TransformationSpecification(**_canonicalize(fragment))
+        derivations = list(_walk_derivations(_as_derivation_list(specification.class_derivations)))
         if derivations:
             yield derivations
 

@@ -1,6 +1,7 @@
 """Command line interface for dm-bip."""
 
 import logging
+import re
 from pathlib import Path
 from typing import Annotated, Optional
 
@@ -15,6 +16,9 @@ __all__ = [
 ]
 
 logger = logging.getLogger(__name__)
+
+# A real study id carries a dbGaP accession (``bdchm:Study/phs000280``); a placeholder does not.
+_PHS_RE = re.compile(r"phs\d+")
 
 app = typer.Typer(
     help="CLI for dm-bip.",
@@ -177,6 +181,68 @@ def extract_mapping_provenance(
         typer.echo(f"Mapping provenance written to {output}")
 
 
+def _dbgap_metadata(records, classify, cohort_key, cache_dir, fetch, with_var_report, refresh):
+    """
+    Build a dbGaP metadata source covering the datasets these records name, or None.
+
+    Returning None is a normal outcome, not a failure: a study with no dbGaP presence still
+    yields entries, just without the descriptive slots.
+    """
+    from dm_bip.prepare_study.fetch_digests import (
+        cached_digests,
+        cohort_for_study,
+        fetch_digests,
+        load_cohorts,
+    )
+    from dm_bip.variable_lib.dbgap_metadata import metadata_for
+
+    if not records:
+        return None
+
+    # Auto-detect needs the cohort registry, which is fetched over the network the first time.
+    # Studies carrying no phs accession — a spec directory with no researchstudy.yaml gets a
+    # placeholder id — can never match one, so rule that out before reaching for it.
+    studies = sorted({record.study_id for record in records.values() if record.study_id})
+    if cohort_key is None and not any(_PHS_RE.search(study) for study in studies):
+        typer.echo("No study accession in these specs; descriptive slots will be empty", err=True)
+        return None
+
+    cohorts = load_cohorts(cache_dir=cache_dir)
+    if cohort_key is not None:
+        cohort = cohorts.get(cohort_key)
+        if cohort is None:
+            typer.echo(f"Unknown cohort '{cohort_key}'. Available: {', '.join(sorted(cohorts))}", err=True)
+            raise typer.Exit(code=2)
+    else:
+        cohort = next((found for study in studies if (found := cohort_for_study(study, cohorts))), None)
+        if cohort is None:
+            typer.echo("No dbGaP cohort matches these specs; descriptive slots will be empty", err=True)
+            return None
+        typer.echo(f"Using dbGaP cohort {cohort.key} ({cohort.study_id}.{cohort.data_version})", err=True)
+
+    datasets = {record.sole_dataset() for record in records.values()}
+    kinds = None if with_var_report else frozenset({"data_dict"})
+    if fetch:
+        digests = fetch_digests(cohort, cache_root=cache_dir, refresh=refresh, datasets=datasets, kinds=kinds)
+    else:
+        digests = cached_digests(cohort, cache_dir, datasets=datasets, kinds=kinds)
+
+    found = {pht for path in digests.data_dicts if (pht := _pht_of(path.name))}
+    if missing := datasets - found:
+        typer.echo(
+            f"{len(missing)} of {len(datasets)} datasets have no dbGaP data dictionary: {', '.join(sorted(missing))}",
+            err=True,
+        )
+    return metadata_for(digests, classify, with_var_report=with_var_report)
+
+
+def _pht_of(filename):
+    """Return the bare pht in a digest filename, deferring the import for CLI startup speed."""
+    from dm_bip.prepare_study.fetch_digests import pht_from_filename
+
+    return pht_from_filename(filename)
+
+
 @app.command()
 def extract_variable_library(
     paths: Annotated[list[Path], typer.Argument(exists=True, help="Transformation spec files or directories")],
@@ -185,8 +251,29 @@ def extract_variable_library(
         typer.Option("--source-schema", "-s", exists=True, help="schema-automator output, used to type each variable"),
     ] = None,
     output: Annotated[Optional[Path], typer.Option("--output", "-o", help="Output YAML file (default: stdout)")] = None,
+    cohort: Annotated[
+        Optional[str],
+        typer.Option("--cohort", help="dbGaP cohort key; omit to detect it from the specs' researchstudy.yaml"),
+    ] = None,
+    dbgap_cache: Annotated[
+        Path, typer.Option("--dbgap-cache", help="Local cache directory for dbGaP digest XMLs")
+    ] = Path(".dbgap-cache"),
+    fetch: Annotated[
+        bool, typer.Option("--fetch/--no-fetch", help="Fetch missing digests; --no-fetch uses only what is cached")
+    ] = True,
+    with_var_report: Annotated[
+        bool,
+        typer.Option("--var-report/--no-var-report", help="Use var_report.xml for data types and observed bounds"),
+    ] = True,
+    refresh: Annotated[bool, typer.Option("--refresh", help="Force re-fetch of cached digest files")] = False,
 ):
-    """Emit BDC variable library entries for the source variables named in transformation specs."""
+    """
+    Emit BDC variable library entries for the source variables named in transformation specs.
+
+    The specs say which variables exist and ``--source-schema`` says whether each is
+    continuous or categorical. Descriptive slots — name, units, bounds, coded values — come
+    from dbGaP, fetched for exactly the datasets the specs name and no others.
+    """
     from dm_bip.mapping_prov.extract import collect_spec_paths
     from dm_bip.variable_lib.classify import classifier_for
     from dm_bip.variable_lib.emit import to_entries, to_yaml
@@ -198,7 +285,9 @@ def extract_variable_library(
         raise typer.Exit(code=1)
 
     records = collect_variables(spec_paths)
-    entries = to_entries(records, classifier_for(source_schema))
+    classify = classifier_for(source_schema)
+    metadata = _dbgap_metadata(records, classify, cohort, dbgap_cache, fetch, with_var_report, refresh)
+    entries = to_entries(records, classify, metadata=metadata)
     serialized = to_yaml(entries)
     if output is None:
         typer.echo(serialized)
