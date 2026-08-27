@@ -53,6 +53,9 @@ DM_MAP_STRICT ?= true
 # peak memory / OOM counters are logged. Off by default; zero cost when off.
 DM_MAP_PROFILE ?= false
 DM_VALIDATE_STRICT ?=
+# Max records checked per entity when validating mapped output against the target
+# schema (0 = all). Bound this on large datasets to keep the advisory report cheap.
+DM_VALIDATE_OUTPUT_LIMIT ?= 0
 
 # --- Raw Data Preparation Variables ---
 # The raw directory containing .txt.gz files
@@ -98,6 +101,8 @@ SCHEMA_VALIDATE_LOG         := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-schema-v
 DATA_VALIDATE_FILES_DIR     := $(VALIDATE_OUTPUT_DIR)/data-validation
 DATA_VALIDATE_ERRORS_DIR    := $(VALIDATE_OUTPUT_DIR)/data-validation-errors
 MAPPING_LOG_DIR             := $(MAPPING_OUTPUT_DIR)/logs
+
+OUTPUT_VALIDATE_REPORT      := $(VALIDATE_OUTPUT_DIR)/$(DM_SCHEMA_NAME)-output-validation.txt
 
 VALIDATION_SUCCESS_SENTINEL := $(VALIDATE_OUTPUT_DIR)/_data_validation_complete
 MAPPING_SUCCESS_SENTINEL := $(MAPPING_OUTPUT_DIR)/_mapping_complete
@@ -169,6 +174,7 @@ Configured variables:
   DM_ENUM_THRESHOLD  = $(DM_ENUM_THRESHOLD)
   DM_MAX_ENUM_SIZE   = $(DM_MAX_ENUM_SIZE)
   DM_VALIDATE_STRICT = $(DM_VALIDATE_STRICT)
+  DM_VALIDATE_OUTPUT_LIMIT = $(DM_VALIDATE_OUTPUT_LIMIT)
 
 Generated variables
   input files:                    $(if $(INPUT_FILES),$(INPUT_FILES),(none))
@@ -180,6 +186,7 @@ Generated logs:
   data validation logs by file:   $(DATA_VALIDATE_FILES_DIR)
   data validation errors by file: $(DATA_VALIDATE_ERRORS_DIR)
   mapping logs:                   $(MAPPING_LOG_DIR)
+  output validation report:       $(OUTPUT_VALIDATE_REPORT)
 
 endef
 
@@ -233,7 +240,9 @@ help::
 .DEFAULT_GOAL := pipeline
 
 .PHONY: pipeline
-pipeline: $(MAPPING_SUCCESS_SENTINEL)
+# The advisory output-validation report is the endpoint when a target schema is
+# configured; without one there is nothing to validate against, so mapping is the end.
+pipeline: $(if $(DM_MAP_TARGET_SCHEMA),$(OUTPUT_VALIDATE_REPORT),$(MAPPING_SUCCESS_SENTINEL))
 
 .PHONY: pipeline-debug
 pipeline-debug:
@@ -635,6 +644,38 @@ $(MAPPING_OUTPUT_DIR)/.%_complete: $(MAP_TRANS_SPEC_FILES) $(SCHEMA_FILE) $(MAP_
 		exit $$rc; \
 	fi
 	@touch $@
+
+# Output Validation Goals
+# =======================
+#
+# The map step passes `--target-schema` to linkml-map, but that only shapes the
+# transformation — nothing asserts the emitted records actually conform to it. This
+# step validates mapped output against the target schema and writes a report.
+#
+# ADVISORY ONLY: the report never fails the pipeline. `validate_output` always exits
+# 0, so mapped output that does not conform is reported, not blocked. Enforcement is
+# a separate decision to be made once the real failure profile is known.
+#
+# Set DM_VALIDATE_OUTPUT_LIMIT to cap records checked per entity on large datasets.
+
+.PHONY: validate-output
+validate-output: $(OUTPUT_VALIDATE_REPORT)
+
+$(OUTPUT_VALIDATE_REPORT): $(MAPPING_SUCCESS_SENTINEL) $(MAP_TARGET_SCHEMA_FILE)
+	@mkdir -p $(VALIDATE_OUTPUT_DIR)
+	$(RUN) python -m dm_bip.map_data.validate_output \
+		--target-schema "$(MAP_TARGET_SCHEMA_FILE)" \
+		--mapped-dir $(MAPPING_OUTPUT_DIR) \
+		--entity-list $(_ENTITY_LIST_FILE) \
+		--prefix="$(DM_MAPPING_PREFIX)" \
+		--postfix="$(DM_MAPPING_POSTFIX)" \
+		--format $(_MAP_PRIMARY_FMT) \
+		--limit $(DM_VALIDATE_OUTPUT_LIMIT) \
+		--report $@
+
+.PHONY: validate-output-clean
+validate-output-clean:
+	rm -f $(OUTPUT_VALIDATE_REPORT)
 
 .PHONY: map-debug
 map-debug:
