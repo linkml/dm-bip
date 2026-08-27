@@ -77,15 +77,14 @@ jobs:
 
       # Deployment tier is selected here, and ONLY here. This is the single
       # branch/tag -> Seven Bridges image repository mapping in the repo:
-      #   docker-dev branch      -> SB_REGISTRY_PROJECT_DEV  (dm-bip-docker-dev)
-      #   bdc-v* tag             -> SB_REGISTRY_PROJECT_PROD (dm-bip-prod)
-      #   anything else (test)   -> SB_REGISTRY_PROJECT_DEV  (dm-bip-docker-dev)
+      #   docker-dev branch      -> SB_REGISTRY_PROJECT_DEV     (dm-bip-docker-dev)
+      #   bdc-v* tag             -> SB_REGISTRY_PROJECT_PROD    (dm-bip-prod)
+      #   anything else (test)   -> SB_REGISTRY_PROJECT_DEVELOP (dm-bip-develop)
       #
-      # KNOWN ISSUE: the dev and test tiers share dm-bip-docker-dev, so :latest
-      # is last-writer-wins between the docker-dev and docker-push-7bridges
-      # branches. The sha-<commit> tags still identify each build uniquely.
-      # Fix pending: point the test tier at SB_REGISTRY_PROJECT_DEVELOP
-      # (dm-bip-develop), which exists in SBG but no trigger currently uses.
+      # One repository per tier: no two triggers write the same :latest. The
+      # else-arm also catches workflow_dispatch from an arbitrary branch, which
+      # would otherwise have no tier, so it must stay a catch-all rather than an
+      # explicit docker-push-7bridges match.
       - name: Configure build for branch
         id: build-config
         run: |
@@ -103,8 +102,8 @@ jobs:
           else
             tier="test"
             pull_latest="false"
-            project='${{ vars.SB_REGISTRY_PROJECT_DEV }}'
-            project_var="SB_REGISTRY_PROJECT_DEV"
+            project='${{ vars.SB_REGISTRY_PROJECT_DEVELOP }}'
+            project_var="SB_REGISTRY_PROJECT_DEVELOP"
           fi
 
           # Fail loudly rather than pushing to a malformed path with an empty segment.
