@@ -19,6 +19,10 @@ DEFAULT_PROJECT = "rmathur2/dmc-task-4-controlled"
 # default stops going stale every time the app is re-saved. Pin a revision for testing
 # with --app .../cc-dm-bip-test/<N> or SBG_DEFAULT_APP.
 DEFAULT_APP = "rmathur2/dmc-task-4-controlled/cc-dm-bip-test"
+# Intentionally empty: cohort mode submits one long-running task that drives every
+# consent group for a cohort, so silently defaulting to somebody's app is worse than
+# failing. --cohort-app or SBG_DEFAULT_COHORT_APP must be given explicitly.
+DEFAULT_COHORT_APP = ""
 DEFAULT_TOKEN_FILE = Path.home() / ".sevenbridges" / "token"
 
 DEFAULT_TIMEOUT_SECONDS = 30.0
@@ -44,6 +48,7 @@ class Config:
     base_url: str
     project: str
     app: str
+    cohort_app: str
     token_file: Path
 
 
@@ -53,6 +58,7 @@ def load_config() -> Config:
         base_url=os.environ.get("SBG_BASE_URL", DEFAULT_BASE_URL).rstrip("/"),
         project=os.environ.get("SBG_DEFAULT_PROJECT", DEFAULT_PROJECT),
         app=os.environ.get("SBG_DEFAULT_APP", DEFAULT_APP),
+        cohort_app=os.environ.get("SBG_DEFAULT_COHORT_APP", DEFAULT_COHORT_APP),
         token_file=Path(os.environ.get("SBG_TOKEN_FILE") or DEFAULT_TOKEN_FILE),
     )
 
@@ -144,6 +150,28 @@ class Client:
         else:
             raise ValueError("Must provide project or parent")
         return [item for item in resp.get("items", []) if item.get("type") == "folder"]
+
+    def resolve_folder_path(self, project: str, path: str) -> str:
+        """
+        Walk a slash-separated path and return the deepest folder's ID.
+
+        Path should be relative to the project root, e.g.
+        ``_QC_STAGING/_dbGaP_cache/copdgene`` (leading/trailing slashes ignored).
+        Raises SevenBridgesError if any component is not found.
+        """
+        parts = [p for p in path.strip("/").split("/") if p]
+        if not parts:
+            raise SevenBridgesError(f"Empty folder path: {path!r}")
+        parent_id: str | None = None
+        current_path = ""
+        for part in parts:
+            folders = self.get_folders(project=project if parent_id is None else None, parent=parent_id)
+            match = next((f for f in folders if f.get("name") == part), None)
+            current_path = f"{current_path}/{part}"
+            if match is None:
+                raise SevenBridgesError(f"Folder not found: {current_path!r} in project {project!r}")
+            parent_id = match["id"]
+        return parent_id  # type: ignore[return-value]
 
     def download(self, url: str, *, timeout: float = 60.0) -> str:
         """Fetch raw text content from a URL (used for SBG log download URLs); no auth header."""
