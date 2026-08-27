@@ -54,6 +54,10 @@ git push origin bdc-v1.2.0
 
 ### Variables (Settings > Secrets and variables > Actions > Variables)
 
+All five are **required**. Deleting any one of them breaks the tier that uses
+it: GitHub substitutes an empty string for an undefined `vars.*` reference, so
+the workflow fails in `Configure build for branch` naming the missing variable.
+
 - `SB_REGISTRY` -- Seven Bridges registry hostname (host only, no scheme, no `/v2`)
 - `SB_REGISTRY_USERNAME` -- Registry account username; also used as the image
   namespace segment. On a division-scoped BDC account this is the qualified form
@@ -62,10 +66,17 @@ git push origin bdc-v1.2.0
 - `SB_REGISTRY_PROJECT_DEVELOP` -- Test registry path segment
 - `SB_REGISTRY_PROJECT_PROD` -- Prod registry path segment
 
-Unused legacy variables, safe to delete: `SB_REGISTRY_PROJECT` (old test tier,
-its SBG repo no longer exists), `SB_REGISTRY_PROJECT_RELMAN` (its workflow was
-removed), `SB_REGISTRY_USERNAME_ERA` and `SB_REGISTRY_PASSWORD_ERA` (superseded
-by `SB_REGISTRY_USERNAME` / `SB_REGISTRY_PASSWORD`).
+Do not prune a `SB_REGISTRY_PROJECT_*` variable on the assumption that an unused
+*name* means an unused *tier*. `SB_REGISTRY_PROJECT_DEVELOP` was deleted on
+2026-08-26 while it still looked unreferenced, one commit before the test tier
+started using it, and the next push failed.
+
+Genuinely dead, safe to delete (grep the workflow first to confirm nothing
+references them):
+
+- `SB_REGISTRY_PROJECT` = `dm-bip` -- old test tier; its SBG repository no
+  longer exists
+- `SB_REGISTRY_PASSWORD_ERA` (secret) -- superseded by `SB_REGISTRY_PASSWORD`
 
 ### Secrets
 
