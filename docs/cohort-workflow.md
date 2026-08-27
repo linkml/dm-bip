@@ -59,20 +59,33 @@ An app ID with no trailing `/<revision>` runs the app's latest revision. Editing
 the Docker Repository field creates a new revision, so a pinned ID such as
 `.../my-app/4` keeps running the old image.
 
-### Dev mode (`--trans-spec` and `--hv-dataqc-branch`)
+### Dev mode (`BDC_PULL_LATEST`) and cohort mode
 
-`--trans-spec` requires the container to be in dev mode. Test- and prod-tier
-images are built with `BDC_PULL_LATEST=false` and will exit with:
+**Cohort mode does not require dev mode** for `--trans-spec` or
+`--hv-dataqc-branch`. `bdc-cohort-workflow.sh` resolves the trans-spec slug to a
+SHA and pre-clones it once at startup, then hands each per-consent worker
+`DM_TRANS_SPEC_DIR_PREBUILT`. Workers never run git, so they never reach
+`bdc-workflow.sh`'s dev-mode gate. `--hv-dataqc-branch` is likewise fetched and
+checked out by `bdc-cohort-workflow.sh` itself.
+
+This error --
 
 ```
 ERROR: --trans-spec is only supported when BDC_PULL_LATEST=true (dev mode)
 ```
 
-The value is read from the environment at runtime, so set `BDC_PULL_LATEST=true`
-on the SBG app (an `EnvVarRequirement` in the app's CWL, or an app input wired to
-the environment) rather than rebuilding the image. Note that dev mode also sets
-`DM_MAP_STRICT=false`, so mapping logs every error in one pass instead of failing
-on the first.
+-- comes from `bdc-workflow.sh` and applies to **Single Consent Execution Mode
+only**, i.e. `submit` *without* `--cohort-mode`.
+
+What dev mode does still change in cohort mode: `bdc-workflow.sh` sets
+`DM_MAP_STRICT=false` when `BDC_PULL_LATEST=true`. On a test- or prod-tier image
+(built `false`) mapping runs **strict** and aborts a consent group on the first
+error rather than logging every error in one pass. Combined with the default
+`--strict-consent-groups`, one bad transform can end the cohort run early. Pass
+`--no-strict-consent-groups` for a survey run.
+
+Note that `--strict-hv-dataqc-branch` defaults to `true` inside the container and
+is not exposed by the CLI, so a failed `--hv-dataqc-branch` fetch is fatal.
 
 ### Working directory
 
