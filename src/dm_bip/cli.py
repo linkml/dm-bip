@@ -151,6 +151,33 @@ def fetch_digests(
 
 
 @app.command()
+def extract_mapping_provenance(
+    paths: Annotated[list[Path], typer.Argument(exists=True, help="Transformation spec files or directories")],
+    output: Annotated[Optional[Path], typer.Option("--output", "-o", help="Output YAML file (default: stdout)")] = None,
+):
+    """Extract mapping provenance (study, dataset, and variable sources) from transformation specs."""
+    from datetime import datetime, timezone
+
+    from dm_bip.mapping_prov.extract import collect_spec_paths, extract_provenance, run_activity, to_yaml
+
+    spec_paths = collect_spec_paths(paths)
+    if not spec_paths:
+        typer.echo("No transformation spec files found", err=True)
+        raise typer.Exit(code=1)
+
+    started_at = datetime.now(timezone.utc)
+    studies = extract_provenance(spec_paths)
+    activity = run_activity(studies, started_at, datetime.now(timezone.utc))
+    serialized = to_yaml([activity, *studies])
+    if output is None:
+        typer.echo(serialized)
+    else:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(serialized)
+        typer.echo(f"Mapping provenance written to {output}")
+
+
+@app.command()
 def apply_overrides(
     pipeline_csv: Annotated[Path, typer.Option("--input", "-i", help="Pipeline output CSV")],
     fixes_csv: Annotated[Path, typer.Option("--fixes", "-f", help="Curator fixes CSV")],

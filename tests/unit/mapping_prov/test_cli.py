@@ -1,0 +1,50 @@
+"""Tests for the extract-mapping-provenance CLI command."""
+
+import shutil
+from pathlib import Path
+
+import yaml
+from typer.testing import CliRunner
+
+from dm_bip.cli import app
+
+INPUT_DIR = Path(__file__).parents[2] / "input" / "mapping_prov"
+
+runner = CliRunner()
+
+
+def test_cli_extracts_directory_to_stdout():
+    """A spec directory is extracted to a YAML list of study documents on stdout."""
+    result = runner.invoke(app, ["extract-mapping-provenance", str(INPUT_DIR / "ARIC-ingest")])
+    assert result.exit_code == 0, result.output
+
+    activity, [study] = yaml.safe_load(result.output)[0], yaml.safe_load(result.output)[1:]
+    assert activity["id"].startswith("dmcprov:run/")
+    assert "started_at_time" in activity
+    assert study["id"] == "bdchm:Study/phs000280"
+    assert study["entity_type"] == "study"
+    assert any(e["id"] == "dbgap:pht004063" for e in study["has_part"])
+
+
+def test_cli_writes_output_file(tmp_path):
+    """The -o option writes the YAML to a file, covering multiple study directories."""
+    # copy the fixtures outside any git checkout so spec ids deterministically use path form
+    specs = tmp_path / "specs"
+    shutil.copytree(INPUT_DIR, specs)
+    out = tmp_path / "mapping-prov.yaml"
+    result = runner.invoke(app, ["extract-mapping-provenance", str(specs), "-o", str(out)])
+    assert result.exit_code == 0, result.output
+
+    activity, *studies = yaml.safe_load(out.read_text())
+    assert "ended_at_time" in activity
+    assert "dmcprov:ARIC-ingest/bmi.yaml" in activity["has_input"]
+    assert [s["id"] for s in studies] == ["bdchm:Study/phs000280", "dmcprov:MESA-ingest"]
+    aric_specs = [e for e in studies[0]["has_part"] if e.get("entity_type") == "transformation_spec"]
+    # spec ids are relative to the common base directory, so they keep the study-dir prefix
+    assert any(s["id"] == "dmcprov:ARIC-ingest/bmi.yaml" for s in aric_specs)
+
+
+def test_cli_errors_when_no_specs_found(tmp_path):
+    """An input directory containing no spec files is an error."""
+    result = runner.invoke(app, ["extract-mapping-provenance", str(tmp_path)])
+    assert result.exit_code == 1

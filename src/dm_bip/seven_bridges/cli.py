@@ -144,6 +144,10 @@ def submit(
     throttle: Annotated[
         int, typer.Option("--throttle", min=0, help="Seconds between task submissions.")
     ] = DEFAULT_THROTTLE_SECONDS,
+    profile: Annotated[
+        bool,
+        typer.Option("--profile", help="Enable map-step diagnostics (py-spy + cgroup) via the app's Profile toggle."),
+    ] = False,
     cohort_mode: Annotated[
         bool,
         typer.Option(
@@ -292,6 +296,7 @@ def submit(
                 "Schema": schema,
                 "RawSource": {"class": "Directory", "path": folder["id"]},
                 **({"TransSpec": trans_spec} if trans_spec else {}),
+                **({"Profile": True} if profile else {}),
             },
         }
         try:

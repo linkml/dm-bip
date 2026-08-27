@@ -15,7 +15,10 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_BASE_URL = "https://api.sb.biodatacatalyst.nhlbi.nih.gov/v2"
 DEFAULT_PROJECT = "rmathur2/dmc-task-4-controlled"
-DEFAULT_APP = "rmathur2/dmc-task-4-controlled/cc-dm-bip-test/4"
+# No trailing revision: SBG resolves a bare app id to the latest revision, so this
+# default stops going stale every time the app is re-saved. Pin a revision for testing
+# with --app .../cc-dm-bip-test/<N> or SBG_DEFAULT_APP.
+DEFAULT_APP = "rmathur2/dmc-task-4-controlled/cc-dm-bip-test"
 # Intentionally empty: cohort mode submits one long-running task that drives every
 # consent group for a cohort, so silently defaulting to somebody's app is worse than
 # failing. --cohort-app or SBG_DEFAULT_COHORT_APP must be given explicitly.

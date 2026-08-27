@@ -133,6 +133,14 @@ jobs:
           if [[ "${GITHUB_REF}" == refs/tags/bdc-v* ]]; then
             VERSION_TAG="${GITHUB_REF_NAME}"
           fi
+          # The :prod tag is a promotion pointer -- the prod app pulls it
+          # permanently, so a release deploys by moving the tag rather than by
+          # hand-editing the app. Guarded against pre-release tags so an rc can
+          # never become prod.
+          PROD_TAG=""
+          if [[ "${GITHUB_REF}" == refs/tags/bdc-v* && "${GITHUB_REF_NAME}" != *-rc* ]]; then
+            PROD_TAG="prod"
+          fi
 
           # Pass build metadata so the image LABELs / provenance are populated
           # (previously supplied by docker/metadata-action).
@@ -151,4 +159,9 @@ jobs:
           if [[ -n "$VERSION_TAG" ]]; then
             docker tag $IMAGE_NAME "$IMAGE_URI:$VERSION_TAG"
             docker push "$IMAGE_URI:$VERSION_TAG"
+          fi
+
+          if [[ -n "$PROD_TAG" ]]; then
+            docker tag $IMAGE_NAME "$IMAGE_URI:$PROD_TAG"
+            docker push "$IMAGE_URI:$PROD_TAG"
           fi

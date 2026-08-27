@@ -73,6 +73,7 @@ def test_submit_creates_and_runs_one_task_per_row(
     assert body["inputs"]["Schema"] == "FHS"
     assert body["inputs"]["RawSource"] == {"class": "Directory", "path": "group-id"}
     assert "TransSpec" not in body["inputs"]
+    assert "Profile" not in body["inputs"]
 
 
 def test_submit_passes_trans_spec_when_provided(
@@ -112,6 +113,42 @@ def test_submit_passes_trans_spec_when_provided(
     assert result.exit_code == 0
     create_req = next(r for r in httpx_mock.get_requests() if r.method == "POST" and r.url.path == "/v2/tasks")
     assert json.loads(create_req.content)["inputs"]["TransSpec"] == "OWNER/REPO@main:specs/foo"
+
+
+def test_submit_passes_profile_when_provided(
+    sbg_env: Path,  # noqa: ARG001
+    seed_token: Callable[[], None],
+    tmp_path: Path,
+    httpx_mock: HTTPXMock,
+) -> None:
+    """--profile adds the Profile input to the task body."""
+    seed_token()
+    manifest = tmp_path / "tasks.csv"
+    _write_manifest(manifest, [("phs000280-HMB-IRB", "ARIC")])
+
+    httpx_mock.add_response(
+        method="GET",
+        url="https://api.sbg.test/v2/files?project=test/project",
+        json={"items": [{"id": "root1", "name": "PilotParentStudies_NoDRS", "type": "folder"}]},
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url="https://api.sbg.test/v2/files?parent=root1",
+        json={"items": [{"id": "aric-id", "name": "ARIC", "type": "folder"}]},
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url="https://api.sbg.test/v2/files?parent=aric-id&name=phs000280-HMB-IRB",
+        json={"items": [{"id": "g-id", "name": "phs000280-HMB-IRB", "type": "folder"}]},
+    )
+    httpx_mock.add_response(method="POST", url="https://api.sbg.test/v2/tasks", json={"id": "t3"})
+    httpx_mock.add_response(method="POST", url="https://api.sbg.test/v2/tasks/t3/actions/run", json={"id": "t3"})
+
+    result = CliRunner().invoke(app, ["submit", "--manifest", str(manifest), "--throttle", "0", "--profile"])
+
+    assert result.exit_code == 0, result.output
+    create_req = next(r for r in httpx_mock.get_requests() if r.method == "POST" and r.url.path == "/v2/tasks")
+    assert json.loads(create_req.content)["inputs"]["Profile"] is True
 
 
 def test_submit_errors_when_manifest_missing(sbg_env: Path, tmp_path: Path) -> None:  # noqa: ARG001
