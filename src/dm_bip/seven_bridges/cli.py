@@ -7,6 +7,7 @@ import enum
 import json
 import logging
 import math
+import os
 import sys
 import time
 import urllib.parse
@@ -149,16 +150,16 @@ def submit(
             "--cohort-mode",
             help="Group manifest rows by cohort and submit ONE Parallel Multi-Consent "
             "Execution task per cohort against the app given by --cohort-app "
-            "(or SBG_DEFAULT_APP). The task drives all consent groups in one "
-            "container and runs hv_dataqc at the end.",
+            "(or SBG_DEFAULT_COHORT_APP). The task drives all consent groups in "
+            "one container and runs hv_dataqc at the end.",
         ),
     ] = False,
     cohort_app: Annotated[
         Optional[str],
         typer.Option(
             "--cohort-app",
-            help="SBG app ID for the Parallel Multi-Consent Execution Mode workflow "
-            "(required when --cohort-mode is set).",
+            help="SBG app ID for the Parallel Multi-Consent Execution Mode workflow. "
+            "REQUIRED with --cohort-mode; no default.",
         ),
     ] = None,
     dbgap_cache: Annotated[
@@ -242,6 +243,8 @@ def submit(
     client = _make_client()
     project_id = project or client.config.project
     app_id = sbg_app or client.config.app
+    typer.echo(f"Project: {project_id}")
+    typer.echo(f"App:     {app_id}   (from {'--app' if sbg_app else 'SBG_DEFAULT_APP'})")
 
     try:
         root_folders = client.get_folders(project=project_id)
@@ -482,13 +485,24 @@ def _submit_cohort_mode(
 ) -> None:
     client = _make_client()
     project_id = project or client.config.project
-    app_id = cohort_app or client.config.cohort_app or client.config.app
+    # No fallback to client.config.app: that is the single-consent app, and running
+    # cohort mode against it would submit a task the app cannot service.
+    app_id = cohort_app or client.config.cohort_app
     if not app_id:
         typer.echo(
-            "ERROR: --cohort-mode requires --cohort-app or SBG_DEFAULT_COHORT_APP to be set.",
+            "ERROR: --cohort-mode requires an app ID. Pass --cohort-app <owner/project/app>, "
+            "or set SBG_DEFAULT_COHORT_APP. There is no default: the app's own Docker "
+            "Repository field decides which image runs, so it must be chosen deliberately.",
             err=True,
         )
         raise typer.Exit(code=2)
+
+    # Echo the resolved target before doing anything. An app ID with no trailing
+    # /<revision> runs the app's latest revision, which is what picks up a changed
+    # Docker Repository field; a pinned revision does not.
+    source = "--cohort-app" if cohort_app else "SBG_DEFAULT_COHORT_APP"
+    typer.echo(f"Project: {project_id}")
+    typer.echo(f"App:     {app_id}   (from {source})")
 
     allow_fail_by_cohort = _parse_allow_fail(allow_fail)
 
@@ -537,7 +551,7 @@ def plan(
         Optional[str],
         typer.Option(
             "--cohort-app",
-            help="App ID for the Parallel Multi-Consent Execution Mode workflow (defaults to SBG_DEFAULT_APP).",
+            help="App ID for the Parallel Multi-Consent Execution Mode workflow. REQUIRED; no default.",
         ),
     ] = None,
     study_root: Annotated[
@@ -585,7 +599,13 @@ def plan(
     if resolve_folders and not project_id:
         client = _make_client()
         project_id = client.config.project
-    app_id = cohort_app or "<mode-b-app-id>"
+    app_id = cohort_app or os.environ.get("SBG_DEFAULT_COHORT_APP", "")
+    if not app_id:
+        typer.echo(
+            "ERROR: plan requires an app ID. Pass --cohort-app <owner/project/app>, or set SBG_DEFAULT_COHORT_APP.",
+            err=True,
+        )
+        raise typer.Exit(code=2)
 
     allow_fail_by_cohort = _parse_allow_fail(list(allow_fail or []))
 

@@ -6,10 +6,12 @@ import json
 from collections.abc import Callable
 from pathlib import Path
 
+import pytest
 from pytest_httpx import HTTPXMock
 from typer.testing import CliRunner
 
 from dm_bip.seven_bridges.cli import app
+from dm_bip.seven_bridges.client import DEFAULT_COHORT_APP, load_config
 
 
 def _write_manifest(path: Path, rows: list[tuple[str, str]]) -> None:
@@ -146,3 +148,52 @@ def test_submit_skips_row_when_schema_unknown(
 
     assert result.exit_code == 0
     assert "schema 'UNKNOWN' not found" in result.output
+
+
+def test_cohort_mode_requires_an_app_id(
+    sbg_env: Path,  # noqa: ARG001
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """
+    Cohort mode with no --cohort-app and no env default exits 2 instead of guessing.
+
+    There used to be a hardcoded DEFAULT_COHORT_APP, and a further fallback to the
+    single-consent app, so an omitted flag silently ran someone else's app.
+    """
+    monkeypatch.delenv("SBG_DEFAULT_COHORT_APP", raising=False)
+    manifest = tmp_path / "tasks.csv"
+    _write_manifest(manifest, [("phs000179-HMB", "COPDGene")])
+
+    result = CliRunner().invoke(app, ["submit", "--manifest", str(manifest), "--cohort-mode"])
+
+    assert result.exit_code == 2
+    assert "requires an app ID" in result.output
+    # Must not fall back to SBG_DEFAULT_APP (the single-consent app).
+    assert "test-app" not in result.output
+
+
+def test_cohort_mode_does_not_fall_back_to_the_single_consent_app(
+    sbg_env: Path,  # noqa: ARG001
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """SBG_DEFAULT_APP must not satisfy cohort mode; only the cohort app may."""
+    monkeypatch.delenv("SBG_DEFAULT_COHORT_APP", raising=False)
+    config = load_config()
+
+    assert config.app == "test/project/test-app/1"
+    assert config.cohort_app == ""
+    assert DEFAULT_COHORT_APP == ""
+
+
+def test_plan_requires_an_app_id(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Plan used to substitute a `<mode-b-app-id>` placeholder, hiding an omitted flag."""
+    monkeypatch.delenv("SBG_DEFAULT_COHORT_APP", raising=False)
+    manifest = tmp_path / "tasks.csv"
+    _write_manifest(manifest, [("phs000179-HMB", "COPDGene")])
+
+    result = CliRunner().invoke(app, ["plan", "--manifest", str(manifest)])
+
+    assert result.exit_code == 2
+    assert "requires an app ID" in result.output
+    assert "mode-b-app-id" not in result.output

@@ -41,6 +41,39 @@ The default project is `rmathur2/dmc-task-4-controlled`. Override if yours diffe
 $env:SBG_DEFAULT_PROJECT = "your-org/your-project"
 ```
 
+### SBG app (cohort mode)
+
+Cohort mode has **no default app**. Either pass `--cohort-app` on every
+invocation, or set it once:
+
+```powershell
+$env:SBG_DEFAULT_COHORT_APP = "owner/project/dmc-harmonization-multiconsent-app"
+```
+
+`submit` and `plan` print the resolved project and app before doing anything, and
+say which of the two sources it came from. Check that line: **the app's own
+"Docker Repository" field decides which container image runs**, so the app ID is
+what selects dev vs test vs prod images, not anything in the CLI.
+
+An app ID with no trailing `/<revision>` runs the app's latest revision. Editing
+the Docker Repository field creates a new revision, so a pinned ID such as
+`.../my-app/4` keeps running the old image.
+
+### Dev mode (`--trans-spec` and `--hv-dataqc-branch`)
+
+`--trans-spec` requires the container to be in dev mode. Test- and prod-tier
+images are built with `BDC_PULL_LATEST=false` and will exit with:
+
+```
+ERROR: --trans-spec is only supported when BDC_PULL_LATEST=true (dev mode)
+```
+
+The value is read from the environment at runtime, so set `BDC_PULL_LATEST=true`
+on the SBG app (an `EnvVarRequirement` in the app's CWL, or an app input wired to
+the environment) rather than rebuilding the image. Note that dev mode also sets
+`DM_MAP_STRICT=false`, so mapping logs every error in one pass instead of failing
+on the first.
+
 ### Working directory
 
 All `uv run dm-bip` commands must be run from the dm-bip repository root:

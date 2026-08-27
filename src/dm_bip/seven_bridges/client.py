@@ -16,7 +16,10 @@ logger = logging.getLogger(__name__)
 DEFAULT_BASE_URL = "https://api.sb.biodatacatalyst.nhlbi.nih.gov/v2"
 DEFAULT_PROJECT = "rmathur2/dmc-task-4-controlled"
 DEFAULT_APP = "rmathur2/dmc-task-4-controlled/cc-dm-bip-test/4"
-DEFAULT_COHORT_APP = "rmathur2/dmc-task-4-controlled/dmc-harmonization-multiconsent-app"
+# Intentionally empty: cohort mode submits one long-running task that drives every
+# consent group for a cohort, so silently defaulting to somebody's app is worse than
+# failing. --cohort-app or SBG_DEFAULT_COHORT_APP must be given explicitly.
+DEFAULT_COHORT_APP = ""
 DEFAULT_TOKEN_FILE = Path.home() / ".sevenbridges" / "token"
 
 DEFAULT_TIMEOUT_SECONDS = 30.0
