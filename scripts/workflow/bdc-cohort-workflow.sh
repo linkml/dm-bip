@@ -709,5 +709,14 @@ echo "  Manifest:    ${MANIFEST}"
 echo "  hv_dataqc:   ${HV_DATAQC_STATUS}"
 echo "================================================================"
 
-# Always exit 0. Status carried by run_manifest.yaml + consent_group_status.tsv.
+# The manifest and status TSV are finalized above, so this is the only place the
+# script can safely fail: under strict mode an unauthorized consent-group failure
+# has to reach the task runner as a non-zero exit, or Seven Bridges reports the
+# task COMPLETED and anything reading task status (orchestration, `seven-bridges
+# status`) treats partial output as a clean run. PARTIAL still exits 0 —
+# allow-listed failures are an accepted outcome, not a broken run.
+if [[ "$overall_status" == "FAIL" && "$STRICT_CONSENT_GROUPS" == "true" ]]; then
+  echo "Exiting non-zero: overall_status=FAIL under --strict-consent-groups true." >&2
+  exit 1
+fi
 exit 0
