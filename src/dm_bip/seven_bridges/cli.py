@@ -171,11 +171,13 @@ def submit(
         typer.Option(
             "--dbgap-cache",
             help=(
-                "dbGaP cache root: either an SBG folder ID or an absolute path from "
-                "the project root (e.g. /_QC_STAGING/_dbGaP_cache). "
-                "When a path is given, the cohort-specific subdirectory is appended "
-                "automatically (e.g. copdgene, hchs_sol) and resolved to a folder ID. "
-                "Defaults to /_QC_STAGING/_dbGaP_cache."
+                "dbGaP cache. An absolute path from the project root "
+                "(e.g. /_QC_STAGING/_dbGaP_cache) is treated as the cache ROOT: the "
+                "cohort-specific subdirectory is appended automatically (e.g. "
+                "copdgene, hchs_sol) and resolved to a folder ID. An SBG folder ID is "
+                "passed through unchanged and must therefore already point at the "
+                "COHORT-SPECIFIC directory, not the cache root -- the container uses "
+                "--dbgap-cache as-is. Defaults to /_QC_STAGING/_dbGaP_cache."
             ),
         ),
     ] = "/_QC_STAGING/_dbGaP_cache",
@@ -419,10 +421,16 @@ def _build_cohort_task_bodies(
             consent_group_refs = [{"class": "Directory", "path": f"<{schema}/{n}>"} for n in cg_names]
 
         # Resolve dbGaP cache folder for this cohort.
-        # When dbgap_cache is a path (starts with /), append the cohort-specific
-        # subdirectory (mirrors the mapping in hv-dataqc-cohort.sh) and resolve
-        # to a folder ID via the SBG API. When it's already a folder ID, pass
-        # it through unchanged — the container handles subdirectory routing internally.
+        # A path (starts with /) is the cache ROOT: append the cohort-specific
+        # subdirectory and resolve to a folder ID via the SBG API.
+        #
+        # A folder ID is passed through unchanged, and the container consumes it
+        # as-is: hv-dataqc-cohort.sh treats --dbgap-cache as the cohort-specific
+        # directory and does NOT append a subdirectory (ba0e1d5). So a folder ID
+        # naming the cache root would leave hv_dataqc pointed at a directory of
+        # per-cohort subdirs rather than one cohort's files, and compare would
+        # fail or compare the wrong data. The CLI cannot distinguish the two
+        # without guessing, so it warns instead.
         cache_ref: dict | None = None
         if dbgap_cache:
             if dbgap_cache.startswith("/"):
@@ -441,6 +449,13 @@ def _build_cohort_task_bodies(
                 else:
                     cache_ref = {"class": "Directory", "path": f"<resolve:{cache_path}>"}
             else:
+                typer.echo(
+                    f"NOTE: --dbgap-cache {dbgap_cache!r} is treated as an SBG folder ID and "
+                    f"passed through unchanged. It must already be {schema}'s cohort-specific "
+                    "cache directory; pass a path (e.g. /_QC_STAGING/_dbGaP_cache) to have the "
+                    "cohort subdirectory appended for you.",
+                    err=True,
+                )
                 cache_ref = {"class": "Directory", "path": dbgap_cache}
 
         inputs: dict = {
@@ -569,8 +584,9 @@ def plan(
         typer.Option(
             "--dbgap-cache",
             help=(
-                "dbGaP cache root: folder ID or absolute path from project root "
-                "(e.g. /_QC_STAGING/_dbGaP_cache). Defaults to /_QC_STAGING/_dbGaP_cache."
+                "dbGaP cache: absolute path from project root (treated as the cache "
+                "root, cohort subdir appended), or a folder ID already pointing at the "
+                "cohort-specific directory. Defaults to /_QC_STAGING/_dbGaP_cache."
             ),
         ),
     ] = "/_QC_STAGING/_dbGaP_cache",

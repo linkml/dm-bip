@@ -116,6 +116,23 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+#------------------------------------------------------------------------------
+# Validate numeric options
+#------------------------------------------------------------------------------
+# JOBS feeds `by_cpu=$(( vcpu / JOBS ))` below and `make -j` in each worker. A
+# non-integer evaluates to 0 in bash arithmetic, so both 0 and garbage produce a
+# bare "division by 0" from an entrypoint whose inputs come from an SBG app.
+require_positive_int() {
+  local name="$1" value="$2"
+  if [[ ! "$value" =~ ^[0-9]+$ ]] || (( value < 1 )); then
+    echo "ERROR: $name must be a positive integer, got: '${value}'" >&2
+    exit 1
+  fi
+}
+
+require_positive_int "--jobs" "$JOBS"
+[[ -n "$CONSENT_PARALLELISM" ]] && require_positive_int "--consent-parallelism" "$CONSENT_PARALLELISM"
+
 if [[ -z "$SCHEMA" ]]; then
   echo "ERROR: --schema is required" >&2; usage
 fi
