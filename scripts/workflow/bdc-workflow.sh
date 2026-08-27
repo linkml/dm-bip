@@ -337,15 +337,28 @@ notify_on_exit() {
 trap notify_on_exit EXIT
 
 # Define paths to external dependencies (within container)
-# Resolve trans-spec directory: use slug-cloned repo if --trans-spec was given,
-# otherwise fall back to the build-time clone of bdc-harmonized-variables.
-RESOLVER_REPO_DIR="${TRANS_SPEC_REPO_DIR:-/app/bdc-harmonized-variables}"
-RESOLVER_ARGS=(--repo-dir "$RESOLVER_REPO_DIR" --schema-name "$DM_SCHEMA_NAME")
-if [[ -n "${TRANS_SPEC_EXPLICIT_PATH:-}" ]]; then
-  RESOLVER_ARGS+=(--explicit-path "$TRANS_SPEC_EXPLICIT_PATH")
+# When an orchestrator (bdc-cohort-workflow.sh, Parallel Multi-Consent Execution)
+# has already resolved and staged the trans-spec directory, use it directly and
+# skip resolution entirely -- concurrent workers must not run git or the resolver.
+# See linkml/dm-bip#350.
+if [[ -n "${DM_TRANS_SPEC_DIR_PREBUILT:-}" ]]; then
+  DM_TRANS_SPEC_DIR="$DM_TRANS_SPEC_DIR_PREBUILT"
+  if [[ ! -d "$DM_TRANS_SPEC_DIR" ]]; then
+    echo "ERROR: DM_TRANS_SPEC_DIR_PREBUILT points at non-existent dir: $DM_TRANS_SPEC_DIR"
+    exit 1
+  fi
+  echo "  Trans-spec version:   ${DM_TRANS_SPEC_DIR} (pre-built)"
+else
+  # Resolve trans-spec directory: use slug-cloned repo if --trans-spec was given,
+  # otherwise fall back to the build-time clone of bdc-harmonized-variables.
+  RESOLVER_REPO_DIR="${TRANS_SPEC_REPO_DIR:-/app/bdc-harmonized-variables}"
+  RESOLVER_ARGS=(--repo-dir "$RESOLVER_REPO_DIR" --schema-name "$DM_SCHEMA_NAME")
+  if [[ -n "${TRANS_SPEC_EXPLICIT_PATH:-}" ]]; then
+    RESOLVER_ARGS+=(--explicit-path "$TRANS_SPEC_EXPLICIT_PATH")
+  fi
+  DM_TRANS_SPEC_DIR=$(uv run --directory "$WORKING_DIR" scripts/workflow/resolve_trans_spec_dir.py "${RESOLVER_ARGS[@]}") || exit 1
+  echo "  Trans-spec version:   ${DM_TRANS_SPEC_DIR}"
 fi
-DM_TRANS_SPEC_DIR=$(uv run --directory "$WORKING_DIR" scripts/workflow/resolve_trans_spec_dir.py "${RESOLVER_ARGS[@]}") || exit 1
-echo "  Trans-spec version:   ${DM_TRANS_SPEC_DIR}"
 DM_MAP_TARGET_SCHEMA="/app/NHLBI-BDC-DMC-HM/src/bdchm/schema/bdchm.yaml"
 
 echo ""
@@ -397,6 +410,13 @@ if [ "${BDC_PULL_LATEST:-false}" = "true" ]; then
   DM_MAP_STRICT_ARG="DM_MAP_STRICT=false"
 fi
 
+# tsv is required by the hv_dataqc fan-in step, which reads mapped output by
+# filename (Demography.tsv, Visit.tsv, ... -- see hv_dataqc/extract_harmonized).
+# Overridable rather than hard-coded: DM_MAP_OUTPUT_TYPE is a space-separated
+# list whose first value is the primary format, so "tsv jsonl" keeps hv_dataqc
+# working and emits jsonl alongside it. Do not drop tsv from the list.
+DM_MAP_OUTPUT_TYPE="${DM_MAP_OUTPUT_TYPE:-tsv}"
+
 make -j "$MAKE_JOBS" pipeline \
   -C "$WORKING_DIR" \
   DM_SCHEMA_NAME="$DM_SCHEMA_NAME" \
@@ -405,6 +425,7 @@ make -j "$MAKE_JOBS" pipeline \
   DM_INPUT_DIR="$DM_INPUT_DIR" \
   DM_TRANS_SPEC_DIR="$DM_TRANS_SPEC_DIR" \
   DM_MAP_TARGET_SCHEMA="$DM_MAP_TARGET_SCHEMA" \
+  DM_MAP_OUTPUT_TYPE="$DM_MAP_OUTPUT_TYPE" \
   DM_REPO_MANIFEST="/app/repo-manifest.yaml" \
   DM_MAP_PROFILE="$DM_MAP_PROFILE" \
   $DM_MAP_STRICT_ARG
@@ -425,6 +446,8 @@ echo "================================================================"
 #    Best-effort: a copy failure here must not flip a successful run to FAILURE
 #    (the EXIT trap reports SUCCESS only if the run exits 0).
 #------------------------------------------------------------------------------
+cp -R -- "$DM_TRANS_SPEC_DIR" "$PROCESSED_DIR/" \
+  || echo "WARNING: failed to copy trans-spec directory" >&2
 cp /Dockerfile.archived "$PROCESSED_DIR/" || echo "WARNING: failed to copy archived Dockerfile" >&2
 find "${HOME}" -maxdepth 1 -name "*.log" -exec cp {} "$PROCESSED_DIR/" \; \
   || echo "WARNING: failed to copy one or more log files" >&2
