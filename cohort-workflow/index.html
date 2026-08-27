@@ -1,0 +1,1676 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://linkml.io/dm-bip/cohort-workflow/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>BDC Cohort Harmonization Workflow - dm-bip</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bdc-cohort-harmonization-workflow" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="dm-bip" class="md-header__button md-logo" aria-label="dm-bip" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            dm-bip
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              BDC Cohort Harmonization Workflow
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/linkml/dm-bip" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    linkml/dm-bip
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="dm-bip" class="md-nav__button md-logo" aria-label="dm-bip" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    dm-bip
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/linkml/dm-bip" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    linkml/dm-bip
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pipeline_user_docs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../map-diagnostics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Map Diagnostics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mapping-provenance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mapping Provenance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LinkML Tools
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LinkML Tools
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schema_automator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Automator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/automated-harmonization-orchestration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Automated Harmonization Orchestration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sbg-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SBG authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sbg-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SBG project
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sbg-app-cohort-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SBG app (cohort mode)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dev-mode-bdc_pull_latest-and-cohort-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dev mode (BDC_PULL_LATEST) and cohort mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output-format-dm_map_output_type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output format (DM_MAP_OUTPUT_TYPE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#working-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Working directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mode-1-single-consent-execution-copdgene-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mode 1: Single Consent Execution (COPDGene example)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mode 1: Single Consent Execution (COPDGene example)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-generate-the-task-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Generate the task manifest
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-filter-to-copdgene-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Filter to COPDGene only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-submit-two-per-consent-tasks-using-baked-image-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Submit two per-consent tasks (using baked image defaults)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-alt-submit-using-a-specific-hv-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 (alt) — Submit using a specific HV branch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-monitor-task-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Monitor task progress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-fetch-logs-for-a-specific-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Fetch logs for a specific task
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output-layout-per-consent-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output layout (per consent group)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mode-2-parallel-multi-consent-execution-copdgene-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mode 2: Parallel Multi-Consent Execution (COPDGene example)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mode 2: Parallel Multi-Consent Execution (COPDGene example)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-generate-and-review-the-manifest-same-as-mode-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Generate and review the manifest (same as Mode 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-preview-the-cohort-mode-task-body-dry-run-no-api-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Preview the cohort-mode task body (dry run, no API calls)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-submit-one-cohort-mode-task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Submit one cohort-mode task
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-alt-with-a-specific-hv-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 (alt) — With a specific HV branch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-alt-allow-a-known-problematic-consent-group-to-fail-gracefully" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 (alt) — Allow a known-problematic consent group to fail gracefully
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-alt-continue-through-failures-and-still-run-hv_dataqc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 (alt) — Continue through failures and still run hv_dataqc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-monitor-and-fetch-logs-same-commands-as-mode-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Monitor and fetch logs (same commands as Mode 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output-layout-whole-cohort" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output layout (whole cohort)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#while-a-consent-group-is-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        While a consent group is running
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-a-consent-group-finishes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When a consent group finishes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference-all-bdc-cohort-workflowsh-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference: All bdc-cohort-workflow.sh options
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference-dm-bip-seven-bridges-cli-quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference: dm-bip seven-bridges CLI quick reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Reference: dm-bip seven-bridges CLI quick reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manifest-discover-consent-groups-in-sbg-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        manifest — discover consent groups in SBG project
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plan-dry-run-for-cohort-mode-no-task-submission" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plan — dry-run for cohort-mode (no task submission)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#submit-submit-tasks-from-the-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        submit — submit tasks from the manifest
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-check-running-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        status — check running tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logs-fetch-task-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        logs — fetch task logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sbg-app-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SBG app configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SBG app configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-consent-execution-app-existing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single Consent Execution app (existing)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallel-multi-consent-execution-app-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallel Multi-Consent Execution app (new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure semantics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sizing-guidance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sizing guidance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tracking
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="bdc-cohort-harmonization-workflow">BDC Cohort Harmonization Workflow<a class="headerlink" href="#bdc-cohort-harmonization-workflow" title="Permanent link">&para;</a></h1>
+<p>This document covers both execution modes for harmonizing BioData Catalyst
+(BDC) cohort data with dm-bip, using <strong>COPDGene</strong> (two consent groups: <code>c1</code>
+and <code>c2</code>) as a worked example throughout.</p>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Entry point</th>
+<th>Use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Single Consent Execution</strong></td>
+<td><code>bdc-workflow.sh</code></td>
+<td>One consent group at a time — for debugging, re-runs, or when only one consent group needs to be processed</td>
+</tr>
+<tr>
+<td><strong>Parallel Multi-Consent Execution</strong></td>
+<td><code>bdc-cohort-workflow.sh</code></td>
+<td>All consent groups for one cohort in a single task — harmonizes in parallel, then runs hv_dataqc comparison automatically</td>
+</tr>
+</tbody>
+</table>
+<p>Both modes use the same Docker image. The Parallel Multi-Consent Execution
+entry point internally calls <code>bdc-workflow.sh</code> once per consent group, so
+everything the single-consent mode does is preserved and unchanged.</p>
+<hr />
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<h3 id="sbg-authentication">SBG authentication<a class="headerlink" href="#sbg-authentication" title="Permanent link">&para;</a></h3>
+<p>The <code>dm-bip seven-bridges</code> CLI commands require your Seven Bridges auth token.
+Set it before running any <code>seven-bridges</code> subcommand:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$env:SBG_AUTH_TOKEN</span> <span class="p">=</span> <span class="s2">&quot;your-token-here&quot;</span>
+<span class="c"># OR place the token in: $HOME/.sevenbridges/token</span>
+</code></pre></div>
+<p>Get a token: https://sb-biodatacatalyst.readme.io/docs/get-your-authentication-token</p>
+<h3 id="sbg-project">SBG project<a class="headerlink" href="#sbg-project" title="Permanent link">&para;</a></h3>
+<p>The default project is <code>rmathur2/dmc-task-4-controlled</code>. Override if yours differs:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$env:SBG_DEFAULT_PROJECT</span> <span class="p">=</span> <span class="s2">&quot;your-org/your-project&quot;</span>
+</code></pre></div>
+<h3 id="sbg-app-cohort-mode">SBG app (cohort mode)<a class="headerlink" href="#sbg-app-cohort-mode" title="Permanent link">&para;</a></h3>
+<p>Cohort mode has <strong>no default app</strong>. Either pass <code>--cohort-app</code> on every
+invocation, or set it once:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">$env:SBG_DEFAULT_COHORT_APP</span> <span class="p">=</span> <span class="s2">&quot;owner/project/dmc-harmonization-multiconsent-app&quot;</span>
+</code></pre></div>
+<p><code>submit</code> and <code>plan</code> print the resolved project and app before doing anything, and
+say which of the two sources it came from. Check that line: <strong>the app's own
+"Docker Repository" field decides which container image runs</strong>, so the app ID is
+what selects dev vs test vs prod images, not anything in the CLI.</p>
+<p>An app ID with no trailing <code>/&lt;revision&gt;</code> runs the app's latest revision. Editing
+the Docker Repository field creates a new revision, so a pinned ID such as
+<code>.../my-app/4</code> keeps running the old image.</p>
+<h3 id="dev-mode-bdc_pull_latest-and-cohort-mode">Dev mode (<code>BDC_PULL_LATEST</code>) and cohort mode<a class="headerlink" href="#dev-mode-bdc_pull_latest-and-cohort-mode" title="Permanent link">&para;</a></h3>
+<p><strong>Cohort mode does not require dev mode</strong> for <code>--trans-spec</code> or
+<code>--hv-dataqc-branch</code>. <code>bdc-cohort-workflow.sh</code> resolves the trans-spec slug to a
+SHA and pre-clones it once at startup, then hands each per-consent worker
+<code>DM_TRANS_SPEC_DIR_PREBUILT</code>. Workers never run git, so they never reach
+<code>bdc-workflow.sh</code>'s dev-mode gate. <code>--hv-dataqc-branch</code> is likewise fetched and
+checked out by <code>bdc-cohort-workflow.sh</code> itself.</p>
+<p>This error --</p>
+<div class="highlight"><pre><span></span><code>ERROR: --trans-spec is only supported when BDC_PULL_LATEST=true (dev mode)
+</code></pre></div>
+<p>-- comes from <code>bdc-workflow.sh</code> and applies to <strong>Single Consent Execution Mode
+only</strong>, i.e. <code>submit</code> <em>without</em> <code>--cohort-mode</code>.</p>
+<p>What dev mode does still change in cohort mode: <code>bdc-workflow.sh</code> sets
+<code>DM_MAP_STRICT=false</code> when <code>BDC_PULL_LATEST=true</code>. On a test- or prod-tier image
+(built <code>false</code>) mapping runs <strong>strict</strong> and aborts a consent group on the first
+error rather than logging every error in one pass. Combined with the default
+<code>--strict-consent-groups</code>, one bad transform can end the cohort run early. Pass
+<code>--no-strict-consent-groups</code> for a survey run.</p>
+<p>Note that <code>--strict-hv-dataqc-branch</code> defaults to <code>true</code> inside the container and
+is not exposed by the CLI, so a failed <code>--hv-dataqc-branch</code> fetch is fatal.</p>
+<h3 id="output-format-dm_map_output_type">Output format (<code>DM_MAP_OUTPUT_TYPE</code>)<a class="headerlink" href="#output-format-dm_map_output_type" title="Permanent link">&para;</a></h3>
+<p><code>bdc-workflow.sh</code> runs the pipeline with <code>DM_MAP_OUTPUT_TYPE</code> defaulting to
+<code>tsv</code>, not the repo-wide default of <code>yaml</code>.</p>
+<p><strong>This is a hard requirement of cohort mode, not a preference.</strong> The hv_dataqc
+fan-in step reads mapped output by filename -- <code>Demography.tsv</code>, <code>Person.tsv</code>,
+<code>Visit.tsv</code>, <code>MeasurementObservation.tsv</code>, and so on (see
+<code>hv_dataqc/extract_harmonized/extract_harmonized_summaries.py</code> in the HV repo).
+Emit anything else and the compare step finds no input.</p>
+<p>The value is a space-separated list whose <strong>first</strong> entry is the primary format
+and the rest are written alongside it. To add a format without breaking
+hv_dataqc, keep <code>tsv</code> first:</p>
+<div class="highlight"><pre><span></span><code><span class="nv">DM_MAP_OUTPUT_TYPE</span><span class="o">=</span><span class="s2">&quot;tsv jsonl&quot;</span>
+</code></pre></div>
+<p>Set it in the SBG app environment; it is not exposed as a CLI flag. Do not drop
+<code>tsv</code> from the list.</p>
+<h3 id="working-directory">Working directory<a class="headerlink" href="#working-directory" title="Permanent link">&para;</a></h3>
+<p>All <code>uv run dm-bip</code> commands must be run from the dm-bip repository root:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd </span><span class="n">c</span><span class="p">:\</span><span class="n">SourceCode</span><span class="p">\</span><span class="n">dm-bip</span>
+</code></pre></div>
+<hr />
+<h2 id="mode-1-single-consent-execution-copdgene-example">Mode 1: Single Consent Execution (COPDGene example)<a class="headerlink" href="#mode-1-single-consent-execution-copdgene-example" title="Permanent link">&para;</a></h2>
+<p>Run one consent group at a time against the existing single-consent SBG app.
+Use this for debugging, targeted re-runs, or when you need to inspect the
+output of one specific consent group in isolation.</p>
+<h3 id="step-1-generate-the-task-manifest">Step 1 — Generate the task manifest<a class="headerlink" href="#step-1-generate-the-task-manifest" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">manifest</span> <span class="n">-o</span> <span class="n">batch_tasks</span><span class="p">.</span><span class="n">csv</span>
+</code></pre></div>
+<p>This crawls <code>PilotParentStudies_NoDRS/&lt;Cohort&gt;/&lt;consent-group&gt;</code> in your SBG
+project and emits a CSV row per consent group:</p>
+<div class="highlight"><pre><span></span><code>Filename,Schema
+COPDGene-c1,COPDGene
+COPDGene-c2,COPDGene
+FHS-c1,FHS
+...
+</code></pre></div>
+<h3 id="step-2-filter-to-copdgene-only">Step 2 — Filter to COPDGene only<a class="headerlink" href="#step-2-filter-to-copdgene-only" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="s2">&quot;Filename,Schema&quot;</span> <span class="p">|</span> <span class="nb">Set-Content</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span>
+<span class="nb">Get-Content</span> <span class="n">batch_tasks</span><span class="p">.</span><span class="n">csv</span> <span class="p">|</span> <span class="nb">Where-Object</span> <span class="p">{</span> <span class="nv">$_</span> <span class="o">-match</span> <span class="s1">&#39;COPDGene$&#39;</span> <span class="p">}</span> <span class="p">|</span>
+  <span class="nb">Add-Content</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span>
+<span class="nb">Get-Content</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span>
+<span class="c"># Expected output:</span>
+<span class="c">#   Filename,Schema</span>
+<span class="c">#   COPDGene-c1,COPDGene</span>
+<span class="c">#   COPDGene-c2,COPDGene</span>
+</code></pre></div>
+<h3 id="step-3-submit-two-per-consent-tasks-using-baked-image-defaults">Step 3 — Submit two per-consent tasks (using baked image defaults)<a class="headerlink" href="#step-3-submit-two-per-consent-tasks-using-baked-image-defaults" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">submit</span> <span class="p">-</span><span class="n">-manifest</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span>
+</code></pre></div>
+<p>This submits two tasks — one for <code>COPDGene-c1</code>, one for <code>COPDGene-c2</code> — each
+using whatever HV YAML version is baked into the current Docker image. Tasks
+are throttled at 60 seconds between submissions by default.</p>
+<h3 id="step-3-alt-submit-using-a-specific-hv-branch">Step 3 (alt) — Submit using a specific HV branch<a class="headerlink" href="#step-3-alt-submit-using-a-specific-hv-branch" title="Permanent link">&para;</a></h3>
+<p>Requires the SBG app to be running in dev mode (<code>BDC_PULL_LATEST=true</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">submit</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-manifest</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-trans-spec</span> <span class="n">RTIInternational</span><span class="p">/</span><span class="n">NHLBI-BDC-DMC-HV</span><span class="nv">@main</span>
+</code></pre></div>
+<p>To skip the 60 s throttle between the two submissions:</p>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">submit</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-manifest</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-trans-spec</span> <span class="n">RTIInternational</span><span class="p">/</span><span class="n">NHLBI-BDC-DMC-HV</span><span class="nv">@main</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-throttle</span> <span class="n">0</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Tip:</strong> pin to a SHA instead of a branch name for reproducibility:
+<code>--trans-spec RTIInternational/NHLBI-BDC-DMC-HV@abc123def456</code></p>
+<p>Get the current main SHA:
+<div class="highlight"><pre><span></span><code><span class="n">git</span> <span class="n">ls-remote</span> <span class="n">https</span><span class="p">://</span><span class="n">github</span><span class="p">.</span><span class="n">com</span><span class="p">/</span><span class="n">RTIInternational</span><span class="p">/</span><span class="n">NHLBI-BDC-DMC-HV</span><span class="p">.</span><span class="n">git</span> <span class="n">refs</span><span class="p">/</span><span class="n">heads</span><span class="p">/</span><span class="n">main</span>
+</code></pre></div></p>
+</blockquote>
+<h3 id="step-4-monitor-task-progress">Step 4 — Monitor task progress<a class="headerlink" href="#step-4-monitor-task-progress" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">status</span>
+</code></pre></div>
+<h3 id="step-5-fetch-logs-for-a-specific-task">Step 5 — Fetch logs for a specific task<a class="headerlink" href="#step-5-fetch-logs-for-a-specific-task" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">logs</span> <span class="p">&lt;</span><span class="n">task-id</span><span class="p">&gt;</span>
+</code></pre></div>
+<h3 id="output-layout-per-consent-group">Output layout (per consent group)<a class="headerlink" href="#output-layout-per-consent-group" title="Permanent link">&para;</a></h3>
+<p>Each Single Consent Execution task writes to:
+<div class="highlight"><pre><span></span><code>$HOME/DMC_COPDGene-c1_COPDGene_Processed_&lt;YYYYMMDD_HHMMSS&gt;/
+├── COPDGene-c1_CleanedSource/     # prepared input TSV files
+├── COPDGene-c1_BDCHM/
+│   ├── mapped-data/               # harmonized output TSVs
+│   ├── validation-logs/
+│   └── provenance.yaml
+├── pipeline.log
+└── Dockerfile.archived
+</code></pre></div></p>
+<hr />
+<h2 id="mode-2-parallel-multi-consent-execution-copdgene-example">Mode 2: Parallel Multi-Consent Execution (COPDGene example)<a class="headerlink" href="#mode-2-parallel-multi-consent-execution-copdgene-example" title="Permanent link">&para;</a></h2>
+<p>Run all consent groups for COPDGene in a single task. The cohort driver
+harmonizes both consent groups in parallel, then automatically runs hv_dataqc
+(source extract + harmonized extract + compare report) across both.</p>
+<h3 id="step-1-generate-and-review-the-manifest-same-as-mode-1">Step 1 — Generate and review the manifest (same as Mode 1)<a class="headerlink" href="#step-1-generate-and-review-the-manifest-same-as-mode-1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">manifest</span> <span class="n">-o</span> <span class="n">batch_tasks</span><span class="p">.</span><span class="n">csv</span>
+<span class="nb">Get-Content</span> <span class="n">batch_tasks</span><span class="p">.</span><span class="n">csv</span>
+</code></pre></div>
+<h3 id="step-2-preview-the-cohort-mode-task-body-dry-run-no-api-calls">Step 2 — Preview the cohort-mode task body (dry run, no API calls)<a class="headerlink" href="#step-2-preview-the-cohort-mode-task-body-dry-run-no-api-calls" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">plan</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-manifest</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-app</span> <span class="p">&lt;</span><span class="n">your-cohort-mode-app-id</span><span class="p">&gt;</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-dbgap-cache</span> <span class="p">&lt;</span><span class="n">sbg-folder-id-for-dbgap-cache</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>This prints the JSON task body that <code>submit --cohort-mode</code> would post — no
+tasks are actually submitted. Verify the consent-group list and inputs look
+correct before going live.</p>
+<p>To include real SBG folder IDs in the preview (requires API call):</p>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">plan</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-manifest</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-app</span> <span class="p">&lt;</span><span class="n">your-cohort-mode-app-id</span><span class="p">&gt;</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-dbgap-cache</span> <span class="p">&lt;</span><span class="n">sbg-folder-id-for-dbgap-cache</span><span class="p">&gt;</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-resolve-folders</span>
+</code></pre></div>
+<h3 id="step-3-submit-one-cohort-mode-task">Step 3 — Submit one cohort-mode task<a class="headerlink" href="#step-3-submit-one-cohort-mode-task" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">submit</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-manifest</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-mode</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-app</span> <span class="p">&lt;</span><span class="n">your-cohort-mode-app-id</span><span class="p">&gt;</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-dbgap-cache</span> <span class="p">&lt;</span><span class="n">sbg-folder-id-for-dbgap-cache</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>This submits <strong>one</strong> task for COPDGene (not two). The task internally
+processes both consent groups in parallel, then runs hv_dataqc at the end.</p>
+<h3 id="step-3-alt-with-a-specific-hv-branch">Step 3 (alt) — With a specific HV branch<a class="headerlink" href="#step-3-alt-with-a-specific-hv-branch" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">submit</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-manifest</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-mode</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-app</span> <span class="p">&lt;</span><span class="n">your-cohort-mode-app-id</span><span class="p">&gt;</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-dbgap-cache</span> <span class="p">&lt;</span><span class="n">sbg-folder-id-for-dbgap-cache</span><span class="p">&gt;</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-trans-spec</span> <span class="n">RTIInternational</span><span class="p">/</span><span class="n">NHLBI-BDC-DMC-HV</span><span class="nv">@main</span>
+</code></pre></div>
+<blockquote>
+<p><strong>Note:</strong> when <code>--trans-spec</code> is used, the HV repo is cloned and checked out
+once at task startup. All parallel workers share the pre-built YAML directory
+via the <code>DM_TRANS_SPEC_DIR_PREBUILT</code> environment variable — no repeated
+git operations, no race conditions.</p>
+</blockquote>
+<h3 id="step-3-alt-allow-a-known-problematic-consent-group-to-fail-gracefully">Step 3 (alt) — Allow a known-problematic consent group to fail gracefully<a class="headerlink" href="#step-3-alt-allow-a-known-problematic-consent-group-to-fail-gracefully" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">submit</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-manifest</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-mode</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-app</span> <span class="p">&lt;</span><span class="n">your-cohort-mode-app-id</span><span class="p">&gt;</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-allow-fail</span> <span class="n">COPDGene</span><span class="p">:</span><span class="n">COPDGene-c2</span>
+</code></pre></div>
+<p>If <code>COPDGene-c2</code> fails, it is recorded as <code>FAIL_ALLOWED</code> in
+<code>consent_group_status.tsv</code> and hv_dataqc runs on the surviving consent group
+(<code>COPDGene-c1</code> only). The task still exits 0.</p>
+<h3 id="step-3-alt-continue-through-failures-and-still-run-hv_dataqc">Step 3 (alt) — Continue through failures and still run hv_dataqc<a class="headerlink" href="#step-3-alt-continue-through-failures-and-still-run-hv_dataqc" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">submit</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-manifest</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-mode</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-app</span> <span class="p">&lt;</span><span class="n">your-cohort-mode-app-id</span><span class="p">&gt;</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-no-strict-consent-groups</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-no-strict-hv-dataqc</span>
+</code></pre></div>
+<p>Any unauthorized failures are recorded as <code>FAIL</code> (not <code>FAIL_ALLOWED</code>) and
+hv_dataqc runs on the survivors. The report banner marks the run <code>PARTIAL</code>.</p>
+<h3 id="step-4-monitor-and-fetch-logs-same-commands-as-mode-1">Step 4 — Monitor and fetch logs (same commands as Mode 1)<a class="headerlink" href="#step-4-monitor-and-fetch-logs-same-commands-as-mode-1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">status</span>
+<span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">logs</span> <span class="p">&lt;</span><span class="n">task-id</span><span class="p">&gt;</span>
+</code></pre></div>
+<h3 id="output-layout-whole-cohort">Output layout (whole cohort)<a class="headerlink" href="#output-layout-whole-cohort" title="Permanent link">&para;</a></h3>
+<p>The Parallel Multi-Consent Execution task writes one top-level folder:</p>
+<div class="highlight"><pre><span></span><code>$HOME/DMC_COPDGene_&lt;YYYYMMDD_HHMMSS&gt;/
+├── run_manifest.yaml                        # cohort, timestamps, HM/HV commits,
+│                                            # per-consent status list, overall_status
+├── consent_group_status.tsv                 # flat one-row-per-consent summary
+├── consent_groups/
+│   ├── COPDGene-c1/                         # same layout as Single Consent output
+│   │   ├── COPDGene-c1_CleanedSource/
+│   │   ├── COPDGene-c1_BDCHM/
+│   │   │   ├── mapped-data/
+│   │   │   ├── validation-logs/
+│   │   │   └── provenance.yaml
+│   │   ├── pipeline.log
+│   │   └── Dockerfile.archived
+│   └── COPDGene-c2/                         # same structure
+├── hv_dataqc/
+│   ├── source/copdgene_source_&lt;ts&gt;.json     # aggregate-only source stats
+│   ├── harmonized/copdgene_harmonized_&lt;ts&gt;.json  # aggregate-only harmonized stats
+│   └── compare/
+│       ├── copdgene_comparison_report.md    # the QC report
+│       ├── copdgene_comparison_results.json
+│       └── manifest.json                    # inputs, git commits, step status
+└── logs/
+    ├── cohort-workflow.log                  # top-level driver log
+    ├── COPDGene-c1/pipeline.log
+    └── COPDGene-c2/pipeline.log
+</code></pre></div>
+<h3 id="while-a-consent-group-is-running">While a consent group is running<a class="headerlink" href="#while-a-consent-group-is-running" title="Permanent link">&para;</a></h3>
+<p><code>bdc-workflow.sh</code> writes to <code>$HOME</code>, which is redirected to
+<code>logs/&lt;cg&gt;/HOME/</code>. Live output appears there while the consent group is
+in progress:</p>
+<div class="highlight"><pre><span></span><code>DMC_COPDGene_&lt;ts&gt;/
+└── logs/
+    └── copdgene_phs000179_v7_r1_c1/
+        └── HOME/
+            └── DMC_copdgene_phs000179_v7_r1_c1_COPDGene_Processed_&lt;ts&gt;/
+                ├── copdgene_phs000179_v7_r1_c1_CleanedSource/   ← input being prepared
+                ├── copdgene_phs000179_v7_r1_c1_BDCHM/
+                │   ├── mapped-data/                             ← entity TSVs appear as entities complete
+                │   └── validation-logs/
+                └── pipeline.log                                 ← live progress
+</code></pre></div>
+<h3 id="when-a-consent-group-finishes">When a consent group finishes<a class="headerlink" href="#when-a-consent-group-finishes" title="Permanent link">&para;</a></h3>
+<p><code>bdc-cohort-workflow.sh</code> moves the completed output from the <code>HOME/</code>
+isolation area into the stable <code>consent_groups/</code> location:</p>
+<div class="highlight"><pre><span></span><code>DMC_COPDGene_&lt;ts&gt;/
+└── consent_groups/
+    └── copdgene_phs000179_v7_r1_c1/         ← moved here on consent-group completion
+        ├── copdgene_phs000179_v7_r1_c1_CleanedSource/
+        ├── copdgene_phs000179_v7_r1_c1_BDCHM/
+        │   └── mapped-data/
+        └── pipeline.log
+</code></pre></div>
+<p>A row is also appended to <code>consent_group_status.tsv</code> (<code>PASS</code> or <code>FAIL</code>).
+Once all consent groups are in <code>consent_groups/</code>, the hv_dataqc fan-in
+starts and <code>hv_dataqc/</code> appears under <code>DMC_COPDGene_&lt;ts&gt;/</code>.</p>
+<hr />
+<h2 id="reference-all-bdc-cohort-workflowsh-options">Reference: All bdc-cohort-workflow.sh options<a class="headerlink" href="#reference-all-bdc-cohort-workflowsh-options" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>--schema &lt;COHORT&gt;                   Required. Cohort name (e.g. COPDGene).
+--consent-group &lt;DIR&gt;               Repeatable. Path to one consent-group raw source dir.
+--dbgap-cache &lt;DIR&gt;                 Optional. Cohort-specific dbGaP cache directory,
+                                    not the cache root — no cohort subdirectory is
+                                    appended. Layout: &lt;dir&gt;/pheno_variable_summaries/*.xml
+                                    If missing, hv_dataqc compare step is skipped.
+--allow-fail &lt;CG_NAME&gt;              Repeatable. Consent group allowed to fail without
+                                    stopping the workflow.
+--strict-consent-groups true|false  Default: true (fail-fast — halt remaining consent groups
+                                    on first unauthorized failure).
+--strict-hv-dataqc true|false       Default: true (skip hv_dataqc if any unauthorized failure).
+--strict-hv-dataqc-branch true|false  Default: true (fail at startup if --hv-dataqc-branch
+                                      fetch/checkout fails).
+--consent-parallelism N             Default: computed from vCPU count (typically 2 on 8 vCPU).
+--jobs N                            Default: 8. Per-consent make -j (validate step parallelism).
+--output-root &lt;DIR&gt;                 Default: $HOME.
+--hv-dataqc-branch &lt;name&gt;           Override hv_dataqc code branch (separate from YAML branch).
+--trans-spec OWNER/REPO[@REF][:PATH]  Alternate YAML source. SHA-pinned at startup; pre-checked
+                                      out once; workers never touch git.
+--profile                           Enable map-step CPU/memory diagnostics (forwarded to
+                                    bdc-workflow.sh).
+</code></pre></div>
+<hr />
+<h2 id="reference-dm-bip-seven-bridges-cli-quick-reference">Reference: dm-bip seven-bridges CLI quick reference<a class="headerlink" href="#reference-dm-bip-seven-bridges-cli-quick-reference" title="Permanent link">&para;</a></h2>
+<h3 id="manifest-discover-consent-groups-in-sbg-project"><code>manifest</code> — discover consent groups in SBG project<a class="headerlink" href="#manifest-discover-consent-groups-in-sbg-project" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">manifest</span> <span class="n">-o</span> <span class="n">batch_tasks</span><span class="p">.</span><span class="n">csv</span>
+</code></pre></div>
+<h3 id="plan-dry-run-for-cohort-mode-no-task-submission"><code>plan</code> — dry-run for cohort-mode (no task submission)<a class="headerlink" href="#plan-dry-run-for-cohort-mode-no-task-submission" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">plan</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-manifest</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-app</span> <span class="p">&lt;</span><span class="n">app-id</span><span class="p">&gt;</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-dbgap-cache</span> <span class="p">&lt;</span><span class="n">folder-id</span><span class="p">&gt;</span> <span class="p">`</span>
+  <span class="p">[-</span><span class="n">-allow-fail</span> <span class="n">COPDGene</span><span class="p">:</span><span class="n">COPDGene-c2</span><span class="p">]</span> <span class="p">`</span>
+  <span class="p">[-</span><span class="n">-trans-spec</span> <span class="n">RTIInternational</span><span class="p">/</span><span class="n">NHLBI-BDC-DMC-HV</span><span class="nv">@main</span><span class="p">]</span> <span class="p">`</span>
+  <span class="p">[-</span><span class="n">-resolve-folders</span><span class="p">]</span>                <span class="c"># add to get real SBG folder IDs in the preview</span>
+</code></pre></div>
+<h3 id="submit-submit-tasks-from-the-manifest"><code>submit</code> — submit tasks from the manifest<a class="headerlink" href="#submit-submit-tasks-from-the-manifest" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c"># Single Consent Execution (one task per row):</span>
+<span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">submit</span> <span class="p">-</span><span class="n">-manifest</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span>
+
+<span class="c"># Parallel Multi-Consent Execution (one task per cohort):</span>
+<span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">submit</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-manifest</span> <span class="n">copdgene_tasks</span><span class="p">.</span><span class="n">csv</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-mode</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-cohort-app</span> <span class="p">&lt;</span><span class="n">app-id</span><span class="p">&gt;</span> <span class="p">`</span>
+  <span class="p">-</span><span class="n">-dbgap-cache</span> <span class="p">&lt;</span><span class="n">folder-id</span><span class="p">&gt;</span>
+</code></pre></div>
+<h3 id="status-check-running-tasks"><code>status</code> — check running tasks<a class="headerlink" href="#status-check-running-tasks" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">status</span>
+</code></pre></div>
+<h3 id="logs-fetch-task-logs"><code>logs</code> — fetch task logs<a class="headerlink" href="#logs-fetch-task-logs" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">logs</span>              <span class="c"># list recent tasks</span>
+<span class="n">uv</span> <span class="n">run</span> <span class="n">dm-bip</span> <span class="n">seven-bridges</span> <span class="n">logs</span> <span class="p">&lt;</span><span class="n">task-id</span><span class="p">&gt;</span>    <span class="c"># fetch specific task log</span>
+</code></pre></div>
+<hr />
+<h2 id="sbg-app-configuration">SBG app configuration<a class="headerlink" href="#sbg-app-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="single-consent-execution-app-existing">Single Consent Execution app (existing)<a class="headerlink" href="#single-consent-execution-app-existing" title="Permanent link">&para;</a></h3>
+<p>No changes required. Set <code>BDC_PULL_LATEST=true</code> in the app's environment if
+you need to use <code>--trans-spec</code> for branch-targeted testing.</p>
+<h3 id="parallel-multi-consent-execution-app-new">Parallel Multi-Consent Execution app (new)<a class="headerlink" href="#parallel-multi-consent-execution-app-new" title="Permanent link">&para;</a></h3>
+<p>Create a new SBG app pointing at the same Docker image with these settings:</p>
+<table>
+<thead>
+<tr>
+<th>Input name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Schema</code></td>
+<td>string</td>
+<td>Cohort name</td>
+</tr>
+<tr>
+<td><code>ConsentGroups</code></td>
+<td>Directory[]</td>
+<td>One per consent group</td>
+</tr>
+<tr>
+<td><code>DbgapCache</code></td>
+<td>Directory</td>
+<td>Shared dbGaP cache directory</td>
+</tr>
+<tr>
+<td><code>AllowFail</code></td>
+<td>string[]</td>
+<td>Consent groups allowed to fail (optional)</td>
+</tr>
+<tr>
+<td><code>StrictConsentGroups</code></td>
+<td>string</td>
+<td><code>"true"</code> / <code>"false"</code>, default <code>"true"</code> -- see note below</td>
+</tr>
+<tr>
+<td><code>StrictHvDataqc</code></td>
+<td>string</td>
+<td><code>"true"</code> / <code>"false"</code>, default <code>"true"</code> -- see note below</td>
+</tr>
+<tr>
+<td><code>HvDataqcBranch</code></td>
+<td>string</td>
+<td>hv_dataqc code branch override (optional)</td>
+</tr>
+<tr>
+<td><code>TransSpec</code></td>
+<td>string</td>
+<td>YAML source slug (optional, e.g. <code>RTIInternational/NHLBI-BDC-DMC-HV@main</code>)</td>
+</tr>
+<tr>
+<td><code>Jobs</code></td>
+<td>integer</td>
+<td>Default: 8</td>
+</tr>
+<tr>
+<td><code>ConsentParallelism</code></td>
+<td>integer</td>
+<td>Optional. Only sent when <code>--consent-parallelism</code> is passed; otherwise the script computes its own default -- see <a href="#sizing-guidance">Sizing guidance</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>StrictConsentGroups</code> and <code>StrictHvDataqc</code> are strings, not booleans.</strong> The CLI
+posts them as the lowercase strings <code>"true"</code> / <code>"false"</code>, because the SBG API
+rejected native JSON booleans for these inputs (<code>str(x).lower()</code> in
+<code>_build_cohort_task_bodies</code>). Declaring them as <code>boolean</code> in the app will not
+match what the CLI sends. When wiring a new app, confirm the input types against
+the existing <code>dmc-harmonization-multiconsent-app</code>, which is the working
+reference.</p>
+<p>Entry point command:
+<div class="highlight"><pre><span></span><code>/app/scripts/workflow/bdc-cohort-workflow.sh<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--schema<span class="w"> </span><span class="k">$(</span>Schema<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--consent-group<span class="w"> </span><span class="k">$(</span>ConsentGroups<span class="o">[</span>*<span class="o">]</span><span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--dbgap-cache<span class="w"> </span><span class="k">$(</span>DbgapCache<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>...<span class="w"> </span><span class="o">(</span>map<span class="w"> </span>remaining<span class="w"> </span>inputs<span class="o">)</span>
+</code></pre></div></p>
+<hr />
+<h2 id="failure-semantics">Failure semantics<a class="headerlink" href="#failure-semantics" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Consent group failed?</th>
+<th>In <code>--allow-fail</code>?</th>
+<th><code>--strict-consent-groups</code></th>
+<th>Loop behavior</th>
+<th>hv_dataqc</th>
+<th><code>overall_status</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No</td>
+<td>—</td>
+<td>—</td>
+<td>continues</td>
+<td>runs on all</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Yes</td>
+<td>Yes</td>
+<td>—</td>
+<td>continues</td>
+<td>runs on survivors</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Yes</td>
+<td>No</td>
+<td>true (default)</td>
+<td>halts remaining</td>
+<td>skipped</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>Yes</td>
+<td>No</td>
+<td>false, strict-hv-dataqc=true</td>
+<td>continues</td>
+<td>skipped</td>
+<td>FAIL</td>
+</tr>
+<tr>
+<td>Yes</td>
+<td>No</td>
+<td>false, strict-hv-dataqc=false</td>
+<td>continues</td>
+<td>runs on survivors, PARTIAL banner</td>
+<td>PARTIAL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The container exits 1 when <code>overall_status</code> is <code>FAIL</code> and
+<code>--strict-consent-groups</code> is <code>true</code></strong>, so SBG marks the task Failed rather than
+reporting partial output as a completed run. Every other outcome — including
+<code>PARTIAL</code> from allow-listed failures — exits 0.</p>
+<p>Status is captured regardless in <code>run_manifest.yaml</code>, <code>consent_group_status.tsv</code>,
+and the hv_dataqc compare report; these are always finalized before the script
+exits. For any run that is not a strict-mode <code>FAIL</code>, check the <code>overall_status</code>
+field in <code>run_manifest.yaml</code> for the actual result, since a <code>PARTIAL</code> run still
+reports as Completed.</p>
+<hr />
+<h2 id="sizing-guidance">Sizing guidance<a class="headerlink" href="#sizing-guidance" title="Permanent link">&para;</a></h2>
+<p>When <code>--consent-parallelism</code> is not passed, <code>bdc-cohort-workflow.sh</code> computes:</p>
+<div class="highlight"><pre><span></span><code>min(#consent-groups, max(1, floor(vCPU / --jobs)))
+</code></pre></div>
+<p>The intent is to hold peak validate-step concurrency
+(<code>consent-parallelism x jobs</code>) at roughly vCPU. Because the default <code>--jobs</code> is
+8, the computed default depends on <code>--jobs</code>:</p>
+<table>
+<thead>
+<tr>
+<th>vCPU</th>
+<th><code>--jobs</code></th>
+<th>Computed <code>--consent-parallelism</code></th>
+<th>Peak threads</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8</td>
+<td>8 (default)</td>
+<td>1 -- <strong>serial</strong></td>
+<td>8</td>
+</tr>
+<tr>
+<td>8</td>
+<td>4</td>
+<td>2</td>
+<td>8</td>
+</tr>
+<tr>
+<td>16</td>
+<td>8</td>
+<td>2</td>
+<td>16</td>
+</tr>
+<tr>
+<td>16</td>
+<td>4</td>
+<td>4</td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<p>The result is also capped by the number of consent groups, so a cohort with 2
+consent groups never exceeds 2 regardless of vCPU.</p>
+<p><strong>On a typical 8-vCPU SBG instance the default <code>--jobs 8</code> means consent groups
+run serially.</strong> To overlap them, lower <code>--jobs</code> rather than raising
+<code>--consent-parallelism</code>:</p>
+<div class="highlight"><pre><span></span><code>--consent-parallelism<span class="w"> </span><span class="m">2</span><span class="w"> </span>--jobs<span class="w"> </span><span class="m">4</span><span class="w">   </span><span class="c1"># 2 x 4 = 8 threads peak, fits 8 vCPU</span>
+--consent-parallelism<span class="w"> </span><span class="m">4</span><span class="w"> </span>--jobs<span class="w"> </span><span class="m">4</span><span class="w">   </span><span class="c1"># 4 x 4 = 16 threads peak, fits 16 vCPU</span>
+</code></pre></div>
+<p>Raising <code>--consent-parallelism</code> without lowering <code>--jobs</code> oversubscribes the
+instance: <code>--consent-parallelism 4 --jobs 8</code> peaks at 32 threads, 4x an 8-vCPU
+instance.</p>
+<p>Single Consent Execution Mode runs one worker, so <code>--jobs 8</code> gives that worker
+the whole instance.</p>
+<hr />
+<h2 id="tracking">Tracking<a class="headerlink" href="#tracking" title="Permanent link">&para;</a></h2>
+<p>This feature was implemented in <a href="https://github.com/linkml/dm-bip/issues/350">linkml/dm-bip#350</a>
+on branch <code>feature/bdc-cohort-workflow</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
