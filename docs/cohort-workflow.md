@@ -397,8 +397,9 @@ starts and `hv_dataqc/` appears under `DMC_COPDGene_<ts>/`.
 ```
 --schema <COHORT>                   Required. Cohort name (e.g. COPDGene).
 --consent-group <DIR>               Repeatable. Path to one consent-group raw source dir.
---dbgap-cache <DIR>                 Optional. Mounted dbGaP cache root.
-                                    Layout: <root>/<cohort-lowercase>/pheno_variable_summaries/*.xml
+--dbgap-cache <DIR>                 Optional. Cohort-specific dbGaP cache directory,
+                                    not the cache root — no cohort subdirectory is
+                                    appended. Layout: <dir>/pheno_variable_summaries/*.xml
                                     If missing, hv_dataqc compare step is skipped.
 --allow-fail <CG_NAME>              Repeatable. Consent group allowed to fail without
                                     stopping the workflow.
@@ -521,10 +522,16 @@ Entry point command:
 | Yes | No | false, strict-hv-dataqc=true | continues | skipped | FAIL |
 | Yes | No | false, strict-hv-dataqc=false | continues | runs on survivors, PARTIAL banner | PARTIAL |
 
-**The container always exits 0** regardless of outcome. Status is captured in
-`run_manifest.yaml`, `consent_group_status.tsv`, and the hv_dataqc compare
-report. This means SBG will always mark the task as "Completed" — check the
-`overall_status` field in `run_manifest.yaml` for the actual result.
+**The container exits 1 when `overall_status` is `FAIL` and
+`--strict-consent-groups` is `true`**, so SBG marks the task Failed rather than
+reporting partial output as a completed run. Every other outcome — including
+`PARTIAL` from allow-listed failures — exits 0.
+
+Status is captured regardless in `run_manifest.yaml`, `consent_group_status.tsv`,
+and the hv_dataqc compare report; these are always finalized before the script
+exits. For any run that is not a strict-mode `FAIL`, check the `overall_status`
+field in `run_manifest.yaml` for the actual result, since a `PARTIAL` run still
+reports as Completed.
 
 ---
 

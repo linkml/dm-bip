@@ -24,8 +24,13 @@
 #   HOME= and UV_CACHE_DIR= for filesystem isolation. --consent-parallelism 1
 #   is exactly serial.
 #
-#   Always exits 0 (except for a pre-flight failure resolving --trans-spec or
-#   --hv-dataqc-branch under strict mode — those are setup failures).
+#   Exit status: 1 when overall_status is FAIL and --strict-consent-groups is
+#   true, so an unauthorized consent-group failure reaches the task runner
+#   instead of being reported as a completed task. PARTIAL (allow-listed
+#   failures) exits 0, as does everything else. A pre-flight failure resolving
+#   --trans-spec or --hv-dataqc-branch under strict mode also exits non-zero —
+#   those are setup failures. The manifest and status TSV are always finalized
+#   before the script exits, whatever the status.
 #
 # Usage:
 #   ./bdc-cohort-workflow.sh \
@@ -77,7 +82,8 @@ usage() {
 Usage: bdc-cohort-workflow.sh
   --schema <COHORT>                 Cohort name (e.g. COPDGene)
   --consent-group <DIR>             Repeatable. One per consent group.
-  [--dbgap-cache <DIR>]             Mounted dbGaP cache root
+  [--dbgap-cache <DIR>]             Cohort-specific dbGaP cache dir
+                                    (contains pheno_variable_summaries/*.xml)
   [--allow-fail <CG_NAME> ...]      Repeatable. Consent groups tolerated to fail.
   [--strict-consent-groups <bool>]  Default true (fail-fast loop)
   [--strict-hv-dataqc <bool>]       Default true (skip hv_dataqc on unauth. failure)
