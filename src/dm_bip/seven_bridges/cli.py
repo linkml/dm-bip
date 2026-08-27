@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import csv
 import enum
+import json
 import logging
 import math
+import os
 import sys
 import time
 import urllib.parse
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated, Optional
@@ -145,15 +148,109 @@ def submit(
         bool,
         typer.Option("--profile", help="Enable map-step diagnostics (py-spy + cgroup) via the app's Profile toggle."),
     ] = False,
+    cohort_mode: Annotated[
+        bool,
+        typer.Option(
+            "--cohort-mode",
+            help="Group manifest rows by cohort and submit ONE Parallel Multi-Consent "
+            "Execution task per cohort against the app given by --cohort-app "
+            "(or SBG_DEFAULT_COHORT_APP). The task drives all consent groups in "
+            "one container and runs hv_dataqc at the end.",
+        ),
+    ] = False,
+    cohort_app: Annotated[
+        Optional[str],
+        typer.Option(
+            "--cohort-app",
+            help="SBG app ID for the Parallel Multi-Consent Execution Mode workflow. "
+            "REQUIRED with --cohort-mode; no default.",
+        ),
+    ] = None,
+    dbgap_cache: Annotated[
+        Optional[str],
+        typer.Option(
+            "--dbgap-cache",
+            help=(
+                "dbGaP cache. An absolute path from the project root "
+                "(e.g. /_QC_STAGING/_dbGaP_cache) is treated as the cache ROOT: the "
+                "cohort-specific subdirectory is appended automatically (e.g. "
+                "copdgene, hchs_sol) and resolved to a folder ID. An SBG folder ID is "
+                "passed through unchanged and must therefore already point at the "
+                "COHORT-SPECIFIC directory, not the cache root -- the container uses "
+                "--dbgap-cache as-is. Defaults to /_QC_STAGING/_dbGaP_cache."
+            ),
+        ),
+    ] = "/_QC_STAGING/_dbGaP_cache",
+    allow_fail: Annotated[
+        Optional[list[str]],
+        typer.Option(
+            "--allow-fail",
+            help="Repeatable. Format: <schema>:<cg-name>. Marks a consent group as tolerated to fail.",
+        ),
+    ] = None,
+    strict_consent_groups: Annotated[
+        bool,
+        typer.Option(
+            "--strict-consent-groups/--no-strict-consent-groups",
+            help="Cohort mode: fail-fast on unauthorized consent-group failure.",
+        ),
+    ] = True,
+    strict_hv_dataqc: Annotated[
+        bool,
+        typer.Option(
+            "--strict-hv-dataqc/--no-strict-hv-dataqc",
+            help="Cohort mode: skip hv_dataqc if any unauthorized failure.",
+        ),
+    ] = True,
+    hv_dataqc_branch: Annotated[
+        Optional[str],
+        typer.Option("--hv-dataqc-branch", help="Cohort mode: override hv_dataqc code branch."),
+    ] = None,
+    jobs: Annotated[
+        int,
+        typer.Option("--jobs", min=1, help="Cohort mode: per-consent make -j."),
+    ] = 8,
+    consent_parallelism: Annotated[
+        Optional[int],
+        typer.Option(
+            "--consent-parallelism",
+            help="Cohort mode: consent groups run concurrently. Default computed from vCPU.",
+        ),
+    ] = None,
 ) -> None:
-    """Read the manifest CSV and launch one harmonization task per row, throttled."""
+    """
+    Submit tasks from the manifest. Default: one task per row (per consent group).
+
+    With `--cohort-mode`, groups rows by Schema and submits one Parallel Multi-Consent
+    Execution task per cohort.
+    """
     if not manifest_path.exists():
         typer.echo(f"Manifest not found: {manifest_path}. Run `dm-bip seven-bridges manifest` first.", err=True)
         raise typer.Exit(code=2)
 
+    if cohort_mode:
+        _submit_cohort_mode(
+            project=project,
+            cohort_app=cohort_app,
+            study_root=study_root,
+            manifest_path=manifest_path,
+            trans_spec=trans_spec,
+            throttle=throttle,
+            dbgap_cache=dbgap_cache,
+            allow_fail=list(allow_fail or []),
+            strict_consent_groups=strict_consent_groups,
+            strict_hv_dataqc=strict_hv_dataqc,
+            hv_dataqc_branch=hv_dataqc_branch,
+            jobs=jobs,
+            consent_parallelism=consent_parallelism,
+        )
+        return
+
     client = _make_client()
     project_id = project or client.config.project
     app_id = sbg_app or client.config.app
+    typer.echo(f"Project: {project_id}")
+    typer.echo(f"App:     {app_id}   (from {'--app' if sbg_app else 'SBG_DEFAULT_APP'})")
 
     try:
         root_folders = client.get_folders(project=project_id)
@@ -216,6 +313,340 @@ def submit(
             time.sleep(throttle)
 
     typer.echo("\nBatch complete.")
+
+
+# --- cohort-mode helpers ----------------------------------------------------
+
+# Mirrors the mapping in scripts/workflow/hv-dataqc-cohort.sh.
+_COHORT_CACHE_SUBDIR: dict[str, str] = {
+    "hchs": "hchs_sol",
+    "hchs-sol": "hchs_sol",
+}
+
+
+def _cohort_cache_subdir(schema: str) -> str:
+    """Return the dbGaP cache subdirectory name for a cohort schema string."""
+    return _COHORT_CACHE_SUBDIR.get(schema.lower(), schema.lower())
+
+
+def _parse_allow_fail(items: list[str]) -> dict[str, list[str]]:
+    """
+    Parse `--allow-fail <schema>:<cg>` entries into {schema: [cg, ...]}.
+
+    Rows without a schema prefix are rejected — global allow-fail across cohorts
+    is not a useful semantic since consent-group names collide across cohorts.
+    """
+    out: dict[str, list[str]] = defaultdict(list)
+    for item in items:
+        if ":" not in item:
+            typer.echo(
+                f"ERROR: --allow-fail entry '{item}' must use <schema>:<cg-name> form.",
+                err=True,
+            )
+            raise typer.Exit(code=2)
+        schema, cg = item.split(":", 1)
+        schema = schema.strip()
+        cg = cg.strip()
+        if not schema or not cg:
+            typer.echo(f"ERROR: --allow-fail entry '{item}' has an empty component.", err=True)
+            raise typer.Exit(code=2)
+        out[schema].append(cg)
+    return dict(out)
+
+
+def _build_cohort_task_bodies(
+    project_id: str,
+    cohort_app: str,
+    manifest_path: Path,
+    study_root: str,
+    trans_spec: str,
+    dbgap_cache: Optional[str],
+    allow_fail_by_cohort: dict[str, list[str]],
+    strict_consent_groups: bool,
+    strict_hv_dataqc: bool,
+    hv_dataqc_branch: Optional[str],
+    jobs: int,
+    consent_parallelism: Optional[int],
+    resolve_folders: bool,
+) -> list[dict]:
+    """
+    Return one task body per cohort, ready for SBG task-create.
+
+    When `resolve_folders` is True, SBG API is used to translate consent-group
+    folder names to folder IDs. When False (dry-run / plan), the raw folder
+    names are echoed back — no network calls required.
+    """
+    with manifest_path.open() as f:
+        rows = list(csv.DictReader(f))
+
+    by_cohort: dict[str, list[str]] = defaultdict(list)
+    for row in rows:
+        by_cohort[row["Schema"]].append(row["Filename"])
+
+    if resolve_folders:
+        client = _make_client()
+        root_folders = client.get_folders(project=project_id)
+        pilot_root = next((f for f in root_folders if f["name"] == study_root), None)
+        if not pilot_root:
+            typer.echo(f"Could not find '{study_root}' folder in {project_id}.", err=True)
+            raise typer.Exit(code=1)
+        cohort_lookup = {f["name"]: f["id"] for f in client.get_folders(parent=pilot_root["id"])}
+    else:
+        cohort_lookup = {}
+
+    bodies: list[dict] = []
+    for schema, cg_names in by_cohort.items():
+        consent_group_refs: list[dict] = []
+        if resolve_folders:
+            parent_id = cohort_lookup.get(schema)
+            if not parent_id:
+                typer.echo(f"WARN: cohort folder '{schema}' not found; skipping.", err=True)
+                continue
+            for name in cg_names:
+                encoded = urllib.parse.quote(name, safe="")
+                try:
+                    resp = client.request(f"files?parent={parent_id}&name={encoded}")
+                except SevenBridgesError as exc:
+                    typer.echo(f"WARN: {schema}/{name} lookup failed ({exc}); skipping.", err=True)
+                    continue
+                folder = next(
+                    (f for f in resp.get("items", []) if f["type"] == "folder" and f["name"] == name),
+                    None,
+                )
+                if not folder:
+                    typer.echo(f"WARN: {schema}/{name} folder not found; skipping.", err=True)
+                    continue
+                consent_group_refs.append({"class": "Directory", "path": folder["id"]})
+        else:
+            consent_group_refs = [{"class": "Directory", "path": f"<{schema}/{n}>"} for n in cg_names]
+
+        # Resolve dbGaP cache folder for this cohort.
+        # A path (starts with /) is the cache ROOT: append the cohort-specific
+        # subdirectory and resolve to a folder ID via the SBG API.
+        #
+        # A folder ID is passed through unchanged, and the container consumes it
+        # as-is: hv-dataqc-cohort.sh treats --dbgap-cache as the cohort-specific
+        # directory and does NOT append a subdirectory (ba0e1d5). So a folder ID
+        # naming the cache root would leave hv_dataqc pointed at a directory of
+        # per-cohort subdirs rather than one cohort's files, and compare would
+        # fail or compare the wrong data. The CLI cannot distinguish the two
+        # without guessing, so it warns instead.
+        cache_ref: dict | None = None
+        if dbgap_cache:
+            if dbgap_cache.startswith("/"):
+                cache_subdir = _cohort_cache_subdir(schema)
+                cache_path = f"{dbgap_cache.rstrip('/')}/{cache_subdir}"
+                if resolve_folders:
+                    try:
+                        cache_folder_id = client.resolve_folder_path(project_id, cache_path)
+                        cache_ref = {"class": "Directory", "path": cache_folder_id}
+                    except SevenBridgesError as exc:
+                        typer.echo(
+                            f"WARN: dbGaP cache path not found for {schema} ({cache_path!r}): {exc}. "
+                            "hv_dataqc compare step may degrade.",
+                            err=True,
+                        )
+                else:
+                    cache_ref = {"class": "Directory", "path": f"<resolve:{cache_path}>"}
+            else:
+                typer.echo(
+                    f"NOTE: --dbgap-cache {dbgap_cache!r} is treated as an SBG folder ID and "
+                    f"passed through unchanged. It must already be {schema}'s cohort-specific "
+                    "cache directory; pass a path (e.g. /_QC_STAGING/_dbGaP_cache) to have the "
+                    "cohort subdirectory appended for you.",
+                    err=True,
+                )
+                cache_ref = {"class": "Directory", "path": dbgap_cache}
+
+        inputs: dict = {
+            "Schema": schema,
+            "ConsentGroups": consent_group_refs,
+            "StrictConsentGroups": str(strict_consent_groups).lower(),
+            "StrictHvDataqc": str(strict_hv_dataqc).lower(),
+            "Jobs": jobs,
+        }
+        if cache_ref is not None:
+            inputs["DbgapCache"] = cache_ref
+        cohort_allow = allow_fail_by_cohort.get(schema, [])
+        if cohort_allow:
+            inputs["AllowFail"] = cohort_allow
+        if hv_dataqc_branch:
+            inputs["HvDataqcBranch"] = hv_dataqc_branch
+        if consent_parallelism is not None:
+            inputs["ConsentParallelism"] = consent_parallelism
+        if trans_spec:
+            inputs["TransSpec"] = trans_spec
+
+        bodies.append(
+            {
+                "project": project_id,
+                "app": cohort_app,
+                "name": f"Harmonization_{schema}_cohort",
+                "inputs": inputs,
+            }
+        )
+    return bodies
+
+
+def _submit_cohort_mode(
+    project: Optional[str],
+    cohort_app: Optional[str],
+    study_root: str,
+    manifest_path: Path,
+    trans_spec: str,
+    throttle: int,
+    dbgap_cache: Optional[str],
+    allow_fail: list[str],
+    strict_consent_groups: bool,
+    strict_hv_dataqc: bool,
+    hv_dataqc_branch: Optional[str],
+    jobs: int,
+    consent_parallelism: Optional[int],
+) -> None:
+    client = _make_client()
+    project_id = project or client.config.project
+    # No fallback to client.config.app: that is the single-consent app, and running
+    # cohort mode against it would submit a task the app cannot service.
+    app_id = cohort_app or client.config.cohort_app
+    if not app_id:
+        typer.echo(
+            "ERROR: --cohort-mode requires an app ID. Pass --cohort-app <owner/project/app>, "
+            "or set SBG_DEFAULT_COHORT_APP. There is no default: the app's own Docker "
+            "Repository field decides which image runs, so it must be chosen deliberately.",
+            err=True,
+        )
+        raise typer.Exit(code=2)
+
+    # Echo the resolved target before doing anything. An app ID with no trailing
+    # /<revision> runs the app's latest revision, which is what picks up a changed
+    # Docker Repository field; a pinned revision does not.
+    source = "--cohort-app" if cohort_app else "SBG_DEFAULT_COHORT_APP"
+    typer.echo(f"Project: {project_id}")
+    typer.echo(f"App:     {app_id}   (from {source})")
+
+    allow_fail_by_cohort = _parse_allow_fail(allow_fail)
+
+    bodies = _build_cohort_task_bodies(
+        project_id=project_id,
+        cohort_app=app_id,
+        manifest_path=manifest_path,
+        study_root=study_root,
+        trans_spec=trans_spec,
+        dbgap_cache=dbgap_cache,
+        allow_fail_by_cohort=allow_fail_by_cohort,
+        strict_consent_groups=strict_consent_groups,
+        strict_hv_dataqc=strict_hv_dataqc,
+        hv_dataqc_branch=hv_dataqc_branch,
+        jobs=jobs,
+        consent_parallelism=consent_parallelism,
+        resolve_folders=True,
+    )
+
+    typer.echo(f"Submitting {len(bodies)} cohort tasks (one per Schema)")
+    for i, body in enumerate(bodies):
+        typer.echo(f"  {body['name']}...", nl=False)
+        try:
+            created = client.request("tasks", method="POST", body=body)
+            client.request(f"tasks/{created['id']}/actions/run", method="POST")
+            typer.echo(f" [RUNNING: {created['id']}]")
+        except SevenBridgesError as exc:
+            typer.echo(f" [FAILED: {exc}]")
+
+        if i < len(bodies) - 1 and throttle > 0:
+            typer.echo(f"  Waiting {throttle}s...")
+            time.sleep(throttle)
+
+    typer.echo("\nCohort-mode batch complete.")
+
+
+# --- plan (dry-run) ---------------------------------------------------------
+
+
+@app.command()
+def plan(
+    project: Annotated[
+        Optional[str], typer.Option("--project", help="SBG project ID (defaults to SBG_DEFAULT_PROJECT).")
+    ] = None,
+    cohort_app: Annotated[
+        Optional[str],
+        typer.Option(
+            "--cohort-app",
+            help="App ID for the Parallel Multi-Consent Execution Mode workflow. REQUIRED; no default.",
+        ),
+    ] = None,
+    study_root: Annotated[
+        str, typer.Option("--study-root", help="Root folder containing cohorts.")
+    ] = DEFAULT_STUDY_ROOT,
+    manifest_path: Annotated[Path, typer.Option("--manifest", help="Task manifest CSV.")] = DEFAULT_MANIFEST_PATH,
+    trans_spec: Annotated[str, typer.Option("--trans-spec", help="Trans-spec slug (OWNER/REPO@REF:PATH).")] = "",
+    dbgap_cache: Annotated[
+        Optional[str],
+        typer.Option(
+            "--dbgap-cache",
+            help=(
+                "dbGaP cache: absolute path from project root (treated as the cache "
+                "root, cohort subdir appended), or a folder ID already pointing at the "
+                "cohort-specific directory. Defaults to /_QC_STAGING/_dbGaP_cache."
+            ),
+        ),
+    ] = "/_QC_STAGING/_dbGaP_cache",
+    allow_fail: Annotated[
+        Optional[list[str]], typer.Option("--allow-fail", help="Repeatable. <schema>:<cg-name>.")
+    ] = None,
+    strict_consent_groups: Annotated[bool, typer.Option("--strict-consent-groups/--no-strict-consent-groups")] = True,
+    strict_hv_dataqc: Annotated[bool, typer.Option("--strict-hv-dataqc/--no-strict-hv-dataqc")] = True,
+    hv_dataqc_branch: Annotated[Optional[str], typer.Option("--hv-dataqc-branch")] = None,
+    jobs: Annotated[int, typer.Option("--jobs", min=1)] = 8,
+    consent_parallelism: Annotated[Optional[int], typer.Option("--consent-parallelism")] = None,
+    resolve_folders: Annotated[
+        bool,
+        typer.Option(
+            "--resolve-folders/--no-resolve-folders",
+            help="When true, contact SBG API to resolve consent-group folder IDs. Off by default so plan runs offline.",
+        ),
+    ] = False,
+) -> None:
+    """
+    Dry-run: emit the JSON task bodies that `submit --cohort-mode` would post.
+
+    Use `--resolve-folders` to hit the SBG API for real folder IDs, or leave off
+    for a pure offline preview (folder IDs shown as `<schema/cg-name>`).
+    """
+    if not manifest_path.exists():
+        typer.echo(f"Manifest not found: {manifest_path}. Run `dm-bip seven-bridges manifest` first.", err=True)
+        raise typer.Exit(code=2)
+
+    project_id = project or ""
+    if resolve_folders and not project_id:
+        client = _make_client()
+        project_id = client.config.project
+    app_id = cohort_app or os.environ.get("SBG_DEFAULT_COHORT_APP", "")
+    if not app_id:
+        typer.echo(
+            "ERROR: plan requires an app ID. Pass --cohort-app <owner/project/app>, or set SBG_DEFAULT_COHORT_APP.",
+            err=True,
+        )
+        raise typer.Exit(code=2)
+
+    allow_fail_by_cohort = _parse_allow_fail(list(allow_fail or []))
+
+    bodies = _build_cohort_task_bodies(
+        project_id=project_id or "<project-id>",
+        cohort_app=app_id,
+        manifest_path=manifest_path,
+        study_root=study_root,
+        trans_spec=trans_spec,
+        dbgap_cache=dbgap_cache,
+        allow_fail_by_cohort=allow_fail_by_cohort,
+        strict_consent_groups=strict_consent_groups,
+        strict_hv_dataqc=strict_hv_dataqc,
+        hv_dataqc_branch=hv_dataqc_branch,
+        jobs=jobs,
+        consent_parallelism=consent_parallelism,
+        resolve_folders=resolve_folders,
+    )
+
+    typer.echo(json.dumps(bodies, indent=2))
 
 
 # --- status -----------------------------------------------------------------

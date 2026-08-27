@@ -159,3 +159,6 @@ output/
 # so match the suffixed variants too, not just the CLI default.
 /batch_tasks.csv
 /task_logs*/
+# Per-cohort / ad-hoc Seven Bridges task manifests (aric_tasks.csv, whi_tasks.csv,
+# testing_tasks.csv, ...). Covers /batch_tasks.csv above as well.
+*_tasks.csv

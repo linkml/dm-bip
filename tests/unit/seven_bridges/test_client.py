@@ -187,3 +187,61 @@ def test_get_folders_filters_to_folder_type(
     folders = Client(load_config()).get_folders(project="test/project")
 
     assert [f["name"] for f in folders] == ["FolderA", "FolderB"]
+
+
+def test_resolve_folder_path_walks_multiple_levels(
+    seed_token: Callable[[], None],
+    httpx_mock: HTTPXMock,
+) -> None:
+    """A slash-separated path resolves to the deepest folder's ID, one API hop per component."""
+    seed_token()
+    # Level 1 is listed by project; deeper levels are listed by parent.
+    httpx_mock.add_response(
+        method="GET",
+        url="https://api.sbg.test/v2/files?project=test/project",
+        json={"items": [{"id": "qc-id", "name": "_QC_STAGING", "type": "folder"}]},
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url="https://api.sbg.test/v2/files?parent=qc-id",
+        json={"items": [{"id": "cache-id", "name": "_dbGaP_cache", "type": "folder"}]},
+    )
+    httpx_mock.add_response(
+        method="GET",
+        url="https://api.sbg.test/v2/files?parent=cache-id",
+        json={"items": [{"id": "copdgene-id", "name": "copdgene", "type": "folder"}]},
+    )
+
+    folder_id = Client(load_config()).resolve_folder_path("test/project", "/_QC_STAGING/_dbGaP_cache/copdgene")
+
+    assert folder_id == "copdgene-id"
+
+
+def test_resolve_folder_path_raises_naming_the_missing_component(
+    seed_token: Callable[[], None],
+    httpx_mock: HTTPXMock,
+) -> None:
+    """A missing intermediate component fails with the partial path, not a null folder ref."""
+    seed_token()
+    httpx_mock.add_response(
+        method="GET",
+        url="https://api.sbg.test/v2/files?project=test/project",
+        json={"items": [{"id": "qc-id", "name": "_QC_STAGING", "type": "folder"}]},
+    )
+    # _dbGaP_cache is absent, so the walk stops here.
+    httpx_mock.add_response(
+        method="GET",
+        url="https://api.sbg.test/v2/files?parent=qc-id",
+        json={"items": [{"id": "other-id", "name": "_something_else", "type": "folder"}]},
+    )
+
+    with pytest.raises(SevenBridgesError, match=r"_QC_STAGING/_dbGaP_cache"):
+        Client(load_config()).resolve_folder_path("test/project", "/_QC_STAGING/_dbGaP_cache/copdgene")
+
+
+def test_resolve_folder_path_rejects_an_empty_path(seed_token: Callable[[], None]) -> None:
+    """A path of only slashes has no components to walk and must not reach the API."""
+    seed_token()
+
+    with pytest.raises(SevenBridgesError, match="Empty folder path"):
+        Client(load_config()).resolve_folder_path("test/project", "///")
