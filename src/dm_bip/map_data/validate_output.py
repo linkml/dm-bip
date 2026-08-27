@@ -85,7 +85,9 @@ def load_records(path: Path) -> list[dict[str, Any]]:
         return [r for r in records if isinstance(r, dict)]
 
     if path.suffix == ".json":
-        doc = json.loads(path.read_text())
+        # A blank file is an empty document, not a parse error — same as yaml/jsonl.
+        text = path.read_text().strip()
+        doc = json.loads(text) if text else None
     else:
         docs = [d for d in yaml.safe_load_all(path.read_text()) if d is not None]
         if len(docs) > 1:

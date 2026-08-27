@@ -68,6 +68,15 @@ def test_load_records_empty_file(tmp_path):
     assert load_records(path) == []
 
 
+@pytest.mark.parametrize("suffix", [".yaml", ".json", ".jsonl"])
+@pytest.mark.parametrize("content", ["", "   \n"])
+def test_load_records_empty_file_consistent_across_formats(tmp_path, suffix, content):
+    """An empty output file reads as 'no records' in every format, never a parse error."""
+    path = tmp_path / f"out{suffix}"
+    path.write_text(content)
+    assert load_records(path) == []
+
+
 def test_load_records_jsonl(tmp_path):
     """JSONL input is read line by line, ignoring blank lines."""
     path = tmp_path / "out.jsonl"
