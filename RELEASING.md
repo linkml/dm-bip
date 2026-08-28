@@ -159,15 +159,25 @@ production means creating a prod app from that same definition with its Docker
 Repository pointed at `dm-bip-prod/dm-bip-env:prod`. No code change is required;
 `bdc-cohort-workflow.sh` ships in every image.
 
-### Strict mapping is a property of the image, not the app
+### Strict mapping follows the image build, unless an app overrides it
 
-`DM_MAP_STRICT` is not an app input. It follows the `BDC_PULL_LATEST` build arg:
-dev images are built `true`, which makes `bdc-workflow.sh` pass
-`DM_MAP_STRICT=false` so a whole run's errors surface in one pass. Test and prod
-images are built `false`, leaving `DM_MAP_STRICT` at its `true` default --
-mapping fails on the first error. Cohort mode inherits this unchanged;
-`bdc-cohort-workflow.sh` never sets `DM_MAP_STRICT`, it just runs
+`DM_MAP_STRICT` is not an app input. Its default comes from the
+`BDC_PULL_LATEST` build arg: dev images are built `true`, which makes
+`bdc-workflow.sh` pass `DM_MAP_STRICT=false` so a whole run's errors surface in
+one pass. Test and prod images are built `false`, leaving `DM_MAP_STRICT` at its
+`true` default -- mapping fails on the first error. Cohort mode inherits this
+unchanged; `bdc-cohort-workflow.sh` never sets `DM_MAP_STRICT`, it just runs
 `bdc-workflow.sh` once per consent group.
+
+`BDC_PULL_LATEST` is a Dockerfile `ENV`, so it is a **default and not a fixed
+property of the image** -- an app can override it in its environment, and
+`docs/cohort-workflow.md` instructs operators to do exactly that when they need
+`--trans-spec` on a non-dev image. Overriding it to `true` also flips mapping to
+non-strict as a side effect, which is easy to miss.
+
+No app currently sets it: none of `cc-dm-bip-test`,
+`dmc-harmonization-multiconsent-app`, or `bdc-dm-bip-prod` declares an
+`EnvVarRequirement`, so today every app runs on its image's build-time value.
 
 Cohort mode has its own strictness controls -- `--strict-consent-groups` and
 `--strict-hv-dataqc`, both defaulting true -- which govern consent-group and QC
