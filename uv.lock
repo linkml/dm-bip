@@ -664,18 +664,6 @@ wheels = [
 ]
 
 [[package]]
-name = "deepdiff"
-version = "8.6.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "orderly-set" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/19/76/36c9aab3d5c19a94091f7c6c6e784efca50d87b124bf026c36e94719f33c/deepdiff-8.6.1.tar.gz", hash = "sha256:ec56d7a769ca80891b5200ec7bd41eec300ced91ebcc7797b41eb2b3f3ff643a", size = 634054, upload-time = "2025-09-03T19:40:41.461Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/f7/e6/efe534ef0952b531b630780e19cabd416e2032697019d5295defc6ef9bd9/deepdiff-8.6.1-py3-none-any.whl", hash = "sha256:ee8708a7f7d37fb273a541fa24ad010ed484192cd0c4ffc0fa0ed5e2d4b9e78b", size = 91378, upload-time = "2025-09-03T19:40:39.679Z" },
-]
-
-[[package]]
 name = "defusedxml"
 version = "0.7.1"
 source = { registry = "https://pypi.org/simple" }
@@ -759,9 +747,9 @@ requires-dist = [
     { name = "gitpython", specifier = ">=3.1.44" },
     { name = "httpx", specifier = ">=0.27,<1" },
     { name = "linkml", specifier = ">=1.11.0" },
-    { name = "linkml-map", specifier = "==0.5.3" },
+    { name = "linkml-map", specifier = "==0.5.4" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
-    { name = "schema-automator", specifier = "==0.5.6" },
+    { name = "schema-automator", specifier = "==0.5.7" },
     { name = "typer", specifier = ">=0.20.0,<1" },
     { name = "typing-extensions", specifier = ">=4.0,<5" },
 ]
@@ -1767,18 +1755,18 @@ wheels = [
 
 [[package]]
 name = "linkml-map"
-version = "0.5.3"
+version = "0.5.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asteval" },
     { name = "click" },
     { name = "curies" },
-    { name = "deepdiff" },
     { name = "duckdb" },
     { name = "flatten-dict" },
     { name = "graphviz" },
     { name = "inflection" },
     { name = "jinja2" },
+    { name = "jsonschema" },
     { name = "lark" },
     { name = "linkml" },
     { name = "linkml-runtime" },
@@ -1790,9 +1778,9 @@ dependencies = [
     { name = "simpleeval" },
     { name = "ucumvert" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/21/65/92e03bbaa3f70c215b44729e1adc37795a01ace438f44a99f30af84f4e8b/linkml_map-0.5.3.tar.gz", hash = "sha256:2bdb16bc9546280cf03bbe9476ed3460795d612004b61e810d4206d7830093b4", size = 585678, upload-time = "2026-07-16T19:18:50.466Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/48/7b/cca78afe9a3fa1ee2ddd1edf3f26f9021f99eb6778769adfff5a1dd32cb2/linkml_map-0.5.4.tar.gz", hash = "sha256:08b5c7f8011036ad9acbb271baf5c3a23964bc15132ad33184b0eb5aa82d9277", size = 653825, upload-time = "2026-08-26T21:04:59.616Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/11/01/1d8e9f0c1e51475275d9393154a69e86170e7d4a7ab17fa568935d1c24ed/linkml_map-0.5.3-py3-none-any.whl", hash = "sha256:937beba0e2ce54f669e873f80166dda9e198068eed2338e032d5a1309251556c", size = 151142, upload-time = "2026-07-16T19:18:48.621Z" },
+    { url = "https://files.pythonhosted.org/packages/2c/43/c65215a4aa4f2670c4887df471fde96a59d406f363224ed7fa0264712a1a/linkml_map-0.5.4-py3-none-any.whl", hash = "sha256:316429deb753568937eb73a173723a3edfb8ce744a61f0ca05a2d91752c05d8b", size = 149661, upload-time = "2026-08-26T21:04:58.36Z" },
 ]
 
 [[package]]
@@ -2385,15 +2373,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/3d/f9/88d94a75de065ea32619465d2f77b29a0469500e99012523b91cc4141cd1/openpyxl-3.1.5.tar.gz", hash = "sha256:cf0e3cf56142039133628b5acffe8ef0c12bc902d2aadd3e0fe5878dc08d1050", size = 186464, upload-time = "2024-06-28T14:03:44.161Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c0/da/977ded879c29cbd04de313843e76868e6e13408a94ed6b987245dc7c8506/openpyxl-3.1.5-py2.py3-none-any.whl", hash = "sha256:5282c12b107bffeef825f4617dc029afaf41d0ea60823bbb665ef3079dc79de2", size = 250910, upload-time = "2024-06-28T14:03:41.161Z" },
-]
-
-[[package]]
-name = "orderly-set"
-version = "5.5.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/4a/88/39c83c35d5e97cc203e9e77a4f93bf87ec89cf6a22ac4818fdcc65d66584/orderly_set-5.5.0.tar.gz", hash = "sha256:e87185c8e4d8afa64e7f8160ee2c542a475b738bc891dc3f58102e654125e6ce", size = 27414, upload-time = "2025-07-10T20:10:55.885Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/12/27/fb8d7338b4d551900fa3e580acbe7a0cf655d940e164cb5c00ec31961094/orderly_set-5.5.0-py3-none-any.whl", hash = "sha256:46f0b801948e98f427b412fcabb831677194c05c3b699b80de260374baa0b1e7", size = 13068, upload-time = "2025-07-10T20:10:54.377Z" },
 ]
 
 [[package]]
@@ -3497,7 +3476,7 @@ wheels = [
 
 [[package]]
 name = "schema-automator"
-version = "0.5.6"
+version = "0.5.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -3524,9 +3503,9 @@ dependencies = [
     { name = "strsimpy" },
     { name = "tomlkit" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/1b/5f/bbf9feb5cd5dee086c7a486736ac1fb8eba7866fff48b50ae97b04150186/schema_automator-0.5.6.tar.gz", hash = "sha256:a1b8ae95d9450be00cf23ed9ee1d6ff55db5a59e55fbc2b4ae6d75b46f539d9c", size = 3978471, upload-time = "2026-07-17T19:18:05.398Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c9/d2/6af0d5695500f45723826f115efa400300b520409230ff182d6f67ae0b53/schema_automator-0.5.7.tar.gz", hash = "sha256:d0a2ac3831455b7762659ad6c250dac5aa9cf9618e8b9fa130872e4ddce82ea3", size = 3978013, upload-time = "2026-08-27T22:19:15.794Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0f/a5/8c8b8423ad8102df881e4b13c309014f68a00b7a713095d6cb2a7aefa64e/schema_automator-0.5.6-py3-none-any.whl", hash = "sha256:8ea03e05320289c195b198f0a5e19471a3c0c678c1008244acd2d6e1dbb03982", size = 173622, upload-time = "2026-07-17T19:18:03.794Z" },
+    { url = "https://files.pythonhosted.org/packages/4c/96/11879f7b62be91340d614e5ab8ef434975f57115cdef451021dbe9507db3/schema_automator-0.5.7-py3-none-any.whl", hash = "sha256:264970f9893cdb9443a5de67e396cd242bbcb51d97c415a42f3859244f24692f", size = 173606, upload-time = "2026-08-27T22:19:14.091Z" },
 ]
 
 [[package]]
