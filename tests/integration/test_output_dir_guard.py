@@ -10,7 +10,7 @@ testing a helper in isolation, because the behaviour under test is make's own
 parse-phase ordering: the guard has to fire *before* make remakes the -include'd
 $(PREPARED_INPUT_MK), whose recipe writes into the contested directory.
 
-The guard degrades open — a missing, unparseable, or key-less provenance.yaml lets
+The guard degrades open — a missing, unparsable, or key-less provenance.yaml lets
 the run proceed. That makes a silently-broken guard indistinguishable from a
 passing one, so the important assertions here are the ones that check it *fires*.
 """
@@ -104,7 +104,7 @@ def test_allow_output_reuse_overrides_the_guard(tmp_path: Path) -> None:
         pytest.param("dm_bip:\n  version: 1.0\n", id="no-pipeline-block"),
         pytest.param("pipeline:\n  input_dir: /somewhere\n", id="no-schema-name-key"),
         pytest.param("", id="empty-file"),
-        pytest.param("\x00\x01 not yaml at all\n", id="unparseable"),
+        pytest.param("\x00\x01 not yaml at all\n", id="unparsable"),
         pytest.param("dm_bip:\n  schema_name: NotTheOwner\n", id="schema-name-outside-pipeline-block"),
     ],
 )

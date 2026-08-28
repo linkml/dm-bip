@@ -129,7 +129,7 @@ DEBUG_TARGETS := pipeline-debug map-debug schema-debug validate-debug help
 # it considers any goal — so a recipe-based guard would fire only after
 # prepare_input.py had already written into $(DM_OUTPUT_DIR).
 #
-# It degrades open by design: a missing provenance.yaml, an unparseable one, or an
+# It degrades open by design: a missing provenance.yaml, an unparsable one, or an
 # absent schema_name all fall through and let the run proceed. The guard can fail
 # to catch a mismatch; it must never invent one. Because a silent guard is
 # indistinguishable from a passing guard, tests/integration/test_output_dir_guard.py
