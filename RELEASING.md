@@ -132,6 +132,52 @@ images.sb.biodatacatalyst.nhlbi.nih.gov/<username>/dm-bip-prod/dm-bip-env
 That is the current wiring, not a constraint -- any app can be pointed at any
 tier by editing its Docker Repository field.
 
+### What each app runs
+
+App definitions live only on the Seven Bridges platform; they are not in this
+repository and not under version control. This table is the record. When an app
+is created, repointed, or has its inputs changed, update it here in the same
+change -- otherwise the only way to answer "what does prod actually run?" is to
+probe the API, which is how a broken prod app went unnoticed for six weeks.
+
+| App | Entry point | Inputs |
+|-----|-------------|--------|
+| `cc-dm-bip-test` | `bdc-workflow.sh` | `Schema`, `RawSource`, `TransSpec`, `Profile` |
+| `dmc-harmonization-multiconsent-app` | `bdc-cohort-workflow.sh` | `Schema`, `ConsentGroups`, `DbgapCache`, `AllowFail`, `StrictConsentGroups`, `StrictHvDataqc`, `HvDataqcBranch`, `TransSpec`, `Jobs`, `ConsentParallelism` |
+| `bdc-dm-bip-prod` | `bdc-workflow.sh` | `Schema`, `RawSource` |
+
+An app must declare every input the CLI may send it. `dm-bip seven-bridges
+submit --profile` posts `Profile`, and `--trans-spec` posts `TransSpec`; an app
+without those inputs cannot accept them. `bdc-dm-bip-prod` declares neither,
+so prod currently runs single-consent harmonization with no trans-spec override
+and no diagnostics.
+
+**There is no cohort-mode app on the prod tier.** Cohort mode -- every consent
+group in one task plus the `hv_dataqc` source-vs-harmonized fan-in -- exists
+only as `dmc-harmonization-multiconsent-app` on the test tier. Putting it in
+production means creating a prod app from that same definition with its Docker
+Repository pointed at `dm-bip-prod/dm-bip-env:prod`. No code change is required;
+`bdc-cohort-workflow.sh` ships in every image.
+
+### Strict mode and profiling are properties of the image, not the app
+
+Neither is an app input, and neither differs between single-consent and cohort
+mode:
+
+- **Strict mapping** comes from the `BDC_PULL_LATEST` build arg. Dev images are
+  built `true`, which makes `bdc-workflow.sh` pass `DM_MAP_STRICT=false` so a
+  whole run's errors surface in one pass. Test and prod images are built
+  `false`, leaving `DM_MAP_STRICT` at its `true` default -- mapping fails on the
+  first error. Cohort mode inherits this: `bdc-cohort-workflow.sh` never sets
+  `DM_MAP_STRICT`, it just runs `bdc-workflow.sh` per consent group.
+- **Profiling** is opt-in per task via the `Profile` input, and only apps that
+  declare it can enable it. Diagnostics belong on dev, which can reach every
+  study prod can; there is no reason to profile in production.
+
+Cohort mode has its own strictness controls -- `--strict-consent-groups` and
+`--strict-hv-dataqc`, both defaulting true -- which govern consent-group and QC
+failure handling. Those are independent of map strictness.
+
 ### Tags each build publishes
 
 Every build publishes `:latest` plus an immutable `:sha-<12-char-commit>` tag. A
