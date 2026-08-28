@@ -146,11 +146,11 @@ probe the API, which is how a broken prod app went unnoticed for six weeks.
 | `dmc-harmonization-multiconsent-app` | `bdc-cohort-workflow.sh` | `Schema`, `ConsentGroups`, `DbgapCache`, `AllowFail`, `StrictConsentGroups`, `StrictHvDataqc`, `HvDataqcBranch`, `TransSpec`, `Jobs`, `ConsentParallelism` |
 | `bdc-dm-bip-prod` | `bdc-workflow.sh` | `Schema`, `RawSource` |
 
-An app must declare every input the CLI may send it. `dm-bip seven-bridges
-submit --profile` posts `Profile`, and `--trans-spec` posts `TransSpec`; an app
-without those inputs cannot accept them. `bdc-dm-bip-prod` declares neither,
-so prod currently runs single-consent harmonization with no trans-spec override
-and no diagnostics.
+An app must declare every input the CLI may send it. In single-consent mode
+`submit --profile` posts `Profile` and `--trans-spec` posts `TransSpec`; an app
+without those inputs cannot accept them. `bdc-dm-bip-prod` declares neither, so
+prod currently runs single-consent harmonization with no trans-spec override and
+no diagnostics.
 
 **There is no cohort-mode app on the prod tier.** Cohort mode -- every consent
 group in one task plus the `hv_dataqc` source-vs-harmonized fan-in -- exists
@@ -159,24 +159,33 @@ production means creating a prod app from that same definition with its Docker
 Repository pointed at `dm-bip-prod/dm-bip-env:prod`. No code change is required;
 `bdc-cohort-workflow.sh` ships in every image.
 
-### Strict mode and profiling are properties of the image, not the app
+### Strict mapping is a property of the image, not the app
 
-Neither is an app input, and neither differs between single-consent and cohort
-mode:
-
-- **Strict mapping** comes from the `BDC_PULL_LATEST` build arg. Dev images are
-  built `true`, which makes `bdc-workflow.sh` pass `DM_MAP_STRICT=false` so a
-  whole run's errors surface in one pass. Test and prod images are built
-  `false`, leaving `DM_MAP_STRICT` at its `true` default -- mapping fails on the
-  first error. Cohort mode inherits this: `bdc-cohort-workflow.sh` never sets
-  `DM_MAP_STRICT`, it just runs `bdc-workflow.sh` per consent group.
-- **Profiling** is opt-in per task via the `Profile` input, and only apps that
-  declare it can enable it. Diagnostics belong on dev, which can reach every
-  study prod can; there is no reason to profile in production.
+`DM_MAP_STRICT` is not an app input. It follows the `BDC_PULL_LATEST` build arg:
+dev images are built `true`, which makes `bdc-workflow.sh` pass
+`DM_MAP_STRICT=false` so a whole run's errors surface in one pass. Test and prod
+images are built `false`, leaving `DM_MAP_STRICT` at its `true` default --
+mapping fails on the first error. Cohort mode inherits this unchanged;
+`bdc-cohort-workflow.sh` never sets `DM_MAP_STRICT`, it just runs
+`bdc-workflow.sh` once per consent group.
 
 Cohort mode has its own strictness controls -- `--strict-consent-groups` and
 `--strict-hv-dataqc`, both defaulting true -- which govern consent-group and QC
 failure handling. Those are independent of map strictness.
+
+### Profiling is single-consent only
+
+Unlike strict mapping, profiling *is* an app input: it is opt-in per task via
+`Profile`, so only an app that declares it can enable it, and only
+`cc-dm-bip-test` does.
+
+It is also single-consent only on the CLI side. `submit` accepts `--profile`,
+but the cohort branch does not forward it, so passing it alongside
+`--cohort-mode` has no effect. There is no cohort-mode app declaring `Profile`
+either, on any tier.
+
+Diagnostics belong on dev, which can reach every study prod can; there is no
+reason to profile in production.
 
 ### Tags each build publishes
 
