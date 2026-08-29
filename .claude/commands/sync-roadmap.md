@@ -14,7 +14,11 @@ gh issue list --repo linkml/dm-bip --state open --label "Tracking" --json number
 
 # Get all issues (open and closed) with tracking category labels
 # Excludes issues closed as NOT_PLANNED (duplicates, obsolete)
-gh issue list --repo linkml/dm-bip --state all --limit 300 --json number,title,state,stateReason,labels,assignees | jq '[.[] | select(.labels | length > 0) | select(.stateReason != "NOT_PLANNED") | select(.labels[].name | test("Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|Trans-Spec Authoring|Audit Logs|Data Delivery"))]'
+# Excludes issues labeled `future` — triaged into a lane but deferred to a later cycle
+gh issue list --repo linkml/dm-bip --state all --limit 300 --json number,title,state,stateReason,labels,assignees | jq '[.[] | select(.labels | length > 0) | select(.stateReason != "NOT_PLANNED") | select([.labels[].name] | index("future") | not) | select(.labels[].name | test("Release Control|Pipeline Improvement|Quality Control|DMC Integration|BDC Application|Trans-Spec Authoring|Audit Logs|Data Delivery"))]'
+
+# Get deferred issues, for the Future Work section of the Outline
+gh issue list --repo linkml/dm-bip --state open --limit 300 --label future --json number,title,labels,assignees
 ```
 
 ### 2. Triage Unlabeled and Multi-Labeled Issues
@@ -36,9 +40,11 @@ For each unlabeled issue:
    - Test coverage, linting, CI → Quality Control
    - Versioning, releases, packaging → Release Control
    - Data delivery, output QC → Data Delivery
-   - Not ready for current roadmap → future
+   - Not ready for current roadmap → `future`, **in addition to** the tracking label above, so the lane is recorded for the next cycle
 3. Present suggestions to the user for approval before applying labels
 4. Apply approved labels, then re-run the step 1 query so they're included in the sync
+
+`future` issues stay out of the GANTT entirely and are listed in the Future Work section of the Outline, grouped by tracking label. Late in a cycle, when the axis has no room left, deferring new work to `future` is usually the right call — but check for issues with landed commits or open PRs first, since those belong on the chart regardless of when they were filed.
 
 **B. Multi-tracker-labeled issues.** Each issue should have exactly one tracking-category label — it belongs in one lane. Surface any with more than one:
 
