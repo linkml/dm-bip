@@ -66,13 +66,13 @@ gantt
 
     section 3 
     Fix Measurement Observation Sets (#174)             :done, i174, 2025-12-10, 2026-03-15
-    Create QC metrics (#196)                            :active, i196, 2026-02-01, 2026-05-15
-    Create QC Documentation (#195)                      :i195, 2026-03-15, 2026-06-15
-    Post-harmonization QC reporting tool (#303)         :i303, 2026-04-15, 2026-08-15
+    Create QC metrics (#196)                            :done, i196, 2026-02-01, 2026-05-15
+    Create QC Documentation (#195)                      :done, i195, 2026-03-15, 2026-06-15
+    Post-harmonization QC reporting tool (#303)         :done, i303, 2026-04-15, 2026-08-15
     Cross-cohort QC comparison dashboard (#304)         :i304, 2026-04-30, 2026-08-25
-    Source-vs-output data comparison in QC (#305)       :i305, 2026-05-10, 2026-08-30
+    Source-vs-output data comparison in QC (#305)       :done, i305, 2026-05-10, 2026-08-30
     hv-lint cleanup and migration (#312)                :i312, 2026-06-01, 2026-08-30
-    Whole-cohort workflow with integrated QC (#350)     :i350, 2026-05-15, 2026-08-30
+    Whole-cohort workflow with integrated QC (#350)     :done, i350, 2026-05-15, 2026-08-30
 
     section Pipeline Improvement
     Tracking Issue #188                     :crit, t188, 2025-10-10, 6w
@@ -85,7 +85,7 @@ gantt
     Create tests for mapping script (#210)              :done, i210, 2025-10-01, 2025-12-20
     Add Containerization to Makefile (#177)             :done, i177, 2025-12-01, 2026-03-15
     Enable offset calculations in LinkML-Map (#169)     :done, i169, 2025-09-20, 2026-01-01
-    Enum derivations (#211)                             :active, i211, 2026-01-01, 2026-03-15
+    Enum derivations (#211)                             :done, i211, 2026-01-01, 2026-03-15
     Generalize map_data.py with INCLUDE mapping (#166)  :done, i166, 2026-02-01, 2026-07-25
     Implement data mapping from multiple classes (#222) :done, i222, 2026-02-01, 2026-05-27
     Tweak prefix and postfix in the Makefile (#230)     :done, i230, 2026-01-01, 2026-04-10
@@ -282,13 +282,13 @@ Preparation, ingestion, and QC of the original pilot data set.
 ## 3. Quality Control (Tracking: #187)
 Procedures and workflows for quality control.
 - [x] Fix Measurement Observation Sets (#174)
-- [ ] Create QC Documentation (#195)
-- [ ] Create QC metrics (#196) - Sigfried
-- [ ] Post-harmonization QC reporting tool (#303) - Sigfried
+- [x] Create QC Documentation (#195)
+- [x] Create QC metrics (#196) - Sigfried
+- [x] Post-harmonization QC reporting tool (#303) - Sigfried
 - [ ] Cross-cohort QC comparison dashboard (#304)
-- [ ] Integrate source-vs-output data comparison into QC (#305) - Sigfried
+- [x] Integrate source-vs-output data comparison into QC (#305) - Sigfried
 - [ ] hv-lint cleanup and migration (#312)
-- [ ] Whole-cohort workflow: parallel per-consent harmonization + integrated hv_dataqc (#350)
+- [x] Whole-cohort workflow: parallel per-consent harmonization + integrated hv_dataqc (#350)
 
 ## 4. Pipeline Improvement (Tracking: #188)
 Improving automation, testing, workflows, and integration.
@@ -300,7 +300,7 @@ Improving automation, testing, workflows, and integration.
 - [x] Enable offset calculations in LinkML-Map (#169) - Madan
 - [x] Add Containerization to Makefile (#177)
 - [x] Create tests for mapping script (#210) - Corey
-- [ ] Enum derivations (#211) - Roman, Corey
+- [x] Enum derivations (#211) - Sigfried
 - [x] Implement data mapping from multiple classes (#222)
 - [x] Tweak prefix and postfix in the Makefile (#230) - Corey
 - [x] Add CONFIG include support to pipeline Makefile (#237) - Corey
@@ -373,6 +373,8 @@ Issues labeled `future` — identified and triaged into a tracking category, but
 
 ## Quality Control (#187)
 - [ ] Test coverage for the cohort-mode shell scripts (#360)
+- [ ] Grade harmonized output against TOPMed DCC reference aggregates (#371)
+- [ ] Document the QC grading methodology and how to read QC reports (#372)
 
 ## Pipeline Improvement (#188)
 - [ ] Blank consent-group TSV files cause DuckDB BinderError in joins (#335)
