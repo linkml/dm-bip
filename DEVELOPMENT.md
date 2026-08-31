@@ -66,12 +66,13 @@ gantt
 
     section 3 
     Fix Measurement Observation Sets (#174)             :done, i174, 2025-12-10, 2026-03-15
-    Create QC metrics (#196)                            :active, i196, 2026-02-01, 2026-05-15
-    Create QC Documentation (#195)                      :i195, 2026-03-15, 2026-06-15
-    Post-harmonization QC reporting tool (#303)         :i303, 2026-04-15, 2026-08-15
+    Create QC metrics (#196)                            :done, i196, 2026-02-01, 2026-05-15
+    Create QC Documentation (#195)                      :done, i195, 2026-03-15, 2026-06-15
+    Post-harmonization QC reporting tool (#303)         :done, i303, 2026-04-15, 2026-08-15
     Cross-cohort QC comparison dashboard (#304)         :i304, 2026-04-30, 2026-08-25
-    Source-vs-output data comparison in QC (#305)       :i305, 2026-05-10, 2026-08-30
+    Source-vs-output data comparison in QC (#305)       :done, i305, 2026-05-10, 2026-08-30
     hv-lint cleanup and migration (#312)                :i312, 2026-06-01, 2026-08-30
+    Whole-cohort workflow with integrated QC (#350)     :done, i350, 2026-05-15, 2026-08-30
 
     section Pipeline Improvement
     Tracking Issue #188                     :crit, t188, 2025-10-10, 6w
@@ -84,7 +85,7 @@ gantt
     Create tests for mapping script (#210)              :done, i210, 2025-10-01, 2025-12-20
     Add Containerization to Makefile (#177)             :done, i177, 2025-12-01, 2026-03-15
     Enable offset calculations in LinkML-Map (#169)     :done, i169, 2025-09-20, 2026-01-01
-    Enum derivations (#211)                             :active, i211, 2026-01-01, 2026-03-15
+    Enum derivations (#211)                             :done, i211, 2026-01-01, 2026-03-15
     Generalize map_data.py with INCLUDE mapping (#166)  :done, i166, 2026-02-01, 2026-07-25
     Implement data mapping from multiple classes (#222) :done, i222, 2026-02-01, 2026-05-27
     Tweak prefix and postfix in the Makefile (#230)     :done, i230, 2026-01-01, 2026-04-10
@@ -100,7 +101,9 @@ gantt
     Exit non-zero on mapping errors (#283)               :done, i283, 2026-03-15, 2026-06-15
     Add SB API scripts for task execution (#287)         :done, i287, 2026-03-01, 2026-06-20
     Add DuckDB output format (#273)                      :i273, 2026-05-15, 2026-08-15
-    Adopt linkml-map multi-spec loading (#310)           :i310, 2026-05-01, 2026-08-20
+    Adopt linkml-map multi-spec loading (#310)           :done, i310, 2026-05-01, 2026-08-20
+    Declare typer as a direct dependency (#327)          :done, i327, 2026-04-01, 2026-07-15
+    Reconcile Seven Bridges registry pinning (#349)      :done, i349, 2026-05-01, 2026-08-15
 
     section Audit Logs
     Tracking Issue #189                     :crit, t189, 2025-10-10, 6w
@@ -111,6 +114,7 @@ gantt
     Add log file for mapping step (#243)               :done, i243, 2025-11-15, 2026-02-02
     Schema-automator validation type issues (#232)     :done, i232, 2026-01-01, 2026-04-30
     Schema-automator optional null handling (#233)     :done, i233, 2026-01-01, 2026-04-10
+    Emit PROV-O provenance records (#352)              :i352, 2026-05-01, 2026-08-25
 
     section DMC Integration
     Tracking Issue #191                     :crit, t191, 2025-10-10, 6w
@@ -131,7 +135,7 @@ gantt
     Implement or remove CLI (#216)                     :done, i216, 2025-11-01, 2026-01-19
     Remove Hardcoded entity list (#220)                :done, i220, 2026-01-19, 2026-04-10
     Retrieve Data from S3 (#267)                       :i267, 2026-04-11, 2026-08-01
-    Move bdc-workflow.sh entrypoint to Python (#297)   :i297, 2026-04-15, 2026-08-15
+    Move bdc-workflow.sh entrypoint to Python (#297)   :done, i297, 2026-04-15, 2026-08-15
 
     section Trans-Spec Authoring
     Tracking Issue #197                     :crit, t197, 2025-10-10, 6w
@@ -141,14 +145,15 @@ gantt
     Incorporate Stata YAML authoring tool (#175)        :done, i175, 2025-11-01, 2026-03-01
     Create script to run AI API (#199)                  :i199, 2026-01-15, 2026-04-15
     Add tooling for SchemaAutomator/Schemasheets (#80)  :i80, 2026-03-15, 2026-07-10
-    make a data dictionary template (#103)              :i103, 2026-03-01, 2026-06-01
-    Add variable digest files to pipeline (#204)        :active, i204, 2025-12-01, 2026-03-01
+    make a data dictionary template (#103)              :done, i103, 2026-03-01, 2026-06-01
+    Add variable digest files to pipeline (#204)        :done, i204, 2025-12-01, 2026-03-01
     Trans-spec authoring pipeline overview (#306)       :i306, 2026-04-16, 2026-08-20
     Enrich schemas with data dictionary metadata (#307) :i307, 2026-04-01, 2026-08-15
     Variable alignment in trans-spec authoring (#308)   :i308, 2026-04-20, 2026-08-25
     Variable library — mapping catalog (#309)           :i309, 2026-04-01, 2026-08-01
     Port Stata data preparation to Python (#315)        :done, i315, 2026-04-20, 2026-08-15
-    Refactor ported Stata data preparation pipeline (#318) :i318, 2026-05-01, 2026-08-30
+    Refactor ported Stata data preparation pipeline (#318) :done, i318, 2026-05-01, 2026-08-30
+    Generalize trans-spec authoring (#329)              :i329, 2026-05-15, 2026-08-30
 
     click t186 href "https://github.com/linkml/dm-bip/issues/186"
     click t185 href "https://github.com/linkml/dm-bip/issues/185"
@@ -236,6 +241,11 @@ gantt
     click i312 href "https://github.com/linkml/dm-bip/issues/312"
     click i315 href "https://github.com/linkml/dm-bip/issues/315"
     click i318 href "https://github.com/linkml/dm-bip/issues/318"
+    click i327 href "https://github.com/linkml/dm-bip/issues/327"
+    click i329 href "https://github.com/linkml/dm-bip/issues/329"
+    click i349 href "https://github.com/linkml/dm-bip/issues/349"
+    click i350 href "https://github.com/linkml/dm-bip/issues/350"
+    click i352 href "https://github.com/linkml/dm-bip/issues/352"
 
     axisFormat %B
     tickInterval 1month
@@ -272,12 +282,13 @@ Preparation, ingestion, and QC of the original pilot data set.
 ## 3. Quality Control (Tracking: #187)
 Procedures and workflows for quality control.
 - [x] Fix Measurement Observation Sets (#174)
-- [ ] Create QC Documentation (#195)
-- [ ] Create QC metrics (#196) - Sigfried
-- [ ] Post-harmonization QC reporting tool (#303) - Sigfried
+- [x] Create QC Documentation (#195)
+- [x] Create QC metrics (#196) - Sigfried
+- [x] Post-harmonization QC reporting tool (#303) - Sigfried
 - [ ] Cross-cohort QC comparison dashboard (#304)
-- [ ] Integrate source-vs-output data comparison into QC (#305) - Sigfried
+- [x] Integrate source-vs-output data comparison into QC (#305) - Sigfried
 - [ ] hv-lint cleanup and migration (#312)
+- [x] Whole-cohort workflow: parallel per-consent harmonization + integrated hv_dataqc (#350)
 
 ## 4. Pipeline Improvement (Tracking: #188)
 Improving automation, testing, workflows, and integration.
@@ -289,7 +300,7 @@ Improving automation, testing, workflows, and integration.
 - [x] Enable offset calculations in LinkML-Map (#169) - Madan
 - [x] Add Containerization to Makefile (#177)
 - [x] Create tests for mapping script (#210) - Corey
-- [ ] Enum derivations (#211) - Roman, Corey
+- [x] Enum derivations (#211) - Sigfried
 - [x] Implement data mapping from multiple classes (#222)
 - [x] Tweak prefix and postfix in the Makefile (#230) - Corey
 - [x] Add CONFIG include support to pipeline Makefile (#237) - Corey
@@ -304,7 +315,9 @@ Improving automation, testing, workflows, and integration.
 - [x] Exit non-zero in non-strict mode when mapping errors occur (#283)
 - [x] Add SB API scripts for automated task execution (#287)
 - [ ] Add DuckDB output format (#273)
-- [ ] Adopt linkml-map multi-spec loading (#310)
+- [x] Adopt linkml-map multi-spec loading (#310)
+- [x] Declare typer as a direct dependency in pyproject.toml (#327)
+- [x] Reconcile Seven Bridges registry account and app-revision pinning (#349)
 
 ## 5. Audit Logs (Tracking: #189)
 Logging, auditability, and human-readable data provenance.
@@ -313,7 +326,7 @@ Logging, auditability, and human-readable data provenance.
 - [x] Add log file for mapping step (#243)
 - [x] Schema-automator validation type issues (#232) - Madan
 - [x] Schema-automator optional null handling (#233) - Madan
-- [ ] Implement human-readable logging
+- [ ] Emit PROV-O provenance records during harmonization (#352)
 
 ## 6. DMC Integration (Tracking: #191)
 Integrating the Harmonization Pipeline into DMC pre-ingestion.
@@ -330,9 +343,7 @@ Bringing the Harmonization Pipeline to BDC for user on-demand harmonization.
 - [x] Implement or remove CLI (#216)
 - [x] Remove Hardcoded entity list from map_data.py (#220)
 - [ ] Harmonization Pipeline to Retrieve Data from S3 (#267)
-- [ ] Move bdc-workflow.sh entrypoint logic to Python (#297) - Corey
-- [ ] Seven Bridges integration planning
-- [ ] User harmonization workflow
+- [x] Move bdc-workflow.sh entrypoint logic to Python (#297) - Corey
 
 ## 8. Trans-Spec Authoring (Tracking: #197)
 Automated pathway from raw study data to finished transformation specifications.
@@ -340,12 +351,43 @@ Automated pathway from raw study data to finished transformation specifications.
 - [x] Incorporate Stata YAML authoring tool (#175)
 - [ ] Create script to run AI API (#199) - Corey
 - [ ] Add tooling for SchemaAutomator/Schemasheets (#80) - Trish
-- [ ] Make a data dictionary template (#103) - Trish
-- [ ] Add variable digest files to pipeline (#204)
+- [x] Make a data dictionary template (#103) - Trish
+- [x] Add variable digest files to pipeline (#204)
 - [ ] Trans-spec authoring pipeline overview (#306)
 - [ ] Enrich generated schemas with data dictionary metadata (#307)
 - [ ] Integrate variable alignment into trans-spec authoring (#308)
 - [ ] Variable library — source-to-target mapping catalog (#309)
 - [x] Port Stata data preparation pipeline to Python (#315) - Corey
-- [ ] Refactor ported Stata data preparation pipeline (#318)
-- [ ] Integrate AI curation into pipeline
+- [x] Refactor ported Stata data preparation pipeline (#318)
+- [ ] Generalize trans-spec authoring beyond MeasurementObservation (#329)
+
+# Future Work
+Issues labeled `future` — identified and triaged into a tracking category, but not scheduled on the roadmap above. These are candidates for the next milestone cycle.
+
+## Release Control (#186)
+- [ ] Add Dependabot (#355)
+- [ ] Consume prov-schema as a released package instead of a URL import (#356)
+- [ ] Restore metadata-action for image tagging in the docker workflow (#359)
+- [ ] Split the container image into a generic base and per-deployment images (#368)
+- [ ] Check that a published release has a matching deploy tag (#369)
+
+## Quality Control (#187)
+- [ ] Test coverage for the cohort-mode shell scripts (#360)
+- [ ] Grade harmonized output against TOPMed DCC reference aggregates (#371)
+- [ ] Document the QC grading methodology and how to read QC reports (#372)
+
+## Pipeline Improvement (#188)
+- [ ] Blank consent-group TSV files cause DuckDB BinderError in joins (#335)
+- [ ] Set DuckDB memory limit per parallel map-data job (#336)
+- [ ] Fail map-data on fatal linkml-map exit codes in non-strict mode (#338)
+- [ ] ClassDerivation needs row-level condition filter to suppress null-key rows (#345) - Chris
+- [ ] Fail fast when DM_OUTPUT_DIR holds a different study's products (#357)
+- [ ] Map step reports success when an entity fails and produces no output (#361)
+- [ ] Invoke pipeline helpers as modules, not repo-relative paths (#367)
+
+## Audit Logs (#189)
+- [ ] Create variable instances (#354)
+
+## BDC User On-Demand (#192)
+- [ ] Validate the app contract before submitting tasks (#362)
+- [ ] --profile is silently ignored in cohort mode (#365)
