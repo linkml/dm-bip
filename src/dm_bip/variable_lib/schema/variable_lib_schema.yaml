@@ -30,4 +30,7 @@ imports:
   # datamodel is regenerated (`make variable-lib-datamodel`; requires network
   # access). Tracks main deliberately: there are open defects filed against this
   # schema upstream, and pinning would hide their resolution.
+  #
+  # Extension-less by LinkML convention: the loader appends `.yaml`. Opening the
+  # URL below as written returns 404 — append `.yaml` to read it in a browser.
   - https://raw.githubusercontent.com/linkml/bdc-variable-library/main/src/bdc_variable_library/schema/bdc_variable_library
