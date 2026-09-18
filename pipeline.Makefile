@@ -568,8 +568,7 @@ $(MAPPING_PROVENANCE_FILE): $(MAP_TRANS_SPEC_FILES)
 # Variable library: one BDC variable library entry per source variable named in the
 # trans specs. Depends on the generated schema as well as the specs because the specs
 # say which variables exist while the schema says whether each is continuous or
-# categorical. Not yet wired into `pipeline` — where this belongs in the stage order is
-# still open (see OPEN-QUESTIONS-354.md, question 5).
+# categorical. Not yet wired into `pipeline`.
 #
 # When DM_COHORT is set the entries also carry dbGaP metadata — variable name, units,
 # bounds, coded values — fetched for exactly the datasets the specs name. The cache is
