@@ -5,7 +5,7 @@ transformation specs, fetches the dbGaP data dictionaries those specs reference,
 variable library entries (`SingleContinuousVariable` and `SingleCategoricalVariable`
 instances).
 
-Deliverable.4.5.Task.2,
+Deliverable 4.5 Task 2,
 [tis-lab/BDC-Add-On-Tracker#93](https://github.com/tis-lab/BDC-Add-On-Tracker/issues/93).
 Modeled on the dm-bip mapping-provenance tool, whose spec-reading layer it reuses.
 
