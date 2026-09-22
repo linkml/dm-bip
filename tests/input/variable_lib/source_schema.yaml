@@ -1,0 +1,37 @@
+id: https://w3id.org/TestSourceSchema
+name: TestSourceSchema
+description: >-
+  Stand-in for schema-automator output over the ARIC fixture specs. Mirrors the shape
+  that pipeline generates: classes named by pht accession, slots named by phv accession,
+  and minted identifier types declared with typeof.
+default_range: string
+prefixes:
+  linkml: https://w3id.org/linkml/
+imports:
+  - linkml:types
+
+types:
+  OMOP identifier:
+    typeof: string
+  identifier:
+    typeof: string
+
+slots:
+  phv00204719:
+    range: float
+  # The participant identifier: numeric in the data, but a label rather than a quantity,
+  # which is exactly why classification reads the declared range and not the raw values.
+  phv00204812:
+    range: identifier
+  phv00204900:
+    range: OMOP identifier
+  phv00204901:
+    range: integer
+
+classes:
+  pht004063:
+    slots:
+      - phv00204719
+      - phv00204812
+      - phv00204900
+      - phv00204901

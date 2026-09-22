@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data_table id="pht000002.v1" study_id="phs000090.v8" participant_set="2" date_created="Thu Jan 19 13:42:14 2023">
+  <description>A table contributed by another study, as appears in a cohort's own listing.</description>
+  <variable id="phv00000010.v1">
+    <name>SUBJECT_ID</name>
+    <description>De-identified subject ID.</description>
+    <type>string</type>
+  </variable>
+</data_table>

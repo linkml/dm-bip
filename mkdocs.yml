@@ -25,10 +25,16 @@ nav:
   - Pipeline User Guide: pipeline_user_docs.md
   - Map Diagnostics: map-diagnostics.md
   - Mapping Provenance: mapping-provenance.md
+  - Variable Library: variable-library.md
   - LinkML Tools:
     - Schema Automator: schema_automator.md
   - Design:
     - Automated Harmonization Orchestration: design/automated-harmonization-orchestration.md
+
+# Source for the published Variable Library Chain artifact, not a site page: its ```chain
+# fence is a diagram spec rather than prose, so it is built to HTML separately.
+not_in_nav: |
+  variable-library-chain.md
 
 markdown_extensions:
   - tables

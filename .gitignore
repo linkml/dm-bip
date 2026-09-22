@@ -162,3 +162,6 @@ output/
 # Per-cohort / ad-hoc Seven Bridges task manifests (aric_tasks.csv, whi_tasks.csv,
 # testing_tasks.csv, ...). Covers /batch_tasks.csv above as well.
 *_tasks.csv
+
+# Local overrides for development
+/tmp
