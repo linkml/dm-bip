@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11, <=3.13"
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -709,12 +709,12 @@ wheels = [
 name = "dm-bip"
 version = "0.0.0"
 source = { editable = "." }
+default-groups = ["dev", "env"]
 dependencies = [
     { name = "gitpython" },
     { name = "httpx" },
     { name = "linkml" },
     { name = "linkml-map" },
-    { name = "lxml" },
     { name = "pandas" },
     { name = "schema-automator" },
     { name = "typer" },
@@ -749,7 +749,6 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.27,<1" },
     { name = "linkml", specifier = ">=1.11.0" },
     { name = "linkml-map", specifier = "==0.5.4" },
-    { name = "lxml", specifier = ">=5.0" },
     { name = "pandas", specifier = ">=2.2.3,<3" },
     { name = "schema-automator", specifier = "==0.5.7" },
     { name = "typer", specifier = ">=0.20.0,<1" },
