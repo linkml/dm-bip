@@ -181,23 +181,38 @@ def extract_mapping_provenance(
         typer.echo(f"Mapping provenance written to {output}")
 
 
-def _dbgap_metadata(records, classify, cohort_key, cache_dir, fetch, with_var_report, refresh):
+def _dbgap_metadata(records, classify, cohort_key, cache_dir, fetch, with_var_report, refresh, dd_dir=None):
     """
     Build a dbGaP metadata source covering the datasets these records name, or None.
+
+    With ``dd_dir`` the source is the canonical DD TSVs already there, typically what the
+    pipeline's ``adapt-digests`` target wrote, and nothing is fetched. Otherwise the digests
+    are fetched (or read from the cache) and adapted in memory.
 
     Returning None is a normal outcome, not a failure: a study with no dbGaP presence still
     yields entries, just without the descriptive slots.
     """
+    import logging
+
     from dm_bip.prepare_study.fetch_digests import (
         cached_digests,
         cohort_for_study,
         fetch_digests,
         load_cohorts,
+        pair_digests,
     )
-    from dm_bip.variable_lib.dbgap_metadata import metadata_for
+    from dm_bip.variable_lib.dbgap_metadata import metadata_for, metadata_from_digests
 
     if not records:
         return None
+
+    datasets = {record.sole_dataset() for record in records.values()}
+
+    if dd_dir is not None:
+        dd_paths = sorted(dd_dir.glob("*.dd.tsv"))
+        found = {pht for path in dd_paths if (pht := _pht_of(path.name))}
+        _report_missing(datasets, found, "canonical DD")
+        return metadata_for(dd_paths, classify)
 
     # Auto-detect needs the cohort registry, which is fetched over the network the first time.
     # Studies carrying no phs accession — a spec directory with no researchstudy.yaml gets a
@@ -220,7 +235,6 @@ def _dbgap_metadata(records, classify, cohort_key, cache_dir, fetch, with_var_re
             return None
         typer.echo(f"Using dbGaP cohort {cohort.key} ({cohort.study_id}.{cohort.data_version})", err=True)
 
-    datasets = {record.sole_dataset() for record in records.values()}
     kinds = None if with_var_report else frozenset({"data_dict"})
     if fetch:
         digests = fetch_digests(cohort, cache_root=cache_dir, refresh=refresh, datasets=datasets, kinds=kinds)
@@ -228,12 +242,20 @@ def _dbgap_metadata(records, classify, cohort_key, cache_dir, fetch, with_var_re
         digests = cached_digests(cohort, cache_dir, datasets=datasets, kinds=kinds)
 
     found = {pht for path in digests.data_dicts if (pht := _pht_of(path.name))}
+    _report_missing(datasets, found, "dbGaP data dictionary")
+
+    # The adapter's linkml-map layer warns once per DD entry about ranges it cannot map;
+    # that is its concern, not a problem with the digests, and over a whole cohort it would
+    # bury the messages above.
+    logging.getLogger("linkml_map").setLevel(logging.ERROR)
+    pairs = pair_digests(digests) if with_var_report else [(path, None) for path in digests.data_dicts]
+    return metadata_from_digests(pairs, classify)
+
+
+def _report_missing(datasets, found, what):
+    """Name, by accession, the datasets the specs use that no dictionary of this kind covers."""
     if missing := datasets - found:
-        typer.echo(
-            f"{len(missing)} of {len(datasets)} datasets have no dbGaP data dictionary: {', '.join(sorted(missing))}",
-            err=True,
-        )
-    return metadata_for(digests, classify, with_var_report=with_var_report)
+        typer.echo(f"{len(missing)} of {len(datasets)} datasets have no {what}: {', '.join(sorted(missing))}", err=True)
 
 
 def _pht_of(filename):
@@ -266,13 +288,23 @@ def extract_variable_library(
         typer.Option("--var-report/--no-var-report", help="Use var_report.xml for data types and observed bounds"),
     ] = True,
     refresh: Annotated[bool, typer.Option("--refresh", help="Force re-fetch of cached digest files")] = False,
+    dd_dir: Annotated[
+        Optional[Path],
+        typer.Option(
+            "--dd-dir",
+            exists=True,
+            file_okay=False,
+            help="Directory of canonical DD TSVs (*.dd.tsv) to read instead of fetching and adapting digests",
+        ),
+    ] = None,
 ):
     """
     Emit BDC variable library entries for the source variables named in transformation specs.
 
     The specs say which variables exist and ``--source-schema`` says whether each is
     continuous or categorical. Descriptive slots — name, units, bounds, coded values — come
-    from dbGaP, fetched for exactly the datasets the specs name and no others.
+    from dbGaP, fetched for exactly the datasets the specs name and no others, or from the
+    canonical DD TSVs in ``--dd-dir`` when the pipeline has already adapted them.
     """
     from dm_bip.mapping_prov.extract import collect_spec_paths
     from dm_bip.variable_lib.classify import classifier_for
@@ -286,7 +318,7 @@ def extract_variable_library(
 
     records = collect_variables(spec_paths)
     classify = classifier_for(source_schema)
-    metadata = _dbgap_metadata(records, classify, cohort, dbgap_cache, fetch, with_var_report, refresh)
+    metadata = _dbgap_metadata(records, classify, cohort, dbgap_cache, fetch, with_var_report, refresh, dd_dir)
     entries = to_entries(records, classify, metadata=metadata)
     serialized = to_yaml(entries)
     if output is None:

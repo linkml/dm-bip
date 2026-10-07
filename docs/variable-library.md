@@ -461,6 +461,11 @@ Directories are searched recursively for `*.yaml` spec files, as in
 | `--no-fetch` | fetches | Use only what is already cached — a genuine offline path |
 | `--no-var-report` | uses both | Skip `var_report.xml`. Halves the download and **loses observed bounds** |
 | `--refresh` | reuses cache | Re-download files already cached |
+| `--dd-dir` | none | Read canonical DD TSVs (`*.dd.tsv`) from this directory, typically what `adapt-digests` wrote, instead of fetching and adapting digests. The fetch options above are then not consulted |
+
+Without `--dd-dir`, the fetched digests are adapted in memory with the same schema-automator
+adapter that `adapt-digests` runs, so both paths read the same canonical DD; only the
+serialization to a file is skipped.
 
 Where each argument comes from, for any study:
 
@@ -615,16 +620,22 @@ ValueError: Code record missing 'code' key: {'label': 'N/A'}
 make: *** [output/aric/dd/phs000280.v8.pht004046.v6.CCELPS18.dd.tsv] Error 1
 ```
 
-schema-automator 0.5.6 assumes every `<value>` element carries a `code` attribute. That table
+schema-automator 0.5.7 assumes every `<value>` element carries a `code` attribute. That table
 contains a bare `<value>N/A</value>`. **17 of ARIC's 368 data dictionaries** have bare `<value>`
 elements, so the failure recurs and Make halts on the first; `make -k` gets the ~334 that
-convert and skips the rest. It is an upstream defect against real published data.
+convert and skips the rest. It is an upstream defect against real published data, tracked
+with the adapter's other gaps as [linkml/schema-automator#231][sa-231].
 
-**Conversion is a shell-out.** No Python function to call directly.
+**The adapter is callable in process.** `schema_automator.adapters.dbgap.dbgap_to_dd(data_dict,
+var_report)` returns the canonical DD as a dict; only the TSV serialization is confined to the
+CLI. That is what `variable_lib.dbgap_metadata.tables_from_digests` calls.
 
-None of this affects the variable library. The defect is in `serialize_codes()`, on the TSV
-*serialization* path — those 17 files parse cleanly through `variable_lib/dbgap.py`, which
-never goes near it.
+The variable library is affected only through `--dd-dir`. The defect is in `serialize_codes()`,
+on the TSV *serialization* path, and the default fetch-and-adapt path keeps the adapter's
+output in memory, so those 17 tables enrich normally there. A library built from a
+`make -k adapt-digests` directory lacks them.
+
+[sa-231]: https://github.com/linkml/schema-automator/issues/231
 
 ---
 

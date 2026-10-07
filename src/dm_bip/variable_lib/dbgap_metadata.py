@@ -5,11 +5,13 @@ Implements the ``MetadataSource`` protocol that ``variable_lib.emit`` defines: w
 every entry carries identity (``id``, ``source_id``, ``file_id``, ``associated_study``,
 ``variable_description``) and eleven nulls.
 
-The input is the canonical data dictionary (DD) TSV that ``schemauto adapt-dbgap`` writes,
-one per dbGaP pheno table, which the pipeline's ``adapt-digests`` target already produces
-under ``output/<cohort>/dd/``. Deciding what a dbGaP variable *is* (its type, bounds, unit,
-codes) is schema-automator's job; this module only maps DD columns onto BDC slot names. It
-is therefore the only layer that knows those names, and nothing here reads XML.
+The input is the canonical data dictionary (DD) that ``schemauto adapt-dbgap`` produces,
+one per dbGaP pheno table: either the TSV the pipeline's ``adapt-digests`` target writes
+under ``output/<cohort>/dd/`` (``load_tables``), or the same adapter's output kept in memory
+for digests that were just fetched (``tables_from_digests``). Deciding what a dbGaP
+variable *is* (its type, bounds, unit, codes) is schema-automator's job; this module only
+maps DD columns onto BDC slot names. It is therefore the only layer that knows those names,
+and nothing here parses XML itself.
 
 **Columns.** The adapter emits ``name``, ``type``, ``description``, ``codes``, ``unit``,
 ``min``, ``max`` and ``uri``, and those are required. ``comment`` and ``missing_values``
@@ -71,8 +73,9 @@ _DD_DATA_TYPES = {
 # transformation specs name variables unversioned, so the join needs the bare stem.
 _URI_ACCESSION_RE = re.compile(r"(?:^|:)(phv\d+)")
 # `phs000280.v8.pht000001.v1.DEMO.dd.tsv` -> DEMO. The pipeline names each DD after the
-# data_dict it came from, which carries dbGaP's table name after the pht version.
-_TABLE_NAME_RE = re.compile(r"pht\d+\.v\d+\.(?P<name>.+?)\.dd\.tsv$")
+# data_dict it came from, which carries dbGaP's table name after the pht version, so the
+# same pattern reads the name off a data_dict adapted in memory.
+_TABLE_NAME_RE = re.compile(r"pht\d+\.v\d+\.(?P<name>.+?)\.(?:dd\.tsv|data_dict\.xml)$")
 
 
 @dataclass(frozen=True)
@@ -139,9 +142,11 @@ def _accession(uri: str | None) -> str | None:
 
 def table_name_from_filename(filename: str) -> str | None:
     """
-    Return dbGaP's table name from a pipeline-named DD file, or None.
+    Return dbGaP's table name from a pipeline-named DD file or a dbGaP data_dict, or None.
 
     >>> table_name_from_filename("phs000280.v8.pht000001.v1.DEMO.dd.tsv")
+    'DEMO'
+    >>> table_name_from_filename("phs000280.v8.pht000001.v1.DEMO.data_dict.xml")
     'DEMO'
     >>> table_name_from_filename("phs000280.pht000001.dd.tsv") is None
     True
@@ -206,6 +211,87 @@ def load_tables(paths: Iterable[Path]) -> dict[str, DdTable]:
             logger.warning("%s is a second DD for %s; keeping %s", path.name, dataset, tables[dataset].source_file)
             continue
         tables[dataset] = read_dd(path)
+    return tables
+
+
+def _adapter_codes(cell: Any, accession: str, column: str) -> list[Code]:
+    """
+    Turn the adapter's in-memory codes list into ``Code`` records.
+
+    A value dbGaP publishes with no code attribute (``<value>1986</value>``) arrives as a
+    record with only a label. The DD grammar reads such a bareword as the value itself, so
+    it is kept as the code with no label, exactly as ``read_dd`` would see it.
+    """
+    if not cell:
+        return []
+    if not isinstance(cell, list):
+        logger.warning("Unexpected %s on %s (%r); ignoring the column", column, accession, cell)
+        return []
+    codes = []
+    for item in cell:
+        code, label = item.get("code"), item.get("label")
+        if code in (None, ""):
+            code, label = label, None
+        if code in (None, ""):
+            continue
+        codes.append(Code(code=str(code), label=None if label in (None, "") else str(label)))
+    return codes
+
+
+def _adapter_cell(record: dict[str, Any], key: str) -> str | None:
+    """Return a scalar from the adapter's record as a stripped string, or None when unset."""
+    value = record.get(key)
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
+
+
+def tables_from_digests(pairs: Iterable[tuple[Path, Path | None]]) -> dict[str, DdTable]:
+    """
+    Adapt dbGaP digest pairs in memory into an index keyed by bare ``pht`` accession.
+
+    The offline-TSV path (``load_tables``) reads what ``schemauto adapt-dbgap --tsv`` wrote.
+    This path calls the same adapter but keeps its canonical DD in memory, so a caller that
+    has just fetched digests need not round-trip through files. It also sidesteps the
+    adapter's TSV serializer, which currently rejects a bareword value; see
+    ``_adapter_codes``. A ``var_report`` of None adapts the data_dict alone.
+    """
+    from schema_automator.adapters.dbgap import dbgap_to_dd
+
+    tables: dict[str, DdTable] = {}
+    for data_dict, var_report in pairs:
+        dataset = pht_from_filename(data_dict.name)
+        if dataset is None:
+            logger.warning("%s names no pht accession; skipping", data_dict.name)
+            continue
+        if dataset in tables:
+            logger.warning(
+                "%s is a second data_dict for %s; keeping %s", data_dict.name, dataset, tables[dataset].source_file
+            )
+            continue
+        table = DdTable(
+            dataset=dataset, source_file=data_dict.name, table_name=table_name_from_filename(data_dict.name)
+        )
+        canonical = dbgap_to_dd(str(data_dict), str(var_report) if var_report is not None else None)
+        for record in canonical.get("entries", []):
+            accession = _accession(_adapter_cell(record, "uri"))
+            if accession is None:
+                logger.warning("%s entry %r has no dbgap:phv uri; skipping", data_dict.name, record.get("name"))
+                continue
+            table.entries[accession] = DdEntry(
+                accession=accession,
+                name=_adapter_cell(record, "name"),
+                data_type=_adapter_cell(record, "type"),
+                description=_adapter_cell(record, "description"),
+                codes=_adapter_codes(record.get("codes"), accession, "codes"),
+                unit=_adapter_cell(record, "unit"),
+                min=_adapter_cell(record, "min"),
+                max=_adapter_cell(record, "max"),
+                comment=_adapter_cell(record, COMMENT_COLUMN),
+                missing_values=_adapter_codes(record.get(MISSING_VALUES_COLUMN), accession, MISSING_VALUES_COLUMN),
+            )
+        tables[dataset] = table
     return tables
 
 
@@ -344,3 +430,8 @@ class DbgapMetadata:
 def metadata_for(dd_paths: Iterable[Path], classify: Classifier) -> DbgapMetadata:
     """Build a metadata source from canonical DD files, typically ``output/<cohort>/dd/*.dd.tsv``."""
     return DbgapMetadata(load_tables(dd_paths), classify)
+
+
+def metadata_from_digests(pairs: Iterable[tuple[Path, Path | None]], classify: Classifier) -> DbgapMetadata:
+    """Build a metadata source straight from fetched digest pairs, adapting them in memory."""
+    return DbgapMetadata(tables_from_digests(pairs), classify)

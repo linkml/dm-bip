@@ -17,6 +17,7 @@ from dm_bip.variable_lib.dbgap_metadata import (
     load_tables,
     read_dd,
     table_name_from_filename,
+    tables_from_digests,
 )
 
 FIXTURES = Path(__file__).parents[2] / "input" / "variable_lib" / "dd"
@@ -391,3 +392,79 @@ class TestBounds:
             _continuous_slots(self._entry(max=">89"))
         assert ">89" in caplog.text
         assert "phv1" in caplog.text
+
+
+DIGESTS = Path(__file__).parents[2] / "input" / "variable_lib" / "dbgap"
+MATCHING_DD = DIGESTS / "phs000007.v35.pht004063.v1.MATCHING.data_dict.xml"
+MATCHING_VR = DIGESTS / "phs000007.v35.pht004063.v1.p16.MATCHING.var_report.xml"
+COLLIDING_DD = DIGESTS / "phs000007.v35.pht004063.v1.COLLIDING.data_dict.xml"
+
+BAREWORD_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<data_table id="pht000009.v1" study_id="phs000280.v8" participant_set="2">
+  <variable id="phv00000031.v1">
+    <name>YEAR</name>
+    <description>dbGaP emits the value with no code attribute.</description>
+    <type>integer</type>
+    <value>1986</value>
+  </variable>
+  <variable id="phv00000032.v1">
+    <name>SEX</name>
+    <description>Reported sex.</description>
+    <type>encoded value</type>
+    <value code="2">Female</value>
+    <value code="1">Male</value>
+  </variable>
+</data_table>
+"""
+
+
+class TestTablesFromDigests:
+    """The in-memory path yields the same table shape ``read_dd`` builds from a TSV."""
+
+    @pytest.fixture()
+    def matching(self):
+        """Adapt the MATCHING pair, whose var_report carries observed bounds for BMI01."""
+        return tables_from_digests([(MATCHING_DD, MATCHING_VR)])
+
+    def test_indexes_by_dataset_and_names_the_table_from_the_data_dict(self, matching):
+        """Identity comes from the data_dict filename, as it does from a DD filename."""
+        table = matching["pht004063"]
+        assert table.source_file == MATCHING_DD.name
+        assert table.table_name == "MATCHING"
+
+    def test_entries_are_keyed_by_bare_accession(self, matching):
+        """The adapter writes a versioned CURIE; the join needs the bare phv."""
+        entry = matching["pht004063"].entries["phv00204719"]
+        assert entry.name == "BMI01"
+        assert entry.data_type == "decimal"
+
+    def test_bounds_arrive_as_strings_like_a_tsv_cell(self, matching):
+        """The adapter returns numbers; a DD cell is text, and the slot filler expects text."""
+        entry = matching["pht004063"].entries["phv00204719"]
+        assert (entry.min, entry.max) == ("13.1", "61.2")
+
+    def test_a_data_dict_alone_has_no_bounds(self):
+        """Without a var_report there is nothing observed, so the bounds stay unset."""
+        entry = tables_from_digests([(MATCHING_DD, None)])["pht004063"].entries["phv00204719"]
+        assert (entry.min, entry.max) == (None, None)
+
+    def test_a_bareword_value_is_the_code(self, tmp_path):
+        """
+        DbGaP's ``<value>1986</value>`` has no code attribute.
+
+        The adapter hands it over as a label-only record, which its TSV serializer rejects.
+        The DD grammar reads a bareword as the value itself, so that is what it becomes
+        here, and coded values beside it keep their labels.
+        """
+        path = tmp_path / "phs000280.v8.pht000009.v1.BARE.data_dict.xml"
+        path.write_text(BAREWORD_XML, encoding="utf-8")
+        entries = tables_from_digests([(path, None)])["pht000009"].entries
+        assert entries["phv00000031"].codes == [Code(code="1986", label=None)]
+        assert entries["phv00000032"].codes == [Code(code="2", label="Female"), Code(code="1", label="Male")]
+
+    def test_a_second_data_dict_for_a_dataset_is_skipped(self, caplog):
+        """Two data_dicts naming one pht is a stray, not a choice; the first one read wins."""
+        with caplog.at_level(logging.WARNING):
+            tables = tables_from_digests([(COLLIDING_DD, None), (MATCHING_DD, None)])
+        assert tables["pht004063"].source_file == COLLIDING_DD.name
+        assert "second data_dict for pht004063" in caplog.text

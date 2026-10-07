@@ -196,4 +196,66 @@ class TestPartialDatasetMatch:
         """
         _, document = serve(MATCHING)
         assert "BMI01" in document
-        assert "kg/m2" in document
+        # The observed bounds come through the adapter. The unit does not yet: the dbGaP
+        # adapter drops <unit> (linkml/schema-automator#231, item 2), so "kg/m2" cannot be
+        # asserted on this path until that lands. TestDdDir covers the unit via a DD TSV.
+        assert "minimum_value: '13.1'" in document
+        assert "maximum_value: '61.2'" in document
+
+
+class TestDdDir:
+    """
+    ``--dd-dir`` reads canonical DD TSVs the pipeline already adapted, and fetches nothing.
+
+    The other options stay accepted so the command's shape can keep evolving, but with a DD
+    directory in hand none of them is consulted: no cohort lookup, no network, no cache.
+    """
+
+    @pytest.fixture()
+    def document(self, monkeypatch, tmp_path):
+        """Run against one DD TSV declaring BMI01 for pht004063, with the network cut."""
+
+        def _no_network(url):
+            raise AssertionError(f"--dd-dir must not fetch, but requested {url}")
+
+        monkeypatch.setattr(fd_mod, "_http_get", _no_network)
+
+        dd_dir = tmp_path / "dd"
+        dd_dir.mkdir()
+        columns = "name\ttype\tdescription\tcodes\tunit\tmin\tmax\turi\n"
+        row = "BMI01\tdecimal\tBody mass index, exam 1.\t\tkg/m2\t13.1\t61.2\tdbgap:phv00204719.v1\n"
+        (dd_dir / "phs000007.v35.pht004063.v1.MATCHING.dd.tsv").write_text(columns + row, encoding="utf-8")
+
+        output = tmp_path / "variable-library.yaml"
+        result = runner.invoke(
+            app,
+            [
+                "extract-variable-library",
+                str(ARIC_SPECS),
+                "-s",
+                str(SOURCE_SCHEMA),
+                "--dd-dir",
+                str(dd_dir),
+                "-o",
+                str(output),
+            ],
+        )
+        assert result.exit_code == 0, result.output
+        return result, output.read_text()
+
+    def test_enriches_from_the_tsv(self, document):
+        """Name, unit and bounds all arrive, the unit included because the TSV carries it."""
+        _, text = document
+        assert "BMI01" in text
+        assert "unit: kg/m2" in text
+        assert "minimum_value: '13.1'" in text
+
+    def test_names_the_datasets_with_no_dd(self, document):
+        """Coverage is reported against the DD directory, by accession."""
+        result, _ = document
+        assert "2 of 3 datasets have no canonical DD: pht012502, pht012811" in result.stderr
+
+    def test_file_name_comes_from_the_dd_filename(self, document):
+        """The pipeline names each DD after its data_dict, which carries dbGaP's table name."""
+        _, text = document
+        assert "file_name: MATCHING" in text
