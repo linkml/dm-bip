@@ -181,16 +181,17 @@ def extract_mapping_provenance(
         typer.echo(f"Mapping provenance written to {output}")
 
 
-def _dbgap_metadata(records, classify, cohort_key, cache_dir, fetch, with_var_report, refresh, dd_dir=None):
+def _dbgap_tables(records, cohort_key, cache_dir, fetch, with_var_report, refresh, dd_dir=None):
     """
-    Build a dbGaP metadata source covering the datasets these records name, or None.
+    Load the canonical data dictionaries covering the datasets these records name, or None.
 
-    With ``dd_dir`` the source is the canonical DD TSVs already there, typically what the
-    pipeline's ``adapt-digests`` target wrote, and nothing is fetched. Otherwise the digests
-    are fetched (or read from the cache) and adapted in memory.
+    With ``dd_dir`` they are the DD TSVs already there, typically what the pipeline's
+    ``adapt-digests`` target wrote, and nothing is fetched. Otherwise the digests are fetched
+    (or read from the cache) and adapted in memory. The tables serve twice: the classifier
+    reads each variable's DD type, and the metadata source fills the descriptive slots.
 
     Returning None is a normal outcome, not a failure: a study with no dbGaP presence still
-    yields entries, just without the descriptive slots.
+    yields entries, typed from the source schema alone and without the descriptive slots.
     """
     import logging
 
@@ -201,7 +202,7 @@ def _dbgap_metadata(records, classify, cohort_key, cache_dir, fetch, with_var_re
         load_cohorts,
         pair_digests,
     )
-    from dm_bip.variable_lib.dbgap_metadata import metadata_for, metadata_from_digests
+    from dm_bip.variable_lib.dbgap_metadata import load_tables, tables_from_digests
 
     if not records:
         return None
@@ -212,7 +213,7 @@ def _dbgap_metadata(records, classify, cohort_key, cache_dir, fetch, with_var_re
         dd_paths = sorted(dd_dir.glob("*.dd.tsv"))
         found = {pht for path in dd_paths if (pht := _pht_of(path.name))}
         _report_missing(datasets, found, "canonical DD")
-        return metadata_for(dd_paths, classify)
+        return load_tables(dd_paths)
 
     # Auto-detect needs the cohort registry, which is fetched over the network the first time.
     # Studies carrying no phs accession — a spec directory with no researchstudy.yaml gets a
@@ -249,7 +250,7 @@ def _dbgap_metadata(records, classify, cohort_key, cache_dir, fetch, with_var_re
     # bury the messages above.
     logging.getLogger("linkml_map").setLevel(logging.ERROR)
     pairs = pair_digests(digests) if with_var_report else [(path, None) for path in digests.data_dicts]
-    return metadata_from_digests(pairs, classify)
+    return tables_from_digests(pairs)
 
 
 def _report_missing(datasets, found, what):
@@ -268,10 +269,6 @@ def _pht_of(filename):
 @app.command()
 def extract_variable_library(
     paths: Annotated[list[Path], typer.Argument(exists=True, help="Transformation spec files or directories")],
-    source_schema: Annotated[
-        Optional[Path],
-        typer.Option("--source-schema", "-s", exists=True, help="schema-automator output, used to type each variable"),
-    ] = None,
     output: Annotated[Optional[Path], typer.Option("--output", "-o", help="Output YAML file (default: stdout)")] = None,
     cohort: Annotated[
         Optional[str],
@@ -301,13 +298,16 @@ def extract_variable_library(
     """
     Emit BDC variable library entries for the source variables named in transformation specs.
 
-    The specs say which variables exist and ``--source-schema`` says whether each is
-    continuous or categorical. Descriptive slots — name, units, bounds, coded values — come
-    from dbGaP, fetched for exactly the datasets the specs name and no others, or from the
-    canonical DD TSVs in ``--dd-dir`` when the pipeline has already adapted them.
+    The specs say which variables exist. dbGaP's data dictionary, as schema-automator's
+    adapter renders it, says whether each is continuous or categorical and supplies the
+    descriptive slots — name, units, bounds, coded values — fetched for exactly the datasets
+    the specs name and no others, or read from the canonical DD TSVs in ``--dd-dir`` when the
+    pipeline has already adapted them. A variable no dictionary describes cannot be typed
+    and is reported rather than emitted.
     """
     from dm_bip.mapping_prov.extract import collect_spec_paths
     from dm_bip.variable_lib.classify import classifier_for
+    from dm_bip.variable_lib.dbgap_metadata import DbgapMetadata
     from dm_bip.variable_lib.emit import to_entries, to_yaml
     from dm_bip.variable_lib.extract import collect_variables
 
@@ -317,8 +317,9 @@ def extract_variable_library(
         raise typer.Exit(code=1)
 
     records = collect_variables(spec_paths)
-    classify = classifier_for(source_schema)
-    metadata = _dbgap_metadata(records, classify, cohort, dbgap_cache, fetch, with_var_report, refresh, dd_dir)
+    tables = _dbgap_tables(records, cohort, dbgap_cache, fetch, with_var_report, refresh, dd_dir)
+    classify = classifier_for(tables)
+    metadata = DbgapMetadata(tables, classify) if tables is not None else None
     entries = to_entries(records, classify, metadata=metadata)
     serialized = to_yaml(entries)
     if output is None:
@@ -333,7 +334,7 @@ def extract_variable_library(
         err=True,
     )
     if entries.unclassified:
-        hint = "" if source_schema else " (no --source-schema supplied)"
+        hint = " (no dbGaP data dictionary describes them)" if tables else " (no dbGaP data dictionaries loaded)"
         typer.echo(f"{len(entries.unclassified)} variables could not be typed and were skipped{hint}", err=True)
 
 

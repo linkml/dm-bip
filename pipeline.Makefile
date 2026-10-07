@@ -566,14 +566,14 @@ $(MAPPING_PROVENANCE_FILE): $(MAP_TRANS_SPEC_FILES)
 	-$(RUN) dm-bip extract-mapping-provenance $(DM_TRANS_SPEC_DIR) -o $@
 
 # Variable library: one BDC variable library entry per source variable named in the
-# trans specs. Depends on the generated schema as well as the specs because the specs
-# say which variables exist while the schema says whether each is continuous or
-# categorical. Not yet wired into `pipeline`.
+# trans specs. The specs say which variables exist; the cohort's dbGaP data dictionaries,
+# as schema-automator's adapter renders them, say whether each is continuous or
+# categorical and supply its name, units, bounds and coded values. The dictionaries are
+# fetched for exactly the datasets the specs name, so DM_COHORT is effectively required:
+# without it nothing can be typed and the library is empty. Not yet wired into `pipeline`.
 #
-# When DM_COHORT is set the entries also carry dbGaP metadata — variable name, units,
-# bounds, coded values — fetched for exactly the datasets the specs name. The cache is
-# deliberately not a prerequisite: it is network-populated and managed by the command
-# itself, so listing it would leave this target perpetually out of date.
+# The cache is deliberately not a prerequisite: it is network-populated and managed by
+# the command itself, so listing it would leave this target perpetually out of date.
 .PHONY: variable-library
 variable-library: $(VARIABLE_LIBRARY_FILE)
 
@@ -581,10 +581,10 @@ ifneq ($(strip $(DM_COHORT)),)
 VARIABLE_LIBRARY_ARGS := --cohort $(DM_COHORT) --dbgap-cache $(DM_DBGAP_CACHE_DIR)
 endif
 
-$(VARIABLE_LIBRARY_FILE): $(MAP_TRANS_SPEC_FILES) $(SCHEMA_FILE)
+$(VARIABLE_LIBRARY_FILE): $(MAP_TRANS_SPEC_FILES)
 	@$(call check_trans_spec_files)
 	@mkdir -p $(@D)
-	$(RUN) dm-bip extract-variable-library $(DM_TRANS_SPEC_DIR) -s $(SCHEMA_FILE) $(VARIABLE_LIBRARY_ARGS) -o $@
+	$(RUN) dm-bip extract-variable-library $(DM_TRANS_SPEC_DIR) $(VARIABLE_LIBRARY_ARGS) -o $@
 
 # Phase 1: Write entity list from the trans-spec directory
 $(_ENTITY_LIST_FILE): $(MAP_TRANS_SPEC_FILES)

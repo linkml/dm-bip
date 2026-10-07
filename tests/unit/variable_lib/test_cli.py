@@ -14,7 +14,6 @@ MAPPING_INPUT = Path(__file__).parents[2] / "input" / "mapping_prov"
 ARIC_SPECS = MAPPING_INPUT / "ARIC-ingest"
 
 VARIABLE_LIB_INPUT = Path(__file__).parents[2] / "input" / "variable_lib"
-SOURCE_SCHEMA = VARIABLE_LIB_INPUT / "source_schema.yaml"
 DIGESTS = VARIABLE_LIB_INPUT / "dbgap"
 COLLIDING = (
     DIGESTS / "phs000007.v35.pht004063.v1.COLLIDING.data_dict.xml",
@@ -135,8 +134,6 @@ class TestPartialDatasetMatch:
                 [
                     "extract-variable-library",
                     str(ARIC_SPECS),
-                    "-s",
-                    str(SOURCE_SCHEMA),
                     "--cohort",
                     "fhs",
                     "--dbgap-cache",
@@ -181,11 +178,11 @@ class TestPartialDatasetMatch:
         for foreign in ("TNFA", "EXAM_CYCLE", "pg/mL", "Tumor necrosis factor"):
             assert foreign not in document
 
-    def test_entries_are_still_emitted(self, collision):
-        """A collision degrades the entries, it does not fail the run."""
+    def test_nothing_is_typed_but_the_run_does_not_fail(self, collision):
+        """With no dictionary describing the specs' variables, every one is held back; the run still succeeds."""
         result, document = collision
-        assert "2 entries from 8 source variables" in result.stderr
-        assert "phv00204719" in document
+        assert "0 entries from 8 source variables" in result.stderr
+        assert "phv00204719" not in document
 
     def test_the_same_pht_declaring_the_right_variable_does_enrich(self, serve):
         """
@@ -232,8 +229,6 @@ class TestDdDir:
             [
                 "extract-variable-library",
                 str(ARIC_SPECS),
-                "-s",
-                str(SOURCE_SCHEMA),
                 "--dd-dir",
                 str(dd_dir),
                 "-o",

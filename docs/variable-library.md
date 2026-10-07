@@ -91,39 +91,28 @@ straight from the spec reader into the fetch filter.
 
 ---
 
-## What the generated schema looks like
+## What the typing signal looks like
 
-**1. The join to schema-automator output is exact, not fuzzy.** In the generated
-`$(DM_SCHEMA_NAME).yaml`, classes are named by `pht` accession and slots by `phv`
-accession — for example, from the synthetic corpus:
+**1. The join to the data dictionary is exact, not fuzzy.** The canonical DD that
+schema-automator's adapter renders from a dbGaP digest pair is one table per `pht`, and
+each row's `uri` carries the `phv`:
 
-```yaml
-classes:
-  pht000113:
-    slots:
-      - dbGaP_Subject_ID
-      - phv10111300
-      - phv10111305
+```
+name     type                 description               codes                unit   min  max  uri
+BMI01    decimal              Body mass index, exam 1.                       kg/m2  13.1 61.2 dbgap:phv00204719.v1
+SEX      permissible_values   Reported sex.             2, Female | 1, Male                   dbgap:phv00000002.v1
 ```
 
-So `(pht, phv)` from a trans spec indexes directly into the source schema. No name
-matching, no heuristic join — a `SchemaView` lookup.
+So `(pht, phv)` from a trans spec indexes directly into the dictionary. No name matching,
+no heuristic join — a dictionary lookup keyed on the bare accession.
 
-**2. There is no `enums:` block in that generated schema.** Slots carry a `range` and a
-`num_distinct_values` annotation instead:
-
-```yaml
-  phv10111101:
-    annotations:
-      num_distinct_values: {tag: num_distinct_values, value: '2'}
-    examples:
-      - value: OMOP:8507
-    range: OMOP identifier
-```
-
-A classifier keyed on "is the range an enum?" finds nothing here. `num_distinct_values`
-plus `range` is the available signal, and any threshold on it is a **heuristic** — a
-judgement about what counts as categorical, not something to bury in code.
+**2. The `type` column is the decision.** The adapter resolves it from dbGaP's declared
+`<type>` and the var_report's `calculated_type` into a closed vocabulary: `integer` and
+`decimal` are quantities; `permissible_values`, `boolean`, `string` and the temporal and
+identifier types are labels. `schema-create` reads the same DD, so the two consumers agree
+by construction. Nothing here applies a distinct-value threshold or any other heuristic to
+decide what counts as categorical — that would be a second rule, made here, about a
+question the adapter has already answered.
 
 ---
 
@@ -134,7 +123,7 @@ judgement about what counts as categorical, not something to bury in code.
 ```
 src/dm_bip/variable_lib/
 ├── extract.py          # spec → VariableRecord (the IR)
-├── classify.py         # source schema → continuous | categorical
+├── classify.py         # DD type → continuous | categorical
 ├── dbgap.py            # digest XML → {pht: {phv: DbgapVariable}}
 ├── dbgap_metadata.py   # that index → BDC slot values
 ├── emit.py             # VariableRecord + kind + metadata → schema instances
@@ -202,19 +191,29 @@ and `coded_values`. No ARIC variable is affected — 1312 spec pairs, 1312 disti
 — but preferring the `pht` under which the dbGaP index actually knows the variable would be
 the better rule.
 
-### Classification is injected, and reads declared types only
+### Classification reads the data dictionary's type, and nothing else
 
-`classify.py` resolves a slot's **declared range** and follows `typeof` to a base type;
-numeric bases are continuous, everything else categorical. That is a fact read off the
-schema, not a guess.
+The canonical DD already carries a `type` for every variable, resolved by schema-automator's
+adapter from dbGaP's declared and calculated types, and `schema-create` reads the same DD.
+So the continuous-or-categorical decision is made once, upstream, and `classify.py` only
+maps that vocabulary onto the two classes: `integer` and `decimal` are continuous;
+`permissible_values`, `boolean`, `string` and the temporal and identifier types are
+categorical. Review of this work asked for exactly that: one decision about what a
+variable is, made in the adapter, instead of a second rule here.
 
-It deliberately does **not** apply a `num_distinct_values` threshold. A threshold is a
-judgement about what counts as categorical rather than something the schema states, so it
-is an open judgement — see [the concrete case](#the-classification-question-made-concrete)
-below.
+An earlier version typed variables from the inferred source schema's declared range
+instead, and took that schema as a `-s` option. That path is gone. A variable the
+dictionary does not describe — a table dbGaP never published, or a spec naming a column
+under the wrong table — is `unknown`, counted, and held back, rather than typed from a
+second source that might disagree with the first.
 
-`classifier_for(None)` returns `always_unknown`, so the module runs without a source
-schema and says so. Adding dbGaP did not change any of this: `classify.py` was not modified.
+`classifier_for(tables)` returns `always_unknown` and says so when there are no
+dictionaries at all, since every variable would then be held back.
+
+One limit is inherited from upstream. The adapter currently types any variable that carries
+codes as `permissible_values`, so a numeric variable with sentinel codes (an age with `-9`
+for missing) comes out categorical. [linkml/schema-automator#231][sa-231] asks the adapter
+to check `calculated_type` first, and that fix reaches the library with no change here.
 
 ### Unclassified variables are held back, not defaulted
 
@@ -433,14 +432,12 @@ them. The dbGaP cache manages itself. The output directory is created by `schema
 ### Commands
 
 ```sh
-# One directory of specs (one study), typed against that study's inferred schema
+# One directory of specs (one study), typed and described from that cohort's dictionaries
 dm-bip extract-variable-library path/to/specs/<study> \
-  -s path/to/output/<study>/<DM_SCHEMA_NAME>.yaml \
   --cohort aric \
   -o variable-library.yaml
 
 # As part of the pipeline, with every path resolved from the pipeline config
-make schema-create      CONFIG=path/to/study.mk    # builds the -s schema
 make variable-library   CONFIG=path/to/study.mk DM_COHORT=aric
 ```
 
@@ -455,7 +452,6 @@ Directories are searched recursively for `*.yaml` spec files, as in
 
 | Option | Default | Effect |
 |---|---|---|
-| `-s` / `--source-schema` | none | schema-automator output; without it nothing is typed and nothing is emitted |
 | `--cohort` | auto-detect | dbGaP cohort key (`aric`, `jhs`, …); `dm-bip fetch-digests --list` shows them |
 | `--dbgap-cache` | `.dbgap-cache` | Where fetched XML lives. Gitignored |
 | `--no-fetch` | fetches | Use only what is already cached — a genuine offline path |
@@ -472,7 +468,6 @@ Where each argument comes from, for any study:
 | Argument | Pipeline variable |
 |---|---|
 | spec dir | `DM_TRANS_SPEC_DIR` |
-| `-s` | `SCHEMA_FILE`, i.e. `$(DM_OUTPUT_DIR)/$(DM_SCHEMA_NAME).yaml` |
 | `-o` | `VARIABLE_LIBRARY_FILE`, i.e. `$(DM_OUTPUT_DIR)/variable-library.yaml` |
 | `--cohort` | `DM_COHORT` |
 | `--dbgap-cache` | `DM_DBGAP_CACHE_DIR` |
@@ -513,20 +508,19 @@ No study accession in these specs; descriptive slots will be empty
 That check runs *before* the cohort registry is consulted, so a study that cannot match one
 never triggers the network fetch that loading it would require.
 
-**The dbGaP half** needs a real cohort, and works without any prepared data as long as you
-have something to pass to `-s`:
+**The dbGaP half** needs a real cohort and nothing else — no prepared data, no schema:
 
 ```sh
 uv run dm-bip extract-variable-library \
   ~/Developer/NHLBI-BDC-DMC-HV/priority_variables_transform/ARIC-ingest \
-  -s <schema>.yaml \
   --cohort aric \
   --dbgap-cache /tmp/dbgap-cache \
   -o /tmp/vl.yaml
 ```
 
-Without `-s` this still fetches, joins, and reports coverage — it just emits nothing, because
-every variable lands in `unclassified`. That is a useful smoke test of steps 1 and 2 on its own.
+Without a cohort, and with no study accession in the specs to detect one from, this still
+reads the specs and reports — it just emits nothing, because nothing can be typed. That is a
+smoke test of step 1 on its own.
 
 To regenerate the checked-in datamodel after an upstream schema change (needs network):
 
@@ -540,7 +534,8 @@ make variable-lib-datamodel
 uv run pytest tests/unit/variable_lib tests/unit/test_fetch_digests.py -q
 ```
 
-These are offline. The classifier fixture is a local schema, and the digest fixtures under
+These are offline. The classifier fixtures are DD TSVs under `tests/input/variable_lib/dd/`,
+and the digest fixtures under
 `tests/input/variable_lib/dbgap/` are small hand-written XML covering the shapes that
 matter: consent-group rows, a `<value>` with no code, duplicate codes, a table contributed
 by another study, and a variable whose report carries no `<stat>`.
@@ -556,19 +551,19 @@ from the generated datamodel, not a failure.
 ## The classification question, made concrete
 
 `phv10111100` is the participant identifier in the synthetic study. Its declared range in
-the generated schema is `integer`, so the current rule types it **continuous** — which is
-wrong: it is a label that happens to be numeric. Its `num_distinct_values` is `500` out of
-500 rows, exactly the signal that would catch it.
+the generated schema is `integer`, so the earlier declared-range rule typed it
+**continuous** — which is wrong: it is a label that happens to be numeric. Its
+`num_distinct_values` is `500` out of 500 rows, exactly the signal that would catch it.
 
-dbGaP now supplies a rival signal that resolves this class of error on the study's own
-authority: `var_report`'s `calculated_type` distinguishes `enum_integer` from `integer`.
-Across the 1298 ARIC spec variables that have a dictionary it types every one of them, 569
-continuous and 729 categorical, from a closed four-value vocabulary.
+dbGaP supplies a signal that resolves this class of error on the study's own authority:
+`var_report`'s `calculated_type` distinguishes `enum_integer` from `integer`, and
+schema-automator's adapter folds it into the canonical DD `type`.
 
-It is deliberately **not** wired into classification — that stayed on the source schema, so
-this work changed what entries say and not which class they take. But the signal is fetched
-and available, and `Classifier` is an injection seam, which makes switching a contained
-change rather than a redesign.
+That signal is now the only thing classification reads. Review of this work asked for
+exactly that: one decision about what a variable is, made in the adapter and shared by
+`schema-create` and the variable library, instead of a second rule here. The remaining gap
+is the adapter's own codes-first typing, tracked upstream as
+[linkml/schema-automator#231][sa-231].
 
 That single variable is the whole typing question in one case.
 
@@ -657,8 +652,8 @@ output in memory, so those 17 tables enrich normally there. A library built from
 
 ## Remaining work
 
-- **Classification rule beyond declared range** — needs the typing question answered. The
-  dbGaP `calculated_type` signal is now available for it.
+- **Sentinel-coded numerics** come out categorical until the adapter checks
+  `calculated_type` before codes ([linkml/schema-automator#231][sa-231], item 5).
 - **Real study accession** — needs the study-identity question answered.
 - **`sole_dataset()` should prefer a known dictionary** rather than the alphabetically
   first, now that the choice decides which metadata a variable gets.

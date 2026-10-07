@@ -3,53 +3,23 @@
 import logging
 from pathlib import Path
 
-from linkml_runtime import SchemaView
-
-from dm_bip.variable_lib.classify import VariableKind, always_unknown, classifier_for, classify_from_source_schema
+from dm_bip.variable_lib.classify import always_unknown, classifier_for
+from dm_bip.variable_lib.dbgap_metadata import load_tables
 from dm_bip.variable_lib.emit import describe, to_entries, to_yaml
 from dm_bip.variable_lib.extract import VariableUsage, collect_variables
 
 MAPPING_INPUT = Path(__file__).parents[2] / "input" / "mapping_prov"
 ARIC_BMI = MAPPING_INPUT / "ARIC-ingest" / "bmi.yaml"
-SOURCE_SCHEMA = Path(__file__).parents[2] / "input" / "variable_lib" / "source_schema.yaml"
+MATCHING_DD = Path(__file__).parents[2] / "input" / "variable_lib" / "dd" / "phs000007.v35.pht004063.v1.MATCHING.dd.tsv"
 
 
 def _records() -> dict:
     return collect_variables([ARIC_BMI], resolve_urls=False)
 
 
-def test_numeric_ranges_classify_as_continuous():
-    """A slot declared float or integer describes a quantity."""
-    view = SchemaView(str(SOURCE_SCHEMA))
-
-    assert classify_from_source_schema(view, "pht004063", "phv00204719") is VariableKind.continuous
-    assert classify_from_source_schema(view, "pht004063", "phv00204901") is VariableKind.continuous
-
-
-def test_string_ranges_classify_as_categorical():
-    """Non-numeric ranges describe labels, including schema-automator's minted identifier types."""
-    view = SchemaView(str(SOURCE_SCHEMA))
-
-    # Both are declared `typeof: string`, so the range has to be followed to its base.
-    assert classify_from_source_schema(view, "pht004063", "phv00204812") is VariableKind.categorical
-    assert classify_from_source_schema(view, "pht004063", "phv00204900") is VariableKind.categorical
-
-
-def test_variable_absent_from_source_schema_is_unknown():
-    """A spec may name a variable the ingest never produced; that is not a guessable case."""
-    view = SchemaView(str(SOURCE_SCHEMA))
-
-    assert classify_from_source_schema(view, "pht004063", "phv99999999") is VariableKind.unknown
-    assert classify_from_source_schema(view, "pht000000", "phv00204719") is VariableKind.unknown
-
-
-def test_no_source_schema_classifies_nothing(caplog):
-    """Without schema-automator output there is no typing signal, and that is said out loud."""
-    with caplog.at_level(logging.WARNING):
-        classify = classifier_for(None)
-
-    assert classify("pht004063", "phv00204719") is VariableKind.unknown
-    assert "No source schema supplied" in caplog.text
+def _classify():
+    """Type from the MATCHING DD, which declares BMI01 (phv00204719) as a decimal."""
+    return classifier_for(load_tables([MATCHING_DD]))
 
 
 def test_unclassified_variables_are_not_emitted(caplog):
@@ -64,7 +34,7 @@ def test_unclassified_variables_are_not_emitted(caplog):
 
 def test_identity_triple_populated_from_specs_alone():
     """The phv/pht/phs join issue #352 asks to preserve survives into the entry."""
-    entries = to_entries(_records(), classifier_for(SOURCE_SCHEMA))
+    entries = to_entries(_records(), _classify())
 
     entry = next(e for e in entries.continuous if e.source_id == "phv00204719")
     assert entry.id == "dbgap:phv00204719"
@@ -74,7 +44,7 @@ def test_identity_triple_populated_from_specs_alone():
 
 def test_descriptive_slots_left_empty_without_a_metadata_source():
     """Data-dictionary slots stay unset rather than being invented from the specs."""
-    entries = to_entries(_records(), classifier_for(SOURCE_SCHEMA))
+    entries = to_entries(_records(), _classify())
 
     entry = next(e for e in entries.continuous if e.source_id == "phv00204719")
     assert entry.variable_name is None
@@ -90,7 +60,7 @@ def test_metadata_source_fills_descriptive_slots():
         def lookup(self, dataset: str, accession: str) -> dict:
             return {"variable_name": "BMI01", "unit": "kg/m2"} if accession == "phv00204719" else {}
 
-    entries = to_entries(_records(), classifier_for(SOURCE_SCHEMA), metadata=Dictionary())
+    entries = to_entries(_records(), _classify(), metadata=Dictionary())
 
     entry = next(e for e in entries.continuous if e.source_id == "phv00204719")
     assert entry.variable_name == "BMI01"
@@ -105,7 +75,7 @@ def test_metadata_slots_unknown_to_the_class_are_dropped_with_a_warning(caplog):
             return {"not_a_slot": "x"}
 
     with caplog.at_level(logging.WARNING):
-        to_entries(_records(), classifier_for(SOURCE_SCHEMA), metadata=Dictionary())
+        to_entries(_records(), _classify(), metadata=Dictionary())
 
     assert "has no slot not_a_slot" in caplog.text
 
@@ -120,7 +90,7 @@ def test_description_records_every_use():
 
 def test_output_is_grouped_by_class():
     """Grouping keeps the output self-describing while descriptive slots are still empty."""
-    document = to_yaml(to_entries(_records(), classifier_for(SOURCE_SCHEMA)))
+    document = to_yaml(to_entries(_records(), _classify()))
 
     assert "single_continuous_variables:" in document
     assert "single_categorical_variables:" in document
@@ -128,7 +98,7 @@ def test_output_is_grouped_by_class():
 
 def test_output_is_deterministic():
     """Repeated runs over unchanged specs produce byte-identical output."""
-    first = to_yaml(to_entries(_records(), classifier_for(SOURCE_SCHEMA)))
-    second = to_yaml(to_entries(_records(), classifier_for(SOURCE_SCHEMA)))
+    first = to_yaml(to_entries(_records(), _classify()))
+    second = to_yaml(to_entries(_records(), _classify()))
 
     assert first == second
