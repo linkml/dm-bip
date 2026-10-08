@@ -191,7 +191,8 @@ def _dbgap_tables(records, cohort_key, cache_dir, fetch, with_var_report, refres
     reads each variable's DD type, and the metadata source fills the descriptive slots.
 
     Returning None is a normal outcome, not a failure: a study with no dbGaP presence still
-    yields entries, typed from the source schema alone and without the descriptive slots.
+    runs to completion, but with nothing to type from it reports every variable as untyped
+    and emits no entries.
     """
     import logging
 
@@ -220,7 +221,7 @@ def _dbgap_tables(records, cohort_key, cache_dir, fetch, with_var_report, refres
     # placeholder id — can never match one, so rule that out before reaching for it.
     studies = sorted({record.study_id for record in records.values() if record.study_id})
     if cohort_key is None and not any(_PHS_RE.search(study) for study in studies):
-        typer.echo("No study accession in these specs; descriptive slots will be empty", err=True)
+        typer.echo("No study accession in these specs; without a data dictionary nothing can be typed", err=True)
         return None
 
     cohorts = load_cohorts(cache_dir=cache_dir)
@@ -232,7 +233,7 @@ def _dbgap_tables(records, cohort_key, cache_dir, fetch, with_var_report, refres
     else:
         cohort = next((found for study in studies if (found := cohort_for_study(study, cohorts))), None)
         if cohort is None:
-            typer.echo("No dbGaP cohort matches these specs; descriptive slots will be empty", err=True)
+            typer.echo("No dbGaP cohort matches these specs; without a data dictionary nothing can be typed", err=True)
             return None
         typer.echo(f"Using dbGaP cohort {cohort.key} ({cohort.study_id}.{cohort.data_version})", err=True)
 
