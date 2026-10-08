@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data_table id="pht004063.v1" study_id="phs000007.v35" participant_set="16" date_created="Thu Jan 19 13:42:14 2023">
+  <description>The same pht, declaring the variable the ARIC specs actually name.</description>
+  <variable id="phv00204719.v1">
+    <name>BMI01</name>
+    <description>Body mass index, exam 1.</description>
+    <type>decimal</type>
+    <unit>kg/m2</unit>
+  </variable>
+</data_table>

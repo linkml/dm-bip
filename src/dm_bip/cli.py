@@ -1,6 +1,7 @@
 """Command line interface for dm-bip."""
 
 import logging
+import re
 from pathlib import Path
 from typing import Annotated, Optional
 
@@ -15,6 +16,9 @@ __all__ = [
 ]
 
 logger = logging.getLogger(__name__)
+
+# A real study id carries a dbGaP accession (``bdchm:Study/phs000280``); a placeholder does not.
+_PHS_RE = re.compile(r"phs\d+")
 
 app = typer.Typer(
     help="CLI for dm-bip.",
@@ -175,6 +179,164 @@ def extract_mapping_provenance(
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(serialized)
         typer.echo(f"Mapping provenance written to {output}")
+
+
+def _dbgap_tables(records, cohort_key, cache_dir, fetch, with_var_report, refresh, dd_dir=None):
+    """
+    Load the canonical data dictionaries covering the datasets these records name, or None.
+
+    With ``dd_dir`` they are the DD TSVs already there, typically what the pipeline's
+    ``adapt-digests`` target wrote, and nothing is fetched. Otherwise the digests are fetched
+    (or read from the cache) and adapted in memory. The tables serve twice: the classifier
+    reads each variable's DD type, and the metadata source fills the descriptive slots.
+
+    Returning None is a normal outcome, not a failure: a study with no dbGaP presence still
+    runs to completion, but with nothing to type from it reports every variable as untyped
+    and emits no entries.
+    """
+    import logging
+
+    from dm_bip.prepare_study.fetch_digests import (
+        cached_digests,
+        cohort_for_study,
+        fetch_digests,
+        load_cohorts,
+        pair_digests,
+    )
+    from dm_bip.variable_lib.dbgap_metadata import load_tables, tables_from_digests
+
+    if not records:
+        return None
+
+    datasets = {record.sole_dataset() for record in records.values()}
+
+    if dd_dir is not None:
+        dd_paths = sorted(dd_dir.glob("*.dd.tsv"))
+        found = {pht for path in dd_paths if (pht := _pht_of(path.name))}
+        _report_missing(datasets, found, "canonical DD")
+        return load_tables(dd_paths)
+
+    # Auto-detect needs the cohort registry, which is fetched over the network the first time.
+    # Studies carrying no phs accession — a spec directory with no researchstudy.yaml gets a
+    # placeholder id — can never match one, so rule that out before reaching for it.
+    studies = sorted({record.study_id for record in records.values() if record.study_id})
+    if cohort_key is None and not any(_PHS_RE.search(study) for study in studies):
+        typer.echo("No study accession in these specs; without a data dictionary nothing can be typed", err=True)
+        return None
+
+    cohorts = load_cohorts(cache_dir=cache_dir)
+    if cohort_key is not None:
+        cohort = cohorts.get(cohort_key)
+        if cohort is None:
+            typer.echo(f"Unknown cohort '{cohort_key}'. Available: {', '.join(sorted(cohorts))}", err=True)
+            raise typer.Exit(code=2)
+    else:
+        cohort = next((found for study in studies if (found := cohort_for_study(study, cohorts))), None)
+        if cohort is None:
+            typer.echo("No dbGaP cohort matches these specs; without a data dictionary nothing can be typed", err=True)
+            return None
+        typer.echo(f"Using dbGaP cohort {cohort.key} ({cohort.study_id}.{cohort.data_version})", err=True)
+
+    kinds = None if with_var_report else frozenset({"data_dict"})
+    if fetch:
+        digests = fetch_digests(cohort, cache_root=cache_dir, refresh=refresh, datasets=datasets, kinds=kinds)
+    else:
+        digests = cached_digests(cohort, cache_dir, datasets=datasets, kinds=kinds)
+
+    found = {pht for path in digests.data_dicts if (pht := _pht_of(path.name))}
+    _report_missing(datasets, found, "dbGaP data dictionary")
+
+    # The adapter's linkml-map layer warns once per DD entry about ranges it cannot map;
+    # that is its concern, not a problem with the digests, and over a whole cohort it would
+    # bury the messages above.
+    logging.getLogger("linkml_map").setLevel(logging.ERROR)
+    pairs = pair_digests(digests) if with_var_report else [(path, None) for path in digests.data_dicts]
+    return tables_from_digests(pairs)
+
+
+def _report_missing(datasets, found, what):
+    """Name, by accession, the datasets the specs use that no dictionary of this kind covers."""
+    if missing := datasets - found:
+        typer.echo(f"{len(missing)} of {len(datasets)} datasets have no {what}: {', '.join(sorted(missing))}", err=True)
+
+
+def _pht_of(filename):
+    """Return the bare pht in a digest filename, deferring the import for CLI startup speed."""
+    from dm_bip.prepare_study.fetch_digests import pht_from_filename
+
+    return pht_from_filename(filename)
+
+
+@app.command()
+def extract_variable_library(
+    paths: Annotated[list[Path], typer.Argument(exists=True, help="Transformation spec files or directories")],
+    output: Annotated[Optional[Path], typer.Option("--output", "-o", help="Output YAML file (default: stdout)")] = None,
+    cohort: Annotated[
+        Optional[str],
+        typer.Option("--cohort", help="dbGaP cohort key; omit to detect it from the specs' researchstudy.yaml"),
+    ] = None,
+    dbgap_cache: Annotated[
+        Path, typer.Option("--dbgap-cache", help="Local cache directory for dbGaP digest XMLs")
+    ] = Path(".dbgap-cache"),
+    fetch: Annotated[
+        bool, typer.Option("--fetch/--no-fetch", help="Fetch missing digests; --no-fetch uses only what is cached")
+    ] = True,
+    with_var_report: Annotated[
+        bool,
+        typer.Option("--var-report/--no-var-report", help="Use var_report.xml for data types and observed bounds"),
+    ] = True,
+    refresh: Annotated[bool, typer.Option("--refresh", help="Force re-fetch of cached digest files")] = False,
+    dd_dir: Annotated[
+        Optional[Path],
+        typer.Option(
+            "--dd-dir",
+            exists=True,
+            file_okay=False,
+            help="Directory of canonical DD TSVs (*.dd.tsv) to read instead of fetching and adapting digests",
+        ),
+    ] = None,
+):
+    """
+    Emit BDC variable library entries for the source variables named in transformation specs.
+
+    The specs say which variables exist. dbGaP's data dictionary, as schema-automator's
+    adapter renders it, says whether each is continuous or categorical and supplies the
+    descriptive slots — name, units, bounds, coded values — fetched for exactly the datasets
+    the specs name and no others, or read from the canonical DD TSVs in ``--dd-dir`` when the
+    pipeline has already adapted them. A variable no dictionary describes cannot be typed
+    and is reported rather than emitted.
+    """
+    from dm_bip.mapping_prov.extract import collect_spec_paths
+    from dm_bip.variable_lib.classify import classifier_for
+    from dm_bip.variable_lib.dbgap_metadata import DbgapMetadata
+    from dm_bip.variable_lib.emit import to_entries, to_yaml
+    from dm_bip.variable_lib.extract import collect_variables
+
+    spec_paths = collect_spec_paths(paths)
+    if not spec_paths:
+        typer.echo("No transformation spec files found", err=True)
+        raise typer.Exit(code=1)
+
+    records = collect_variables(spec_paths)
+    tables = _dbgap_tables(records, cohort, dbgap_cache, fetch, with_var_report, refresh, dd_dir)
+    classify = classifier_for(tables)
+    metadata = DbgapMetadata(tables, classify) if tables is not None else None
+    entries = to_entries(records, classify, metadata=metadata)
+    serialized = to_yaml(entries)
+    if output is None:
+        typer.echo(serialized)
+    else:
+        output.write_text(serialized)
+        typer.echo(f"Variable library written to {output}")
+
+    typer.echo(
+        f"{len(entries)} entries from {len(records)} source variables "
+        f"({len(entries.continuous)} continuous, {len(entries.categorical)} categorical)",
+        err=True,
+    )
+    if entries.unclassified:
+        hint = " (no dbGaP data dictionary describes them)" if tables else " (no dbGaP data dictionaries loaded)"
+        typer.echo(f"{len(entries.unclassified)} variables could not be typed and were skipped{hint}", err=True)
 
 
 @app.command()

@@ -585,6 +585,7 @@ _ENTITIES         := $(shell cat $(_ENTITY_LIST_FILE) 2>/dev/null)
 _ENTITY_SENTINELS := $(foreach e,$(_ENTITIES),$(MAPPING_OUTPUT_DIR)/.$(e)_complete)
 
 MAPPING_PROVENANCE_FILE := $(DM_OUTPUT_DIR)/mapping-provenance.yaml
+VARIABLE_LIBRARY_FILE   := $(DM_OUTPUT_DIR)/variable-library.yaml
 
 .PHONY: map-data
 map-data: $(MAPPING_SUCCESS_SENTINEL) mapping-provenance
@@ -605,6 +606,27 @@ $(MAPPING_PROVENANCE_FILE): $(MAP_TRANS_SPEC_FILES)
 	@$(call check_trans_spec_files)
 	@mkdir -p $(@D)
 	-$(RUN) dm-bip extract-mapping-provenance $(DM_TRANS_SPEC_DIR) -o $@
+
+# Variable library: one BDC variable library entry per source variable named in the
+# trans specs. The specs say which variables exist; the cohort's dbGaP data dictionaries,
+# as schema-automator's adapter renders them, say whether each is continuous or
+# categorical and supply its name, units, bounds and coded values. The dictionaries are
+# fetched for exactly the datasets the specs name, so DM_COHORT is effectively required:
+# without it nothing can be typed and the library is empty. Not yet wired into `pipeline`.
+#
+# The cache is deliberately not a prerequisite: it is network-populated and managed by
+# the command itself, so listing it would leave this target perpetually out of date.
+.PHONY: variable-library
+variable-library: $(VARIABLE_LIBRARY_FILE)
+
+ifneq ($(strip $(DM_COHORT)),)
+VARIABLE_LIBRARY_ARGS := --cohort $(DM_COHORT) --dbgap-cache $(DM_DBGAP_CACHE_DIR)
+endif
+
+$(VARIABLE_LIBRARY_FILE): $(MAP_TRANS_SPEC_FILES)
+	@$(call check_trans_spec_files)
+	@mkdir -p $(@D)
+	$(RUN) dm-bip extract-variable-library $(DM_TRANS_SPEC_DIR) $(VARIABLE_LIBRARY_ARGS) -o $@
 
 # Phase 1: Write entity list from the trans-spec directory
 $(_ENTITY_LIST_FILE): $(MAP_TRANS_SPEC_FILES)

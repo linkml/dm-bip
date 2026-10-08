@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data_table name="MATCHING" dataset_id="pht004063.v1" study_name="Another Study" study_id="phs000007.v35" participant_set="16" date_created="2023/01/19">
+  <variable id="phv00204719.v1.p16" var_name="BMI01" calculated_type="decimal" reported_type="decimal">
+    <total><stats><stat n="3200" nulls="4" mean="27.4" min="13.1" max="61.2" /></stats></total>
+  </variable>
+</data_table>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data_table name="COLLIDING" dataset_id="pht004063.v1" study_name="Another Study" study_id="phs000007.v35" participant_set="16" date_created="2023/01/19">
+  <variable id="phv00901101.v1.p16" var_name="TNFA" calculated_type="decimal" reported_type="decimal">
+    <total><stats><stat n="3200" nulls="4" mean="2.1" min="0.4" max="18.6" /></stats></total>
+  </variable>
+  <variable id="phv00901102.v1.p16" var_name="EXAM_CYCLE" calculated_type="enum_integer" reported_type="encoded value">
+    <total><stats><stat n="3204" nulls="0" /></stats></total>
+  </variable>
+</data_table>

@@ -8,7 +8,12 @@ from pathlib import Path
 import git
 import yaml
 
-from dm_bip.mapping_prov.extract import extract_provenance, iter_class_derivations, read_study, run_activity
+from dm_bip.mapping_prov.extract import (
+    extract_provenance,
+    iter_class_derivations,
+    read_study,
+    run_activity,
+)
 
 INPUT_DIR = Path(__file__).parents[2] / "input" / "mapping_prov"
 ARIC_DIR = INPUT_DIR / "ARIC-ingest"
