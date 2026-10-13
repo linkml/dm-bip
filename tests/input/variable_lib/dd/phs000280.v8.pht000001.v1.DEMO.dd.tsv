@@ -1,0 +1,7 @@
+name	type	description	codes	unit	min	max	uri	comment	missing_values
+HEIGHT	integer	Standing height, declared string but measured integer.		cm	125	199	dbgap:phv00000001.v1	Measured to the nearest cm.	
+SEX	permissible_values	Reported sex.	2, Female | 1, Male				dbgap:phv00000002.v1		
+YEAR	permissible_values	Year of the exam; dbGaP emits the value with no code attribute.	1986				dbgap:phv00000003.v1		
+DUPCODE	permissible_values	Two values sharing one code, as dbGaP sometimes publishes.	1, Yes | 1, Affirmative				dbgap:phv00000004.v1		
+BOUNDED	integer	Declares logical bounds; its var_report row carries no stat element.		none	10	99	dbgap:phv00000005.v1		
+SENTINEL	integer	A numeric measurement carrying one out-of-band marker among its values.		Years	126	155	dbgap:phv00000006.v1		5, Transport condition

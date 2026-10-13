@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11, <=3.13"
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -192,6 +192,16 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/35/66/259eed040158b4e4df04fdf2c9f5f6387dfb155e7005d8522b588a700ea7/bcp47-0.1.0.tar.gz", hash = "sha256:37cc7a03fd696149ebfe7de785c5bad473f911eddac8415cf479584049cf03d5", size = 13665, upload-time = "2024-05-13T11:49:05.733Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/63/5a/33251b8d10e7f9e13caacc307629595a0fe7cc516100d44ad8fc4ef98a5d/bcp47-0.1.0-py3-none-any.whl", hash = "sha256:a567b7fe881c900916a9db62ac8f792370c7ddf2664e601b74eeed35d8758aa5", size = 13016, upload-time = "2024-05-13T11:49:04.175Z" },
+]
+
+[[package]]
+name = "bdc-varlib"
+version = "0.0.0.post13.dev0+f791532"
+source = { git = "https://github.com/tis-lab/BDC-VarLib.git?branch=pipeline#f791532ed4635c24b6619fa7dbd1c6f983221b1d" }
+dependencies = [
+    { name = "linkml-runtime" },
+    { name = "pydantic" },
+    { name = "pyyaml" },
 ]
 
 [[package]]
@@ -709,7 +719,9 @@ wheels = [
 name = "dm-bip"
 version = "0.0.0"
 source = { editable = "." }
+default-groups = ["dev", "env"]
 dependencies = [
+    { name = "bdc-varlib" },
     { name = "gitpython" },
     { name = "httpx" },
     { name = "linkml" },
@@ -744,6 +756,7 @@ env = [
 
 [package.metadata]
 requires-dist = [
+    { name = "bdc-varlib", git = "https://github.com/tis-lab/BDC-VarLib.git?branch=pipeline" },
     { name = "gitpython", specifier = ">=3.1.44" },
     { name = "httpx", specifier = ">=0.27,<1" },
     { name = "linkml", specifier = ">=1.11.0" },
@@ -1190,7 +1203,7 @@ name = "importlib-metadata"
 version = "8.6.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "zipp", marker = "python_full_version < '3.12'" },
+    { name = "zipp" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/33/08/c1395a292bb23fd03bdf572a1357c5a733d3eecbab877641ceacab23db6e/importlib_metadata-8.6.1.tar.gz", hash = "sha256:310b41d755445d74569f993ccfc22838295d9fe005425094fad953d7f15c8580", size = 55767, upload-time = "2025-01-20T22:21:30.429Z" }
 wheels = [

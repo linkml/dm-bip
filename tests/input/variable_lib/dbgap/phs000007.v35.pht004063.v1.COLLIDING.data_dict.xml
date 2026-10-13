@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data_table id="pht004063.v1" study_id="phs000007.v35" participant_set="16" date_created="Thu Jan 19 13:42:14 2023">
+  <description>Another study's table that happens to carry a pht the specs also name.</description>
+  <variable id="phv00901101.v1">
+    <name>TNFA</name>
+    <description>Tumor necrosis factor alpha; nothing the ARIC specs asked for.</description>
+    <type>decimal</type>
+    <unit>pg/mL</unit>
+  </variable>
+  <variable id="phv00901102.v1">
+    <name>EXAM_CYCLE</name>
+    <description>Exam cycle the sample was drawn in.</description>
+    <type>encoded value</type>
+    <value code="7">Cycle 7</value>
+  </variable>
+</data_table>

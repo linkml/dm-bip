@@ -1,0 +1,2 @@
+name	type	description	codes	unit	min	max	uri
+BMI01	decimal	Body mass index, exam 1.		kg/m2	13.1	61.2	dbgap:phv00204719.v1
