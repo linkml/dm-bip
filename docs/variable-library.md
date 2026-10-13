@@ -76,11 +76,11 @@ flowchart TD
   subgraph resolve [Resolve]
     direction LR
     adapt["3 · Read the digests<br/>dbgap_metadata.py · tables_from_digests()"]
-    classify["4 · Type each variable<br/>classify.py · classifier_for()"]
+    classify["4 · Type each variable<br/>bdc_varlib.pipeline.classify · classifier_for()"]
   end
   subgraph express [Express]
     direction LR
-    emit["6 · Emit the entries<br/>emit.py · to_entries() · to_yaml()"]
+    emit["6 · Emit the entries<br/>bdc_varlib.pipeline.emit · to_entries() · to_yaml()"]
     slots["5 · Map onto BDC slots<br/>DbgapMetadata.lookup()"]
   end
   subgraph out [Output]
@@ -153,17 +153,26 @@ the adapter has already answered.
 ### Layers: parse, decide, express
 
 ```
-src/dm_bip/variable_lib/
+src/dm_bip/variable_lib/            dm-bip: reading
 ├── extract.py          # spec → VariableRecord (the IR)
-├── classify.py         # DD type → continuous | categorical
 ├── dbgap_metadata.py   # digests → canonical DD index → BDC slot values
-├── emit.py             # VariableRecord + kind + metadata → schema instances
-└── datamodel/          # gen-pydantic output
+└── datamodel/          # gen-pydantic output, and ENTRY_CLASSES (which class per kind)
+
+bdc_varlib/pipeline/                BDC-VarLib: deciding and expressing
+├── records.py          # VariableUsage, VariableRecord
+├── classify.py         # DD type → continuous | categorical
+└── emit.py             # VariableRecord + kind + metadata → entries of the given classes
 ```
 
-plus `prepare_study/fetch_digests.py`, which fetches and caches the digests. Same split as
+plus `prepare_study/fetch_digests.py`, which fetches and caches the digests. The logic that
+decides what a variable is and how it is expressed lives in
+[BDC-VarLib](https://github.com/tis-lab/BDC-VarLib) as `bdc_varlib.pipeline`, which dm-bip
+imports; everything that reads specs, digests and dictionaries stays here. Same split as
 `mapping_prov`: extraction depends only on the specs and stays testable on its own, and
-`dbgap_metadata.py` is the only layer that knows BDC slot names.
+`dbgap_metadata.py` is the only layer that knows BDC slot names. `classify` takes any
+mapping of tables whose entries carry a `data_type`, and `to_entries` takes the datamodel
+classes to instantiate, so the shared package carries neither the DD reader nor the
+generated datamodel.
 
 ### Reuse the spec-reading layer, don't re-parse
 
@@ -191,7 +200,7 @@ which a dictionary actually knows the variable would be the better rule.
 
 The canonical DD already carries a `type` for every variable, resolved by schema-automator's
 adapter from dbGaP's declared and calculated types, and `schema-create` reads the same DD.
-So the continuous-or-categorical decision is made once, upstream, and `classify.py` only
+So the continuous-or-categorical decision is made once, upstream, and `classify` only
 maps that vocabulary onto the two classes. A variable the dictionary does not describe is
 `unknown`, counted, and held back, rather than typed from a second source that might
 disagree with the first. `classifier_for(tables)` returns `always_unknown` and says so when

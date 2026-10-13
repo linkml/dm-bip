@@ -6,7 +6,9 @@ the *derived* thing — each derivation fragment becoming an entity that records
 derived from — a variable library is organized around the *source* thing: the entry is the
 dbGaP variable, and it should state every target slot that variable feeds. So this module
 reuses that module's spec-reading layer wholesale and re-keys what it yields by ``phv``
-accession, accumulating uses rather than keeping the first one seen.
+accession, accumulating uses rather than keeping the first one seen. The records it builds
+are ``bdc_varlib``'s intermediate representation, so that package's emit step consumes them
+directly.
 
 Reading the spec, recursing into nested class derivations, and pulling ``{phv...}``
 references out of ``expr`` strings all happen in ``mapping_prov.extract``; nothing here
@@ -15,9 +17,9 @@ module rather than being imported sideways.
 """
 
 import logging
-from dataclasses import dataclass, field
 from pathlib import Path
 
+from bdc_varlib.pipeline.records import VariableRecord, VariableUsage
 from linkml_runtime.loaders import yaml_loader
 
 from dm_bip.mapping_prov.extract import (
@@ -30,56 +32,6 @@ from dm_bip.mapping_prov.extract import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass(frozen=True, order=True)
-class VariableUsage:
-    """
-    One place a source variable feeds a target slot.
-
-    ``via_expression`` distinguishes a slot populated directly (``populated_from: phv...``)
-    from one that references the variable inside a LinkML expression — an identifier woven
-    into a ``uuid5()`` call is a materially weaker claim about the variable's role than a
-    value copied straight across, and a library entry should not flatten the two.
-    """
-
-    target_class: str
-    slot: str
-    via_expression: bool
-    spec_id: str
-
-
-@dataclass
-class VariableRecord:
-    """
-    A source variable and every target slot it feeds.
-
-    ``datasets`` is a set rather than a scalar because nothing in the spec format prevents
-    the same accession appearing under two ``pht`` values; see :func:`sole_dataset`.
-    """
-
-    accession: str
-    datasets: set[str] = field(default_factory=set)
-    study_id: str | None = None
-    usages: list[VariableUsage] = field(default_factory=list)
-
-    def sole_dataset(self) -> str:
-        """
-        Return the dataset this variable belongs to.
-
-        The variable library's ``file_id`` is single-valued, so a variable seen under
-        several datasets has to collapse to one. That collapse is lossy, so it warns and
-        picks deterministically rather than silently taking whichever spec was read first.
-        """
-        datasets = sorted(self.datasets)
-        if len(datasets) > 1:
-            logger.warning(
-                "Variable %s appears under multiple datasets %s; using %s for file_id",
-                self.accession,
-                datasets,
-                datasets[0],
-            )
-        return datasets[0]
 
 
 def _study_id(directory: Path) -> str:

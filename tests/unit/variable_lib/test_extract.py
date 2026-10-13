@@ -4,8 +4,9 @@ import logging
 from pathlib import Path
 
 import yaml
+from bdc_varlib.pipeline.records import VariableUsage
 
-from dm_bip.variable_lib.extract import VariableUsage, collect_variables
+from dm_bip.variable_lib.extract import collect_variables
 
 INPUT_DIR = Path(__file__).parents[2] / "input" / "mapping_prov"
 ARIC_DIR = INPUT_DIR / "ARIC-ingest"

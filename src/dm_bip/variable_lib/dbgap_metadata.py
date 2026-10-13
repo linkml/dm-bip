@@ -1,7 +1,7 @@
 """
 Fill variable library descriptive slots from canonical data dictionaries.
 
-Implements the ``MetadataSource`` protocol that ``variable_lib.emit`` defines: without one,
+Implements the ``MetadataSource`` protocol that ``bdc_varlib.pipeline.emit`` defines: without one,
 every entry carries identity (``id``, ``source_id``, ``file_id``, ``associated_study``,
 ``variable_description``) and eleven nulls.
 
@@ -36,11 +36,11 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any
 
+from bdc_varlib.pipeline.classify import Classifier, VariableKind
 from schema_automator.adapters.codes import parse_codes
 
 from dm_bip.prepare_study.fetch_digests import pht_from_filename
 from dm_bip.trans_spec_gen.units import UNIT_NORMALIZATION
-from dm_bip.variable_lib.classify import Classifier, VariableKind
 from dm_bip.variable_lib.datamodel.variable_lib import DataTypeEnum, EnumValue, MissingValue
 
 logger = logging.getLogger(__name__)

@@ -4,8 +4,8 @@ import logging
 from pathlib import Path
 
 import pytest
+from bdc_varlib.pipeline.classify import VariableKind, classifier_for, classify_from_dd
 
-from dm_bip.variable_lib.classify import VariableKind, classifier_for, classify_from_dd
 from dm_bip.variable_lib.dbgap_metadata import load_tables
 
 DEMO_DD = Path(__file__).parents[2] / "input" / "variable_lib" / "dd" / "phs000280.v8.pht000001.v1.DEMO.dd.tsv"

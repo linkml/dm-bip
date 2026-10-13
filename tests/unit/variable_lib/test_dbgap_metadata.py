@@ -4,8 +4,8 @@ import logging
 from pathlib import Path
 
 import pytest
+from bdc_varlib.pipeline.classify import VariableKind
 
-from dm_bip.variable_lib.classify import VariableKind
 from dm_bip.variable_lib.datamodel.variable_lib import DataTypeEnum
 from dm_bip.variable_lib.dbgap_metadata import (
     Code,

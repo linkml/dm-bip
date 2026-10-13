@@ -1,16 +1,23 @@
-"""Tests for classifying variables and expressing them as variable library entries."""
+"""Tests that dm-bip's records, dictionaries and datamodel work through bdc_varlib's emit step."""
 
 import logging
 from pathlib import Path
 
-from dm_bip.variable_lib.classify import always_unknown, classifier_for
+from bdc_varlib.pipeline import VariableUsage, always_unknown, classifier_for, describe, to_yaml
+from bdc_varlib.pipeline import to_entries as _to_entries
+
+from dm_bip.variable_lib.datamodel import ENTRY_CLASSES
 from dm_bip.variable_lib.dbgap_metadata import load_tables
-from dm_bip.variable_lib.emit import describe, to_entries, to_yaml
-from dm_bip.variable_lib.extract import VariableUsage, collect_variables
+from dm_bip.variable_lib.extract import collect_variables
 
 MAPPING_INPUT = Path(__file__).parents[2] / "input" / "mapping_prov"
 ARIC_BMI = MAPPING_INPUT / "ARIC-ingest" / "bmi.yaml"
 MATCHING_DD = Path(__file__).parents[2] / "input" / "variable_lib" / "dd" / "phs000007.v35.pht004063.v1.MATCHING.dd.tsv"
+
+
+def to_entries(records, classify, metadata=None):
+    """Emit with dm-bip's generated datamodel classes."""
+    return _to_entries(records, classify, metadata, entry_classes=ENTRY_CLASSES)
 
 
 def _records() -> dict:

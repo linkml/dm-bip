@@ -306,10 +306,11 @@ def extract_variable_library(
     pipeline has already adapted them. A variable no dictionary describes cannot be typed
     and is reported rather than emitted.
     """
+    from bdc_varlib.pipeline import classifier_for, to_entries, to_yaml
+
     from dm_bip.mapping_prov.extract import collect_spec_paths
-    from dm_bip.variable_lib.classify import classifier_for
+    from dm_bip.variable_lib.datamodel import ENTRY_CLASSES
     from dm_bip.variable_lib.dbgap_metadata import DbgapMetadata
-    from dm_bip.variable_lib.emit import to_entries, to_yaml
     from dm_bip.variable_lib.extract import collect_variables
 
     spec_paths = collect_spec_paths(paths)
@@ -321,7 +322,7 @@ def extract_variable_library(
     tables = _dbgap_tables(records, cohort, dbgap_cache, fetch, with_var_report, refresh, dd_dir)
     classify = classifier_for(tables)
     metadata = DbgapMetadata(tables, classify) if tables is not None else None
-    entries = to_entries(records, classify, metadata=metadata)
+    entries = to_entries(records, classify, metadata=metadata, entry_classes=ENTRY_CLASSES)
     serialized = to_yaml(entries)
     if output is None:
         typer.echo(serialized)
