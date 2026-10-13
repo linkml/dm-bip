@@ -195,6 +195,16 @@ wheels = [
 ]
 
 [[package]]
+name = "bdc-varlib"
+version = "0.0.0.post13.dev0+f791532"
+source = { git = "https://github.com/tis-lab/BDC-VarLib.git?branch=pipeline#f791532ed4635c24b6619fa7dbd1c6f983221b1d" }
+dependencies = [
+    { name = "linkml-runtime" },
+    { name = "pydantic" },
+    { name = "pyyaml" },
+]
+
+[[package]]
 name = "beautifulsoup4"
 version = "4.13.3"
 source = { registry = "https://pypi.org/simple" }
@@ -711,6 +721,7 @@ version = "0.0.0"
 source = { editable = "." }
 default-groups = ["dev", "env"]
 dependencies = [
+    { name = "bdc-varlib" },
     { name = "gitpython" },
     { name = "httpx" },
     { name = "linkml" },
@@ -745,6 +756,7 @@ env = [
 
 [package.metadata]
 requires-dist = [
+    { name = "bdc-varlib", git = "https://github.com/tis-lab/BDC-VarLib.git?branch=pipeline" },
     { name = "gitpython", specifier = ">=3.1.44" },
     { name = "httpx", specifier = ">=0.27,<1" },
     { name = "linkml", specifier = ">=1.11.0" },
