@@ -104,5 +104,6 @@ classes:
     description: A value with unit
     attributes:
       value_decimal:
+        range: decimal
       value_concept:
       unit:
