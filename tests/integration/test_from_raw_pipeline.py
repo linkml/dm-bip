@@ -194,7 +194,7 @@ def test_mapping_unit_conversion(from_raw_pipeline_output):
     records = [r for r in yaml.safe_load_all(mo_files[0].read_text()) if r]
 
     height_records = [r for r in records if r.get("observation_type") == "OBA:VT0001253"]
-    values = [r["value_quantity"]["value_decimal"] for r in height_records if r.get("value_quantity")]
+    values = [q["value_decimal"] for r in height_records if "value_decimal" in (q := r.get("value_quantity", {}))]
     assert values, "No converted height values found"
 
     # Input: 59.5 inches → 151.13 cm (59.5 * 2.54)
@@ -204,7 +204,7 @@ def test_mapping_unit_conversion(from_raw_pipeline_output):
     assert all(v > 100 for v in values), f"Values look unconverted (still in inches?): {values[:5]}"
 
     weight_records = [r for r in records if r.get("observation_type") == "OBA:VT0001254"]
-    weights = [r["value_quantity"]["value_decimal"] for r in weight_records if r.get("value_quantity")]
+    weights = [q["value_decimal"] for r in weight_records if "value_decimal" in (q := r.get("value_quantity", {}))]
     assert weights, "No converted weight values found"
 
     # Input: 135.6 lbs → 61.51 kg (135.6 * 0.453592)
